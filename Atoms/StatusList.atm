@@ -1,0 +1,222 @@
+
+
+{Preregister functions}
+
+PreregisterFunction([StatusName], 1, 1);
+
+
+{Atom: StatusList}
+
+sets;
+BaseClass;
+CreateAtom(a, s, [], 1, false);
+Set(OnInit, [Dim([atmStatusList], vbAtom, c)
+]);
+int023([StatusList], 0, 0);
+DefineFunction([StatusName], [Basic], 1, 1, [Cell(p(1), 1, atmStatusList)
+], [Returns the name of the status], [StatusName(5)], 0, [Statuslist.atm]);
+Set(Icon(a), 
+	RegisterIcon(pDir([media\images\default.jpg]), [default.jpg]));
+SetMaterial(
+	RegisterMaterial([Default], 8421504, 8421504, 3289650, 0, 0.100000001490116, 0, false, false, 1, 0), 1, a);
+Set(Version(a), 7.3);
+SetTreeIcon(pDir([Media\Icons\Tools.ico]));
+Set(Info, [Listing of statusnames used in Enterprise Dynamics
+
+This atom defines the statusnames used in other Enterprise Dynamics 
+atoms. The list is maintained by Incontrol and statuses 1..100 are reserved 
+for future applications. The names are used for displaying statuses in 
+monitors, reports, graphs, etc. The contents at the time of making this 
+document are: 
+
+Status Name
+1 Idle
+2 Busy
+3 Down
+4 Waiting
+5 Blocked
+6 Travel Full
+7 Travel Empty 
+8 Lift Up
+9 Lift Down
+10 Not Down
+11 Available
+12 Not Available
+13 Empty
+14 Full
+15 Not Empty
+16 Load
+17 Unload
+18 Open
+19 Closed
+20 Waiting for Contents
+21 Waiting for Package
+22 Collecting
+23 Contents Blocked
+24 Distributing
+25 Busy and Blocked
+26 Conveying
+27 Setup
+28 Waiting for Job
+29 On the Job
+30 Waiting for Operator
+31 Assigned
+32 Take-Down
+
+Statuses may be added over time.
+
+Last Revision:
+---------------------
+February, 2008
+]);
+Set(DdbRec, [>t-nocreate:1.]);
+int001(16);
+SetSize(1, 1, 1);
+LockPosition(false);
+LockSize(false);
+DisableIconRotation(false);
+SetProductCode([]);
+int024;
+SetTable(100, 1);
+int015(0, 0, [`Status #`
+1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+20
+21
+22
+23
+24
+25
+26
+27
+28
+29
+30
+31
+32
+33
+34
+35
+36
+37
+38
+39
+40
+41
+42
+43
+44
+45
+46
+47
+48
+49
+50
+51
+52
+53
+54
+55
+56
+57
+58
+59
+60
+61
+62
+63
+64
+65
+66
+67
+68
+69
+70
+71
+72
+73
+74
+75
+76
+77
+78
+79
+80
+81
+82
+83
+84
+85
+86
+87
+88
+89
+90
+91
+92
+93
+94
+95
+96
+97
+98
+99
+100
+]);
+int015(1, 0, [`Status`
+`Idle`
+`Busy`
+`Down`
+`Waiting`
+`Blocked`
+`TravelFull`
+`TravelEmpty`
+`Lift Up`
+`Lift Down`
+`Not Down`
+`Available`
+`Not Available`
+`Empty`
+`Full`
+`Not Empty`
+`Load`
+`Unload`
+`Open`
+`Closed`
+`Waiting for Contents`
+`Waiting for Package`
+`Collecting`
+`Contents Blocked`
+`Distributing`
+`Busy and Blocked`
+`Conveying`
+`Setup`
+`Waiting for Job`
+`On the Job`
+`Waiting for Operator`
+`Assigned`
+`Take-Down`
+`Travel to Job`
+]);
+Set(OnUser, [EditTable]);
+Set(On2DDraw, [standarddisplay([Status List],[])]);
+SetStatus(0);
+int018;
+int007;

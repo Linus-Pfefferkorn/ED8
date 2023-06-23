@@ -1,0 +1,513 @@
+
+
+{Preregister functions}
+
+PreregisterFunction([Availability_Control_Down], 2, 2);
+PreregisterFunction([Availability_Control_Up], 2, 2);
+
+
+{Atom: Availability Control}
+
+sets;
+BaseClass;
+createAtom(a, s, [], 1, false);
+Set(OnInit, [Do(
+  Dim([AVAILABILITY_CONTROL_DELAYTIME], vbConstant, 1e10)
+)
+]);
+int023([Availability Control], 32768, 1264);
+DefineFunction([Availability_Control_Down], [Various], 2, 2, [Do( 
+  var([valCounter], vbValue, p(1)),
+  var([atmAV], vbAtom, p(2)),
+  var([atmC], vbAtom),
+  var([valPreviousDown], vbValue),
+  
+  SetTable(NrOC(atmAV), 8, atmAV),
+  If(
+    OcConnected(valCounter, atmAV),
+    Do(
+      atmC := out(valCounter, atmAV),
+      
+      {**Set previous down, needed for delay event**}
+      valPreviousDown := Cell(valCounter, 2, atmAV),
+      
+      if(
+        Or(
+          Cell(valCounter, 3, atmAV) = 0,
+          Status(atmC) <> 12
+        ),
+        
+        {**Only store settings if atmC is not yet down or status is not equal to not available**}
+        do(          
+          Cell(valCounter, 1, atmAV, 1) := Status(atmC),
+          Status(atmC) := 12,
+          Cell(valCounter, 2, atmAV) := Time,
+          Cell(valCounter, 3, atmAV) := 1,
+          Cell(valCounter, 4, atmAV, 1) := xSpeed(atmC),
+          Cell(valCounter, 5, atmAV, 1) := ySpeed(atmC),
+          Cell(valCounter, 6, atmAV, 1) := zSpeed(atmC),
+          Cell(valCounter, 7, atmAV, 1) := RotationSpeedAs(atmC),
+          
+          If(
+            Att([cntlspeedcontainer], atmAV),
+            StopAtom(atmC)
+          ),
+          If( 
+            Att([cntlrotationcont], atmAV), 
+            RotationSpeedAs(atmC) := 0
+          ),
+          If(
+            Att([cntlspeedcontents], atmAV),
+            Repeat(
+              Content(atmC),
+              Do(
+               If(
+                 Count = 1,
+                 s := First(atmC),
+                 s := Next(s)
+               ),
+               Label([t028-xs], s) := xSpeed(s),
+               Label([t028-ys], s) := ySpeed(s),
+               Label([t028-zs], s) := zSpeed(s),
+               StopAtom(s)
+              )
+            )
+          )
+        )
+      ),
+      
+      If(
+        Color(atmC) <> ColorRed,
+        do(
+          Cell(valCounter, 8, atmAV) := Color(atmC),
+          Color(atmC) := ColorRed
+        )
+      ),
+      
+      If(
+        Att([cntlinput], atmAV),
+        CloseInput(atmC)
+      ),
+      If(
+        Att([cntloutput], atmAV),
+        CloseOutput(atmC)
+      ),
+      
+      If(
+        Att([cntlevents], atmAV),
+        do(
+         
+          {**Only delay those events that are not yet delayed**}
+          DelayEvents(AVAILABILITY_CONTROL_DELAYTIME, atmC, valPreviousDown + AVAILABILITY_CONTROL_DELAYTIME)
+        )  
+      )
+    )
+  )
+)
+], [e1 = outputchannel e1 of atom e2
+e2 = availability control atom
+sets atom down], [Availability_Control_Down(Out(Count, c), c))], 0, [Availability Control.atm]);
+DefineFunction([Availability_Control_Up], [Various], 2, 2, [Do(
+  var([valCounter], vbValue, p(1)),
+  var([atmAV], vbAtom, p(2)),
+  var([atmC], vbAtom),
+  var([valCorrection], vbValue),
+  
+  SetTable(NrOc(atmAV), 8, atmAV),
+  If(
+    And(
+      OcConnected(valCounter, atmAV),
+      Cell(valCounter, 3, atmAV) <> 0
+    ),
+    Do(
+     
+      {**Set to up**}
+      Cell(valCounter, 3, atmAV) := 0,
+       
+      atmC := Out(valCounter, atmAV),
+      if(
+        Att([cntlspeedcontainer], atmAV),
+        SetSpeed(  
+          Cell(valCounter, 4, atmAV), 
+          Cell(valCounter, 5, atmAV), 
+          Cell(valCounter, 6, atmAV),
+          atmC
+        )
+      ),
+      if(
+        Att([cntlrotationcont], atmAV),
+        RotationSpeedAs(atmC) := Cell(valCounter, 7, atmAV)
+      ),
+      If(
+        And(
+          Time <> 0,
+          Att([cntlevents], atmAV)
+        ),
+        do(       
+        
+          {**1e-20 becayse delay cannot be equal to zero**}
+          valCorrection := 1E-20,
+          
+          {**Thrid parameter used because only events that have been delayed can be set back**}
+          DelayEvents(Time - Cell(valCounter, 2, atmAV) - AVAILABILITY_CONTROL_DELAYTIME + valCorrection, atmC, AVAILABILITY_CONTROL_DELAYTIME)        
+        )  
+       ),
+       Status(atmC) := Cell(valCounter, 1, atmAV),
+       Color(atmC) := Cell(valCounter, 8, atmAV),
+       Cell(valCounter, 1, atmAV) := 0,
+       Cell(valCounter, 2, atmAV) := 0,
+       Cell(valCounter, 3, atmAV) := 0,
+       Cell(valCounter, 4, atmAV) := 0,
+       Cell(valCounter, 5, atmAV) := 0,
+       Cell(valCounter, 6, atmAV) := 0,
+       Cell(valCounter, 7, atmAV) := 0,
+       If(
+         Att([cntlspeedcontents], atmAV),
+         do(
+           PushAtomPointer(s),
+           Repeat(
+             Content(atmC),
+             Do(
+               If(
+                 Count = 1,
+                 s := First(atmC),
+                 s := Next(s)
+               ),
+               SetSpeed(Label([t028-xs], s), Label([t028-ys], s), Label([t028-zs], s), s),
+               Label([t028-xs], s) := 0,
+               Label([t028-ys], s) := 0,
+               Label([t028-zs], s) := 0
+             )
+           ),
+           s := PopAtomPointer
+         )
+       ),
+       If(
+         Att([cntlinput], atmAV),
+         OpenInput(atmC)
+       ),
+       If(
+         Att([cntloutput], atmAV),
+         OpenOutput(atmC)
+       )
+     )
+   )
+ )
+], [e1 = outputchannel e1 of atom e2
+e2 = availability control atom
+sets atom up
+], [Availability_Control_Up(Out(Count, c), c))], 0, [Availability Control.atm]);
+Set(Icon(a), 
+	RegisterIcon(pDir([media\images\default.jpg]), [default.jpg]));
+Addmodel3D(
+	Registermodel3D(model3DDir([\controller.wrl]), [controller.wrl], 0, 0, 0, 1, 1, -1, -90, 0, 0), a);
+Addmodel3D(
+	Registermodel3D(model3DDir([\controller1.wrl]), [controller1.wrl], 0, 0, 0, 1, 1, -1, -90, 0, 0), a);
+Addmodel3D(
+	Registermodel3D(model3DDir([\controller2.wrl]), [controller2.wrl], 0, 0, 0, 1, 1, -1, -90, 0, 0), a);
+SetMaterial(
+	RegisterMaterial([Default], 8421504, 8421504, 3289650, 0, 0.100000001490116, 0, false, false, 1, 0), 1, a);
+Set(Version(a), 7.3);
+SetTreeIcon(pDir([Media\Icons\AvailabilityControl.ico]));
+Set(Info, [Availability Control.
+
+General
+------------
+Can be used to control the availability of other atoms. It's 
+flexible structure allows complex availibility control, for 
+example controlling the availability of N different 
+atoms, based on M different availability definitions. In this way 
+one can model and freely mix multiple breakdown patterns, 
+time schedules, on/off switches (manual 
+or automatic), etc.
+
+The atom's outputchannels are connected with the central 
+channels of those atoms you want to control. The atom's 
+inputchannels are connected with the 
+outputchannels of those atoms that define availibility, for 
+example Mtbf Mttr Availability, Time Schedule 
+Availability and Switch Availability.
+
+When not available, with all atoms controlled the following 
+happens:
+- input and output is closed, 
+- status is set to not available,
+- all events are delayed,
+- speed is set to 0.
+
+When the atom becomes available again, speed, 
+status and channelstatuses are restored and events are 
+recalculated. 
+
+Channels:
+--------------
+N inputchannels (availability atoms) , 
+N outputchannels (atoms controlled)
+
+Statuses:
+-------------
+ 11 - Available
+ 12 - Not Available
+
+Rightclick:
+---------------
+Define what "unavailable" means by choosing what 
+parameters are controlled by this availablility control atom (i.e. 
+input flow, output flow, delayed events, speeds).
+
+Applications: machine breakdowns, shifts, working hours, 
+breaks, holidays, manual switches, etc.
+
+Last revision:
+-------------------
+February, 2008
+]);
+SetChannels(1, 1);
+SetChannelRanges(1, 255, 1, 255);
+int001(210);
+SetSize(5, 2, 1);
+LockPosition(false);
+LockSize(false);
+DisableIconRotation(false);
+SetProductCode([]);
+createAttributes(11);
+SetAttributeName(r(1), [Available]);
+SetAttributeName(r(2), [cntlinput]);
+SetAttributeName(r(3), [cntloutput]);
+SetAttributeName(r(4), [cntlevents]);
+SetAttributeName(r(5), [cntlspeedcontainer]);
+SetAttributeName(r(6), [cntlspeedcontents]);
+SetAttributeName(r(7), [cntlrotationcont]);
+SetAttributeName(r(8), [NrDown]);
+SetAttributeName(r(9), [TriggerOnDown]);
+SetAttributeName(r(10), [TriggerOnUp]);
+SetAttributeName(r(11), [3DIcon]);
+SetAtt(r(1), 1);
+SetAtt(r(2), 1);
+SetAtt(r(3), 1);
+SetAtt(r(4), 1);
+SetAtt(r(5), 1);
+SetAtt(r(7), 1);
+SetAtt(r(11), 4);
+int024;
+SetTable(2, 8);
+int015(0, 0, [ 
+1
+2
+]);
+int015(1, 0, [`Oldstatus`
+]);
+int015(2, 0, [`Downtime`
+]);
+int015(3, 0, [`Down`
+]);
+int015(4, 0, [`xs`
+]);
+int015(5, 0, [`ys`
+]);
+int015(6, 0, [`zs`
+]);
+int015(7, 0, [`rot`
+]);
+int015(8, 0, [`color`
+]);
+Set(OnEvent, [Case(
+  EventCode,
+  
+  {**1: availibilty control switches to up**}
+  do(
+   
+    {** Let all the connected atoms go up **} 
+    Repeat(
+      NrOc(c),
+      Availability_Control_Up(Count, c)
+    ),
+    
+    TriggerOnUp
+  ),  
+  
+  {**2: availibilty control is down or switches to down**}
+  do(
+   
+    {** Let all the connected atoms go down **} 
+    Repeat(
+      NrOc(c),
+      Availability_Control_Down(Count, c)
+    ),
+    if(
+      NrDown = 1,
+      
+      {**Availibilty control is switches to down, execute trigger**}
+      TriggerOnDown
+    )
+  )
+)
+]);
+Set(OnCreation, [Do(
+ {* Autoconnect *}
+ If(
+  AtomExists(Prev(c)),
+  Connect(1, c, 0, Prev(c))
+ ),
+ Setlabel([t-atomtype], [t028], c)
+)
+]);
+Set(OnDestruction, [{* When this atom is destroyed, all the connected atoms are set Up *}
+Repeat(
+  NrOc(c),
+  Availability_Control_Up(Count, c)
+)
+]);
+Set(OnReset, [Do(
+ 
+  {**Reset NrDown = number of controls that are currently down**}
+  NrDown := 0,
+  
+  if(
+    Available = 0,
+    do(
+      Repeat(
+        NrOC(c),
+        
+        {**Set back color**}
+        if(
+          OcConnected(Count, c),
+          Color(out(Count, c)) := Cell(Count, 8, c)
+        )
+      ),
+      Available := 1
+    )
+  ),
+  
+  {* Set label t-available of all the atoms at the inputchannels to true *}
+  Repeat(
+    NrIc(c),
+    Label([t-available], In(Count, c)) := 1
+  ),
+  
+  Color(c) := ColorGreen,
+  Status(c) := 11,
+  
+  {**Reset Table**}
+  SetTable(NrOC(c), 8, c),
+  Repeat(
+    nRows(c),
+    do(
+      Cell(Count, 2, c) := 0,
+      Cell(Count, 3, c) := 0
+    )
+  ),
+
+  Repeat(
+   NrIc(c),
+   If(
+    And(
+     AtomExists(In(Count, c)),
+     Not(CompareText(Label([t-atomoutconnect], In(Count, c)), [t028]))
+    ),
+    Msg(
+     Concat(
+      [You cannot connect atom ],
+      Name(In(Count, c)),
+      [ with inputchannel ],
+      String(Count),
+      [of atom ],
+      Name(c)
+     ),
+     3
+    )   
+   )
+  )
+)
+]);
+Set(OnUser, [Do(
+  { Delete any current instances of this form.} 
+  GuiDestroy([Availability Control]),
+
+  { Register the GUI-form for this atom.}
+  GuiRegister(PDir([\Atoms\Availability Control.gui]), 1),
+
+  { Show the GUI-form.}
+   Guicreate([Availability Control], [Availability Control], 0, c, 0, 1)
+)
+]);
+Set(OnIcReady, [Do(
+  var([valDown], vbValue, 0),
+  if(
+    label([t-available], In(ic(c), c)) = 1,
+        
+    {**Atom goes from down to up**}
+    do(
+      dec(NrDown)
+    ),
+    
+    {**Atom goes from up to down**}
+    do(
+      inc(NrDown),
+      valDown := 1
+    )
+  ), 
+ 
+  {* If one of the atoms at the inputchannels has a label not available *}
+  {* The availability control is also not available *}
+  if(
+    NrDown > 0,
+    do(
+      Available := 0,
+      
+      if(
+        valDown,
+        createEvent(0, c, 2)
+      )
+    ),
+    do(
+      Available := 1,
+      
+      {**Only created up event if all atoms connected to the inputchannels are available**}
+      createEvent(0, c, 1)
+    )
+  ),
+  
+  If(
+   Available,
+   Do(
+    Color(c) := ColorGreen,
+    Status(c) := 11
+   ),
+   Do(
+    Color(c) := ColorRed,
+    Status(c) := 12
+   )
+  )
+)
+]);
+Set(On2DDraw, [StandardDisplay([Control], [Availability])
+]);
+Set(On3DDraw, [Case(
+ 3DIcon,
+ {* Draw None *}
+ SetSetting(sa3DDraw, 0, c),
+ {* Draw Simple Box *}
+ Do(
+  di3DBox(0, 0, 0, 1, 0.5, 2, ColorGray),
+  di3DBox(0.2, -0.05, 1.5, 0.6, 0.6, 0.3, Color(c)),
+  diOnScale(
+   20,
+   Repeat(
+    NrIc(c),
+    If(IcConnected(Count, c),
+      di3DBox(*(Count, 0.1), -0.03, 1.3, 0.07, 0.56, 0.07, Color(In(Count, c))))
+   )
+  )
+ ),
+ {** Draw empty controller **}
+ Drawmodel3D(model3D(1, c), 0, 0, 0),
+ {** Draw controller 1 **}
+ Drawmodel3D(model3D(2, c), 0, 0, 0),
+ {** Draw controller 2 **}
+ Drawmodel3D(model3D(3, c), 0, 0, 0)
+)
+]);
+SetStatus(0);
+int018;
+int007;

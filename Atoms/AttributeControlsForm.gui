@@ -1,0 +1,244 @@
+EDControl(EditForm:
+  BorderIcons = set(SystemMenu,Minimize),
+  BorderStyle = Single,
+  Caption = str('Attribute Controls Form'),
+  Height = 474,
+  InstanceOptions = DestroyOnHide,
+  Name = str('frmAttributeControls'),
+  Position = ScreenCenter,
+  ShowHint = True,
+  Top = 253,
+  Visible = False,
+  Width = 523,
+  Controls(
+    EDControl(Panel:
+      Align = Top,
+      Anchors = set(Left,Top,Right,Bottom),
+      BevelInner = Raised,
+      Caption = str(''),
+      Height = 427,
+      Left = 0,
+      Name = str('PanelMain'),
+      TabOrder = 1,
+      Top = 0,
+      Width = 523,
+      Controls(
+        EDControl(GroupBox:
+          Caption = str('Index, AttributeName, Function Type'),
+          Height = 410,
+          Left = 8,
+          Name = str('gbAttributes'),
+          TabOrder = 1,
+          Top = 8,
+          Width = 250,
+          Controls(
+            EDControl(ListBox:
+              Height = 337,
+              Left = 8,
+              Name = str('lbAttributes'),
+              TabOrder = 1,
+              Top = 20,
+              Width = 234,
+              Events(
+                Change = str('do('#13'  var([atmC], vbAtom),'#13'  var([valCounter], vbValue, 0),'#13'  var([strLine], vbString),'#13'  var([strAttName], vbString),'#13'  var([strFunctionName], vbString),'#13'  var([valType], vbValue),'#13'  '#13'  atmC := AtomByID(value(StrSeparate(GuiControl([ebSelectedAtom], GuiGet([Text])), [: ], 2)), Main),  '#13'  strLine := GuiControl([lbAttributes], GuiGet([Items], GuiGet([ItemIndex]))),'#13'  '#13'  '#13'  if('#13'    GuiControl([lbAttributes], GuiGet([ItemIndex])) > 0,'#13'    if('#13'      StringPos([...], strLine) > 0,'#13'      '#13'      {**Attribute are part of mother**}'#13'      do(        '#13'        GuiControl([ebBeginFunctionName], GuiSet([Text], [])),'#13'        GuiControl([ebAttributeName], GuiSet([Text], [])),'#13'                '#13'        GuiControl([cbAttributeType], do(GuiSet([ItemIndex], 0), GuiRun([Change]), GuiSet([Enabled], False))),'#13'        GuiControl([btnDelete], GuiSet([Enabled], False)),        '#13'        GuiControl([btnMoveUp], GuiSet([Enabled], False)),'#13'        GuiControl([btnMoveDown], GuiSet([Enabled], False))'#13'      ),'#13'      '#13'      {**Attributes are part of this atom**}'#13'      do('#13'        strAttName := StrSeparate(strLine, [, ], 2),'#13'        '#13'        {**Set buttons**}'#13'        GuiControl([btnDelete], GuiSet([Enabled], True)),'#13'        '#13'        Case('#13'          WhichIsTrue('#13'            GuiControl([lbAttributes], GuiGet([ItemIndex])) = 1,'#13'            StringPos([...], GuiControl([lbAttributes], GuiGet([Items], GuiGet([ItemIndex]) - 1))) > 0,'#13'            True'#13'          ),'#13'          do('#13'            GuiControl([btnMoveUp], GuiSet([Enabled], False))'#13'          ),'#13'          do('#13'            GuiControl([btnMoveUp], GuiSet([Enabled], False))'#13'          ),'#13'          do('#13'            GuiControl([btnMoveUp], GuiSet([Enabled], True))'#13'          )'#13'        ),'#13'          '#13'        '#13'        Case('#13'          WhichIsTrue('#13'            GuiControl([lbAttributes], GuiGet([ItemIndex])) = GuiControl([lbAttributes], GuiList([Items], [Count])), '#13'            True'#13'          ),'#13'          do('#13'            GuiControl([btnMoveDown], GuiSet([Enabled], False))'#13'          ),'#13'          do('#13'            GuiControl([btnMoveDown], GuiSet([Enabled], True))'#13'          )'#13'        ),'#13'  '#13'        '#13'        {**Check if function exist**}'#13'        LoopUntil('#13'          or('#13'            StringLength(FunctionOnAtomName(atmC, Count)) = 0,    '#13'            valCounter > 0'#13'          ),'#13'          do('#13'            strFunctionName := FunctionOnAtomName(atmC, Count),'#13'            if('#13'              And('#13'                StringPos(Lowercase(Concat([_get], strAttName)), Lowercase(strFunctionName)) > 0,'#13'                StringPos(Lowercase(Concat([_get], strAttName)), Lowercase(strFunctionName)) + StringLength(Concat([_get], strAttName)) - 1 = StringLength(strFunctionName), {**Not part of name**}'#13'                FunctionExists(StringReplace(strFunctionName, Concat([_Get], strAttName), Concat([_Set], strAttName), SR_IGNORE_CASE))          '#13'              ),'#13'              valCounter := Count        '#13'            )    '#13'          )  '#13'        ),'#13'        '#13'        valType := InList(StrSeparate(strLine, [, ], 3), [], [vbValue], [vbString], [vbReference], [vbExpression]),'#13'        GuiControl([ebAttributeName], GuiSet([Text], strAttName)),'#13'        if('#13'          or('#13'            valCounter > 0,'#13'            valType > 1'#13'          ),'#13'          do(          '#13'            GuiControl([cbAttributeType], do(GuiSet([ItemIndex], valType), GuiRun([Change]), GuiSet([Enabled], True))), '#13'            if('#13'              SubstrCount(strFunctionName, Concat([_Get], strAttName)) > 0,'#13'              GuiControl([ebBeginFunctionName], GuiSet([Text], StrSeparate(strFunctionName, Concat([_Get], strAttName), 1))),                      '#13'              GuiControl([ebBeginFunctionName], GuiSet([Text], StrSeparate(Lowercase(strFunctionName), Lowercase(Concat([_get], strAttName)), 1)))'#13'            )'#13'          ),'#13'          do('#13'            GuiControl([cbAttributeType], do(GuiSet([ItemIndex], 1), GuiRun([Change]), GuiSet([Enabled], True))),'#13'            GuiControl([ebBeginFunctionName], GuiSet([Text], []))      '#13'          )'#13'        )'#13'      )'#13'    ),'#13'    '#13'    {**No attribute, disable update**}'#13'    do(       '#13'      GuiControl([ebAttributeName], GuiSet([Text], [])),'#13'      GuiControl([ebBeginFunctionName], GuiSet([Enabled], False)), '#13'      GuiControl([btnDelete], GuiSet([Enabled], False)),'#13'      '#13'      GuiControl([btnMoveUp], GuiSet([Enabled], False)),'#13'      GuiControl([btnMoveDown], GuiSet([Enabled], False))'#13'    )'#13'  ),'#13'  '#13'  GuiControl([btnUpdate], GuiSet([Enabled], False)),'#13'  GuiControl([btnInsert], GuiSet([Enabled], False)),'#13'  GuiControl([btnAdd], GuiSet([Enabled], False))'#13')'#13))),
+            EDControl(Button:
+              Caption = str('Delete'),
+              Left = 8,
+              Name = str('btnDelete'),
+              TabOrder = 2,
+              Top = 368,
+              Events(
+                Click = str('do('#13'  var([valIndex], vbValue),'#13'  var([valIndexStart], vbValue),'#13'  var([strAttName], vbString),'#13'  var([strLine], vbString),'#13'  '#13'  valIndex := GuiControl([lbAttributes], GuiGet([ItemIndex])), '#13'  strLine := GuiControl([lbAttributes], GuiGet([Items], valIndex)),  '#13'  '#13'  if('#13'    or('#13'      valIndex < 1,'#13'      StringPos([...], strLine) > 0'#13'    ),'#13'    return'#13'  ),'#13'  '#13'  strAttName := StrSeparate(strLine, [, ], 2),'#13'  '#13'  '#13'  if('#13'    Attribute_Delete(atmAttribute, strAttName) > 0,'#13'    '#13'    {**Could be deleted**}  '#13'    GuiControl('#13'      [lbAttributes], '#13'      Do(      '#13'        GuiList([Items], [Delete], valIndex), '#13'        GuiSet([ItemIndex], Min(GuiList([Items], [Count]), valIndex)),'#13'        GuiRun([Change]),       '#13#13'        strLine := GuiControl([lbAttributes], GuiGet([Items], valIndex)), '#13'        valIndex := Value(StrSeparate(strLine, [, ], 1)),'#13'        valIndexStart := GuiGet([ItemIndex]) - 1,'#13'        '#13'        Repeat('#13'          GuiList([Items], [Count]) - valIndexStart + 1,          '#13'          do(            '#13'            GuiSet([Items], valIndexStart + Count, StringReplace(GuiGet([Items], valIndexStart + Count), String(valIndex), String(valIndex - 1))),'#13'            valIndex := valIndex + 1'#13'          )'#13'        ),'#13'        GuiRun([Change])'#13'      )'#13'    )'#13'  )'#13')'#13))),
+            EDControl(Button:
+              Caption = str('Down'),
+              Left = 136,
+              Name = str('btnMoveDown'),
+              TabOrder = 3,
+              Top = 368,
+              Width = 50,
+              Events(
+                Click = str('do('#13'  var([valIndex], vbValue),'#13'  var([valIndexStart], vbValue),'#13'  var([strLine], vbString),'#13'  var([strAttName], vbString),'#13'  '#13'  valIndex := GuiControl([lbAttributes], GuiGet([ItemIndex])),'#13'  strLine := GuiControl([lbAttributes], GuiGet([Items], valIndex)),'#13'  '#13'  if('#13'    or('#13'      valIndex >= GuiControl([lbAttributes], GuiList([Items], [Count])),'#13'      StringPos([...], strLine) > 0'#13'    ),'#13'    return'#13'  ),'#13'  '#13'  strAttName := StrSeparate(strLine, [, ], 2),'#13'  '#13'  {**Get new index because it can be different when using daughters**}'#13'  valIndexStart := Value(StrSeparate(strLine, [, ], 1)),  '#13'  if('#13'    Attribute_Move(atmAttribute, strAttName, valIndexStart + 1) > 0,   '#13'    GuiControl('#13'      [lbAttributes], '#13'      Do('#13'        GuiList([Items], [Move], valIndex, valIndex + 1), '#13'        GuiSet([ItemIndex], valIndex + 1),'#13'        GuiSet([Items], valIndex, StringReplace(GuiGet([Items], valIndex), String(valIndexStart + 1), String(valIndexStart))),'#13'        GuiSet([Items], valIndex + 1, StringReplace(GuiGet([Items], valIndex + 1), String(valIndexStart), String(valIndexStart + 1))),'#13'        GuiRun([Change])'#13'      )'#13'    )'#13'  )  '#13')'#13))),
+            EDControl(Button:
+              Caption = str('Up'),
+              Left = 192,
+              Name = str('btnMoveUp'),
+              TabOrder = 4,
+              Top = 368,
+              Width = 50,
+              Events(
+                Click = str('do('#13'  var([valIndex], vbValue),'#13'  var([valIndexStart], vbValue),'#13'  var([strLine], vbString),'#13'  var([strAttName], vbString), '#13#13'  valIndex := GuiControl([lbAttributes], GuiGet([ItemIndex])),'#13'  strLine := GuiControl([lbAttributes], GuiGet([Items], valIndex)),'#13'  '#13'  if('#13'    or('#13'      valIndex <= 1,'#13'      StringPos([...], strLine) > 0,'#13'      StringPos([...], GuiControl([lbAttributes], GuiGet([Items], valIndex - 1))) > 0'#13'    ),'#13'    return'#13'  ),'#13'  '#13'  strAttName := StrSeparate(strLine, [, ], 2),'#13'  '#13'  {**Get new index because it can be different when using daughters**}'#13'  valIndexStart := Value(StrSeparate(strLine, [, ], 1)),'#13'  if( '#13'    Attribute_Move(atmAttribute, strAttName, valIndexStart - 1) > 0,'#13'    '#13'    {**Move Allowed**} '#13'    GuiControl('#13'      [lbAttributes], '#13'      Do('#13'        GuiList([Items], [Move], valIndex, valIndex - 1), GuiSet([ItemIndex], valIndex - 1),'#13'        GuiSet([Items], valIndex, StringReplace(GuiGet([Items], valIndex), String(valIndexStart - 1), String(valIndexStart))),'#13'        GuiSet([Items], valIndex - 1, StringReplace(GuiGet([Items], valIndex - 1), String(valIndexStart), String(valIndexStart - 1))),'#13'        GuiRun([Change])'#13'      )'#13'    )'#13'  )'#13')'#13))))),
+        EDControl(GroupBox:
+          Caption = str('Atom:'),
+          Height = 112,
+          Left = 264,
+          Name = str('gbSelect'),
+          TabOrder = 2,
+          Top = 8,
+          Width = 250,
+          Controls(
+            EDControl(Label:
+              Caption = str('Selected Atom:'),
+              Color = -16777208,
+              Height = 13,
+              Left = 8,
+              Name = str('label13'),
+              Top = 20,
+              Width = 72),
+            EDControl(Edit:
+              Enabled = False,
+              Height = 21,
+              Left = 8,
+              Name = str('ebSelectedAtom'),
+              TabOrder = 1,
+              TabStop = False,
+              Text = str('Main: 1'),
+              Top = 44,
+              Width = 235,
+              Events(
+                Change = str('do('#13'  var([strListItem], vbString),'#13'  var([valCounter], vbValue),'#13'  var([strAttName], vbString),'#13'  var([strFunctionName], vbString),'#13'  var([strCode], vbString),'#13'  '#13#13'  '#13'  GuiControl([lbAttributes], GuiList([Items], [Clear])),'#13'  '#13'  if('#13'    M(atmAttribute) = BaseClass,  '#13'    Repeat('#13'      NrOfAttributes(atmAttribute),'#13'      do('#13'        strAttName := AttributeName(Count, atmAttribute),'#13'        strListItem := Concat(String(Count), [, ], strAttName),'#13'        '#13'        {**Check if function exist. Begin of function name can be different, so loop over all functions**}'#13'        valCounter:= 0,'#13'        LoopUntil('#13'          or('#13'            StringLength(FunctionOnAtomName(atmAttribute, Count)) = 0,    '#13'            valCounter > 0'#13'          ),'#13'          do('#13'            strFunctionName := FunctionOnAtomName(atmAttribute, Count),'#13'            if('#13'              And('#13'                StringPos(Lowercase(Concat([_set], strAttName)), Lowercase(strFunctionName)) > 0,      '#13'                StringPos(Lowercase(Concat([_set], strAttName)), Lowercase(strFunctionName)) + StringLength(Concat([_set], strAttName)) - 1 = StringLength(strFunctionName), {**Not part of name**}          '#13'                FunctionExists(StringReplace(strFunctionName, Concat([_Set], strAttName), Concat([_Get], strAttName), SR_IGNORE_CASE))          '#13'              ),'#13'              do('#13'                valCounter := Count        '#13'              )'#13'            )    '#13'          )  '#13'        ),'#13'        if('#13'          valCounter > 0,'#13'          '#13'          {**Get type**}'#13'          do('#13'            strCode := Lowercase(FunctionOnAtomInfo(atmAttribute, valCounter, [code])),'#13'            '#13'            '#13'            '#13'            Case('#13'              WhichIsTrue('#13'                StringPos([atom pointer], Lowercase(FunctionOnAtomInfo(atmAttribute, valCounter, [helptext]))) > 0,'#13'                StringPos([setexpratt(], strCode) > 0,'#13'                StringPos([textatt(], strCode) > 0,'#13'                True'#13'              ),   '#13'              strListItem := Concat(strListItem, [, ], [vbReference]),'#13'              strListItem := Concat(strListItem, [, ], [vbExpression]),'#13'              strListItem := Concat(strListItem, [, ], [vbString]),'#13'              strListItem := Concat(strListItem, [, ], [vbValue])'#13'            )'#13'          )'#13'        ),       '#13'        '#13'        GuiControl([lbAttributes], GuiList([Items], [Add], strListItem))'#13'      )'#13'    ),'#13'    do('#13'      strListItem := Concat(String(1), [...], String(NrOfAttributes(M(atmAttribute))),  [, see mother]),'#13'      '#13'      GuiControl([lbAttributes], GuiList([Items], [Add], strListItem)),'#13'      Repeat('#13'        NrOfAttributes(atmAttribute) - NrOfAttributes(M(atmAttribute)),'#13'        do('#13'          strAttName := AttributeName(Count + NrOfAttributes(M(atmAttribute)), atmAttribute),          '#13'          strListItem := Concat(String(Count + NrOfAttributes(M(atmAttribute))), [, ],  strAttName),'#13'          '#13'          {**Check if function exist. Begin of function name can be different, so loop over all functions**}'#13'          valCounter:= 0,'#13'          LoopUntil('#13'            or('#13'              StringLength(FunctionOnAtomName(atmAttribute, Count)) = 0,    '#13'              valCounter > 0'#13'            ),'#13'            do('#13'              strFunctionName := FunctionOnAtomName(atmAttribute, Count),'#13'              if('#13'                And('#13'                  StringPos(Lowercase(Concat([_set], strAttName)), Lowercase(strFunctionName)) > 0,'#13'                  StringPos(Lowercase(Concat([_set], strAttName)), Lowercase(strFunctionName)) + StringLength(Concat([_set], strAttName)) - 1 = StringLength(strFunctionName), {**Not part of name**}'#13'                  FunctionExists(StringReplace(strFunctionName, Concat([_Set], strAttName), Concat([_Get], strAttName), SR_IGNORE_CASE))          '#13'                ),'#13'                do('#13'                  valCounter := Count        '#13'                )'#13'              )    '#13'            )  '#13'          ),'#13'          if('#13'            valCounter > 0,'#13'            '#13'            {**Get type**}'#13'            do('#13'              strCode := Lowercase(FunctionOnAtomInfo(atmAttribute, valCounter, [code])),'#13'              '#13'              Case('#13'                WhichIsTrue('#13'                  StringPos([atom pointer], Lowercase(FunctionOnAtomInfo(atmAttribute, valCounter, [helptext]))) > 0,'#13'                  StringPos([setexpratt(], strCode) > 0,'#13'                  StringPos([textatt(], strCode) > 0,'#13'                  True'#13'                ),   '#13'                strListItem := Concat(strListItem, [, ], [vbReference]),'#13'                strListItem := Concat(strListItem, [, ], [vbExpression]),'#13'                strListItem := Concat(strListItem, [, ], [vbString]),'#13'                strListItem := Concat(strListItem, [, ], [vbValue])'#13'              )'#13'            )'#13'          ), '#13'            '#13'          GuiControl([lbAttributes], GuiList([Items], [Add], strListItem))'#13'        )'#13'      )    '#13'    )'#13'  ),'#13#13'  GuiControl([lbAttributes], do(GuiSet([ItemIndex], 1), GuiRun([Change])))'#13')'#13))),
+            EDControl(Button:
+              Caption = str('&Select Other Atom'),
+              Hint = str('Select another atom'),
+              Left = 8,
+              Name = str('btnSelectAtom'),
+              TabOrder = 2,
+              Top = 80,
+              Width = 99,
+              Events(
+                Click = str('do('#13'  var([strName], vbString),'#13'  var([valBool], vbValue),'#13'  var([valID], vbValue),'#13'  strName := GuiControl([ebSelectedAtom], GuiGet([Text])),'#13'  valID := value(StrSeparate(GuiControl([ebSelectedAtom], GuiGet([Text])), [: ], 2)),'#13'  '#13'  if('#13'    AtomByID(valID, Main) > 0,'#13'    valBool := SelectAtom(Main, AtomByID(valID, Main), [Select an atom]),'#13'    valBool := SelectAtom(Main, Main, [Select an atom])'#13'  ),'#13'  '#13'  if('#13'    valBool,'#13'    do('#13'      atmAttribute := a,'#13'      GuiControl([ebSelectedAtom], GuiSet([Text], concat(name(a), [: ], String(AtomID(a)))))'#13'    )'#13'  )'#13')'#13))),
+            EDControl(Button:
+              Caption = str('Update All Indices'),
+              Hint = str('Update all indeces of the get and set functions for the selected atom'),
+              Left = 144,
+              Name = str('btnUpdateAllIndices'),
+              TabOrder = 3,
+              Top = 79,
+              Width = 99,
+              Events(
+                Click = str('do('#13'  Attribute_UpdateIndicesOfGetSetFunctions(atmAttribute),'#13'  '#13'  if('#13'    WindowVisible(TreeView),'#13'    TreeRefresh  '#13'  )'#13')'#13))))),
+        EDControl(GroupBox:
+          Caption = str('Attribute Settings'),
+          Height = 233,
+          Left = 264,
+          Name = str('gbAttributeSettings'),
+          TabOrder = 3,
+          Top = 185,
+          Width = 250,
+          Controls(
+            EDControl(Edit:
+              Height = 21,
+              Hint = str('Name of the attribute'),
+              Left = 8,
+              Name = str('ebAttributeName'),
+              TabOrder = 1,
+              Top = 44,
+              Width = 235,
+              Events(
+                KeyDown = str('do('#13'  GuiControl([btnAdd], GuiSet([Enabled], True)),'#13'  GuiControl([btnInsert], GuiSet([Enabled], True)),'#13'  '#13'  if('#13'    SubstrCount(GuiControl([lbAttributes], GuiGet([Items], GuiGet([ItemIndex]))), [...]) > 0,'#13'    '#13'    {**Mother attribute**}'#13'    GuiControl([cbAttributeType], GuiSet([Enabled], True)),'#13'    GuiControl([btnUpdate], GuiSet([Enabled], True))'#13'  )    '#13')'#13))),
+            EDControl(ComboBox:
+              Height = 21,
+              Hint = str('Type of attribute. Needed to create the correct get and set functions'),
+              Items = str('No Specific'#13#10'vbValue'#13#10'vbString'#13#10'vbReference'#13#10'vbExpression'#13#10),
+              Left = 8,
+              Name = str('cbAttributeType'),
+              Style = DropDownList,
+              TabOrder = 2,
+              Top = 100,
+              Width = 235,
+              Events(
+                Change = str('do('#13'  if('#13'    GuiGet([ItemIndex]) <= 1,'#13'    GuiControl([ebBeginFunctionName], GuiSet([Enabled], False)),'#13'    do('#13'      GuiControl([ebBeginFunctionName], GuiSet([Enabled], True)), '#13'      if('#13'        CompareText(GuiControl([ebBeginFunctionName], GuiGet([Text])), []),'#13'        GuiControl([ebBeginFunctionName], GuiSet([Text], StringReplace(Name(atmAttribute), [ ], [], SR_REPLACE_ALL))) '#13'      ) '#13'    )'#13'  ),'#13'  '#13'  if('#13'    SubstrCount(GuiControl([lbAttributes], GuiGet([Items], GuiGet([ItemIndex]))), [...]) = 0,'#13'    GuiControl([btnUpdate], GuiSet([Enabled], True))'#13'  )'#13')'#13))),
+            EDControl(Edit:
+              Height = 21,
+              Hint = str('Part of the function name before  _Get or _Set. Cannot contain spaces'),
+              Left = 8,
+              Name = str('ebBeginFunctionName'),
+              TabOrder = 3,
+              Top = 156,
+              Width = 235,
+              Events(
+                Exit = str('do('#13'  if('#13'    SubstrCount(GuiControl([ebBeginFunctionName], GuiGet([Text])), [ ]) > 0,'#13'    do('#13'      msg([Begin of function name cannot contain spaces], 3),'#13'      GuiSetFocus([ebBeginFunctionName])'#13'    )'#13'  )'#13')'#13),
+                KeyDown = str('do('#13'  GuiControl([btnAdd], GuiSet([Enabled], True)),'#13'  GuiControl([btnInsert], GuiSet([Enabled], True)),'#13'  GuiControl([btnUpdate], GuiSet([Enabled], True))'#13')'#13))),
+            EDControl(Button:
+              Caption = str('&Add'),
+              Hint = str('Add a new attribute at the end of the list'),
+              Left = 8,
+              Name = str('btnAdd'),
+              TabOrder = 4,
+              Top = 192,
+              Events(
+                Click = str('do('#13'  var([strAttName], vbString),'#13'  var([strListItem], vbString),'#13'  var([strBeginFunctionName], vbString),'#13'  var([valType], vbValue),'#13'  var([strType], vbString),'#13'  '#13'  strAttName := GuiControl([ebAttributeName], GuiGet([Text])),'#13'  strBeginFunctionName := GuiControl([ebBeginFunctionName], GuiGet([Text])),  '#13'  valType := GuiControl([cbAttributeType], GuiGet([ItemIndex])) - 2, '#13'    '#13'  if('#13'    Attribute_Add(atmAttribute, strAttName, valType, strBeginFunctionName) > 0,      '#13'    do('#13'      strListItem := Concat(String(NrOfAttributes(atmAttribute)), [, ], strAttName),'#13'      if('#13'        valType > -1, '#13'        do('#13'          strType := GuiControl([cbAttributeType], GuiGet([Text])),'#13'          strListItem := Concat(strListItem, [, ], strType)'#13'        )        '#13'      ),'#13'      '#13'      GuiControl('#13'        [lbAttributes], '#13'        do('#13'          GuiList([Items], [Add], strListItem),'#13'          GuiSet([ItemIndex], GuiList([Items], [Count])),'#13'          GuiRun([Change])'#13'        )'#13'      ),'#13'      '#13'      {**Update buttons disabled**}'#13'      GuiControl([btnAdd], GuiSet([Enabled], False)),'#13'      GuiControl([btnInsert], GuiSet([Enabled], False)),'#13'      GuiControl([btnUpdate], GuiSet([Enabled], False))'#13'    )'#13'  )'#13')'#13))),
+            EDControl(Button:
+              Caption = str('&Insert'),
+              Hint = str('Insert attribute after the attribute in the selected line'),
+              Left = 88,
+              Name = str('btnInsert'),
+              TabOrder = 5,
+              Top = 192,
+              Events(
+                Click = str('do('#13'  var([strAttName], vbString),'#13'  var([strListItem], vbString),'#13'  var([strBeginFunctionName], vbString),'#13'  var([valType], vbValue),'#13'  var([strType], vbString),'#13'  var([valIndex], vbValue),'#13'  var([valIndexStart], vbValue),'#13'  '#13'  strAttName := GuiControl([ebAttributeName], GuiGet([Text])),'#13'  strBeginFunctionName := GuiControl([ebBeginFunctionName], GuiGet([Text])),  '#13'  valType := GuiControl([cbAttributeType], GuiGet([ItemIndex])) - 2, '#13'  '#13'  {**Get index of inserted atom**}'#13'  if('#13'    M(atmAttribute) = BaseClass,'#13'    valIndex := GuiControl([lbAttributes], GuiGet([ItemIndex])) + 1,'#13'    valIndex := GuiControl([lbAttributes], GuiGet([ItemIndex])) + NrOfAttributes(M(atmAttribute))'#13'  ),'#13'  '#13'  if('#13'    Attribute_Insert(atmAttribute, strAttName, valType, valIndex, strBeginFunctionName) > 0,      '#13'    do('#13'      strListItem := Concat(String(valIndex), [, ], strAttName),'#13'      if('#13'        valType > -1, '#13'        do('#13'          strType := GuiControl([cbAttributeType], GuiGet([Text])),'#13'          strListItem := Concat(strListItem, [, ], strType)'#13'        )                        '#13'      ),'#13'    '#13'      GuiControl('#13'        [lbAttributes], '#13'        do('#13'          GuiList([Items], [Insert], GuiGet([ItemIndex]) + 1, strListItem),'#13'          GuiSet([ItemIndex], GuiGet([ItemIndex]) + 1),          '#13'          '#13'          {**Update other indeces**}'#13'          valIndexStart := GuiGet([ItemIndex]), '#13'          Repeat('#13'            GuiList([Items], [Count]) - valIndexStart ,'#13'            do('#13'              valIndex := valIndex + 1,'#13'              GuiSet([Items], valIndexStart + Count, StringReplace(GuiGet([Items], valIndexStart + Count), String(valIndex - 1), String(valIndex)))        '#13'            )'#13'          ),'#13'          GuiRun([Change])'#13'        )'#13'      ),'#13'      '#13'      {**Update buttons disabled**}'#13'      GuiControl([btnAdd], GuiSet([Enabled], False)),'#13'      GuiControl([btnInsert], GuiSet([Enabled], False)),'#13'      GuiControl([btnUpdate], GuiSet([Enabled], False))'#13'    )'#13'  )'#13')'#13))),
+            EDControl(Button:
+              Caption = str('&Update'),
+              Hint = str('Update the settings for the attribute in the selected line'),
+              Left = 168,
+              Name = str('btnUpdate'),
+              TabOrder = 6,
+              Top = 192,
+              Events(
+                Click = str('do('#13'  var([strAttNameNew], vbString),'#13'  var([strAttNameOld], vbString),'#13'  var([strListItem], vbString),'#13'  var([strBeginFunctionName], vbString),'#13'  var([valType], vbValue),'#13'  var([strType], vbString),'#13'  var([valIndex], vbValue),'#13'    '#13'  strAttNameNew := GuiControl([ebAttributeName], GuiGet([Text])), '#13'  strBeginFunctionName := GuiControl([ebBeginFunctionName], GuiGet([Text])),  '#13'  valType := GuiControl([cbAttributeType], GuiGet([ItemIndex])) - 2, '#13'  '#13'  {**Get index of inserted atom**}'#13'  if('#13'    M(atmAttribute) = BaseClass,'#13'    valIndex := GuiControl([lbAttributes], GuiGet([ItemIndex])), '#13'    valIndex := GuiControl([lbAttributes], GuiGet([ItemIndex])) + NrOfAttributes(M(atmAttribute)) - 1'#13#13'  ),'#13'  strAttNameOld := StrSeparate(GuiControl([lbAttributes], GuiGet([Items], valIndex)), [, ], 2),'#13'      '#13'  '#13'  if('#13'    Attribute_Update(atmAttribute, valIndex, strAttNameNew, valType, strBeginFunctionName) = True,'#13'    do('#13'      strListItem := Concat(String(valIndex), [, ], strAttNameNew),'#13#13'      if(    '#13'        valType > - 1,      '#13'        '#13'        {**User wants to add new functions: Add new function**}'#13'        do('#13'          strType := GuiControl([cbAttributeType], GuiGet([Text])),'#13'          strListItem := Concat(strListItem, [, ], strType) '#13'        )'#13'      ),'#13'      '#13'      GuiControl([lbAttributes], '#13'        do('#13'          GuiSet([Items], GuiGet([ItemIndex]), strListItem),'#13'          GuiRun([Change])'#13'        )'#13'      )'#13'    )'#13'  )'#13')'#13))),
+            EDControl(Label:
+              Caption = str('Attribute type:'),
+              Color = -16777208,
+              Height = 13,
+              Left = 8,
+              Name = str('label1'),
+              Top = 80),
+            EDControl(Label:
+              Caption = str('Attribute name:'),
+              Color = -16777208,
+              Height = 13,
+              Left = 8,
+              Name = str('label2'),
+              Top = 24,
+              Width = 71),
+            EDControl(Label:
+              Caption = str('Begin of function name:'),
+              Color = -16777208,
+              Height = 13,
+              Left = 8,
+              Name = str('label3'),
+              Top = 136,
+              Width = 112))))),
+    EDControl(Panel:
+      Align = Bottom,
+      Anchors = set(Left,Right,Bottom),
+      BevelOuter = None,
+      Caption = str(''),
+      Height = 40,
+      Left = 0,
+      Name = str('PanelButtons'),
+      TabOrder = 2,
+      Top = 434,
+      Width = 523,
+      Controls(
+        EDControl(Button:
+          Caption = str('&Help'),
+          Left = 8,
+          Name = str('btnHelp'),
+          TabOrder = 1,
+          Top = 8,
+          Events(
+            Click = str('Help(PDir([Help\ED Windows.hlp]), [Attribute Controls Form])'#13))),
+        EDControl(Button:
+          Anchors = set(Right),
+          Caption = str('&Close'),
+          Default = True,
+          Left = 440,
+          Name = str('btnClose'),
+          TabOrder = 2,
+          Top = 8,
+          Events(
+            Click = str('do('#13'  GuiDestroy,'#13'  GuiUnregister([frmAttributeControls])'#13')'#13)))))),
+  Events(
+    Destroy = str('do('#13'  TreeForm,'#13'  AtomTreeRefresh'#13')'#13),
+    Show = str('do('#13'  var([strName], vbString),'#13'  var([valID], vbValue),'#13'  '#13'  valID := AtomID(atmAttribute),  '#13'  strName := Concat(Name(AtomByID(valID, Main)), [: ], String(valID)),'#13'  '#13'  GuiControl('#13'    [ebSelectedAtom], '#13'    do('#13'      GuiSet([Text], strName)'#13'    )'#13'  ) '#13')'#13)))
+

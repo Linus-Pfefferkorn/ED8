@@ -1,0 +1,248 @@
+EDControl(EditForm:
+  BorderIcons = set(SystemMenu),
+  BorderStyle = Single,
+  Caption = str('Database Connection'),
+  Height = 568,
+  Name = str('DatabaseConnection'),
+  Position = Default,
+  ShowHint = True,
+  Top = 317,
+  Visible = True,
+  Width = 397,
+  Controls(
+    EDControl(MultiPage:
+      ActivePage = 1,
+      Align = Client,
+      Anchors = set(Left,Top,Right,Bottom),
+      Height = 492,
+      Left = 0,
+      Name = str('MultiPage1'),
+      TabOrder = 1,
+      Top = 0,
+      Width = 397,
+      Controls(
+        EDControl(SinglePage:
+          Caption = str('General'),
+          Name = str('SinglePage1'),
+          PageIndex = 1,
+          Controls(
+            EDControl(GroupBox:
+              Caption = str(''),
+              Height = 64,
+              Left = 8,
+              Name = str('GroupBox1'),
+              TabOrder = 1,
+              Top = 8,
+              Width = 370,
+            Controls(
+EDControl(Edit:
+              Height = 21,
+              Left = 132,
+              Name = str('AtomName'),
+              TabOrder = 2,
+              Top = 26,
+              Width = 225),
+            EDControl(Label:
+              Caption = str('Atom name:'),
+              Color = -16777208,
+              Left = 12,
+              Name = str('StaticText1'),
+              Top = 32,
+              Width = 60))),
+EDControl(GroupBox:
+              Caption = str('Settings'),
+              Height = 224,
+              Left = 8,
+              Name = str('GroupBox3'),
+              TabOrder = 3,
+              Top = 88,
+              Width = 370,
+            Controls(
+EDControl(RadioButton:
+              Caption = str('Open file database'),
+              Left = 12,
+              Name = str('rbDBF'),
+              TabOrder = 4,
+              Top = 32,
+              Events(
+                Change = str('Do('#13' GuiControl([txtAliasName], GuiSet([Enabled], False)),'#13' GuiControl([AliasName], GuiSet([Enabled], False)),'#13' GuiControl([Optional], GuiSet([Enabled], False)),'#13' GuiControl([txtOptional], GuiSet([Enabled], False)),'#13' '#13' GuiControl([txtDatabaseName], GuiSet([Enabled], True)),'#13' GuiControl([DatabaseName], GuiSet([Enabled], True)),'#13' GuiControl([cmdBrowse], GuiSet([Enabled], True)),'#13#13' GuiRun([Update])'#13#13')'#13))),
+            EDControl(Label:
+              Caption = str('Database name:'),
+              Color = -16777208,
+              Left = 12,
+              Name = str('txtDatabaseName'),
+              Top = 64,
+              Width = 82),
+            EDControl(Edit:
+              Height = 21,
+              Left = 132,
+              Name = str('DatabaseName'),
+              TabOrder = 5,
+              Top = 58,
+              Width = 225),
+            EDControl(Button:
+              Caption = str('&Browse...'),
+              Left = 132,
+              Name = str('cmdBrowse'),
+              TabOrder = 6,
+              Top = 90,
+              Events(
+                Click = str('Do('#13' { Select a dbf file and store in temporarily in the global variable t. }'#13' t := GetFileOpen(Pdir([*.dbf]),[Database Files (*.dbf)|*.dbf|Paradox (*.db)|*.db],0,0),'#13#13' { Update the edit box. }'#13' if(StringLength(t) > 0, GuiControl([DatabaseName], GuiSet([Text], ExtractDir(t)))),'#13#13' { This is a dbf file so update the table name and the query. }'#13' if(StringLength(t) > 0, GuiControl([TableName], GuiSet([Text], ExtractName(t)))),'#13' if(StringLength(t) > 0, GuiControl([QueryText], GuiSet([Text], Concat([Select * from ], ExtractOnlyName(ExtractName(t)))))),'#13' '#13' GuiRun([Update])'#13' )'#13))),
+            EDControl(RadioButton:
+              Caption = str('ODBC connection'),
+              Left = 12,
+              Name = str('rbODBC'),
+              TabOrder = 7,
+              Top = 128,
+              Events(
+                Change = str('Do('#13' GuiControl([txtDatabaseName], GuiSet([Enabled], False)),'#13' GuiControl([DatabaseName], GuiSet([Enabled], False)),'#13' GuiControl([cmdBrowse], GuiSet([Enabled], False)),'#13#13' GuiControl([txtAliasName], GuiSet([Enabled], True)),'#13' GuiControl([AliasName], GuiSet([Enabled], True)),'#13' GuiControl([Optional], GuiSet([Enabled], True)),'#13' GuiControl([txtOptional], GuiSet([Enabled], True)),'#13#13' GuiRun([Update])'#13#13')'#13))),
+            EDControl(Label:
+              Caption = str('Alias name:'),
+              Color = -16777208,
+              Left = 12,
+              Name = str('txtAliasName'),
+              Top = 160,
+              Width = 58),
+            EDControl(Edit:
+              Height = 21,
+              Left = 132,
+              Name = str('AliasName'),
+              TabOrder = 8,
+              Top = 154,
+              Width = 225),
+            EDControl(Label:
+              Caption = str('Optional db name:'),
+              Color = -16777208,
+              Left = 12,
+              Name = str('txtOptional'),
+              Top = 192,
+              Width = 90),
+            EDControl(Edit:
+              Height = 21,
+              Left = 132,
+              Name = str('Optional'),
+              TabOrder = 9,
+              Top = 186,
+              Width = 225))),
+EDControl(GroupBox:
+              Caption = str('Table and Query'),
+              Height = 160,
+              Left = 8,
+              Name = str('GroupBox2'),
+              TabOrder = 10,
+              Top = 328,
+              Width = 369,
+            Controls(
+EDControl(Label:
+              Caption = str('Table name:'),
+              Color = -16777208,
+              Left = 12,
+              Name = str('Icon323'),
+              Top = 32,
+              Width = 63),
+            EDControl(Edit:
+              Height = 21,
+              Left = 132,
+              Name = str('TableName'),
+              TabOrder = 11,
+              Top = 26,
+              Width = 225),
+            EDControl(Edit:
+              Height = 21,
+              Left = 132,
+              Name = str('QueryText'),
+              TabOrder = 12,
+              Top = 58,
+              Width = 225),
+            EDControl(Label:
+              Caption = str('Simple query statement:'),
+              Color = -16777208,
+              Left = 12,
+              Name = str('Icon3232'),
+              Top = 64,
+              Width = 116),
+            EDControl(CheckBox:
+              Caption = str(''),
+              Left = 132,
+              Name = str('chkJoin'),
+              TabOrder = 13,
+              Top = 92,
+              Width = 25),
+            EDControl(CheckBox:
+              Caption = str(''),
+              Left = 132,
+              Name = str('chkUpdate'),
+              TabOrder = 14,
+              Top = 124,
+              Width = 25),
+            EDControl(Label:
+              Caption = str('Join query:'),
+              Color = -16777208,
+              Left = 12,
+              Name = str('Icon32322'),
+              Top = 96,
+              Width = 55),
+            EDControl(Label:
+              Caption = str('Update query:'),
+              Color = -16777208,
+              Left = 12,
+              Name = str('Icon323222'),
+              Top = 128,
+              Width = 71),
+            EDControl(Button:
+              Caption = str('Co&nnect'),
+              Left = 282,
+              Name = str('cmdConnect'),
+              TabOrder = 15,
+              Top = 120,
+              Events(
+                Click = str('Do('#13' { Depending on the selected type of database we connect to this database. }'#13' if(GuiControl([rbDBF], GuiGet([Checked]) = True),'#13'    dbConnect(GuiControl([DatabaseName], GuiGet([Text])), GuiControl([TableName], GuiGet([Text])), []),'#13'    Do(if(StringLength(GuiControl([Optional], GuiGet([Text]))) > 0,'#13'          dbConnect(GuiControl([AliasName], GuiGet([Text])), Concat(GuiControl([DatabaseName], GuiGet([Text])), [], GuiControl([TableName], GuiGet([Text]))), []),'#13'          dbConnect(GuiControl([AliasName], GuiGet([Text])), GuiControl([TableName], GuiGet([Text])), []))'#13'    )'#13' )'#13')'#13))))))))),
+    EDControl(Panel:
+      Align = Bottom,
+      Anchors = set(Left,Right,Bottom),
+      BevelOuter = None,
+      Caption = str(''),
+      Height = 40,
+      Left = 0,
+      Name = str('Panel1'),
+      TabOrder = 2,
+      Top = 492,
+      Width = 397,
+      Controls(
+        EDControl(Button:
+          Caption = str('&Help'),
+          Left = 8,
+          Name = str('btnHelp'),
+          TabOrder = 1,
+          Top = 8,
+          Events(
+            Click = str('Help(PDir([HELP\ED Help.hlp]), [Database Connection])'#13))),
+        EDControl(Button:
+          Caption = str('&Ok'),
+          Default = True,
+          Left = 144,
+          Name = str('btnOk'),
+          TabOrder = 2,
+          Top = 8,
+          Events(
+            Click = str('Do('#13' GuiControl([btnApply]),'#13' GuiRun([Click]),'#13' GuiDestroy,'#13' GuiUnregister([Database Connection])'#13')'#13))),
+        EDControl(Button:
+          Cancel = True,
+          Caption = str('&Cancel'),
+          Left = 230,
+          Name = str('btnCancel'),
+          TabOrder = 3,
+          Top = 8,
+          Events(
+            Click = str('Do('#13' GuiDestroy,'#13' GuiUnregister([Database Connection])'#13')'#13))),
+        EDControl(Button:
+          Caption = str('&Apply'),
+          Left = 312,
+          Name = str('btnApply'),
+          TabOrder = 4,
+          Top = 8,
+          Events(
+            Click = str('do('#13' '#13'  {Save TextField}'#13' '#13'  Name(GuiAtom) := GuiControl([AtomName],GuiGet([Text])),'#13'    '#13'  TextAtt([AliasName],GuiAtom) := GuiControl([AliasName],GuiGet([Text])),'#13'  '#13'  if(GuiControl([rbDBF], GuiGet([Checked])) = True,'#13'    TextAtt([Database],GuiAtom) := GuiControl([DatabaseName],GuiGet([Text])), '#13'    TextAtt([Database],GuiAtom) := GuiControl([Optional],GuiGet([Text]))'#13'  ),'#13'  '#13'  TextAtt([TableName],GuiAtom) := GuiControl([TableName],GuiGet([Text])),'#13'  '#13'  TextAtt([query],GuiAtom) := GuiControl([QueryText],GuiGet([Text])), '#13'  '#13'  { Save the type of database. }  '#13'  if(GuiControl([rbDBF], GuiGet([Checked])) = True, Att([dbtype], GuiAtom) := 3, Att([dbType], GuiAtom) := 1),'#13'  '#13'  { Save the type of query. }'#13'  if(GuiControl([chkUpdate], GuiGet([Checked])) = True, Att([update], GuiAtom) := 1, Att([update], GuiAtom) := 0),'#13'  if(GuiControl([chkJoin], GuiGet([Checked])) = True, Att([join], GuiAtom) := 1, Att([join], GuiAtom) := 0),'#13'       '#13'  GuiRun([Update])'#13')'#13)))))),
+  Events(
+    Show = str('do('#13' '#13'  {Set Caption}'#13'  if('#13'   atomexists(m(GuiAtom)),'#13'   GuiControl([DatabaseConnection],GuiSet([Caption],concat(name(m(GuiAtom)), [ - ], name(GuiAtom)))),'#13'   GuiControl([DatabaseConnection],GuiSet([Caption],concat([Baseclass - ], name(GuiAtom))))'#13'  ),'#13' '#13'  {Set ActivePage}'#13'     '#13'  GuiControl([MultiPage1]),GuiSet([ActivePage],1),'#13'  '#13'  {Set TextField}'#13'      '#13'  GuiControl([AtomName],GuiSet([Text],Name(GuiAtom))),'#13'  '#13'  GuiControl([AliasName],GuiSet([Text], TextAtt([AliasName],GuiAtom))),'#13#13'  if(Att([dbtype], GuiAtom) = 3, GuiControl([DatabaseName],GuiSet([Text], TextAtt([Database],GuiAtom))), GuiControl([Optional],GuiSet([Text], TextAtt([Database],GuiAtom)))),'#13'  '#13'  GuiControl([TableName],GuiSet([Text], TextAtt([TableName],GuiAtom))),'#13#13'  GuiControl([QueryText],GuiSet([Text], TextAtt([query],GuiAtom))),'#13#13'  { Set check boxes for query type }'#13'  if(Att([update], GuiAtom) <> 0, GuiControl([chkUpdate], GuiSet([Checked], True))),'#13'  if(Att([join], GuiAtom) <> 0, GuiControl([chkJoin], GuiSet([Checked], True))),'#13#13'  {Set Connection type}'#13'  '#13'  if(Att([dbtype], GuiAtom) = 3, GuiControl([rbDBF], GuiSet([Checked], True)), GuiControl([rbODBC], GuiSet([Checked], True))),'#13#13'  {Position the form}'#13'  Gui_PositionGuiAroundAtom(GuiControl([DatabaseConnection])),'#13#13'  GuiRun([Update])'#13')'#13)))
+

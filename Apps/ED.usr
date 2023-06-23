@@ -1,0 +1,33 @@
+{
+STARTUP SCRIPT
+
+The STARTUP section in this file is automatically 
+executed when you start your application. 
+
+The EXPLANATION section is not executed, it is 
+provided as an example only.
+}
+
+{{startup section}}
+
+do(
+ [nothing]
+);
+
+{{explanation section}}
+
+{
+ A typical task you may want to perform automatically 
+ at startup is loading additional atoms into your 
+ library.
+ 
+ Example: if you would put the code in this section in
+ the startup section two atoms myatom1.atm and 
+ myatom2.atm are put in the library when you start your
+ application the next time.
+}
+
+do(
+ library,execfile(pdir([atoms\myatom1.atm])),
+ library,execfile(pdir([atoms\myatom2.atm]))
+);

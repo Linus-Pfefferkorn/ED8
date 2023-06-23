@@ -1,0 +1,255 @@
+
+
+{Atom: Time Schedule Availability}
+
+sets;
+BaseClass;
+createAtom(a, s, [], 1, false);
+int023([Time Schedule Availability], 32768, 1264);
+Set(Icon(a), 
+	RegisterIcon(pDir([media\images\default.jpg]), [default.jpg]));
+Addmodel3D(
+	Registermodel3D(model3DDir([\controller.wrl]), [controller.wrl], 0, 0, 0, 1, 1, -1, -90, 0, 0), a);
+Addmodel3D(
+	Registermodel3D(model3DDir([\controller1.wrl]), [controller1.wrl], 0, 0, 0, 1, 1, -1, -90, 0, 0), a);
+Addmodel3D(
+	Registermodel3D(model3DDir([\controller2.wrl]), [controller2.wrl], 0, 0, 0, 1, 1, -1, -90, 0, 0), a);
+SetMaterial(
+	RegisterMaterial([Default], 8421504, 8421504, 3289650, 0, 0.100000001490116, 0, false, false, 1, 0), 1, a);
+Set(Version(a), 7.3);
+SetTreeIcon(pDir([Media\Icons\TimeScheduleAvailability.ico]));
+Set(Info, [Control opening and closing time.
+
+General
+------------
+This atom is not part of the flow of atoms but is 
+ALWAYS used in conjunction with the Availability Control. 
+
+Connect the outputchannels with the inputchannels of one or more 
+availabilty controls. The availability controls in their turn control the 
+availability of atoms in the flow. 
+
+The atom provides a table in which a list of opening and closing times 
+can be specified. When filling out the 'Locked' column of the table:
+  0 = unlocked/open (green)
+  1 = locked/closed (red).
+
+IMPORTANT:
+---------------------
+The times must be listed in chronological order from top 
+to bottom.
+
+Channels:
+---------------
+N outputchannels
+
+Statuses:
+-------------
+  18 - Open
+  19 - Closed
+
+Applications: shifts, working hours, breaks, holidays, scheduled 
+maintenance, etc.
+
+Double click:
+edit time table. Rightlick: set time table size, switch repeat on/off.
+
+Last revision:
+--------------------
+February, 2008
+
+]);
+SetChannels(0, 1);
+SetChannelRanges(0, 0, 1, 255);
+int001(33);
+SetSize(5, 1, 1);
+LockPosition(false);
+LockSize(false);
+DisableIconRotation(false);
+SetProductCode([]);
+createAttributes(5);
+SetAttributeName(r(1), [RepeatTable]);
+SetAttributeName(r(2), [AddCycle]);
+SetAttributeName(r(3), [CurRecord]);
+SetAttributeName(r(4), [MaxRec]);
+SetAttributeName(r(5), [3DIcon]);
+SetAtt(r(3), 1);
+SetAtt(r(4), 8);
+SetAtt(r(5), 3);
+int024;
+SetTable(8, 2);
+int015(0, 0, [ 
+1
+2
+3
+4
+5
+6
+7
+8
+]);
+int015(1, 0, [`Time`
+`hr(1)`
+`hr(2)`
+`hr(2.5)`
+`hr(4)`
+`hr(4.25)`
+`hr(4.5)`
+`hr(6)`
+`hr(8)`
+]);
+int015(2, 0, [`Down=1`
+1
+0
+1
+0
+1
+0
+1
+0
+]);
+Set(OnEvent, [Do(
+
+ {* The current record indicates the row in the table *}
+ If(
+  cell( CurRecord, 2, c),
+  Do(
+
+   {* Not Available *}
+   if(
+    Label([t-available], c) = True,
+    do(
+      setstatus(12,c),
+      SetLabel( [t-available], 0, c),
+      color(c) := colorred,
+      OpenAllOc(c)
+    )
+   )
+  ),
+
+  Do(
+
+   {* Available *}
+   if(
+    Label([t-available], c) = False,
+    do(
+      SetStatus(11,c),
+      SetLabel( [t-available], 1, c),
+      color(c) := colorgreen,
+      OpenAllOc(c)
+    )
+   )
+  )
+ ),
+
+ CurRecord := CurRecord + 1,
+
+ {* If the schedule is repeattable, adjust the addcylce after every cycle to the current time *}
+ If(
+  And(
+   RepeatTable,
+   or(
+    CurRecord > nRows(c), 
+    execstring( cell( CurRecord , 1, c, 2)) = 0
+   )
+  ),
+
+  Do(
+   AddCycle := AddCycle + ExecString( cell( CurRecord - 1 , 1, c, 2)),
+   currecord  := 1
+  )
+ ),
+
+ {* create the next event to go up or down. Chekc hereby if the event lies in hte future  *}
+ If(
+  ExecString( cell( CurRecord , 1, c, 2)) + AddCycle >= Time,
+  createEvent( TimeFromNow(+(AddCycle , ExecString( cell( CurRecord , 1, c, 2)))), c)
+ )
+)
+]);
+Set(OnCreation, [Do(
+ SetLabel([t-atomoutconnect], [t028], c),
+ Label([t-available], c) := 1
+)
+]);
+Set(OnReset, [Do(
+ SetLabel([t-available], 1, c),
+ Status(c) := 11,
+ Color(c) := ColorGreen,
+ AddCycle := 0,
+ CurRecord := 1,
+ createEvent(ExecString(Cell(CurRecord, 1, c, 2)), c, 1),
+ Repeat(
+  NrOC(c),
+  If(
+   And(
+    AtomExists(Out(Count, c)),
+    Not(CompareText(Label([t-atomtype], Out(Count, c)), [t028]))
+   ),
+   Msg(
+    Concat(
+     [Outputchannel ],
+     String(Count),
+     [ of ],
+     Name( c),
+     [ must be connected with an Availability Control atom]
+    ),
+    3
+   )
+  )
+ )
+)
+]);
+Set(OnUser, [If(
+ DoubleClick,
+ {* Double click *}
+ Do(
+  EditTable
+ ),
+ 
+ {* Right Click *}
+ Do(
+  { Delete any current instances of this form.}
+  GuiDestroy([Time Schedule Availability]),
+  
+  { Register the GUI-form for this atom.}
+  GuiRegister(PDir([\Atoms\Time Schedule Availability.gui]), 1),
+  
+  { Show the GUI-form.}
+  Guicreate([Time Schedule Availability], [Time Schedule Availability], 0, c, 0, 1)
+ )
+)
+]);
+Set(On2DDraw, [Do(
+ diShape(0, 0, xSize(c), 1, 0.25, ColorBlack, Color(c)),
+ diOnScale(
+  13,
+  diText(0.2, 0.1, Name(c), ColorWhite, Color(c), 0.5, [Arial], xSize(c) - 0.3, 0.8)
+ )
+)
+]);
+Set(On3DDraw, [Case(
+ 3DIcon,
+ 
+ {* Draw None *}
+ SetSetting(sa3DDraw, 0, c),
+ 
+ {* Draw Simple Box *}
+ Do(
+  di3DBox(0, 0, 0, 1, 0.5, 2, ColorGray),
+  di3DBox(0.2, -0.05, 1.5, 0.6, 0.6, 0.3, Color(c))
+ ),
+ 
+ {** Draw empty controller **}
+ Drawmodel3D(model3D(1, c), 0, 0, 0),
+ 
+ {** Draw controller 1 **}
+ Drawmodel3D(model3D(2, c), 0, 0, 0),
+ 
+ {** Draw controller 2 **}
+ Drawmodel3D(model3D(3, c), 0, 0, 0)
+)
+]);
+SetStatus(0);
+int018;
+int007;

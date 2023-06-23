@@ -1,0 +1,155 @@
+
+
+{Atom: Network Node}
+
+sets;
+BaseClass;
+CreateAtom(a, s, [], 1, false);
+int023([Network Node], 0, 6384);
+Set(Icon(a), 
+	RegisterIcon(IconsDir([bmp\atoms\server.bmp]), [server]));
+SetMaterial(
+	RegisterMaterial([Default], 8421504, 8421504, 3289650, 0, 0.100000001490116, 0, false, false, 1, 0), 1, a);
+Set(Version(a), 7.3);
+SetTreeIcon(pDir([Media\Icons\NetworkNode.ico]));
+Set(Info, [Network Node
+
+General
+------------
+Use this atom to build a network for the Advanced Transporter.
+
+Use the Node Manipulator to (dis)connect nodes and atoms 
+in a fast and easy way.
+
+Last Revision:
+---------------------
+March, 2008
+]);
+SetChannelRanges(0, 255, 0, 255);
+int001(94);
+SetSize(1, 1, 0);
+LockPosition(false);
+LockSize(true);
+DisableIconRotation(false);
+SetProductCode([]);
+CreateAttributes(7);
+SetAttributeName(r(1), [ShowPaths]);
+SetAttributeName(r(2), [ShowNode]);
+SetAttributeName(r(3), [network]);
+SetAttributeName(r(4), [nodenumber]);
+SetAttributeName(r(5), [ShowName]);
+SetAttributeName(r(6), [ShowConnectionsToAtoms]);
+SetAttributeName(r(7), [ShowSpeedLimit]);
+SetAtt(r(1), 1);
+SetAtt(r(2), 1);
+SetAtt(r(3), 1);
+SetAtt(r(6), 1);
+SetAtt(r(7), 1);
+int024;
+Set(OnEvent, [if( content(c)>0, do(  createevent(0,vtp(ddb([t-tspwait],first(c))),4),  destroyatom(first(c)) ))]);
+Set(OnCreation, [sddb([t-node],1,c)]);
+Set(OnReset, [do( SetTable(CountMatch(NrOC(c),ddb([t-node], out(Count, c)), true), 4, c), Repeat(  nRows(c),  do(   SetCell(Count, 2, 0, c),   if(    Cell(Count, 1, c) = 0,    SetCell(Count, 1, 1000000, c)   )  ) ), ForAtomLayerUnder(c, DestroyAtom))]);
+Set(OnUser, [Do(  { Delete any current instances of this form.}   GuiDestroy([NetworkNode]),  { Register the GUI-form for this atom.}  GuiRegister(PDir([\Atoms\Network Node.gui]), 1),  { Show the GUI-form.}   GuiCreate([NetworkNode], [NetworkNode], 0, c, 0, 1))]);
+Set(On2DDraw, [do(
+ var([valCounter], vbValue, 1),
+ var([valOffset], vbValue, 0),
+ var([valXLoc], vbValue, 0),
+ var([valYLoc], vbValue, 0),
+ 
+ if(
+  att([ShowNode], c) = True,
+  do(
+   { Draw a circle for the representation of the node. }
+   dishape(-0.1, -0.1, 0.2, 0.2, 0.5, color(c), color(c)),
+   
+   { Check if the user wants to see connections and / or names }
+   if(
+    Att([ShowName], c) = True,
+    ditext(0.5, -1, name, color, colorwhite, 0.5, [arial])
+   ),
+   
+   if(
+    NrOC(c) > 0,
+    Repeat(
+     NrOC(c),
+     if(
+      AtomExists(out(Count, c)),
+      do(
+       setcs(out(Count, c)),
+       if(
+        ddb([t-node], cs),
+        if(
+         Att([ShowPaths], c) = True,
+         do(
+          if(
+           Cell(Count, 1, c) > Cell(Count, 2, c),
+           do(
+            if(
+             Cell(Count, 3, c) = true,
+             diLine(0, 0, xabsloc(cs, model) - xabsloc(c, model), yabsloc(cs,model) - yabsloc(c,model), ColorDarkGray, 0.15, 30, 1.5),
+             diLine(0, 0, xabsloc(cs, model) - xabsloc(c, model), yabsloc(cs,model) - yabsloc(c,model), ColorGreen, 0.15, 30)
+            )
+           ),
+           diLine(0, 0, xabsloc(cs, model) - xabsloc(c, model), yabsloc(cs,model) - yabsloc(c,model), colorred, 0.15, 30)
+          ),
+          
+          { Visualize speed limit }
+          if(
+           and(
+            Att([ShowSpeedLimit], c),
+            Cell(valCounter, 3, c) = true
+           ),
+           do(
+            valXloc := (xabsloc(cs, model) - xabsloc(c, model)) / 2,
+            valYLoc := (yabsloc(cs, model) - yabsloc(c, model)) / 2,
+            
+            { Calculate the correct position }
+            Case(
+             WhichIsTrue(
+             and(valXLoc = 0, valYLoc > 0),
+             and(valXLoc = 0, valYLoc < 0),
+             valXLoc > 0,
+             valXLoc < 0
+             ),
+             valXLoc := valXLoc + 1,
+             valXLoc := valXLoc - 2.5,
+             valYLoc := valYLoc - 2.5,
+             valYLoc := valYLoc + 1
+            ),
+
+            if(
+             StringLength(String(Cell(valCounter, 4, c))) > 1,
+             valOffset := 0.3,
+             valOffset := 0.6
+            ),
+            
+            diShape(valXLoc, valYLoc, 1.5, 1.5, 1, ColorRed, ColorWhite),
+            
+            diText(valXLoc + valOffset, valYLoc + 0.3, String(Cell(valCounter, 4, c)), ColorBlack, ColorWhite, 0.5, [arial])
+           )
+          ),
+          inc(valCounter)
+         )
+        ),
+        if(
+         Att([ShowConnectionsToAtoms], c) = True,
+         if(
+          nodenumber=ddb([t-node1],cs),
+          diline(0,0,-(xabsloc(cs,model),xabsloc(c,model)),-(yabsloc(cs,model),yabsloc(c,model)),colorblue,0,0),
+          diline(0,0,+(-(xabsloc(cs,model),xabsloc(c,model)),xsize(cs)),-(yabsloc(cs,model),yabsloc(c,model)),colorblue,0,0)
+         )
+        )
+       )
+      )
+     )
+    ),
+    dishape(-0.25,-0.25,0.5,0.5,0.5,colorred,colorred)
+   )
+  )
+ )
+)
+]);
+Set(On3DDraw, [ repeat(  nroc(c),  if(   atomexists(out(count,c)),   do(     setcs(out(count,c)),    if(     ddb([t-node],cs),     if(      showpaths,      if(       cell(count,1,c)>cell(count,2,c),       pointsplane(0,0,0,        -(xabsloc(out(count,c),model),xabsloc(c,model)),        -(yabsloc(out(count,c),model),yabsloc(c,model)),        -(zabsloc(out(count,c),model),zabsloc(c,model)),        0.1,0.1,0,colorgreen       ),       pointsplane(0,0,0,        -(xabsloc(out(count,c),model),xabsloc(c,model)),        -(yabsloc(out(count,c),model),yabsloc(c,model)),        -(zabsloc(out(count,c),model),zabsloc(c,model)),        0.1,0.1,0,colorred       )      )     ),     if(      shownode,      pointsplane(0,0,0,       -(xabsloc(out(count,c),model),xabsloc(c,model)),       -(yabsloc(out(count,c),model),yabsloc(c,model)),       -(zabsloc(out(count,c),model),zabsloc(c,model)),       0.1,0.1,0,colorblue      )     )    )   )  ) )]);
+SetStatus(0);
+int018;
+int007;

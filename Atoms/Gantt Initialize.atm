@@ -1,0 +1,57 @@
+
+
+{Atom: Gantt Initialize}
+
+sets;
+BaseClass;
+CreateAtom(a, s, [], 1, false);
+int023([Gantt Initialize], 16753828, 1248);
+Set(Icon(a), 
+	RegisterIcon(IconsDir([Png\products\circlered.png]), [circlered]));
+SetMaterial(
+	RegisterMaterial([Default], 8421504, 8421504, 3289650, 0, 0.100000001490116, 0, false, false, 1, 0), 1, a);
+Set(Version(a), 7.3);
+SetTreeIcon(pDir([Media\Icons\GanttChartInitialize.ico]));
+Set(Info, [Gantt Chart functionality.
+
+General
+-----------
+Initializes passing products for the 'Gantt Chart' 
+functionality when used in the flow. This atom has to be 
+linked-up normally into the flow. All the passing atoms will get a 
+slightly different behaviour on the OnEntering and on the OnExiting.
+This behavior is reset to it's original settings when the 
+atom passes through the Gantt Chart. 
+
+Warning:
+-------------
+Do not use the Gantt Chart initialize settings on atoms 
+that are moved in other atoms (like assembly) between 
+the Gantt Initialize and the Gantt Chart.
+
+Last Revision:
+---------------------
+April, 2008
+]);
+SetChannels(1, 1);
+SetChannelRanges(1, 255, 1, 1);
+int001(79);
+SetSize(1, 1, 0.1);
+LockPosition(false);
+LockSize(false);
+DisableIconRotation(false);
+SetProductCode([]);
+int024;
+Set(OnEvent, [{ Event to trigger which channels need to be opened. }Case(EventCode, {1: Entered} OpenOc(1, c), {2: Exited} OpenAllIc(c))]);
+Set(OnEntered, [Do( { Close all input channels when a product has entered. } CloseAllIc(c), { Create an event to trigger the output channel to be opened. } CreateEvent(0, c, 1))]);
+Set(OnExited, [Do( { Set the status to Idle. } SetStatus(1, c), { Close the output channel. } CloseOc(1, c), { Create an event to open all input channels. } CreateEvent(0, c, 2), { Set a label "t-gc_ent" to the product with the length of the OnEntry event of the product. } SetLabel([t-gc_ent], StringLength(OnEntry(i)), i), { Test if the label we just created is greater than 0. } if(Label([t-gc_ent], i) > 0,  { Add additional labels to the already existing OnEntry event of the product. }  { The labels are required to track the time needed to perform a sequence/activity. }  OnEntry(i) := Concat([Do(], OnEntry(i), [,    Inc(Label([t-gcc], c)),    SetLabel(Concat([t-gcit], String(Label([t-gcc], c))), Round(Time), c),    SetLabel(Concat([t-gca], String(Label([t-gcc], c))), AtomID(i), c)  )]),  { There is no OnEntry event in the product so write our own OnEntry event handler. }  OnEntry(i) := [Do(Inherit,    Inc(Label([t-gcc], c)),    SetLabel(Concat([t-gcit], String(Label([t-gcc], c))), Round(Time), c),    SetLabel(Concat([t-gca], String(Label([t-gcc], c))), AtomID(i), c)  )] ), { Set a label "t-gc_ext" to the product with the length of the OnExit event of the product. } SetLabel([t-gc_ext], StringLength(OnExit(i)), i), { Test if the label we just created is greater than 0. } if(Label([t-gc_ext], i) > 0,  { Add an additional label to the already existing OnExit event of the product. }  OnExit(i) := Concat([Do(], OnExit(i), [,    SetLabel(Concat([t-gcot], String(Label([t-gcc], c))), Round(Time), c)   )]),  { There is no OnExit event in the product so write our own OnExit event handler. }  OnExit(i) := [Do(Inherit,    SetLabel(Concat([t-gcot], String(Label([t-gcc], c))), Round(Time), c)   )] ))]);
+Set(OnCreation, [{ Automatically connect this atom with its predecessor. }AutoConnect]);
+Set(OnReset, [Do( { Set the status to Idle. } SetStatus(1, c), { Close the output channel. } CloseOc(1, c))]);
+Set(OnUser, [Do( { Delete any current instances of this form.}  GuiDestroy([GanttInitialize]), { Register the GUI-form for this atom.} GuiRegister(PDir([\Atoms\GanttInitialize.gui]), 1), { Show the GUI-form.} GuiCreate([GanttInitialize], [GanttInitialize], 0, c, 0, 1))]);
+Set(OnOcReady, [if( { Test is there is an atom in the Gantt Initialize atom. } { If so, we are now ready to move it to the next atom. } AtomExists(First(c)),   { If there is an atom present, request the atom to be moved to the next atom. }   MoveRequest(First(c), 1),   { If there is no atom present, close the output channel, open the input channels }   { to be able to receive a new atom and set the status to Open. }   Do(     CloseOc(1, c),     OpenAllIc(c),     SetStatus(18, c)   ))]);
+Set(OnIcReady, [{ It might be that we want to send out an atom, but that the connect atom }{ to the output channel is not yet able to receive the atom. }if(Not(IcOpen(OcIcNo(1, c), Out(1, c))), { The connected atom is not yet able to receive an atom. } Do(  { Close all input channels, because this means that we cannot receive an atom as well. }  CloseAllIc(c),  { Make sure our output channel is open to move the atom to the receiving atom }  { when possible. }  OpenOc(1, c) ))]);
+Set(On2DDraw, [Draw2DIcon(2, [gc])
+]);
+SetStatus(0);
+int018;
+int007;

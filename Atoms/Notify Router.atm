@@ -1,0 +1,79 @@
+
+
+{Atom: Notify Router}
+
+sets;
+BaseClass;
+createAtom(a, s, [], 1, false);
+int023([Notify Router], 0, 1256);
+Set(Icon(a), 
+	RegisterIcon(pDir([media\images\default.jpg]), [default.jpg]));
+SetMaterial(
+	RegisterMaterial([Default], 8421504, 8421504, 3289650, 0, 0.100000001490116, 0, false, false, 1, 0), 1, a);
+Set(Version(a), 7.3);
+SetTreeIcon(pDir([Media\Icons\NotifyRouter.ico]));
+Set(Info, [Notify Router
+
+General
+------------
+This atom is (mostly) used with the Condition Controller. This 
+atom will reroute a notification (= the message 'notify') that 
+something has changed on the atom that is linked to the 
+inputchannel of this router.
+
+The notification is routed to all the atoms that are linked to the 
+output channels. You need this atom if more than 1 control atom 
+has to listen to the same atom.
+
+Last revision:
+-------------------
+February, 2008
+]);
+Set(DdbRec, [>notifyrouter:1.]);
+SetChannels(1, 2);
+SetChannelRanges(1, 1, 1, 255);
+int001(58);
+int013(1, 0, false, true, 0, 0, [], []);
+int013(2, 0, false, false, 1, 1, [notify], []);
+SetSize(1, 1, 0.1);
+LockPosition(false);
+LockSize(false);
+DisableIconRotation(false);
+SetProductCode([]);
+int024;
+Set(OnCreation, [sddb([NotifyRouter],1,c)
+]);
+Set(OnReset, [do(
+ stoplisten(1,c),
+ if(and(atomexists(in(1,c)),not(ddb([NotifyRouter],in(1,c)))),
+  if(not(startlisten(1,c)),
+   msg([Use this NotifyRouter to reroute the notify to the other Control as well])
+  )
+ )
+)
+]);
+Set(OnUser, [Do(
+  { Delete any current instances of this form.} 
+  GuiDestroy([NotifyRouter]),
+
+  { Register the GUI-form for this atom.}
+  GuiRegister(PDir([\Atoms\NotifyRouter.gui]), 1),
+
+  { Show the GUI-form.}
+  Guicreate([NotifyRouter], [NotifyRouter], 0, c, 0, 1)
+ )
+]);
+Set(On2DDraw, [do(
+ draw2dicon(2,[R]),
+ repeat(-(nroc(c),1),set(ocstyle(+(1,count),c),1))
+)
+]);
+Set(OnMessage, [if(comparetext(message(c),[notify]),
+ repeat(nroc(c),
+  if(atomexists(out(count,c)),sendmessage(count,[notify],c))
+ )
+)
+]);
+SetStatus(0);
+int018;
+int007;

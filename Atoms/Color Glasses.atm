@@ -1,0 +1,43 @@
+
+
+{Atom: Color Glasses}
+
+sets;
+BaseClass;
+CreateAtom(a, s, [], 1, false);
+int023([Color Glasses], 8388608, 32);
+Set(Icon(a), 
+	RegisterIcon(pDir([media\images\default.jpg]), [default.jpg]));
+SetMaterial(
+	RegisterMaterial([Default], 8421504, 8421504, 3289650, 0, 0.100000001490116, 0, false, false, 1, 0), 1, a);
+Set(Version(a), 8.1);
+SetTreeIcon(pDir([Media\Icons\glasses.ico]));
+int001(214);
+SetSize(6, 2, 1);
+LockPosition(false);
+LockSize(false);
+DisableIconRotation(false);
+SetProductCode([]);
+int024;
+Set(OnUser, [Do(
+  { Delete any current instances of this form.} 
+  GuiDestroy([ColorGlasses]),
+
+  { Register the GUI-form for this atom.}
+  GuiRegister(PDir([\Atoms\ColorGlasses.gui]), 1),
+
+  { Show the GUI-form.}
+   Guicreate([ColorGlasses], [ColorGlasses], 0, c, 0, 1)
+  )
+]);
+Set(On2DDraw, [StandardDisplay(
+ Name,
+ Concat([Active: ],
+   if(Anaglyphs, [Yes], [No])
+ ),
+ Icon
+)
+]);
+SetStatus(0);
+int018;
+int007;

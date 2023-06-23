@@ -1,0 +1,82 @@
+EDControl(EditForm:
+  BorderIcons = set(SystemMenu,Maximize),
+  BorderStyle = Single,
+  Caption = str('Label MultiTransform'),
+  Height = 167,
+  Name = str('frmMultitransformEditLabel'),
+  Position = ScreenCenter,
+  ShowHint = True,
+  Top = 272,
+  Visible = True,
+  Width = 407,
+  Controls(
+    EDControl(Panel:
+      Align = Client,
+      Anchors = set(Left,Top,Right,Bottom),
+      Caption = str(''),
+      Height = 91,
+      Left = 0,
+      Name = str('Panel1'),
+      TabOrder = 1,
+      Top = 0,
+      Width = 407,
+      Controls(
+        EDControl(GroupBox:
+          Caption = str('Settings'),
+          Height = 64,
+          Left = 8,
+          Name = str('GroupBox1'),
+          TabOrder = 1,
+          Top = 8,
+          Width = 380,
+        Controls(
+EDControl(Label:
+          Caption = str('Name:'),
+          Color = -16777208,
+          Left = 12,
+          Name = str('StaticText1'),
+          Top = 32,
+          Width = 35),
+        EDControl(Edit:
+          Height = 21,
+          Left = 132,
+          Name = str('ebLabelName'),
+          TabOrder = 2,
+          Top = 26,
+          Width = 225))))),
+EDControl(Panel:
+      Align = Bottom,
+      Anchors = set(Left,Right,Bottom),
+      BevelOuter = None,
+      Caption = str(''),
+      Height = 40,
+      Left = 0,
+      Name = str('Panel2'),
+      TabOrder = 2,
+      Top = 91,
+      Width = 407,
+      Controls(
+        EDControl(Button:
+          Anchors = set(Right,Bottom),
+          Caption = str('&OK'),
+          Default = True,
+          Left = 242,
+          Name = str('btnOK'),
+          TabOrder = 1,
+          Top = 8,
+          Events(
+            Click = str('do( '#13' var([numberoflabels], vbValue),'#13' var([activerow], vbValue, 0),'#13' var([labelname], vbString, 0),'#13' var([indexer], vbValue, 0),'#13' var([rowindex], vbValue, 0),'#13#13' numberoflabels := Value(GuiSelect([MultiTransform], [lblNumberOfLabels], GuiGet([Caption]))),'#13' activerow:= GuiSelect([MultiTransform], [tblLabels], GuiGet([ActiveRow])),'#13' labelname := GuiControl([ebLabelName], GuiGet([Text])),'#13#13' { First do some error datarange checking }'#13#13' { Is the name entered for the variable correct? }'#13' if('#13'  stringlength(labelname) = 0,'#13'  do('#13'   msg([The name of the label is incorrect.], 1),'#13'   return(-1)'#13'  )'#13' ),'#13#13' { Check out if we have to add or edit a variable, a label on the compoistioncontainer form stores this inforamtion. }'#13' if( '#13'  Value(GuiSelect([MultiTransform], [lblAddOrEdit], GuiGet([Caption]))) = 1,'#13'         '#13'  { ADD }'#13'  do( '#13'   { create an extra row in the table of variables when there''s more than 0 variables present already,'#13'     that''s because we keep the first row visible although there may not be a variable in it. So when there'#13'     are 0 variables present we shouldn''t insert a new row because this one then can use the first row.}'#13'   if('#13'    numberoflabels > 0,'#13'    '#13'    { Chek out if the user wants to add or insert a varaiable. Adding is at the end of the list and inserting is before the '#13'      currently sleected item.}'#13'    { ADD }'#13'    do('#13'     rowindex := numberoflabels + 1,'#13'     GuiSelect([MultiTransform], [tblLabels], GuiTableInsertRow(rowindex - 1))'#13'    ),'#13'    '#13'    rowindex := 1'#13'   ),'#13'   '#13'   inc(numberoflabels),'#13'   '#13'   { Copy arrival time code to the new row in the table on the ArrivalList form }'#13'   GuiSelect([MultiTransform], [tblLabels], GuiSet([Cells], rowindex, 1, String(labelname))),'#13'   '#13'   { Increase the invisible label on the Gui form of the composition container. }'#13'   GuiSelect([MultiTransform], [lblNumberOfLabels], GuiSet([Caption], String(numberoflabels))),'#13'   '#13'   { Finally adjust the numbering of the table rows...}'#13'   For('#13'    indexer := 1, indexer <= numberoflabels, inc(indexer),'#13'    GuiSelect([MultiTransform], [tblLabels], GuiSet([Cells], indexer, 0, String(indexer)))'#13'   )'#13'  ),'#13'  '#13'  { EDIT mode }'#13'  do( '#13'   { Copy arrival time code to the new row in the table on the ArrivalList form }'#13'   GuiSelect([MultiTransform], [tblLabels], GuiSet([Cells], GuiGet([ActiveRow]), 1, String(labelname)))'#13'  )'#13' ),  '#13' GuiDestroy  '#13')'#13))),
+        EDControl(Button:
+          Anchors = set(Right,Bottom),
+          Cancel = True,
+          Caption = str('&Cancel'),
+          Left = 324,
+          ModalResult = Cancel,
+          Name = str('btnCancel'),
+          TabOrder = 2,
+          Top = 8,
+          Events(
+            Click = str('GuiDestroy'#13)))))),
+  Events(
+    Show = str('do( '#13' { Intialize the form depending on Add or Edit mode. }  '#13' if(    '#13'  Value(GuiSelect(name(GuiAtom), [lblAddOrEdit], GuiGet([Caption]))) =1,'#13'   '#13'  { ADD mode - just put default values in the edit boxes...}'#13'  GuiControl([ebLabelName],  GuiSet([Text], [LabelName])),'#13'  '#13'  { EDIT mode - just put default values in the edit boxes...}'#13'  GuiControl([ebLabelName],  GuiSet([Text], GuiSelect(name(GuiAtom), [tblLabels], Guiget([Cells], GuiGet([ActiveRow]), 1))))'#13' )'#13')'#13#13#13#13)))
+

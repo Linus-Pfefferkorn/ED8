@@ -1,0 +1,175 @@
+EDControl(EditForm:
+  BorderIcons = set(SystemMenu),
+  BorderStyle = Single,
+  Caption = str('Lock'),
+  Height = 301,
+  Name = str('Lock'),
+  ShowHint = True,
+  Top = 421,
+  Visible = False,
+  Width = 395,
+  Controls(
+    EDControl(MultiPage:
+      ActivePage = 2,
+      Align = Client,
+      Anchors = set(Left,Top,Right,Bottom),
+      Height = 225,
+      Left = 0,
+      Name = str('MultiPage1'),
+      TabOrder = 1,
+      Top = 0,
+      Width = 395,
+      Controls(
+        EDControl(SinglePage:
+          Caption = str('General'),
+          Name = str('SinglePage1'),
+          PageIndex = 1,
+          Controls(
+            EDControl(GroupBox:
+              Caption = str(''),
+              Height = 64,
+              Left = 8,
+              Name = str('GroupBox1'),
+              TabOrder = 1,
+              Top = 8,
+              Width = 370,
+            Controls(
+EDControl(Edit:
+              Height = 21,
+              Left = 132,
+              Name = str('AtomName'),
+              TabOrder = 2,
+              Top = 26,
+              Width = 225),
+            EDControl(Label:
+              Caption = str('Atom name:'),
+              Color = -16777208,
+              Left = 12,
+              Name = str('StaticText1'),
+              Top = 32,
+              Width = 60))),
+EDControl(GroupBox:
+              Caption = str('Settings'),
+              Height = 128,
+              Left = 8,
+              Name = str('GroupBox12'),
+              TabOrder = 3,
+              Top = 88,
+              Width = 370,
+            Controls(
+EDControl(Label:
+              Caption = str('Lock level:'),
+              Color = -16777208,
+              Left = 10,
+              Name = str('StaticText122'),
+              Top = 32,
+              Width = 56),
+            EDControl(Label:
+              Caption = str('Continues evaluation:'),
+              Color = -16777208,
+              Left = 10,
+              Name = str('StaticText1222'),
+              Top = 64,
+              Width = 106),
+            EDControl(Label:
+              Caption = str('Batchwise control:'),
+              Color = -16777208,
+              Left = 10,
+              Name = str('StaticText12222'),
+              Top = 96,
+              Width = 91),
+            EDControl(ScriptEdit:
+              Height = 21,
+              Left = 132,
+              Name = str('LockLevel'),
+              TabOrder = 4,
+              Top = 26,
+              Width = 225),
+            EDControl(CheckBox:
+              Caption = str(''),
+              Left = 132,
+              Name = str('ContinuesEvaluation'),
+              TabOrder = 6,
+              Top = 60),
+            EDControl(CheckBox:
+              Caption = str(''),
+              Left = 132,
+              Name = str('BatchwiseControl'),
+              TabOrder = 7,
+              Top = 92))))),
+EDControl(SinglePage:
+          Caption = str('Visualization'),
+          Name = str('SinglePage2'),
+          PageIndex = 2,
+          Controls(
+            EDControl(GroupBox:
+              Caption = str('Settings'),
+              Height = 64,
+              Left = 8,
+              Name = str('GroupBox2'),
+              TabOrder = 1,
+              Top = 8,
+              Width = 370,
+            Controls(
+EDControl(Icon:
+              Height = 24,
+              Left = 132,
+              Name = str('Icon'),
+              Top = 26,
+              Width = 225),
+            EDControl(Label:
+              Caption = str('Icon:'),
+              Color = -16777208,
+              Left = 12,
+              Name = str('StaticText622'),
+              Top = 32,
+              Width = 28))))))),
+    EDControl(Panel:
+      Align = Bottom,
+      Anchors = set(Left,Right,Bottom),
+      BevelOuter = None,
+      Caption = str(''),
+      Height = 40,
+      Left = 0,
+      Name = str('Panel1'),
+      TabOrder = 2,
+      Top = 225,
+      Width = 395,
+      Controls(
+        EDControl(Button:
+          Caption = str('&Help'),
+          Left = 8,
+          Name = str('btnHelp'),
+          TabOrder = 1,
+          Top = 8,
+          Events(
+            Click = str('Help(PDir([HELP\ED Help.hlp]), [Lock])'#13))),
+        EDControl(Button:
+          Caption = str('&Ok'),
+          Default = True,
+          Left = 144,
+          Name = str('btnOk'),
+          TabOrder = 2,
+          Top = 8,
+          Events(
+            Click = str('Do('#13' GuiControl([btnApply]),'#13' GuiRun([Click]),'#13' GuiDestroy,'#13' GuiUnregister([Lock])'#13')'#13))),
+        EDControl(Button:
+          Cancel = True,
+          Caption = str('&Cancel'),
+          Left = 230,
+          Name = str('btnCancel'),
+          TabOrder = 3,
+          Top = 8,
+          Events(
+            Click = str('Do('#13' GuiDestroy,'#13' GuiUnregister([Lock])'#13')'#13))),
+        EDControl(Button:
+          Caption = str('&Apply'),
+          Left = 312,
+          Name = str('btnApply'),
+          TabOrder = 4,
+          Top = 8,
+          Events(
+            Click = str('do('#13' '#13'  {Save TextField}'#13'   '#13'  Name(GuiAtom) := GuiControl([AtomName],GuiGet([Text])),'#13'  '#13'  {Save CheckBox}'#13'  '#13'  Att([contevaluation],GuiAtom) := GuiControl([ContinuesEvaluation],GuiGet([Checked])),'#13'  '#13'  Att([batchwise],GuiAtom) := GuiControl([BatchWiseControl],GuiGet([Checked])),'#13'  '#13'  {Save 4D ScriptField}'#13'  '#13'  SetExprAtt([lock expr],GuiControl([LockLevel],GuiGet([Code])),GuiAtom),'#13#13'  {Rest}'#13'  '#13'  Icon(GuiAtom) := GuiControl([Icon],GuiGet([Icon]))'#13')'#13)))))),
+  Events(
+    Show = str('do('#13' '#13'  {Set Caption}'#13'  if('#13'   atomexists(m(GuiAtom)),'#13'   GuiControl([Lock],GuiSet([Caption],concat(name(m(GuiAtom)), [ - ], name(GuiAtom)))),'#13'   GuiControl([Lock],GuiSet([Caption],concat([Baseclass - ], name(GuiAtom))))'#13'  ),'#13' '#13'  {Set ActivePage}'#13'     '#13'  GuiControl([MultiPage1]),GuiSet([ActivePage],1),'#13'  '#13'  {Set TextField}'#13'  '#13'  GuiControl([AtomName],GuiSet([Text],Name(GuiAtom))),'#13'  '#13'  {Set CheckBox}'#13'  '#13'  GuiControl([ContinuesEvaluation],GuiSet([Checked], Att([contevaluation],GuiAtom))),'#13'  '#13'  GuiControl([BatchwiseControl],GuiSet([Checked], Att([batchwise],GuiAtom))),'#13'  '#13'  {Set 4D ScriptField}'#13'  '#13'  GuiControl([LockLevel],GuiSet([Code], TextAtt([lock expr],GuiAtom))),'#13#13'  {Rest}'#13'      '#13'  GuiControl([Icon],GuiSet([Icon], Icon(GuiAtom))),'#13#13'  {Position the form}'#13'  Gui_PositionGuiAroundAtom(GuiControl([Lock])),'#13#13'  GuiRun([Update])'#13')'#13)))
+

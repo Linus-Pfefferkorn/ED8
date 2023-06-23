@@ -1,0 +1,557 @@
+
+
+{Preregister functions}
+
+PreregisterFunction([StatusMonitor_SetNumberOfSegments], 2, 2);
+PreregisterFunction([StatusMonitor_GetNumberOfSegments], 1, 1);
+PreregisterFunction([StatusMonitor_Initialize], 1, 1);
+PreregisterFunction([StatusMonitor_SetSegmentColor], 3, 3);
+PreregisterFunction([StatusMonitor_SetSegmentScore], 3, 3);
+PreregisterFunction([StatusMonitor_Animate2D], 1, 1);
+PreregisterFunction([StatusMonitor_SetTotalScore], 2, 2);
+PreregisterFunction([StatusMonitor_GetTotalScore], 1, 1);
+PreregisterFunction([StatusMonitor_DetermineScores], 1, 1);
+PreregisterFunction([StatusMonitor_SetSegmentName], 3, 3);
+PreregisterFunction([StatusMonitor_SetLegendVisible], 2, 2);
+PreregisterFunction([StatusMonitor_GetLegendVisible], 1, 1);
+PreregisterFunction([StatusMonitor_GetSegmentColor], 2, 2);
+PreregisterFunction([StatusMonitor_SetRadius], 2, 2);
+PreregisterFunction([StatusMonitor_GetRadius], 1, 1);
+PreregisterFunction([StatusMonitor_SetBorderColor], 2, 2);
+PreregisterFunction([StatusMonitor_GetBorderColor], 1, 1);
+PreregisterFunction([StatusMonitor_GetSegmentScore], 2, 2);
+PreregisterFunction([StatusMonitor_GetSegmentCumulativeScore], 2, 2);
+PreregisterFunction([StatusMonitor_UseDefaultColours], 1, 1);
+PreregisterFunction([StatusMonitor_SetPercentagesVisible], 2, 2);
+PreregisterFunction([StatusMonitor_GetPercentagesVisible], 1, 1);
+PreregisterFunction([StatusMonitor_SetTitle], 2, 2);
+PreregisterFunction([StatusMonitor_GetTitle], 1, 1);
+PreregisterFunction([StatusMonitor_SetTitleVisible], 2, 2);
+PreregisterFunction([StatusMonitor_GetTitleVisible], 1, 1);
+PreregisterFunction([StatusMonitor_SetTextColor], 2, 2);
+PreregisterFunction([StatusMonitor_GetTextColor], 1, 1);
+PreregisterFunction([StatusMonitor_SetTextSizePercentages], 2, 2);
+PreregisterFunction([StatusMonitor_GetTextSizePercentages], 1, 1);
+PreregisterFunction([StatusMonitor_SetTextSizeTitle], 2, 2);
+PreregisterFunction([StatusMonitor_GetTextSizeTitle], 1, 1);
+PreregisterFunction([StatusMonitor_SetTextSizeLegend], 2, 2);
+PreregisterFunction([StatusMonitor_GetTextSizeLegend], 1, 1);
+PreregisterFunction([StatusMonitor_GuiDataTypeAndRangeValidation], 1, 1);
+PreregisterFunction([StatusMonitor_GuiApplyChanges], 1, 1);
+PreregisterFunction([StatusMonitor_GetSegmentName], 2, 2);
+PreregisterFunction([StatusMonitor_SetRefreshRate], 2, 2);
+PreregisterFunction([StatusMonitor_GetRefreshRate], 1, 1);
+PreregisterFunction([StatusMonitor_Refresh], 1, 1);
+PreregisterFunction([StatusMonitor_SetShowPercentagesBesidesLegend], 2, 2);
+PreregisterFunction([StatusMonitor_GetShowPercentagesBesidesLegend], 1, 1);
+PreregisterFunction([StatusMonitor_InitializeStatuses], 1, 1);
+PreregisterFunction([StatusMonitor_SetStatusesInitialized], 2, 2);
+PreregisterFunction([StatusMonitor_GetStatusesInitialized], 1, 1);
+PreregisterFunction([StatusMonitor_SetDiagramVisible], 2, 2);
+PreregisterFunction([StatusMonitor_GetDiagramVisible], 1, 1);
+PreregisterFunction([StatusMonitor_StartCollectingStatusInformation], 1, 1);
+PreregisterFunction([StatusMonitor_Animate3D], 1, 1);
+PreregisterFunction([StatusMonitor_GetAutomaticScaling], 1, 1);
+PreregisterFunction([StatusMonitor_SetAutomaticScaling], 2, 2);
+
+
+{Atom: StatusMonitor}
+
+sets;
+BaseClass;
+CreateAtom(a, s, [], 1, false);
+Set(OnInit, [do( { This constant is set according to the number of statuses in the StatusList atom.   If you added statuses manually then change this constant to represent the number   of available statuses. } dim([STATUSMONITOR_NUMBEROFSTATUSES], vbConstant, 33), { Define some columnnumber constants for the Status Monitor} dim([STATUSMONITOR_COLUMNNUMBER_SEGMENTSCORE], vbValue, 1), dim([STATUSMONITOR_COLUMNNUMBER_SEGMENTCUMULATIVESCORE], vbValue, 2), dim([STATUSMONITOR_COLUMNNUMBER_SEGMENTCOLOR], vbValue, 3), dim([STATUSMONITOR_COLUMNNUMBER_SEGMENTNAME], vbValue, 4),  { Event Code constants } dim([STATUSMONITOR_EVENTCODE_STARTCOLLECTINGSTATUSINFORMATION], vbConstant, 1001), dim([STATUSMONITOR_EVENTCODE_REFRESH], vbConstant, 1002))]);
+int023([StatusMonitor], 0, 48);
+DefineFunction([StatusMonitor_SetNumberOfSegments], [StatusMonitor], 2, 2, [do( Att([NumberOfSegments], p(1)) := p(2), nrows(p(1)) := p(2))], [p(1) as StatusMonitorp(2) as integer, the number of segmentsResult: none. Sets the property NumberOfSegments of StatusMonitor.], [StatusMonitor_SetNumberOfSegments( atmStatusMonitor, newNumberOfSegments )], 0, [StatusMonitor.atm]);
+DefineFunction([StatusMonitor_GetNumberOfSegments], [StatusMonitor], 1, 1, [Att([NumberOfSegments], p(1))], [p(1) as StatusMonitorResult: integer. Get the property NumberOfSegments of StatusMonitor.], [newNumberOfSegments := StatusMonitor_GetNumberOfSegments( atmStatusMonitor )], 0, [StatusMonitor.atm]);
+DefineFunction([StatusMonitor_Initialize], [StatusMonitor], 1, 1, [do( var([indexer], vbValue, 0),  {--Activate 3D animation of existing models--} SetSetting(sa3DOutline, 0, p(1)), SetSetting(sa3DDraw, 1, p(1)), { Put all segment scores back to zero. } for(  indexer := 1, indexer <= StatusMonitor_GetNumberOfSegments(p(1)), inc(indexer),  StatusMonitor_SetSegmentScore(p(1), indexer, 0) ),  if(  AtomExists(in(1, p(1))) = true,  do(   { create an event to start collecting status information. This is done by an event because     if we call EnableStatusMonitor here directly and the monitor has a lower rank than the atom to be     monitored this atom's onReset event will fire later and will DisableTheStatusMonitor. Creating an event     at time 0 will occur after all onReset eventHandlers are fired. You see...}   createevent(0, p(1), STATUSMONITOR_EVENTCODE_STARTCOLLECTINGSTATUSINFORMATION),      { And create an event to start up the Refreshment Cycle. This is an almost immediate event so      that the user directly sees something on the diagram. Afterwards the refresh event is created with an interval     equal to the Refresh Rate. See the Refresh function for further details. }   createEvent(1, p(1), STATUSMONITOR_EVENTCODE_REFRESH)     ) ))], [p(1) as StatusMonitorResult: none. INitializes the diagram.], [StatusMonitor_Initialize(c)], 0, [StatusMonitor.atm]);
+DefineFunction([StatusMonitor_SetSegmentColor], [StatusMonitor], 3, 3, [cell(p(2), StatusMonitor_COLUMNNUMBER_SEGMENTCOLOR, p(1)) := p(3)], [p(1) as StatusMonitorp(2) as integer, Segment Indexp(3) as ColorResult: none. Sets the color for the specified Segment], [StatusMonitor_SetSegmentColor(c)], 0, [StatusMonitor.atm]);
+DefineFunction([StatusMonitor_SetSegmentScore], [StatusMonitor], 3, 3, [do( if(  p(3) >= 0,  cell(p(2), StatusMonitor_COLUMNNUMBER_SEGMENTSCORE, p(1)) := p(3),  do(   cell(p(2), StatusMonitor_COLUMNNUMBER_SEGMENTSCORE, p(1)) := 0,   trace(    concat(     [The score of segment ],     string(p(2)),     [ has been set to zero because an attempt was made to set it to a value lower than zero. StatusMonitor: ],     string(name),     [, Atomid: ],     String(atomid(p(1)))    )   ),   displaytracer  ) ), StatusMonitor_DetermineScores(p(1)))], [p(1) as StatusMonitorp(2) as integer, Segment Indexp(3) as double, ScoreResult: none. Sets the socre for the specified Segment], [StatusMonitor_SetSegmentScore(c, indexer, timeinstatus)], 0, [StatusMonitor.atm]);
+DefineFunction([StatusMonitor_Animate2D], [StatusMonitor], 1, 1, [do(
+ var([atmC], vbAtom, p(1)),
+ var([indexer], vbValue, 0),
+ var([degrees], vbValue, 0),
+ var([segmentsdrawn], vbValue, 0),
+ var([offsetx], vbValue, 0),
+ var([offsety], vbValue, 0),
+
+ StatusMonitor_SetRadius(atmC, xSize(atmC) / 2),
+
+ if(
+   {**Check if automatic scaling is turned on**}
+   StatusMonitor_GetAutomaticScaling(atmC) = True,
+   do(
+     StatusMonitor_SetTextSizeTitle(atmC, xSize(atmC) / 10),
+     StatusMonitor_SetTextSizeLegend(atmC, xSize(atmC) / 20),
+     StatusMonitor_SetTextSizePercentages(atmC, xSize(atmC) / 20)
+   )     
+ ),
+
+ ySize(atmC) := xSize(atmC) + 2 * StatusMonitor_GetTextSizeTitle(atmC),
+
+ if(
+  StatusMonitor_GetDiagramVisible(atmC) = false,
+  do(
+   offsetx := StatusMonitor_GetRadius(atmC) + 8 * StatusMonitor_GetTextSizePercentages(atmC),
+   offsety := 1.2 * StatusMonitor_GetRadius(atmC)
+  )
+ ),
+
+
+ { APP-124 JG (29-04-2008) Show a message when the diagram is not refreshed...}
+ if(
+  runspeed = 1E40,  
+  DrawText(
+   0,
+   -4 * StatusMonitor_GetTextSizeTitle(atmC),
+   StatusMonitor_GetTextSizeTitle(atmC) * 40,
+   StatusMonitor_GetTextSizeTitle(atmC) * 4,
+   Concat(
+    [Refresment has been paused.],
+    CR,
+    [(Lower the runspeed to refresh the diagram)]
+   ),
+   ColorRed,
+   StatusMonitor_GetTextSizeTitle(atmC),
+   [Arial],
+   True,
+   0,
+   0,
+   HA_LEFT + VA_TOP
+  )
+ ),
+
+ { The Diagram's Title }
+ if(
+  StatusMonitor_GetTitleVisible(atmC),
+  DrawText(
+   0,
+   StatusMonitor_GetRadius(atmC) * 2,
+   StringLength(StatusMonitor_GetTitle(atmC)) * StatusMonitor_GetTextSizeTitle(atmC),
+   StatusMonitor_GetTextSizeTitle(atmC) * 2,
+   StatusMonitor_GetTitle(atmC),
+   StatusMonitor_GetTextColor(atmC),
+   StatusMonitor_GetTextSizeTitle(atmC),
+   [Arial],
+   0,
+   0,
+   0,
+   HA_LEFT + VA_TOP
+  )
+ ),
+ 
+ if(
+  StatusMonitor_GetTotalScore(atmC) = 0,
+  do(
+   DrawCircle(
+    StatusMonitor_GetRadius(atmC),
+    StatusMonitor_GetRadius(atmC),
+    StatusMonitor_GetRadius(atmC),
+    ColorBlack,
+    StatusMonitor_GetBorderColor(atmC),
+    1,
+    0,
+    360
+   ),
+   return(0)
+  )
+ ),
+ 
+ for(
+  indexer := 1, indexer <= StatusMonitor_GetNumberOfSegments(atmC), inc(indexer),
+  if(
+   StatusMonitor_GetSegmentScore(atmC, indexer) > 0,
+   do(
+    inc(segmentsdrawn),
+    
+    { **************** COLORED SEGMENTS ******************* }
+    if(
+     StatusMonitor_GetDiagramVisible(atmC) = True,
+     do(
+      DrawCircle(
+       StatusMonitor_GetRadius(atmC),
+       StatusMonitor_GetRadius(atmC),
+       StatusMonitor_GetRadius(atmC),
+       cell(indexer, StatusMonitor_COLUMNNUMBER_SEGMENTCOLOR, atmC),
+       StatusMonitor_GetBorderColor(atmC),
+       1,
+       if(
+        indexer = 1,
+        0,
+        (cell(indexer - 1, StatusMonitor_COLUMNNUMBER_SEGMENTCUMULATIVESCORE, atmC) / StatusMonitor_GetTotalScore(atmC)) * 360
+       ),
+       (cell(indexer, StatusMonitor_COLUMNNUMBER_SEGMENTCUMULATIVESCORE, atmC) / StatusMonitor_GetTotalScore(atmC)) * 360
+      ),
+     
+      { **************** PERCENTAGES ******************* }
+      if(
+       and(
+        StatusMonitor_GetPercentagesVisible(atmC) = True,
+        StatusMonitor_GetShowPercentagesBesidesLegend(atmC) = false,
+        StatusMonitor_GetDiagramVisible(atmC) = true
+       ),
+       do(
+        if(
+         indexer = 1,
+         degrees := StatusMonitor_GetSegmentScore(atmC, indexer) / (2 * StatusMonitor_GetTotalScore(atmC)) * 360,
+         degrees := (StatusMonitor_GetSegmentCumulativeScore(atmC, indexer) + StatusMonitor_GetSegmentCumulativeScore(atmC, indexer - 1)) / (2 * StatusMonitor_GetTotalScore(atmC)) * 360
+        ),
+        DrawText(
+         { If the percentage is to be drawn to the left of the diagram correct the x position with the width of the bounding box. }
+         if(
+          degrees > 180,
+          StatusMonitor_GetRadius(atmC) - StatusMonitor_GetTextSizePercentages(atmC) * 10 - StatusMonitor_GetRadius(atmC) * sin(degrees - 180),
+          StatusMonitor_GetRadius(atmC) + StatusMonitor_GetRadius(atmC) * sin(degrees)
+         ),
+         if(
+          or(
+           degrees < 90,
+           degrees > 270
+          ),
+          StatusMonitor_GetRadius(atmC) - StatusMonitor_GetRadius(atmC) * cos(degrees) - 1.25 * StatusMonitor_GetTextSizePercentages(atmC),
+          StatusMonitor_GetRadius(atmC) - StatusMonitor_GetRadius(atmC) * cos(degrees)
+         ),
+         StatusMonitor_GetTextSizePercentages(atmC) * 10,
+         StatusMonitor_GetTextSizePercentages(atmC) * 2,
+         concat(
+          String(StatusMonitor_GetSegmentScore(atmC, indexer) / StatusMonitor_GetTotalScore(atmC) * 100, 0, 2),
+          [%]
+         ),
+         StatusMonitor_GetTextColor(atmC),
+         StatusMonitor_GetTextSizePercentages(atmC),
+         [Arial],
+         0,
+         0,
+         0,
+         { If the percentage is to be drawn to the left of the diagram use Right Align for the Text. }
+         if(
+          degrees > 180,
+          HA_RIGHT,
+          HA_LEFT
+         )
+        )
+       )
+      ) 
+     )
+    ),
+
+    { **************** PERCENTAGES ******************* }
+    if(
+     StatusMonitor_GetLegendVisible(atmC) = True,
+       
+     { Show the percentages besides the legend??? }
+     if(
+      StatusMonitor_GetShowPercentagesBesidesLegend(atmC) = false,
+      do(
+       { The box for the color }
+       DrawRectangle(
+        StatusMonitor_GetRadius(atmC) * 2 + 6 * StatusMonitor_GetTextSizePercentages(atmC) - offsetx,
+        StatusMonitor_GetTextSizeLegend(atmC) * (2 * segmentsdrawn - 2) + offsety,
+        StatusMonitor_GetRadius(atmC) * 2 + 6 * StatusMonitor_GetTextSizePercentages(atmC) + StatusMonitor_GetTextSizeLegend(atmC) - offsetx,
+        StatusMonitor_GetTextSizeLegend(atmC) * (2 * segmentsdrawn - 1) + offsety,
+        StatusMonitor_GetSegmentColor(atmC, indexer),
+        StatusMonitor_GetBorderColor(atmC)
+       ),
+       
+       { The name of the segment }
+       DrawText(
+        StatusMonitor_GetRadius(atmC) * 2 + 6 * StatusMonitor_GetTextSizePercentages(atmC) + 2 * StatusMonitor_GetTextSizeLegend(atmC) - offsetx,
+        StatusMonitor_GetTextSizeLegend(atmC) * (2 * segmentsdrawn - 2) + offsety - StatusMonitor_GetTextSizeLegend(atmC) / 5,        
+        StringLength(String(cell(indexer, StatusMonitor_COLUMNNUMBER_SEGMENTNAME, atmC))) * StatusMonitor_GetTextSizeLegend(atmC),
+        StatusMonitor_GetTextSizeLegend(atmC) * 2,
+        String(cell(indexer, StatusMonitor_COLUMNNUMBER_SEGMENTNAME, atmC)),
+        StatusMonitor_GetTextColor(atmC),
+        StatusMonitor_GetTextSizeLegend(atmC),
+        [Arial],
+        0,
+        0,
+        0,
+        HA_LEFT + VA_TOP
+       )     
+      ),
+      { Show the percentages besides the legend! }
+      do(
+       DrawText(
+        - 10 * StatusMonitor_GetTextSizeLegend(atmC) + StatusMonitor_GetRadius(atmC) * 2 + 8 * StatusMonitor_GetTextSizeLegend(atmC) - offsetx,
+        StatusMonitor_GetTextSizeLegend(atmC) * (2 * segmentsdrawn - 2) + offsety - StatusMonitor_GetTextSizeLegend(atmC) / 5,
+        StatusMonitor_GetTextSizeLegend(atmC) * 10,
+        StatusMonitor_GetTextSizeLegend(atmC) * 2,
+        concat(
+         String(StatusMonitor_GetSegmentScore(atmC, indexer) / StatusMonitor_GetTotalScore(atmC) * 100, 0, 2),
+         [%]
+        ),
+        StatusMonitor_GetTextColor(atmC),
+        StatusMonitor_GetTextSizeLegend(atmC),
+        [Arial],
+        0,
+        0,
+        0,
+        HA_RIGHT
+       ),
+        
+       { The box for the color }
+       DrawRectangle(
+        StatusMonitor_GetRadius(atmC) * 2 + 9 * StatusMonitor_GetTextSizeLegend(atmC) - offsetx,
+        StatusMonitor_GetTextSizeLegend(atmC) * (2 * segmentsdrawn - 2) + offsety,
+        StatusMonitor_GetRadius(atmC) * 2 + 9 * StatusMonitor_GetTextSizeLegend(atmC) + StatusMonitor_GetTextSizeLegend(atmC) - offsetx,
+        StatusMonitor_GetTextSizeLegend(atmC) * (2 * segmentsdrawn - 1) + offsety,
+        StatusMonitor_GetSegmentColor(atmC, indexer),
+        StatusMonitor_GetBorderColor(atmC)
+       ),
+      
+       { The name of the segment }
+       DrawText(
+        StatusMonitor_GetRadius(atmC) * 2 + 9 * StatusMonitor_GetTextSizeLegend(atmC) + 2 * StatusMonitor_GetTextSizeLegend(atmC) - offsetx,
+        StatusMonitor_GetTextSizeLegend(atmC) * (2 * segmentsdrawn - 2) + offsety - StatusMonitor_GetTextSizeLegend(atmC) / 5,
+        StringLength(String(cell(indexer, StatusMonitor_COLUMNNUMBER_SEGMENTNAME, atmC))) * StatusMonitor_GetTextSizeLegend(atmC),
+        StatusMonitor_GetTextSizeLegend(atmC) * 2,
+        String(cell(indexer, StatusMonitor_COLUMNNUMBER_SEGMENTNAME, atmC)),
+        StatusMonitor_GetTextColor(atmC),
+        StatusMonitor_GetTextSizeLegend(atmC),
+        [Arial],
+        0,
+        0,
+        0,
+        HA_LEFT + VA_TOP
+       )
+      )    
+     )
+    )
+   )
+  )
+ )
+)
+
+], [p(1) as StatusMonitor
+], [StatusMonitor_Animate2D(c)], 0, [StatusMonitor.atm]);
+DefineFunction([StatusMonitor_SetTotalScore], [StatusMonitor], 2, 2, [Att([TotalScore], p(1)) := p(2)], [p(1) as StatusMonitorp(2) as doubleResult: none. Sets the property TotalScore of StatusMonitor.], [StatusMonitor_SetTotalScore( atmStatusMonitor, newTotalScore )], 0, [StatusMonitor.atm]);
+DefineFunction([StatusMonitor_GetTotalScore], [StatusMonitor], 1, 1, [Att([TotalScore], p(1))], [p(1) as StatusMonitorResult: double. Get the property TotalScore of StatusMonitor.], [newTotalScore := StatusMonitor_GetTotalScore( atmStatusMonitor )], 0, [StatusMonitor.atm]);
+DefineFunction([StatusMonitor_DetermineScores], [StatusMonitor], 1, 1, [do( var([indexer], vbValue, 0),  for(  indexer := 1, indexer <= StatusMonitor_GetNumberOfSegments(p(1)), inc(indexer),    if(   indexer = 1,   cell(indexer, StatusMonitor_COLUMNNUMBER_SEGMENTCUMULATIVESCORE, p(1)) := cell(indexer, StatusMonitor_COLUMNNUMBER_SEGMENTSCORE, p(1)),   cell(indexer, StatusMonitor_COLUMNNUMBER_SEGMENTCUMULATIVESCORE, p(1)) := cell(indexer - 1, StatusMonitor_COLUMNNUMBER_SEGMENTCUMULATIVESCORE, p(1)) + cell(indexer, StatusMonitor_COLUMNNUMBER_SEGMENTSCORE, p(1))  ) ),  StatusMonitor_SetTotalScore(p(1), cell(StatusMonitor_GetNumberOfSegments(p(1)), StatusMonitor_COLUMNNUMBER_SEGMENTCUMULATIVESCORE, p(1))))], [p(1) as StatusMonitor], [StatusMonitor_Animate2D(c)], 0, [StatusMonitor.atm]);
+DefineFunction([StatusMonitor_SetSegmentName], [StatusMonitor], 3, 3, [cell(p(2), StatusMonitor_COLUMNNUMBER_SEGMENTNAME, p(1)) := p(3)], [p(1) as StatusMonitorp(2) as integer, Segment indexp(3) as string, Segment Name], [StatusMonitor_SetSegmentName(c, indexer, statusname(indexer))], 0, [StatusMonitor.atm]);
+DefineFunction([StatusMonitor_SetLegendVisible], [StatusMonitor], 2, 2, [Att([LegendVisible], p(1)) := p(2)], [p(1) as StatusMonitorp(2) as BooleanResult: none. Sets the property LegendVisible of StatusMonitor.], [StatusMonitor_SetLegendVisible( atmStatusMonitor, newLegendVisible )], 0, [StatusMonitor.atm]);
+DefineFunction([StatusMonitor_GetLegendVisible], [StatusMonitor], 1, 1, [Att([LegendVisible], p(1))], [p(1) as StatusMonitorResult: Boolean. Get the property LegendVisible of StatusMonitor.], [newLegendVisible := StatusMonitor_GetLegendVisible( atmStatusMonitor )], 0, [StatusMonitor.atm]);
+DefineFunction([StatusMonitor_GetSegmentColor], [StatusMonitor], 2, 2, [cell(p(2), StatusMonitor_COLUMNNUMBER_SEGMENTCOLOR, p(1))], [p(1) as StatusMonitorp(2) as integer, Segment indexResult: Color. The color pointer for the requested Segmetn index], [StatusMonitor_GetSegmentColor(c, 3)], 0, [StatusMonitor.atm]);
+DefineFunction([StatusMonitor_SetRadius], [StatusMonitor], 2, 2, [Att([Radius], p(1)) := p(2)], [p(1) as StatusMonitorp(2) as DoubleResult: none. Sets the property Radius of StatusMonitor.], [StatusMonitor_SetRadius( atmStatusMonitor, newRadius )], 0, [StatusMonitor.atm]);
+DefineFunction([StatusMonitor_GetRadius], [StatusMonitor], 1, 1, [Att([Radius], p(1))], [p(1) as StatusMonitorResult: Double. Get the property Radius of StatusMonitor.], [newRadius := StatusMonitor_GetRadius( atmStatusMonitor )], 0, [StatusMonitor.atm]);
+DefineFunction([StatusMonitor_SetBorderColor], [StatusMonitor], 2, 2, [Att([BorderColor], p(1)) := p(2)], [p(1) as StatusMonitorp(2) as DoubleResult: none. Sets the property BorderColor of StatusMonitor.], [StatusMonitor_SetBorderColor( atmStatusMonitor, newBorderColor )], 0, [StatusMonitor.atm]);
+DefineFunction([StatusMonitor_GetBorderColor], [StatusMonitor], 1, 1, [Att([BorderColor], p(1))], [p(1) as StatusMonitorResult: Double. Get the property BorderColor of StatusMonitor.], [newBorderColor := StatusMonitor_GetBorderColor( atmStatusMonitor )], 0, [StatusMonitor.atm]);
+DefineFunction([StatusMonitor_GetSegmentScore], [StatusMonitor], 2, 2, [cell(p(2), StatusMonitor_COLUMNNUMBER_SEGMENTSCORE, p(1))], [p(1) as StatusMonitorp(2) as integer, Segment indexResult: Double. The score for the segment with index p(2) of StatusMonitor p(1)], [StatusMonitor_GetSegmentScore(c, 2)], 0, [StatusMonitor.atm]);
+DefineFunction([StatusMonitor_GetSegmentCumulativeScore], [StatusMonitor], 2, 2, [cell(p(2), StatusMonitor_COLUMNNUMBER_SEGMENTCUMULATIVESCORE, p(1))], [p(1) as StatusMonitorp(2) as integer, Segment indexResult: Double. The cumulative score for the segment with index p(2) of StatusMonitor p(1)], [StatusMonitor_GetSegmentCumulativeScore(c, 3)], 0, [StatusMonitor.atm]);
+DefineFunction([StatusMonitor_UseDefaultColours], [StatusMonitor], 1, 1, [do( var([indexer], vbValue, 0), var([indexer2], vbValue, 0), var([cred], vbValue, 0), var([cgreen], vbValue, 0), var([cblue], vbValue, 0),  { We divide the number of segments in 5 ranges. Every range will vary one of the color components Red, Green or Blue.   This way we get smoothly changing colors from red to purple to blue to green to yellow. Some understanding of color profiles is assumed.} var([b1], vbValue, 0), var([b2], vbValue, 0), var([b3], vbValue, 0), var([b4], vbValue, 0), var([b5], vbValue, 0),  { Obtain the ranges borders depending on the number of segments } b1 := Round(StatusMonitor_GetNumberOfSegments(p(1)) / 5 * 1), b2 := 2 * b1, b3 := 3 * b1, b4 := 4 * b1, b5 := 5 * b1,  { Define the default coloring of the segments. } for(  indexer2 := 1, indexer2 <= StatusMonitor_GetNumberOfSegments(p(1)), inc(indexer2),    do(   indexer := mod(indexer2, 5),      if(    indexer = 0,    indexer := 5   ),      indexer := indexer / 5,    indexer := indexer * StatusMonitor_GetNumberOfSegments(p(1)),   indexer := indexer - b1 + 1,   indexer := indexer + trunc(indexer2 / 5),   if(    indexer <= b1,    do(     cred := 255,     cgreen := 0,     cblue := indexer / b1 * 255    )   ),     if(    and(     indexer > b1,     indexer <= b2    ),    do(     cred := 255 - ((indexer - b1)/ (b2 - b1)) * 255,     cgreen := 0,     cblue := 255    )   ),       if(    and(     indexer > b2,     indexer <= b3    ),    do(     cred := 0,     cgreen := ((indexer - b2) / (b3 - b2)) * 255,     cblue := 255    )   ),      if(    and(     indexer > b3,     indexer <= b4    ),    do(     cred := 0,     cgreen := 255,     cblue := 255 - ((indexer - b3) / (b4 - b3)) * 255    )   ),        if(    and(     indexer > b4,     indexer <= b5    ),    do(     cred := ((indexer - b4) / (b5 - b4)) * 255,     cgreen := 255,     cblue := 0    )   ),     StatusMonitor_SetSegmentColor(p(1), indexer2, RgbColor(cred, cgreen, cblue))  ) ))], [p(1) as StatusMonitorResult: none. Sets the defualt colors at the connected atom.], [StatusMonitor_UseDefaultColours(c)], 0, [StatusMonitor.atm]);
+DefineFunction([StatusMonitor_SetPercentagesVisible], [StatusMonitor], 2, 2, [Att([PercentagesVisible], p(1)) := p(2)], [p(1) as StatusMonitorp(2) as BooleanResult: none. Sets the property PercentagesVisible of StatusMonitor.], [StatusMonitor_SetPercentagesVisible( atmStatusMonitor, newPercentagesVisible )], 0, [StatusMonitor.atm]);
+DefineFunction([StatusMonitor_GetPercentagesVisible], [StatusMonitor], 1, 1, [Att([PercentagesVisible], p(1))], [p(1) as StatusMonitorResult: Boolean. Get the property PercentagesVisible of StatusMonitor.], [newPercentagesVisible := StatusMonitor_GetPercentagesVisible( atmStatusMonitor )], 0, [StatusMonitor.atm]);
+DefineFunction([StatusMonitor_SetTitle], [StatusMonitor], 2, 2, [Att([Title], p(1)) := p(2)], [p(1) as StatusMonitorp(2) as StringResult: none. Sets the property Title of StatusMonitor.], [StatusMonitor_SetTitle( atmStatusMonitor, newTitle )], 0, [StatusMonitor.atm]);
+DefineFunction([StatusMonitor_GetTitle], [StatusMonitor], 1, 1, [Att([Title], p(1))], [p(1) as StatusMonitorResult: String. Get the property Title of StatusMonitor.], [newTitle := StatusMonitor_GetTitle( atmStatusMonitor )], 0, [StatusMonitor.atm]);
+DefineFunction([StatusMonitor_SetTitleVisible], [StatusMonitor], 2, 2, [Att([TitleVisible], p(1)) := p(2)], [p(1) as StatusMonitorp(2) as BooleanResult: none. Sets the property TitleVisible of StatusMonitor.], [StatusMonitor_SetTitleVisible( atmStatusMonitor, newTitleVisible )], 0, [StatusMonitor.atm]);
+DefineFunction([StatusMonitor_GetTitleVisible], [StatusMonitor], 1, 1, [Att([TitleVisible], p(1))], [p(1) as StatusMonitorResult: Boolean. Get the property TitleVisible of StatusMonitor.], [newTitleVisible := StatusMonitor_GetTitleVisible( atmStatusMonitor )], 0, [StatusMonitor.atm]);
+DefineFunction([StatusMonitor_SetTextColor], [StatusMonitor], 2, 2, [Att([TextColor], p(1)) := p(2)], [p(1) as StatusMonitorp(2) as ColorResult: none. Sets the property TextColor of StatusMonitor.], [StatusMonitor_SetTextColor( atmStatusMonitor, newTextColor )], 0, [StatusMonitor.atm]);
+DefineFunction([StatusMonitor_GetTextColor], [StatusMonitor], 1, 1, [Att([TextColor], p(1))], [p(1) as StatusMonitorResult: Color. Get the property TextColor of StatusMonitor.], [newTextColor := StatusMonitor_GetTextColor( atmStatusMonitor )], 0, [StatusMonitor.atm]);
+DefineFunction([StatusMonitor_SetTextSizePercentages], [StatusMonitor], 2, 2, [Att([TextSizePercentages], p(1)) := p(2)], [p(1) as StatusMonitorp(2) as DoubleResult: none. Sets the property TextSizePercentages of StatusMonitor.], [StatusMonitor_SetTextSizePercentages( atmStatusMonitor, newTextSizePercentages )], 0, [StatusMonitor.atm]);
+DefineFunction([StatusMonitor_GetTextSizePercentages], [StatusMonitor], 1, 1, [Att([TextSizePercentages], p(1))], [p(1) as StatusMonitorResult: Double. Get the property TextSizePercentages of StatusMonitor.], [newTextSizePercentages := StatusMonitor_GetTextSizePercentages( atmStatusMonitor )], 0, [StatusMonitor.atm]);
+DefineFunction([StatusMonitor_SetTextSizeTitle], [StatusMonitor], 2, 2, [Att([TextSizeTitle], p(1)) := p(2)], [p(1) as StatusMonitorp(2) as DoubleResult: none. Sets the property TextSizeTitle of StatusMonitor.], [StatusMonitor_SetTextSizeTitle( atmStatusMonitor, newTextSizeTitle )], 0, [StatusMonitor.atm]);
+DefineFunction([StatusMonitor_GetTextSizeTitle], [StatusMonitor], 1, 1, [Att([TextSizeTitle], p(1))], [p(1) as StatusMonitorResult: Double. Get the property TextSizeTitle of StatusMonitor.], [newTextSizeTitle := StatusMonitor_GetTextSizeTitle( atmStatusMonitor )], 0, [StatusMonitor.atm]);
+DefineFunction([StatusMonitor_SetTextSizeLegend], [StatusMonitor], 2, 2, [Att([TextSizeLegend], p(1)) := p(2)], [p(1) as StatusMonitorp(2) as DoubleResult: none. Sets the property TextSizeLegend of StatusMonitor.], [StatusMonitor_SetTextSizeLegend( atmStatusMonitor, newTextSizeLegend )], 0, [StatusMonitor.atm]);
+DefineFunction([StatusMonitor_GetTextSizeLegend], [StatusMonitor], 1, 1, [Att([TextSizeLegend], p(1))], [p(1) as StatusMonitorResult: Double. Get the property TextSizeLegend of StatusMonitor.], [newTextSizeLegend := StatusMonitor_GetTextSizeLegend( atmStatusMonitor )], 0, [StatusMonitor.atm]);
+DefineFunction([StatusMonitor_GuiDataTypeAndRangeValidation], [StatusMonitor], 1, 1, [do( var([PassCheck], vbValue, true), var([TextValue], vbString, 0), var([NumericValue], vbValue, 0), { First we do a DataType and DataRange validation before we really apply the changes...} { TITLE } textvalue := GuiControl([ebTitle], GuiGet([Text])),  if(  StringLength(textvalue) = 0,  do(   passcheck := false,      msg([The title has to contain at least one character.])  ) ),  { RADIUS }  textvalue := GuiControl([ebRadius], GuiGet([Text])), numericvalue := Value(GuiControl([ebRadius], GuiGet([Text]))), if(  passcheck = true,  if(   or(    StringLength(textvalue) = 0,    numericvalue <= 0   ),   do(    passcheck := false,       msg([The inserted value for the radius is invalid.])   )  ) ),  { REFRESH RATE } textvalue := GuiControl([ebRefreshRate], GuiGet([Text])), numericvalue := Value(GuiControl([ebRefreshRate], GuiGet([Text]))), if(  passcheck = true,  if(   or(    StringLength(textvalue) = 0,    numericvalue <= 0   ),   do(    passcheck := false,       msg([The inserted value for the refresh rate is invalid.])   )  ) ),  { TEXTSIZE TITLE }  textvalue := GuiControl([ebTextSizeTitle], GuiGet([Text])), numericvalue := Value(GuiControl([ebTextSizeTitle], GuiGet([Text]))), if(  passcheck = true,  if(   or(    StringLength(textvalue) = 0,    numericvalue <= 0   ),   do(    passcheck := false,       msg([The inserted value for the textsize of the title is invalid.])   )  ) ), { TEXTSIZE LEGEND }  textvalue := GuiControl([ebTextSizeLegend], GuiGet([Text])), numericvalue := Value(GuiControl([ebTextSizeLegend], GuiGet([Text]))), if(  passcheck = true,  if(   or(    StringLength(textvalue) = 0,    numericvalue <= 0   ),   do(    passcheck := false,       msg([The inserted value for the textsize of the legend is invalid.])   )  ) ), { TEXTSIZE PERCENTAGES }  textvalue := GuiControl([ebTextSizePercentages], GuiGet([Text])), numericvalue := Value(GuiControl([ebTextSizePercentages], GuiGet([Text]))), if(  passcheck = true,  if(   or(    StringLength(textvalue) = 0,    numericvalue <= 0   ),   do(    passcheck := false,       msg([The inserted value for the textsize of the percentages is invalid.])   )  ) ),   { If the check succeeds then apply the changes to the StatusMonitor } if(  passcheck = true,  StatusMonitor_GuiApplyChanges(p(1)) ),  return(passcheck))], [p(1) as StatusMonitorResult: Boolean. Returns tru if the data validation succeeds else false ], [StatusMonitor_GuiDataTypeAndRangeValidation(GuiAtom)], 0, [StatusMonitor.atm]);
+DefineFunction([StatusMonitor_GuiApplyChanges], [StatusMonitor], 1, 1, [do(
+ var([atmC], vbAtom, p(1)), 
+
+ StatusMonitor_SetTitle(
+  atmC,
+  GuiControl([ebTitle], GuiGet([Text]))
+ ),
+   
+ StatusMonitor_SetRadius(
+  atmC,
+  Value(GuiControl([ebRadius], GuiGet([Text])))
+ ),
+ 
+ StatusMonitor_SetRefreshRate(
+  atmC,
+  Value(GuiControl([ebRefreshRate], GuiGet([Text])))
+ ),
+
+ StatusMonitor_SetTextColor(
+  atmC,
+  GuiControl([cpText], GuiGet([Color]))
+ ),
+
+ StatusMonitor_SetBorderColor(
+  atmC,
+  GuiControl([cpBorder], GuiGet([Color]))
+ ),
+
+ StatusMonitor_SetAutomaticScaling(
+  atmC,
+  GuiControl([cbAutomaticScaling], GuiGet([Checked]))
+ ),
+ 
+ {**Update GUI**}
+ if(
+   StatusMonitor_GetAutomaticScaling(atmC) = True,
+   do(    
+     GuiControl(
+      [ebTextSizeTitle], 
+      GuiSet([Text], String(StatusMonitor_GetTextSizeTitle(GuiAtom)))
+     ),
+     
+     GuiControl(
+      [ebTextSizeLegend], 
+      GuiSet([Text], String(StatusMonitor_GetTextSizeLegend(GuiAtom)))
+     ),
+     
+     GuiControl(
+      [ebTextSizePercentages], 
+      GuiSet([Text], String(StatusMonitor_GetTextSizePercentages(GuiAtom)))
+     )    
+   )
+ ),
+
+ StatusMonitor_SetTextSizeTitle(
+  atmC,
+  Value(GuiControl([ebTextSizeTitle], GuiGet([Text])))
+ ),
+
+ StatusMonitor_SetTextSizeLegend(
+  atmC,
+  Value(GuiControl([ebTextSizeLegend], GuiGet([Text])))
+ ),
+ 
+ StatusMonitor_SetTextSizePercentages(
+  atmC,
+  Value(GuiControl([ebTextSizePercentages], GuiGet([Text])))
+ ),
+ 
+ {**Adjust size accordingly**}
+ xSize(atmC) := StatusMonitor_GetRadius(atmC) * 2,
+ ySize(atmC) := xSize(atmC) + 2 * StatusMonitor_GetTextSizeTitle(atmC),
+ 
+ StatusMonitor_SetTitleVisible(
+  atmC,
+  GuiControl([cbTitleVisible], GuiGet([Checked]))
+ ),
+
+ StatusMonitor_SetLegendVisible(
+  atmC,
+  GuiControl([cbLegendVisible], GuiGet([Checked]))
+ ),
+ 
+ StatusMonitor_SetPercentagesVisible(
+  atmC,
+  GuiControl([cbPercentagesVisible], GuiGet([Checked]))
+ ),
+
+ StatusMonitor_SetDiagramVisible(
+  atmC,
+  GuiControl([cbDiagramVisible], GuiGet([Checked]))
+ ),
+ 
+ StatusMonitor_SetShowPercentagesBesidesLegend(
+  atmC,
+  GuiControl([cbShowPercentagesBesidesLegend], GuiGet([Checked]))
+ ),
+  
+ UpdateAnimator
+)
+], [p(1) as StatusMonitor
+
+Result: none. Applies all the inserted values for the StatusMonitor atom
+], [StatusMonitor_GuiApplyChanges(GuiAtom)], 0, [StatusMonitor.atm]);
+DefineFunction([StatusMonitor_GetSegmentName], [StatusMonitor], 2, 2, [cell(p(2), StatusMonitor_COLUMNNUMBER_SEGMENTNAME, p(1), 2)], [p(1) as StatusMonitorp(2) as Integer, index of the segmentResult: String. The name og the segment with index p(2)], [StatusMonitor_GetSegmentName(c, 2)], 0, [StatusMonitor.atm]);
+DefineFunction([StatusMonitor_SetRefreshRate], [StatusMonitor], 2, 2, [Att([RefreshRate], p(1)) := p(2)], [p(1) as StatusMonitorp(2) as IntegerResult: none. Sets the property RefreshRate of StatusMonitor.], [StatusMonitor_SetRefreshRate( atmStatusMonitor, newRefreshRate )], 0, [StatusMonitor.atm]);
+DefineFunction([StatusMonitor_GetRefreshRate], [StatusMonitor], 1, 1, [Att([RefreshRate], p(1))], [p(1) as StatusMonitorResult: Integer. Get the property RefreshRate of StatusMonitor.], [newRefreshRate := StatusMonitor_GetRefreshRate( atmStatusMonitor )], 0, [StatusMonitor.atm]);
+DefineFunction([StatusMonitor_Refresh], [StatusMonitor], 1, 1, [{ APP-124 when speed is set to unlimited we cancel the refresh procedure...for slowing down reasons...}do( if(  RunSpeed < 1e40,  if(   atomexists(in(1, c)) = True,     do(    var([indexer], vbValue, 0),    var([timeinstatus], vbValue, 0),        for(     indexer:=1, indexer <= STATUSMONITOR_NUMBEROFSTATUSES, inc(indexer),     do(      timeinstatus := StatusTime(in(1, p(1)), indexer),           if(       timeinstatus > 0,       { Now let's see if we can store the information of the score, the name and the identifier on the row}       StatusMonitor_SetSegmentScore(p(1), indexer, timeinstatus)      )     )    )   )  ) ), { create a new event to trigger the refresh procedure. } createEvent(StatusMonitor_GetRefreshRate(p(1)), p(1), STATUSMONITOR_EVENTCODE_REFRESH))], [p(1) as StatusMonitorResult: none. Refreshes the information of the StatusMonitor, is only executed in Pull mode], [StatusMonitor_Refresh(c)], 0, [StatusMonitor.atm]);
+DefineFunction([StatusMonitor_SetShowPercentagesBesidesLegend], [StatusMonitor], 2, 2, [Att([ShowPercentagesBesidesLegend], p(1)) := p(2)], [p(1) as StatusMonitorp(2) as BooleanResult: none. Sets the property ShowPercentagesLeftOfLegend of StatusMonitor.], [StatusMonitor_SetShowPercentagesLeftOfLegend( atmStatusMonitor, newShowPercentagesLeftOfLegend )], 0, [StatusMonitor.atm]);
+DefineFunction([StatusMonitor_GetShowPercentagesBesidesLegend], [StatusMonitor], 1, 1, [Att([ShowPercentagesBesidesLegend], p(1))], [p(1) as StatusMonitorResult: Boolean. Get the property ShowPercentagesLeftOfLegend of StatusMonitor.], [newShowPercentagesLeftOfLegend := StatusMonitor_GetShowPercentagesLeftOfLegend( atmStatusMonitor )], 0, [StatusMonitor.atm]);
+DefineFunction([StatusMonitor_InitializeStatuses], [StatusMonitor], 1, 1, [do( { Only initialize the status when the atom is created for the first time in the model. When an atom is duplicated in the model we don't want the statuses to be   initialized again because then coloring information can get lost. And that's exactly something why you want to duplicate a StatusMonitor because you want to   reuse self defined coloring of the segments. }  if(  StatusMonitor_GetStatusesInitialized(p(1)) = false,  do(   var([indexer], vbValue, 0),      StatusMonitor_SetNumberOfSegments(p(1), STATUSMONITOR_NUMBEROFSTATUSES),     for(    indexer := 1, indexer <= STATUSMONITOR_NUMBEROFSTATUSES, inc(indexer),    StatusMonitor_SetSegmentName(p(1), indexer, statusname(indexer))   ),      StatusMonitor_UseDefaultColours(p(1)),     StatusMonitor_SetStatusesInitialized(p(1), true)   ) ))], [p(1) as StatusMonitorResult: none. Initializes the available statuses for the Status Monitor], [StatusMonitor_InitializeStatuses(c)], 0, [StatusMonitor.atm]);
+DefineFunction([StatusMonitor_SetStatusesInitialized], [StatusMonitor], 2, 2, [Att([StatusesInitialized], p(1)) := p(2)], [p(1) as StatusMonitorp(2) as BooleanResult: none. Sets the property StatusesInitialized of StatusMonitor.], [StatusMonitor_SetStatusesInitialized( atmStatusMonitor, newStatusesInitialized )], 0, [StatusMonitor.atm]);
+DefineFunction([StatusMonitor_GetStatusesInitialized], [StatusMonitor], 1, 1, [Att([StatusesInitialized], p(1))], [p(1) as StatusMonitorResult: Boolean. Get the property StatusesInitialized of StatusMonitor.], [newStatusesInitialized := StatusMonitor_GetStatusesInitialized( atmStatusMonitor )], 0, [StatusMonitor.atm]);
+DefineFunction([StatusMonitor_SetDiagramVisible], [StatusMonitor], 2, 2, [Att([DiagramVisible], p(1)) := p(2)], [p(1) as StatusMonitorp(2) as BooleanResult: none. Sets the property DiagramVisible of StatusMonitor.], [StatusMonitor_SetDiagramVisible( atmStatusMonitor, newDiagramVisible )], 0, [StatusMonitor.atm]);
+DefineFunction([StatusMonitor_GetDiagramVisible], [StatusMonitor], 1, 1, [Att([DiagramVisible], p(1))], [p(1) as StatusMonitorResult: Boolean. Get the property DiagramVisible of StatusMonitor.], [newDiagramVisible := StatusMonitor_GetDiagramVisible( atmStatusMonitor )], 0, [StatusMonitor.atm]);
+DefineFunction([StatusMonitor_StartCollectingStatusInformation], [StatusMonitor], 1, 1, [if( atomexists(in(1, c)) = True, { When an atom is connected to the Status Monitor   start collecting status information on this atom } EnableStatusMonitor(in(1, p(1)), true))], [p(1) as StatusMonitorResult: none. Starts collecting status information at the connected atom.], [StatusMonitor_StartCollectingStatusInformation(c)], 0, [StatusMonitor.atm]);
+DefineFunction([StatusMonitor_Animate3D], [Various], 1, 1, [do( var([atmC], vbAtom, p(1)), var([indexer], vbValue, 0), var([degrees], vbValue, 0), var([segmentsdrawn], vbValue, 0), var([offsetx], vbValue, 0), var([offsety], vbValue, 0), var([offsetz], vbValue, 0.5), if(  StatusMonitor_GetDiagramVisible(atmC) = false,  do(   offsetx := StatusMonitor_GetRadius(atmC) + 8 * StatusMonitor_GetTextSizePercentages(atmC),   offsety := 1.2 * StatusMonitor_GetRadius(atmC)  ) ), TranslateCoords(0, 0, offsetz), { APP-124 JG (29-04-2008) Show a message when the diagram is not refreshed...} if(  runspeed = 1E40,  DrawText(   0,   -4 * StatusMonitor_GetTextSizeTitle(atmC),   StatusMonitor_GetTextSizeTitle(atmC) * 40,   StatusMonitor_GetTextSizeTitle(atmC) * 4,   Concat(    [Refresment has been paused.],    CR,    [(Lower the runspeed to refresh the diagram)]   ),   ColorRed,   StatusMonitor_GetTextSizeTitle(atmC),   [Arial],   True,   0,   0,   HA_LEFT + VA_TOP  ) ), { The Diagram's Title } if(  StatusMonitor_GetTitleVisible(atmC),  DrawText(   -1 * 0.5 * StatusMonitor_GetTextSizeTitle(atmC) * StringLength(StatusMonitor_GetTitle(atmC)) + 0.5,   1.2 * StatusMonitor_GetRadius(atmC) + offsety,   StatusMonitor_GetTextSizeTitle(atmC) * StringLength(StatusMonitor_GetTitle(atmC)),   2 * StatusMonitor_GetTextSizeTitle(atmC),   StatusMonitor_GetTitle(atmC),   StatusMonitor_GetTextColor(atmC),   StatusMonitor_GetTextSizeTitle(atmC),   [Arial],   0,   0,   0,   HA_CENTER + VA_TOP  ) ),  for(  indexer := 1, indexer <= StatusMonitor_GetNumberOfSegments(atmC), inc(indexer),  if(   StatusMonitor_GetSegmentScore(atmC, indexer) > 0,   do(    inc(segmentsdrawn),        { **************** COLORED SEGMENTS ******************* }    if(     StatusMonitor_GetDiagramVisible(atmC) = True,     do(      PushCoords,      TranslateCoords(0, 0, -0.25),      RotateCoords(180, 1, 0, 0, 0.5, 0.5, 0),      RotateCoords(if(indexer = 1, 0, 0 - (cell(indexer - 1, StatusMonitor_COLUMNNUMBER_SEGMENTCUMULATIVESCORE, atmC) / StatusMonitor_GetTotalScore(atmC)) * 360), 0, 0, 1, 0.5, 0.5),      SetMaterialColor(cell(indexer, StatusMonitor_COLUMNNUMBER_SEGMENTCOLOR, atmC), DIFFUSE_AND_AMBIENT_COLOR),      DrawCone(       0.5,       0.5,       0,       0.5,       StatusMonitor_GetRadius(atmC),       StatusMonitor_GetRadius(atmC),       (cell(indexer, StatusMonitor_COLUMNNUMBER_SEGMENTCUMULATIVESCORE, atmC) / StatusMonitor_GetTotalScore(atmC)) * 360 - if(indexer = 1,0,(cell(indexer - 1, StatusMonitor_COLUMNNUMBER_SEGMENTCUMULATIVESCORE, atmC) / StatusMonitor_GetTotalScore(atmC)) * 360),       Z_AXIS,       CP_BOTTOM + CP_SIDES + CP_TOP      ),      SetMaterialColor(ColorBlack, DIFFUSE_AND_AMBIENT_COLOR),            TranslateCoords(0, 0, -0.25),      DrawCone(       0.5,       0.5,       0,       0.01,       StatusMonitor_GetRadius(atmC) + 0.001,       StatusMonitor_GetRadius(atmC) + 0.001,       (cell(indexer, StatusMonitor_COLUMNNUMBER_SEGMENTCUMULATIVESCORE, atmC) / StatusMonitor_GetTotalScore(atmC)) * 360 - if(indexer = 1,0,(cell(indexer - 1, StatusMonitor_COLUMNNUMBER_SEGMENTCUMULATIVESCORE, atmC) / StatusMonitor_GetTotalScore(atmC)) * 360),       Z_AXIS,       CP_SIDES      ),      TranslateCoords(0, 0, 0.49),      DrawCone(       0.5,       0.5,       0,       0.01,       StatusMonitor_GetRadius(atmC) + 0.001,       StatusMonitor_GetRadius(atmC) + 0.001,       (cell(indexer, StatusMonitor_COLUMNNUMBER_SEGMENTCUMULATIVESCORE, atmC) / StatusMonitor_GetTotalScore(atmC)) * 360 - if(indexer = 1,0,(cell(indexer - 1, StatusMonitor_COLUMNNUMBER_SEGMENTCUMULATIVESCORE, atmC) / StatusMonitor_GetTotalScore(atmC)) * 360),       Z_AXIS,       CP_SIDES      ),           TranslateCoords(0, 0, -0.24),      RotateCoords(if(indexer = 1,0, 0.2), 0, 0, 1, 0.5, 0.5),      DrawCone(       0.5,       0.5,       0,       0.501,       StatusMonitor_GetRadius(atmC) + 0.001,       StatusMonitor_GetRadius(atmC) + 0.001,       0.4,       Z_AXIS,       CP_BOTTOM + CP_SIDES + CP_TOP      ),      PopCoords,           { **************** PERCENTAGES ******************* }      if(       and(        StatusMonitor_GetPercentagesVisible(atmC) = True,        StatusMonitor_GetShowPercentagesBesidesLegend(atmC) = false,        StatusMonitor_GetDiagramVisible(atmC) = true       ),       do(        if(         indexer = 1,         degrees := StatusMonitor_GetSegmentScore(atmC, indexer) / (2 * StatusMonitor_GetTotalScore(atmC)) * 360,         degrees := (StatusMonitor_GetSegmentCumulativeScore(atmC, indexer) + StatusMonitor_GetSegmentCumulativeScore(atmC, indexer - 1)) / (2 * StatusMonitor_GetTotalScore(atmC)) * 360        ),        DrawText(         { If the percentage is to be drawn to the left of the diagram correct the x position with the width of the bounding box. }         if(          degrees > 180,          0.5 - StatusMonitor_GetTextSizePercentages(atmC) * 10 + StatusMonitor_GetRadius(atmC) * sin(degrees),          0.5 + StatusMonitor_GetRadius(atmC) * sin(degrees)         ),         if(          or(           degrees < 90,           degrees > 270          ),          0.5 - StatusMonitor_GetRadius(atmC) * cos(degrees) - 1.25 * StatusMonitor_GetTextSizePercentages(atmC),          0.5 - StatusMonitor_GetRadius(atmC) * cos(degrees)         ),         StatusMonitor_GetTextSizePercentages(atmC) * 10,         StatusMonitor_GetTextSizePercentages(atmC) * 2,         concat(          String(StatusMonitor_GetSegmentScore(atmC, indexer) / StatusMonitor_GetTotalScore(atmC) * 100, 0, 2),          [%]         ),         StatusMonitor_GetTextColor(atmC),         StatusMonitor_GetTextSizePercentages(atmC),         [Arial],         0,         0,         0,         { If the percentage is to be drawn to the left of the diagram use Right Align for the Text. }         if(          degrees > 180,          HA_RIGHT,          HA_LEFT         )        )       )      )      )    ),    { **************** PERCENTAGES ******************* }    if(     StatusMonitor_GetLegendVisible(atmC) = True,            { Show the percentages besides the legend??? }     if(      StatusMonitor_GetShowPercentagesBesidesLegend(atmC) = false,      do(       { The box for the color }       di3DBox(        StatusMonitor_GetRadius(atmC) + 8 * StatusMonitor_GetTextSizePercentages(atmC) - offsetx,        -1 * StatusMonitor_GetRadius(atmC) + StatusMonitor_GetTextSizeLegend(atmC) * (2 * segmentsdrawn- 1) + offsety,        0,        StatusMonitor_GetTextSizeLegend(atmC),        StatusMonitor_GetTextSizeLegend(atmC),        StatusMonitor_GetTextSizeLegend(atmC),        StatusMonitor_GetSegmentColor(atmC, indexer)       ),              { The name of the segment }       DrawText(        StatusMonitor_GetRadius(atmC) + 8 * StatusMonitor_GetTextSizePercentages(atmC) + 2 * StatusMonitor_GetTextSizeLegend(atmC) - offsetx,        -1 * StatusMonitor_GetRadius(atmC) + StatusMonitor_GetTextSizeLegend(atmC) * (2 * segmentsdrawn- 1) + offsety - StatusMonitor_GetTextSizeLegend(atmC) / 5,        StatusMonitor_GetTextSizeLegend(atmC) * StringLength(String(cell(indexer, StatusMonitor_COLUMNNUMBER_SEGMENTNAME, atmC))),        StatusMonitor_GetTextSizeLegend(atmC) * 2,        String(cell(indexer, StatusMonitor_COLUMNNUMBER_SEGMENTNAME, atmC)),        StatusMonitor_GetTextColor(atmC),        StatusMonitor_GetTextSizeLegend(atmC),        [Arial],        0,        0,        0,        HA_LEFT        )           ),      { Show the percentages besides the legend! }      do(       DrawText(        -10 * StatusMonitor_GetTextSizeLegend(atmC) + StatusMonitor_GetRadius(atmC) + 8 * StatusMonitor_GetTextSizeLegend(atmC) - offsetx,        -1 * StatusMonitor_GetRadius(atmC) + StatusMonitor_GetTextSizeLegend(atmC) * (2 * segmentsdrawn - 1) + offsety - StatusMonitor_GetTextSizeLegend(atmC) / 5,        10 * StatusMonitor_GetTextSizeLegend(atmC),        StatusMonitor_GetTextSizeLegend(atmC) * 2,        concat(         String(StatusMonitor_GetSegmentScore(atmC, indexer) / StatusMonitor_GetTotalScore(atmC) * 100, 0, 2),         [%]        ),        StatusMonitor_GetTextColor(atmC),        StatusMonitor_GetTextSizeLegend(atmC),        [Arial],        0,        0,        0,        HA_RIGHT       ),       { The box for the color }       di3DBox(        StatusMonitor_GetRadius(atmC) + 9 * StatusMonitor_GetTextSizeLegend(atmC) - offsetx,        -1 * StatusMonitor_GetRadius(atmC) + StatusMonitor_GetTextSizeLegend(atmC) * (2 * segmentsdrawn- 1) + offsety,        0,        StatusMonitor_GetTextSizeLegend(atmC),        StatusMonitor_GetTextSizeLegend(atmC),        StatusMonitor_GetTextSizeLegend(atmC),        StatusMonitor_GetSegmentColor(atmC, indexer)       ),             { The name of the segment }       DrawText(        StatusMonitor_GetRadius(atmC) + 9 * StatusMonitor_GetTextSizeLegend(atmC) + 2 * StatusMonitor_GetTextSizeLegend(atmC) - offsetx,        -1 * StatusMonitor_GetRadius(atmC) + StatusMonitor_GetTextSizeLegend(atmC) * (2 * segmentsdrawn- 1) + offsety - StatusMonitor_GetTextSizeLegend(atmC) / 5,        StatusMonitor_GetTextSizeLegend(atmC) * StringLength(String(cell(indexer, StatusMonitor_COLUMNNUMBER_SEGMENTNAME, atmC))),        StatusMonitor_GetTextSizeLegend(atmC) * 2,        String(cell(indexer, StatusMonitor_COLUMNNUMBER_SEGMENTNAME, atmC)),        StatusMonitor_GetTextColor(atmC),        StatusMonitor_GetTextSizeLegend(atmC),        [Arial],        0,        0,        0,        HA_LEFT       )      )         )    )   )  ) ))], [p(1) as StatusMonitor], [Enter Syntax Example], 0, [Inctrl02]);
+DefineFunction([StatusMonitor_GetAutomaticScaling], [Atom Parameters], 1, 1, [Att(17, p(1))], [Returns the value of attribute AutomaticScaling (# 17) of StatusMonitor e1], [StatusMonitor_GetAutomaticScaling(c)], 0, [StatusMonitor.atm]);
+DefineFunction([StatusMonitor_SetAutomaticScaling], [Atom Parameters], 2, 2, [Att(17, p(1)) := p(2)], [Sets the value of attribute AutomaticScaling (# 17) of StatusMonitor e1 to e2], [StatusMonitor_SetAutomaticScaling(c, 1)], 0, [StatusMonitor.atm]);
+Set(Icon(a), 
+	RegisterIcon(pDir([media\images\default.jpg]), [default.jpg]));
+SetMaterial(
+	RegisterMaterial([Default], 8421504, 8421504, 3289650, 0, 0.100000001490116, 0, false, false, 1, 0), 1, a);
+Set(Version(a), 7.3);
+SetTreeIcon(pDir([Media\Icons\StatusMonitor.ico]));
+SetChannels(1, 0);
+SetChannelRanges(1, 1, 0, 0);
+int001(76);
+SetSize(6, 7.2, 1);
+LockPosition(false);
+LockSize(false);
+DisableIconRotation(false);
+SetProductCode([]);
+CreateAttributes(17);
+SetAttributeName(r(1), [NumberOfSegments]);
+SetAttributeName(r(2), [TotalScore]);
+SetAttributeName(r(3), [Title]);
+SetAttributeName(r(4), [Radius]);
+SetAttributeName(r(5), [TextColor]);
+SetAttributeName(r(6), [BorderColor]);
+SetAttributeName(r(7), [TextSizeTitle]);
+SetAttributeName(r(8), [TextSizePercentages]);
+SetAttributeName(r(9), [TextSizeLegend]);
+SetAttributeName(r(10), [LegendVisible]);
+SetAttributeName(r(11), [PercentagesVisible]);
+SetAttributeName(r(12), [TitleVisible]);
+SetAttributeName(r(13), [DiagramVisible]);
+SetAttributeName(r(14), [ShowPercentagesBesidesLegend]);
+SetAttributeName(r(15), [RefreshRate]);
+SetAttributeName(r(16), [StatusesInitialized]);
+SetAttributeName(r(17), [AutomaticScaling]);
+SetTextAtt(r(3), [Status Monitor]);
+SetAtt(r(4), 3);
+SetExprAtt(r(5), [colorblack]);
+SetExprAtt(r(6), [colorblack]);
+SetAtt(r(7), 0.6);
+SetAtt(r(8), 0.3);
+SetAtt(r(9), 0.3);
+SetAtt(r(10), 1);
+SetAtt(r(11), 1);
+SetAtt(r(12), 1);
+SetAtt(r(13), 1);
+SetAtt(r(15), 60);
+SetAtt(r(17), 1);
+int024;
+SetTable(1, 4);
+int015(0, 64, [ 
+1
+]);
+int015(1, 64, [`SegmentScore`
+]);
+int015(2, 64, [`SegmentCumulativeScore`
+]);
+int015(3, 64, [`SegmentColor`
+]);
+int015(4, 64, [`SegmentName`
+]);
+Set(OnEvent, [case(
+  inlist(
+   eventcode,
+   {1} STATUSMONITOR_EVENTCODE_STARTCOLLECTINGSTATUSINFORMATION,
+   {2} STATUSMONITOR_EVENTCODE_REFRESH
+  ),
+  { 1 }
+  { Start the operation. }
+  StatusMonitor_StartCollectingStatusInformation(c),
+  
+  { 2 }
+  { Start the operation. }
+  StatusMonitor_Refresh(c)
+)
+]);
+Set(OnCreation, [StatusMonitor_InitializeStatuses(c)
+]);
+Set(OnReset, [StatusMonitor_Initialize(c)
+]);
+Set(OnUser, [Do( { Delete any current instances of this form.}  GuiDestroy([StatusMonitor]), { Register the GUI-form for this atom.} GuiRegister(PDir([\Atoms\StatusMonitor.gui]), 1), { Show the GUI-form.} Guicreate([formStatusMonitor], [StatusMonitor], 0, c, 0, 1))]);
+Set(On2DDraw, [StatusMonitor_Animate2D(c)]);
+Set(On3DDraw, [StatusMonitor_Animate3D(c)]);
+SetStatus(0);
+int018;
+int007;

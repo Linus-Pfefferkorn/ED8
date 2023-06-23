@@ -1,0 +1,145 @@
+EDControl(EditForm:
+  BorderIcons = set(SystemMenu),
+  BorderStyle = Single,
+  Caption = str('Color Glasses'),
+  Height = 440,
+  Left = 1600,
+  Name = str('ColorGlasses'),
+  Position = Default,
+  ShowHint = True,
+  Top = 271,
+  Visible = True,
+  Width = 397,
+  Controls(
+    EDControl(MultiPage:
+      ActivePage = 1,
+      Align = Client,
+      Anchors = set(Left,Top,Right,Bottom),
+      Height = 400,
+      Left = 0,
+      Name = str('mpSettings'),
+      TabOrder = 1,
+      Top = 0,
+      Width = 397,
+      Controls(
+        EDControl(SinglePage:
+          Caption = str('Settings'),
+          Name = str('spSettings'),
+          PageIndex = 1,
+          Controls(
+            EDControl(GroupBox:
+              Caption = str(''),
+              Height = 64,
+              Left = 8,
+              Name = str('GroupBox1'),
+              TabOrder = 1,
+              Top = 8,
+              Width = 370,
+              Controls(
+                EDControl(CheckBox:
+                  Caption = str('Show Anaglyphs'),
+                  Left = 24,
+                  Name = str('chkAnaglyphs'),
+                  TabOrder = 1,
+                  Top = 24,
+                  Width = 321))),
+            EDControl(GroupBox:
+              Caption = str('Settings'),
+              Height = 112,
+              Left = 8,
+              Name = str('GroupBox2'),
+              TabOrder = 2,
+              Top = 88,
+              Width = 370,
+              Controls(
+                EDControl(Trackbar:
+                  Left = 136,
+                  Max = 20,
+                  Min = 0,
+                  Name = str('tbEyeSeparation'),
+                  Top = 24,
+                  TrackPosition = 8,
+                  Width = 224),
+                EDControl(Trackbar:
+                  Left = 136,
+                  Max = 10,
+                  Min = 0,
+                  Name = str('tbEyeRotation'),
+                  Top = 64,
+                  TrackPosition = 5,
+                  Width = 224),
+                EDControl(Label:
+                  Caption = str('Eye Separation (in cm):'),
+                  Color = -16777208,
+                  Height = 13,
+                  Left = 16,
+                  Name = str('lbEyeSeparation'),
+                  Top = 24,
+                  Width = 109),
+                EDControl(Label:
+                  Caption = str('Eye Rotation (in deg):'),
+                  Color = -16777208,
+                  Height = 13,
+                  Left = 16,
+                  Name = str('lbEyeRotation'),
+                  Top = 64,
+                  Width = 102))),
+            EDControl(RadioGroup:
+              Caption = str('Glass Type'),
+              ColCount = 2,
+              Height = 153,
+              ItemIndex = 0,
+              Items = str('Red Cyan'#13#10'Red Blue'#13#10'Red Green'#13#10'Blue Red'#13#10'Green Red'#13#10'Cyan Red'#13#10),
+              Left = 8,
+              Name = str('rgColorGlasses'),
+              TabOrder = 3,
+              Top = 208,
+              Width = 369))))),
+    EDControl(Panel:
+      Align = Bottom,
+      Anchors = set(Left,Right,Bottom),
+      BevelOuter = None,
+      Caption = str(''),
+      Height = 40,
+      Left = 0,
+      Name = str('Panel1'),
+      TabOrder = 2,
+      Top = 400,
+      Width = 397,
+      Controls(
+        EDControl(Button:
+          Caption = str('&Apply'),
+          Left = 312,
+          Name = str('btnApply'),
+          TabOrder = 4,
+          Top = 8,
+          Events(
+            Click = str('do('#13'    '#13'  if(GuiControl([chkAnaglyphs], GuiGet([Checked])), Anaglyphs(1), Anaglyphs(0)),'#13'              '#13'  vrEyeSeparation := GuiControl([tbEyeSeparation], GuiGet([TrackPosition])) / 100,'#13'  vrEyeRotation := GuiControl([tbEyeRotation], GuiGet([TrackPosition])) / 10,'#13#13'  vrColorGlasses := GUIControl([rgColorGlasses], GUIGet([ItemIndex])) - 1,'#13'  '#13'  GuiRun([Update])'#13')'#13))),
+        EDControl(Button:
+          Cancel = True,
+          Caption = str('&Cancel'),
+          Left = 230,
+          Name = str('btnCancel'),
+          TabOrder = 3,
+          Top = 8,
+          Events(
+            Click = str('Do('#13' GuiDestroy,'#13' GuiUnregister([Source])'#13')'#13))),
+        EDControl(Button:
+          Caption = str('&Ok'),
+          Default = True,
+          Left = 144,
+          Name = str('btnOk'),
+          TabOrder = 2,
+          Top = 8,
+          Events(
+            Click = str('Do('#13' GuiControl([btnApply]),'#13' GuiRun([Click]),'#13' GuiDestroy,'#13' GuiUnregister([Source])'#13')'#13))),
+        EDControl(Button:
+          Caption = str('&Help'),
+          Left = 8,
+          Name = str('btnHelp'),
+          TabOrder = 1,
+          Top = 8,
+          Events(
+            Click = str('Help(PDir([HELP\ED Help.hlp]), [Color Glasses])'#13)))))),
+  Events(
+    Show = str('do('#13'  {Set Caption}'#13'  if('#13'   atomexists(m(GuiAtom)),'#13'   GuiControl([ColorGlasses],GuiSet([Caption],concat(name(m(GuiAtom)), [ - ], name(GuiAtom)))),'#13'   GuiControl([ColorGlasses],GuiSet([Caption],concat([Baseclass - ], name(GuiAtom))))'#13'  ), '#13#13'  {Set ActivePage}'#13'     '#13'  GuiControl([mpSettings]),GuiSet([ActivePage],1),'#13'  '#13'  {Set CheckBox}'#13'      '#13'  GuiControl([chkAnaglyphs],GuiSet([Checked], Anaglyphs)),'#13'        '#13'  {Set Trackbars} '#13'      '#13'  GuiControl([tbEyeSeparation],GuiSet([TrackPosition], vrEyeSeparation * 100)),'#13'  GuiControl([tbEyeRotation],GuiSet([TrackPosition], vrEyeRotation * 10)),'#13#13'  GUIControl([rgColorGlasses], GUISet([ItemIndex], vrColorGlasses + 1)),'#13'  '#13'  {Position the form}'#13'  Gui_PositionGuiAroundAtom(GuiControl([ColorGlasses])),'#13#13'  GuiRun([Update])'#13')'#13)))

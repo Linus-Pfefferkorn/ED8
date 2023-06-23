@@ -1,0 +1,176 @@
+EDControl(EditForm:
+  BorderIcons = set(SystemMenu),
+  BorderStyle = Single,
+  Caption = str('Word'),
+  Height = 384,
+  Name = str('Word'),
+  Position = Default,
+  ShowHint = True,
+  Top = 226,
+  Visible = False,
+  Width = 395,
+  Controls(
+    EDControl(MultiPage:
+      ActivePage = 1,
+      Align = Client,
+      Anchors = set(Left,Top,Right,Bottom),
+      Height = 344,
+      Left = 0,
+      Name = str('MultiPage1'),
+      TabOrder = 1,
+      Top = 0,
+      Width = 395,
+      Controls(
+        EDControl(SinglePage:
+          Caption = str('General'),
+          Name = str('SinglePage1'),
+          PageIndex = 1,
+          Controls(
+            EDControl(GroupBox:
+              Caption = str(''),
+              Height = 64,
+              Left = 8,
+              Name = str('GroupBox22'),
+              TabOrder = 1,
+              Top = 8,
+              Width = 369,
+              Controls(
+                EDControl(Edit:
+                  Height = 21,
+                  Left = 132,
+                  Name = str('ebAtomName'),
+                  TabOrder = 1,
+                  Top = 26,
+                  Width = 225),
+                EDControl(Label:
+                  Caption = str('Atom name:'),
+                  Color = -16777208,
+                  Height = 13,
+                  Left = 12,
+                  Name = str('StaticText132'),
+                  Top = 32,
+                  Width = 56))),
+            EDControl(GroupBox:
+              Caption = str('Settings'),
+              Height = 128,
+              Left = 8,
+              Name = str('GroupBox1'),
+              TabOrder = 2,
+              Top = 88,
+              Width = 370,
+              Controls(
+                EDControl(Label:
+                  Caption = str('Filename:'),
+                  Color = -16777208,
+                  Height = 13,
+                  Left = 12,
+                  Name = str('StaticText1'),
+                  Top = 32,
+                  Width = 45),
+                EDControl(Label:
+                  Caption = str('Word visible at startup:'),
+                  Color = -16777208,
+                  Height = 13,
+                  Left = 12,
+                  Name = str('StaticText123'),
+                  Top = 96,
+                  Width = 108),
+                EDControl(Edit:
+                  Height = 21,
+                  Left = 132,
+                  Name = str('Edit_File'),
+                  TabOrder = 1,
+                  Top = 26,
+                  Width = 225),
+                EDControl(CheckBox:
+                  Caption = str(''),
+                  Left = 132,
+                  Name = str('cbVisible'),
+                  TabOrder = 3,
+                  Top = 92,
+                  Events(
+                    Change = str('SetAtt([Visible],GuiGet([Checked]),GuiAtom)'#13))),
+                EDControl(Button:
+                  Caption = str('&Browse...'),
+                  Left = 280,
+                  Name = str('Select_Btn'),
+                  TabOrder = 2,
+                  Top = 52,
+                  Events(
+                    Click = str('do('#13' if(ddeready,excelclose),'#13' sddb([T000-MustloadExcel],1,model),'#13' settextatt([FileName],getfileopen([*.doc],[Word files (*.doc)|*.doc|All files (*.*)|*.*]),guiatom),'#13' if('#13'  >(stringlength(textatt([FileName],guiatom)),0),'#13'  do('#13'   guicontrol([Edit_File]),'#13'   guiset([Text],textatt([FileName],guiatom))'#13'  ),'#13'  msg([No valid file name has been selected. Try again.])'#13' )'#13')'#13))))),
+            EDControl(GroupBox:
+              Caption = str('Miscellaneous'),
+              Height = 64,
+              Left = 8,
+              Name = str('GroupBox222'),
+              TabOrder = 3,
+              Top = 240,
+              Width = 369,
+              Controls(
+                EDControl(Button:
+                  Caption = str('C&onnect'),
+                  Hint = str('Pushing this button will automatically apply the changes'),
+                  Left = 12,
+                  Name = str('Button1'),
+                  TabOrder = 1,
+                  Top = 24,
+                  Events(
+                    Click = str('do('#13' { First apply the changes }'#13' GuiControl([btnApply]),'#13' GuiRun([Click]), '#13#13' var([filename], vbString, 0),'#13' var([wordvisible], vbValue, 0),'#13#13' '#13' filename := GuiControl([Edit_File], GuiGet([Text])),'#13' wordvisible := Value(GuiControl([cbVisible], Guiget([Checked]))),'#13' '#13' { Check out if the file is useable... }'#13' if('#13'  or('#13'   comparetext('#13'    filename, '#13'    [Untitled]'#13'   ) = true,'#13'   fileexists(filename) = false'#13'  ),'#13'  do('#13'   msg([The specified filename isnt'' a valid Word document.], 3),'#13'   return(-1)'#13'  )'#13' ),'#13' '#13' if('#13'  ddeready,'#13'  wordclose'#13' ),'#13' '#13' sddb([T000-Mustloadword],1,model),'#13' '#13' if('#13'  stringlength(textatt(1,GuiAtom)) > 0,'#13'  do('#13'   if('#13'    wordopen('#13'     textatt(1, GuiAtom),'#13'     att(2, GuiAtom)'#13'    ) = true,'#13'    msg([The connection with Word was created succesfully.], 1),'#13'    msg([The connection with Word couldn''t be created.], 3)'#13'   ),'#13'   sddb([T000-Mustloadword],0,model)'#13'  )  '#13' )'#13')'#13))),
+                EDControl(Button:
+                  Caption = str('&Disconnect'),
+                  Hint = str('Pushing this button will automatically apply the changes'),
+                  Left = 100,
+                  Name = str('Button13'),
+                  TabOrder = 2,
+                  Top = 24,
+                  Events(
+                    Click = str('if('#13' confirm([Are you sure you want to dicsonnect from Word?]) = true,'#13' WordClose'#13')'#13))))))))),
+    EDControl(Panel:
+      Align = Bottom,
+      Anchors = set(Left,Right,Bottom),
+      BevelOuter = None,
+      Caption = str(''),
+      Height = 40,
+      Left = 0,
+      Name = str('Panel1'),
+      TabOrder = 2,
+      Top = 344,
+      Width = 395,
+      Controls(
+        EDControl(Button:
+          Caption = str('&Help'),
+          Left = 8,
+          Name = str('btnHelp'),
+          TabOrder = 1,
+          Top = 8,
+          Events(
+            Click = str('Help(PDir([HELP\ED Help.hlp]), [Word])'#13))),
+        EDControl(Button:
+          Caption = str('&Ok'),
+          Default = True,
+          Left = 144,
+          Name = str('btnOk'),
+          TabOrder = 2,
+          Top = 8,
+          Events(
+            Click = str('do('#13' GuiControl([btnApply]),'#13' GuiRun([Click]),'#13' GuiDestroy'#13')'#13))),
+        EDControl(Button:
+          Cancel = True,
+          Caption = str('&Cancel'),
+          Left = 230,
+          Name = str('btnCancel'),
+          TabOrder = 3,
+          Top = 8,
+          Events(
+            Click = str('GuiDestroy '#13))),
+        EDControl(Button:
+          Caption = str('&Apply'),
+          Left = 312,
+          Name = str('btnApply'),
+          TabOrder = 4,
+          Top = 8,
+          Events(
+            Click = str('do('#13' { Enter the File name in the attributes}'#13' name(GuiAtom) := GuiControl([ebAtomName], Guiget([text])),'#13#13' textatt([FileName]) := guicontrol([Edit_File],guiget([Text])),'#13' att([Visible],guiatom) := GuiControl([cbVisible], Guiget([Checked]))'#13')'#13)))))),
+  Events(
+    Show = str('do('#13' var([indexer], vbValue, 0), '#13#13' if('#13'  atomexists(m(GuiAtom)),'#13'  GuiControl([Word],GuiSet([Caption],concat(name(m(GuiAtom)), [ - ], name(GuiAtom)))),'#13'  GuiControl([Word],GuiSet([Caption],concat([Baseclass - ], name(GuiAtom))))'#13' ),'#13' '#13' {Set ActivePage}'#13' GuiControl([MultiPage1]),GuiSet([ActivePage],1),'#13#13' GuiControl([ebAtomName], GuiSet([Text], name(GuiAtom))),'#13#13' guicontrol([Edit_File],guiset([Text],textatt([FileName],guiatom))),'#13' guicontrol([cbVisible],guiset([Checked],att([Visible],guiatom))),'#13#13' Gui_PositionGuiAroundAtom(GuiControl([Word])),'#13#13' GuiRun([Update])'#13')'#13)))
+

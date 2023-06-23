@@ -1,0 +1,109 @@
+
+
+{Atom: Call Operators}
+
+sets;
+BaseClass;
+CreateAtom(a, s, [], 1, false);
+int023([Call Operators], 12615808, 1120);
+Set(Icon(a), 
+	RegisterIcon(pDir([media\images\default.jpg]), [default.jpg]));
+SetMaterial(
+	RegisterMaterial([Default], 8421504, 8421504, 3289650, 0, 0.100000001490116, 0, false, false, 1, 0), 1, a);
+Set(Version(a), 7.3);
+SetTreeIcon(pDir([Media\Icons\CallOperators.ico]));
+Set(Info, [Last Revision:
+---------------------
+March, 2008
+]);
+SetChannels(2, 1);
+SetChannelRanges(1, 255, 1, 255);
+int001(139);
+SetSize(1, 1, 0);
+LockPosition(false);
+LockSize(false);
+DisableIconRotation(false);
+SetProductCode([]);
+CreateAttributes(7);
+SetAttributeName(r(1), [sendto]);
+SetAttributeName(r(2), [opselection]);
+SetAttributeName(r(3), [oprow]);
+SetAttributeName(r(4), [lookrows]);
+SetAttributeName(r(5), [lookcolumns]);
+SetAttributeName(r(6), [entrytrigger]);
+SetAttributeName(r(7), [exittrigger]);
+SetExprAtt(r(1), [1]);
+SetExprAtt(r(2), [{.~1|1. Specific row --> Always use the settings of row ~1~ in the operator lookup table.  .}1]);
+SetExprAtt(r(3), [0]);
+SetAtt(r(4), 1);
+SetAtt(r(5), 1);
+int024;
+SetTable(1, 5);
+int015(0, 0, [ 
+1
+]);
+int015(1, 0, [`Lookup Match`
+`Product`
+]);
+int015(2, 0, [`Team Reference`
+`in(2,c)`
+]);
+int015(3, 0, [`# Operators`
+2
+]);
+int015(4, 0, [`Job Priority`
+1
+]);
+int015(5, 0, [`Operator 1`
+]);
+Set(OnEvent, [Case( EventCode, {* 1: Open the outputchannels *} OpenAllOc( c), {* Open the inputchannels *} OpenAllIc( c))]);
+Set(OnEntered, [Do(
+  closeAllIc( c),
+  oprow := opselection,
+
+ If(
+   oprow > 0,
+  If(
+    Cell( oprow, 3, c, 1) > 0,
+    callOperators(
+    ExecString( Cell( oprow, 2, c, 2)),
+    Cell( oprow, 3, c, 1),
+    ExecString( Cell( oprow, 4, c, 2)),
+    Cell( oprow, 5, c, 2),
+    Cell( oprow, 6, c, 2),
+    Cell( oprow, 7, c, 2),
+    Cell( oprow, 8, c, 2),
+    Cell( oprow, 9, c, 2),
+    Cell( oprow, 10, c, 2),
+    Cell( oprow, 11, c, 2),
+    Cell( oprow, 12, c, 2),
+    Cell( oprow, 13, c, 2),
+    Cell( oprow, 14, c, 2),
+    Cell( oprow, 15, c, 2),
+    Cell( oprow, 16, c, 2),
+    Cell( oprow, 17, c, 2),
+    Cell( oprow, 18, c, 2),
+    Cell( oprow, 19, c, 2),
+    Cell( oprow, 20, c, 2),
+    Cell( oprow, 21, c, 2),
+    Cell( oprow, 22, c, 2),
+    Cell( oprow, 23, c, 2),
+    Cell( oprow, 24, c, 2)
+   )
+  )
+ ),
+ CreateEvent( 0, c, 1, 0, i),
+
+ entrytrigger
+
+)
+]);
+Set(OnExited, [Do( CloseAllOc( c), CreateEvent( 0, c, 2), exittrigger)]);
+Set(OnCreation, [AutoConnect]);
+Set(OnReset, [CloseAllOc( c)]);
+Set(OnUser, [Do(  { Delete any current instances of this form.}   GuiDestroy([CallOperators]),  { Register the GUI-form for this atom.}  GuiRegister(PDir([\Atoms\CallOperators.gui]), 1),  { Show the GUI-form.}   GuiCreate([CallOperators], [CallOperators], 0, c, 0, 1))]);
+Set(OnOcReady, [If( Content( c ) >0, MoveRequest( First( c), sendto))]);
+Set(On2DDraw, [Draw2DIcon( 2, [C])]);
+SetStatus(0);
+int018;
+int007;

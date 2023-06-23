@@ -1,0 +1,282 @@
+EDControl(EditForm:
+  BorderIcons = set(SystemMenu),
+  Caption = str('Edit Category'),
+  Height = 652,
+  Name = str('frmStatistics'),
+  Position = ScreenCenter,
+  ShowHint = True,
+  Top = 179,
+  Visible = False,
+  Width = 403,
+  Controls(
+    EDControl(Panel:
+      Align = Bottom,
+      Anchors = set(Left,Right,Bottom),
+      BevelOuter = None,
+      Caption = str(''),
+      Height = 40,
+      Left = 0,
+      Name = str('pnButtons'),
+      TabOrder = 1,
+      Top = 319,
+      Width = 403,
+      Controls(
+        EDControl(Button:
+          Caption = str('&Ok'),
+          Default = True,
+          Left = 230,
+          Name = str('btnOK'),
+          TabOrder = 1,
+          Top = 8,
+          Events(
+            Click = str('do('#13'     '#13'  label([NoGo],refExperimentSupport) := 0,'#13'  '#13'  {Check the three reasons in which a new group is added, in these cases a new groupname must be used}'#13'  if( or( and(label([StatGui],refExperimentSupport) =3, GuiControl([rgType],GuiGet([ItemIndex])) = 2), {Adding Copy and Group}'#13'             and(label([StatGui],refExperimentSupport) =1, GuiControl([rgType],GuiGet([ItemIndex])) = 2), {Add and Group}'#13'             and( label([StatGui],refExperimentSupport) =2, label([GroupSelected],refExperimentSupport) = 0 , GuiControl([rgType],GuiGet([ItemIndex])) = 2 ) {Edit,  no Group selected but now Group}'#13'        ),'#13'    do( {adding extra group record later on so check if groupname already used}'#13#13'      {look for group in GroupsTable}'#13'      label([GroupFound],refExperimentSupport) := 0,'#13'      loopuntil( label([GroupFound],refExperimentSupport),'#13'        do('#13'          if( comparetext( GuiControl([edGroupName],GuiGet([Text])), GuiSelect([ExpWizForm],[tbGroups],guiGet([Cells],count,0))),'#13'            do('#13'              label([GroupFound],refExperimentSupport) := 1              '#13'            )'#13'          )'#13'        ),'#13'        GuiSelect([ExpWizForm],[tbGroups],GuiGet([RowCount]))-1'#13'      ),'#13'            '#13'      if( label([GroupFound],refExperimentSupport),'#13'        do( {GroupName already used, don''t do anything ... name has to be changed first}'#13'           label([NoGo],refExperimentSupport) := 1,'#13'           msg([Groupname already used, please rename the group])                    '#13'        )'#13'      ),    '#13'      {remove label}'#13'      label([GroupFound],refExperimentSupport) := 0                      '#13'    )    '#13'  ),'#13'  '#13'  if( label([NoGo],refExperimentSupport) = 0,'#13'    do( {Allowed to copy all the data}'#13#13'      if ( GuiControl([rgType],GuiGet([ItemIndex])) = 3,  {Add Atoms by mother}'#13'        do('#13'          {remember mother name}'#13'          label([tempmother],refExperimentSupport) := GuiControl([edAtomSelected],GuiGet([Text])),'#13'                    '#13'          {if editing, remove the entire row. In case of a selected group, the group row will be deleted later on}'#13'          if(label([StatGui],refExperimentSupport) =2,'#13'            do('#13'              {clear all cells in the selected row, just to be sure}'#13'              repeat( GuiSelect([ExpWizForm],[tbStatistics],GuiGet([ColCount])),'#13'                 GuiSelect([ExpWizForm],[tbStatistics],GuiSet([Cells],label([StatSelected],refExperimentSupport),count-1, [] ))    '#13'              ),'#13'              {Delete the row}'#13'              GuiSelect([ExpWizForm],[tbStatistics],GUITableDeleteRow(label([StatSelected],refExperimentSupport)))'#13'            )'#13'          ),'#13'          '#13'          {check all atoms in the model, if right mother then add to the table}'#13'          ForAtomTreeUnder(model,'#13'            do('#13'              {checks can be made faster if we use pointer to mother instead of name of mother}'#13'              refTempAtom := a,'#13'              if( AtomExists(m(refTempAtom)),'#13'              '#13'                 if( comparetext(name(m(refTempAtom)),label([tempmother],refExperimentSupport)),'#13'                   do( {atom with the same mother as we are looking for, add record}'#13'                                        '#13'                     GuiControl([edAtomSelected],GuiSet([Text],name(refTempAtom))),'#13'                     '#13'                     {Add new row}'#13'                     GuiSelect([ExpWizForm],[tbStatistics],GuiSet([RowCount], GuiGet([RowCount])+1)),'#13'                     label([AtomRow],refExperimentSupport ) := GuiSelect([ExpWizForm],[tbStatistics],GuiGet([RowCount]))-1,'#13'                     '#13'                     {table must have enough columns to contain the data}'#13'                     label([ColNeed],refExperimentSupport) := *(2, GuiControl([tbAtomStats],GuiGet([RowCount]))-1) + 2,'#13'                     '#13'                     if( label([ColNeed],refExperimentSupport) > GuiSelect([ExpWizForm],[tbStatistics],GuiGet([ColCount])),'#13'                       GuiSelect([ExpWizForm],[tbStatistics],GuiSet([ColCount], label([ColNeed],refExperimentSupport)))  '#13'                     ),'#13#13'                     {copy first two columns}                  '#13#13'                     GuiSelect([ExpWizForm],[tbStatistics],GuiSet([Cells],label([AtomRow],refExperimentSupport),0,'#13'                       GuiSelect([StatisticsForm],[edAtomSelected],GuiGet([Text]))'#13'                     )),'#13'                     GuiSelect([ExpWizForm],[tbStatistics],GuiSet([Cells],label([AtomRow],refExperimentSupport),1,'#13'                       [Atom]'#13'                     )),'#13#13'                     {copy rest of the data to table}'#13'                     repeat( GuiControl([tbAtomStats],GuiGet([RowCount]))-1,'#13'                       do('#13'                           GuiSelect([ExpWizForm],[tbStatistics],GuiSet([Cells],label([AtomRow],refExperimentSupport),*(count,2),'#13'                             GuiSelect([StatisticsForm],[tbAtomStats],GuiGet([Cells],Count,0))'#13'                           )),'#13'                           GuiSelect([ExpWizForm],[tbStatistics],GuiSet([Cells],label([AtomRow],refExperimentSupport),1+*(count,2),'#13'                               GuiSelect([StatisticsForm],[tbAtomStats],GuiGet([Cells],Count,1))'#13'                           ))             '#13'                       )'#13'                     )                                                        '#13'                   )'#13'                 )                                                '#13'              )        '#13'            )          '#13'          ),'#13'          label([tempmother],refExperimentSupport) := 0'#13'          '#13'          {refTempAtom := 0 ??}        '#13'        ),'#13'        do( {Atom or Group}'#13'         '#13'          {make the table the right size and look for the right row to put the data in}'#13'          '#13'          if( or(label([StatGui],refExperimentSupport) =1,label([StatGui],refExperimentSupport) =3 ),'#13'            do( {Add new row}    '#13'              GuiSelect([ExpWizForm],[tbStatistics],GuiSet([RowCount], GuiGet([RowCount])+1)),'#13'              label([AtomRow],refExperimentSupport ) := GuiSelect([ExpWizForm],[tbStatistics],GuiGet([RowCount]))-1    '#13'            ),'#13'            do( {Edit selected row}    '#13'              label([AtomRow],refExperimentSupport ) := label([StatSelected],refExperimentSupport),'#13'              '#13'              {clear all cells in the atom row, will be completely refilled}'#13'              repeat( GuiSelect([ExpWizForm],[tbStatistics],GuiGet([ColCount])),'#13'                 GuiSelect([ExpWizForm],[tbStatistics],GuiSet([Cells],label([StatSelected],refExperimentSupport),count-1, [] ))    '#13'              )'#13'            )'#13'          ),'#13'          '#13'          {table must have enough columns to contain the data}'#13'          '#13'          if ( GuiControl([rgType],GuiGet([ItemIndex])) = 1,'#13'            label([ColNeed],refExperimentSupport) := *(2, GuiControl([tbAtomStats],GuiGet([RowCount]))-1) + 2,'#13'            label([ColNeed],refExperimentSupport) := *(2, GuiControl([tbGroupStats],GuiGet([RowCount]))-1) + 2'#13'          ), '#13'          '#13'          if( label([ColNeed],refExperimentSupport) > GuiSelect([ExpWizForm],[tbStatistics],GuiGet([ColCount])),'#13'            GuiSelect([ExpWizForm],[tbStatistics],GuiSet([ColCount], label([ColNeed],refExperimentSupport)))  '#13'          ),'#13'          '#13'          {copy first two columns}'#13'          '#13'          if(GuiControl([rgType],GuiGet([ItemIndex])) = 1,'#13'            do( {Atom}'#13'                GuiSelect([ExpWizForm],[tbStatistics],GuiSet([Cells],label([AtomRow],refExperimentSupport),0,'#13'                  GuiSelect([StatisticsForm],[edAtomSelected],GuiGet([Text]))'#13'                )),'#13'                GuiSelect([ExpWizForm],[tbStatistics],GuiSet([Cells],label([AtomRow],refExperimentSupport),1,'#13'                  [Atom]'#13'                )),'#13'                '#13'                {copy rest of the data to table}   '#13'               repeat( GuiControl([tbAtomStats],GuiGet([RowCount]))-1,'#13'                 do('#13'                     GuiSelect([ExpWizForm],[tbStatistics],GuiSet([Cells],label([AtomRow],refExperimentSupport),*(count,2),'#13'                       GuiSelect([StatisticsForm],[tbAtomStats],GuiGet([Cells],Count,0))'#13'                     )),'#13'                     GuiSelect([ExpWizForm],[tbStatistics],GuiSet([Cells],label([AtomRow],refExperimentSupport),1+*(count,2),'#13'                         GuiSelect([StatisticsForm],[tbAtomStats],GuiGet([Cells],Count,1))'#13'                     ))             '#13'                 )'#13'               )                          '#13'            ),'#13'            do( {Group}'#13'                GuiSelect([ExpWizForm],[tbStatistics],GuiSet([Cells],label([AtomRow],refExperimentSupport),0,'#13'                  GuiSelect([StatisticsForm],[edGroupName],GuiGet([Text]))'#13'                )),'#13'                GuiSelect([ExpWizForm],[tbStatistics],GuiSet([Cells],label([AtomRow],refExperimentSupport),1,'#13'                  [Group]'#13'                )),'#13'                '#13'                {copy rest of the data to table}   '#13'               repeat( GuiControl([tbGroupStats],GuiGet([RowCount]))-1,'#13'                 do('#13'                     GuiSelect([ExpWizForm],[tbStatistics],GuiSet([Cells],label([AtomRow],refExperimentSupport),*(count,2),'#13'                       GuiSelect([StatisticsForm],[tbGroupStats],GuiGet([Cells],Count,0))'#13'                     )),'#13'                     GuiSelect([ExpWizForm],[tbStatistics],GuiSet([Cells],label([AtomRow],refExperimentSupport),1+*(count,2),'#13'                         GuiSelect([StatisticsForm],[tbGroupStats],GuiGet([Cells],Count,1))'#13'                     ))             '#13'                 )'#13'               )                                                       '#13'            )'#13'          )                  '#13'        )'#13'      ),'#13'      '#13'      {Start working on the groups, check the 2 reasons in which a new group must be added}'#13'      if( or(  and(label([StatGui],refExperimentSupport) =3, GuiControl([rgType],GuiGet([ItemIndex])) = 2), {Adding Copy and Group}'#13'                 and(label([StatGui],refExperimentSupport) =1, GuiControl([rgType],GuiGet([ItemIndex])) = 2), {Add and Group}'#13'                 and( label([StatGui],refExperimentSupport) =2, label([GroupSelected],refExperimentSupport) = 0 , GuiControl([rgType],GuiGet([ItemIndex])) = 2 ) {Edit,  no Group selected but now Group}'#13'          ),'#13'        do( {Add a new row .... is done below}'#13'          [nothing]'#13'           {GuiSelect([ExpWizForm],[tbGroups],GuiSet([RowCount], GuiGet([RowCount])+1)),}'#13'           {label([GroupRow],refExperimentSupport ) := GuiSelect([ExpWizForm],[tbGroups],GuiGet([RowCount]))-1,}'#13'        ),'#13'        do('#13'           if ( label([GroupSelected],refExperimentSupport) > 0,'#13'             do( {currently a group selected, must be replaced so delete it ... new one will be added below}'#13'             '#13'               {to be sure first empty all cells in this row, seems to be necessary }                '#13'                repeat( GuiSelect([ExpWizForm],[tbGroups],GuiGet([ColCount])),'#13'                  GuiSelect([ExpWizForm],[tbGroups],GuiSet([Cells],label([GroupSelected],refExperimentSupport),count-1, [] ))    '#13'                ),                '#13'                              '#13'               GuiSelect([ExpWizForm],[tbGroups],GUITableDeleteRow(label([GroupSelected],refExperimentSupport)))'#13'             )       '#13'           )       '#13'        )'#13'      ) ,                                         '#13'            '#13'      if( GuiControl([rgType],GuiGet([ItemIndex])) = 2, {Group}'#13'          do( {Add group row and fill it}'#13'           '#13'           GuiSelect([ExpWizForm],[tbGroups],GuiSet([RowCount], GuiGet([RowCount])+1)),'#13'           label([GroupRow],refExperimentSupport ) := GuiSelect([ExpWizForm],[tbGroups],GuiGet([RowCount]))-1,'#13'           '#13'           {to be sure first empty all cells in this row, seems to be necessary }                '#13'           repeat( GuiSelect([ExpWizForm],[tbGroups],GuiGet([ColCount])),'#13'                  GuiSelect([ExpWizForm],[tbGroups],GuiSet([Cells],label([GroupRow],refExperimentSupport),count-1, [] ))    '#13'            ),      '#13'           '#13'           {table must have enough columns to contain the data}'#13'            label([ColNeed],refExperimentSupport) := 1 + GuiControl([lbxInGroup],GuiList([Items],[Count])),'#13'      '#13'            if( label([ColNeed],refExperimentSupport) > GuiSelect([ExpWizForm],[tbGroups],GuiGet([ColCount])),'#13'              GuiSelect([ExpWizForm],[tbGroups],GuiSet([ColCount], label([ColNeed],refExperimentSupport)))  '#13'            ),'#13'            '#13'            GuiSelect([ExpWizForm],[tbGroups],GuiSet([Cells],label([GroupRow],refExperimentSupport),0, GuiSelect([StatisticsForm],[edGroupName],GuiGet([Text])))),'#13'            repeat( GuiControl([lbxInGroup],GuiList([Items],[Count])),'#13'              do('#13'                GuiSelect([ExpWizForm],[tbGroups],GuiSet([Cells],label([GroupRow],refExperimentSupport),count, GuiSelect([StatisticsForm],[lbxInGroup],GuiGet([Items],count))))'#13'              )'#13'            )                                     '#13'        )  '#13'      ),'#13'      '#13'      {updating the tables will ensure first row to be fixed and empty col''s to be removed}'#13'      GuiSelect([ExpWizForm],[tbStatsView],GuiRun([Update])),'#13'      GuiSelect([ExpWizForm],[tbGroups],GuiRun([Update])),'#13'      '#13'      {Enable Save button}'#13'      {GuiSelect([ExpWizForm],[btnSaveSettings],GuiSet([Enabled],True)),}'#13'      '#13'      {Delete labels}'#13'      label([AtomRow],refExperimentSupport) := 0,'#13'      label([GroupRow],refExperimentSupport) := 0,'#13'      label([ColNeed],refExperimentSupport) := 0,'#13'      '#13'      GuiDestroy'#13'      '#13'    )  '#13'  ),'#13'  label([NoGo],refExperimentSupport) := 0'#13')'#13))),
+        EDControl(Button:
+          Cancel = True,
+          Caption = str('&Cancel'),
+          Left = 312,
+          Name = str('btnCancel'),
+          TabOrder = 2,
+          Top = 8,
+          Events(
+            Click = str('do('#13#10'  GuiDestroy'#13#10')'))))),
+EDControl(Panel:
+      Align = Top,
+      Anchors = set(Left,Top,Right),
+      BevelOuter = None,
+      Caption = str(''),
+      Height = 81,
+      Left = 0,
+      Name = str('pnCategory'),
+      TabOrder = 2,
+      Top = 0,
+      Width = 403,
+      Controls(
+        EDControl(RadioGroup:
+          Caption = str('Category'),
+          ColCount = 3,
+          Height = 64,
+          ItemIndex = 1,
+          Items = str('Atom'#13#10'Group'#13#10'Atom by mother'#13#10),
+          Left = 8,
+          Name = str('rgType'),
+          TabOrder = 1,
+          Top = 8,
+          Width = 370,
+          Events(
+            Change = str('do('#13'  if( or(GuiControl([rgType],GuiGet([ItemIndex])) = 1, GuiControl([rgType],GuiGet([ItemIndex])) = 3),'#13'    do('#13'      {Activate components for atomselection}'#13'      '#13'      GuiControl([btnSelectAtom],GuiSet([Visible],True)),'#13'      if( GuiControl([rgType],GuiGet([ItemIndex])) = 3,'#13'              GuiControl([btnSelectAtom],GuiSet([Caption],[&Select Atom])),'#13'              GuiControl([btnSelectAtom],GuiSet([Caption],[&Select Atom]))'#13'      ),'#13'      '#13'      GuiControl([edAtomSelected],GuiSet([Visible],True)),'#13'      '#13'      Guicontrol([tbAtomStats],GuiSet([Visible],True)),'#13'      '#13'      Guicontrol([tbGroupStats],GuiSet([Visible],False)),'#13'      '#13'      GuiControl([lbGroupName],GuiSet([Visible],False)),'#13'      GuiControl([lbAtomName],GuiSet([Visible],True)),'#13'      GuiControl([edGroupName],GuiSet([Visible],False)),'#13'      GuiControl([lbNotGroup],GuiSet([Visible],False)),'#13'      GuiControl([lbInGroup],GuiSet([Visible],False)),'#13'      GuiControl([lbxNotGroup],GuiSet([Visible],False)),'#13'      GuiControl([lbxInGroup],GuiSet([Visible],False)),'#13'      GuiControl([btnSelFromGroup],GuiSet([Visible],False)),'#13'      GuiControl([btnSelToGroup],GuiSet([Visible],False)),'#13'      GuiControl([btnAllFromGroup],GuiSet([Visible],False)),'#13'      GuiControl([btnAllToGroup],GuiSet([Visible],False)),'#13'      '#13'      GuiControl([tbAtomStats],GuiRun([Update])),'#13'      '#13'      {enable/disable OK button}'#13'      '#13'      if( or(GuiControl([tbAtomStats],GuiGet([RowCount])) <= 1 ,comparetext(GuiControl([edAtomSelected],GuiGet([Text])),[])),'#13'        do('#13'          GuiControl([btnOK],GuiSet([Enabled],0))'#13'        ),'#13'        do('#13'          GuiControl([btnOK],GuiSet([Enabled],1))'#13'        )'#13'      ),'#13'      '#13'      GuiControl([frmStatistics], GuiSet([Height], 456)),'#13'      GuiControl([gbSettings], GuiSet([Height], 64))'#13'    ),'#13'    do('#13'      {Activate components for groupselection}'#13'      GuiControl([btnSelectAtom],GuiSet([Visible],False)),'#13'      GuiControl([edAtomSelected],GuiSet([Visible],False)),'#13'      '#13'      Guicontrol([tbAtomStats],GuiSet([Visible],False)),'#13'      Guicontrol([tbGroupStats],GuiSet([Visible],True)),'#13'      '#13'      GuiControl([lbGroupName],GuiSet([Visible],True)),'#13'      GuiControl([lbAtomName],GuiSet([Visible],False)),'#13'      GuiControl([edGroupName],GuiSet([Visible],True)),'#13'      GuiControl([lbNotGroup],GuiSet([Visible],True)),'#13'      GuiControl([lbInGroup],GuiSet([Visible],True)),'#13'      GuiControl([lbxNotGroup],GuiSet([Visible],True)),'#13'      GuiControl([lbxInGroup],GuiSet([Visible],True)),'#13'      GuiControl([btnSelFromGroup],GuiSet([Visible],True)),'#13'      GuiControl([btnSelToGroup],GuiSet([Visible],True)),'#13'      GuiControl([btnAllFromGroup],GuiSet([Visible],True)),'#13'      GuiControl([btnAllToGroup],GuiSet([Visible],True)),'#13'      '#13'      GuiControl([tbGroupStats],GuiRun([Update])),'#13'      '#13'      {Enable/disable OK button}'#13'      '#13'      if ( or(GuiControl([tbGroupStats],GuiGet([RowCount])) <= 1 ,comparetext(GuiControl([edGroupName],GuiGet([Text])),[]), GuiControl([lbxInGroup],GuiList([Items],[Count])) = 0 ),'#13'        do('#13'          GuiControl([btnOK],GuiSet([Enabled],0))'#13'        ),'#13'        do('#13'          GuiControl([btnOK],GuiSet([Enabled],1))'#13'        )'#13'      ),'#13'      '#13'      GuiControl([frmStatistics], GuiSet([Height], 616)),'#13'      GuiControl([gbSettings], GuiSet([Height], 224))'#13'    )             '#13'  )'#13')'#13))))),
+EDControl(Panel:
+      Align = Client,
+      Anchors = set(Left,Top,Right,Bottom),
+      BevelOuter = None,
+      Caption = str(''),
+      Height = 238,
+      Left = 0,
+      Name = str('pnSettings'),
+      TabOrder = 3,
+      Top = 81,
+      Width = 403,
+      Controls(
+        EDControl(GroupBox:
+          Caption = str('Settings'),
+          Height = 224,
+          Left = 8,
+          Name = str('gbSettings'),
+          TabOrder = 1,
+          Top = 8,
+          Width = 370,
+        Controls(
+EDControl(Label:
+          Caption = str('Groupname:'),
+          Color = -16777208,
+          Left = 12,
+          Name = str('lbGroupName'),
+          Top = 32,
+          Width = 62),
+        EDControl(Label:
+          Caption = str('Atom:'),
+          Color = -16777208,
+          Left = 12,
+          Name = str('lbAtomName'),
+          Top = 32,
+          Width = 31),
+        EDControl(Edit:
+          Height = 21,
+          Left = 132,
+          Name = str('edAtomSelected'),
+          TabOrder = 2,
+          Top = 26,
+          Width = 150,
+          Events(
+            Change = str('do('#13#10'  if( or(GuiControl([tbAtomStats],GuiGet([RowCount])) <= 1 ,comparetext(GuiControl([edAtomSelected],GuiGet([Text])),[]) ),'#13#10'    do('#13#10'      GuiControl([btnOK],GuiSet([Enabled],0))'#13#10'    ),'#13#10'    do('#13#10'      GuiControl([btnOK],GuiSet([Enabled],1))'#13#10'    )'#13#10'  )'#13#10')'))),
+        EDControl(Button:
+          Caption = str('&Select Atom'),
+          Left = 288,
+          Name = str('btnSelectAtom'),
+          TabOrder = 4,
+          Top = 24,
+          Events(
+            Click = str('do('#13#10'  if(comparetext(GuiControl([edAtomSelected],GuiGet([Text])), [] ),'#13#10'    label([CurAtom],refExperimentSupport) := [],'#13#10'    label([CurAtom],refExperimentSupport) := GuiControl([edAtomSelected],GuiGet([Text])) '#13#10'  ),'#13#10#13#10'  GuiControl([edAtomSelected] ,GuiSet([Text],'#13#10'    do('#13#10'      if( GuiControl([rgType],GuiGet([ItemIndex])) = 1, '#13#10'        do('#13#10'          if( atomexists(SelectAtom(model, atombyname(label([CurAtom],refExperimentSupport),model), [Select an atom])),'#13#10'             name(a),'#13#10'             []'#13#10'          )'#13#10'        ),'#13#10'        do( {Select atom by mother}'#13#10'          if( atomexists(SelectAtom(Library, atombyname(label([CurAtom],refExperimentSupport),Library), [Select a mother atom])),'#13#10'             name(a),'#13#10'             []'#13#10'          )'#13#10'        )        '#13#10'      )    '#13#10'    )      '#13#10'  )),'#13#10'  '#13#10'  label([CurAtom],refExperimentSupport) := 0'#13#10')'))),
+        EDControl(Edit:
+          Height = 21,
+          Left = 132,
+          Name = str('edGroupName'),
+          TabOrder = 3,
+          Top = 26,
+          Width = 225,
+          Events(
+            Change = str('do('#13#10#13#10'  if( or( GuiControl([tbGroupStats],GuiGet([RowCount])) <= 1 ,'#13#10'             comparetext(GuiControl([edGroupName],GuiGet([Text])),[]), GuiControl([lbxInGroup],GuiList([Items],[Count])) = 0'#13#10'        ),'#13#10'    do('#13#10'      GuiControl([btnOK],GuiSet([Enabled],0))'#13#10'    ),'#13#10'    do('#13#10'      GuiControl([btnOK],GuiSet([Enabled],1))'#13#10'    )'#13#10'  )      '#13#10')'))),
+        EDControl(Label:
+          Caption = str('Available atoms'),
+          Color = -16777208,
+          Left = 12,
+          Name = str('lbNotGroup'),
+          Top = 70,
+          Width = 78),
+        EDControl(Label:
+          Caption = str('Selected atoms'),
+          Color = -16777208,
+          Left = 208,
+          Name = str('lbInGroup'),
+          Top = 70,
+          Width = 77),
+        EDControl(ListBox:
+          Height = 121,
+          Left = 12,
+          Name = str('lbxNotGroup'),
+          Sorted = True,
+          TabOrder = 5,
+          Top = 88,
+          Width = 145,
+          Events(
+            Change = str('do('#13#10'  if(   GuiControl([lbxNotGroup],GuiList([Items],[Count])) > 0,'#13#10'    do( {Items in List}'#13#10'      GuiControl([btnAllToGroup],GuiSet([Enabled],True)),'#13#10'      if( GuiControl([lbxNotGroup],GuiGet([ItemIndex])) > 0,'#13#10'        do('#13#10'          GuiControl([btnSelToGroup],GuiSet([Enabled],True))'#13#10'        ),'#13#10'        do('#13#10'          GuiControl([btnSelToGroup],GuiSet([Enabled],False))'#13#10'        )'#13#10'      )'#13#10'    ),'#13#10'    do( {No Items in List}'#13#10'      GuiControl([btnAllToGroup],GuiSet([Enabled],False)),'#13#10'      GuiControl([btnSelToGroup],GuiSet([Enabled],False))'#13#10'    )'#13#10'  )'#13#10')'))),
+        EDControl(Button:
+          Caption = str('<'),
+          Left = 168,
+          Name = str('btnSelFromGroup'),
+          TabOrder = 9,
+          Top = 88,
+          Width = 25,
+          Events(
+            Click = str('do('#13#10'   GuiControl([lbxNotGroup],GuiList([Items],[Add],GuiControl([lbxInGroup],GuiGet([Items],GuiGet([ItemIndex]))))),'#13#10'   '#13#10'   GuiControl([lbxInGroup],GuiList([Items],[Delete],GuiGet([ItemIndex]))),      '#13#10'  '#13#10'  GuiControl([lbxNotGroup],GuiRun([Change])),'#13#10'  GuiControl([lbxInGroup],GuiRun([Change]))'#13#10')'))),
+        EDControl(Button:
+          Caption = str('>'),
+          Left = 168,
+          Name = str('btnSelToGroup'),
+          TabOrder = 8,
+          Top = 120,
+          Width = 25,
+          Events(
+            Click = str('do('#13#10'   GuiControl([lbxInGroup],GuiList([Items],[Add],GuiControl([lbxNotGroup],GuiGet([Items],GuiGet([ItemIndex]))))),'#13#10'   '#13#10'   GuiControl([lbxNotGroup],GuiList([Items],[Delete],GuiGet([ItemIndex]))),      '#13#10'  '#13#10'  GuiControl([lbxNotGroup],GuiRun([Change])),'#13#10'  GuiControl([lbxInGroup],GuiRun([Change]))'#13#10')'))),
+        EDControl(Button:
+          Caption = str('<<'),
+          Left = 168,
+          Name = str('btnAllFromGroup'),
+          TabOrder = 7,
+          Top = 152,
+          Width = 25,
+          Events(
+            Click = str('do('#13#10'  repeat( GuiControl([lbxInGroup],GuiList([Items],[Count])),'#13#10'    do( '#13#10'      GuiControl([lbxNotGroup],GuiList([Items],[Add],GuiControl([lbxInGroup],GuiGet([Items],1)))),'#13#10'      GuiControl([lbxInGroup],GuiList([Items],[Delete],1))      '#13#10'    )'#13#10'  ),'#13#10'  GuiControl([lbxNotGroup],GuiRun([Change])),'#13#10'  GuiControl([lbxInGroup],GuiRun([Change]))'#13#10')'))),
+        EDControl(Button:
+          Caption = str('>>'),
+          Left = 168,
+          Name = str('btnAllToGroup'),
+          TabOrder = 6,
+          Top = 184,
+          Width = 25,
+          Events(
+            Click = str('do('#13#10'  repeat( GuiControl([lbxNotGroup],GuiList([Items],[Count])),'#13#10'    do( '#13#10'      GuiControl([lbxInGroup],GuiList([Items],[Add],GuiControl([lbxNotGroup],GuiGet([Items],1)))),'#13#10'      GuiControl([lbxNotGroup],GuiList([Items],[Delete],1))      '#13#10'    )'#13#10'  ),'#13#10'  GuiControl([lbxNotGroup],GuiRun([Change])),'#13#10'  GuiControl([lbxInGroup],GuiRun([Change]))'#13#10')'))),
+        EDControl(ListBox:
+          Height = 121,
+          Left = 208,
+          Name = str('lbxInGroup'),
+          Sorted = True,
+          TabOrder = 10,
+          Top = 88,
+          Width = 145,
+          Events(
+            Change = str('do('#13#10'  if(   GuiControl([lbxInGroup],GuiList([Items],[Count])) > 0,'#13#10'    do( {Items in List}'#13#10'      GuiControl([btnAllFromGroup],GuiSet([Enabled],True)),'#13#10'      if( GuiControl([lbxInGroup],GuiGet([ItemIndex])) > 0,'#13#10'        do('#13#10'          GuiControl([btnSelFromGroup],GuiSet([Enabled],True))'#13#10'        ),'#13#10'        do('#13#10'          GuiControl([btnSelFromGroup],GuiSet([Enabled],False))'#13#10'        )'#13#10'      )'#13#10'    ),'#13#10'    do( {No Items in List}'#13#10'      GuiControl([btnAllFromGroup],GuiSet([Enabled],False)),'#13#10'      GuiControl([btnSelFromGroup],GuiSet([Enabled],False))'#13#10'    )'#13#10'  ),'#13#10'  '#13#10'  {check if OK button can be enabled}'#13#10'  '#13#10'{  if( or(GuiControl([rgType],GuiGet([ItemIndex])) = 1, GuiControl([rgType],GuiGet([ItemIndex])) = 3),'#13#10'    if( or(GuiControl([tbAtomStats],GuiGet([RowCount])) <= 1 ,comparetext(GuiControl([edAtomSelected],GuiGet([Text])),[]) ),'#13#10'      do('#13#10'        GuiControl([btnOK],GuiSet([Enabled],0))'#13#10'      ),'#13#10'      do('#13#10'        GuiControl([btnOK],GuiSet([Enabled],1))'#13#10'      )'#13#10'    ),'#13#10'}    '#13#10'    if( or(GuiControl([tbGroupStats],GuiGet([RowCount])) <= 1 ,comparetext(GuiControl([edGroupName],GuiGet([Text])),[]), GuiControl([lbxInGroup],GuiList([Items],[Count])) = 0 ),'#13#10'      do('#13#10'        GuiControl([btnOK],GuiSet([Enabled],0))'#13#10'      ),'#13#10'      do('#13#10'        GuiControl([btnOK],GuiSet([Enabled],1))'#13#10'      )'#13#10'    )'#13#10'{    '#13#10'  )    '#13#10'}  '#13#10')'))))))),
+EDControl(Panel:
+      Align = Bottom,
+      Anchors = set(Left,Right,Bottom),
+      BevelOuter = None,
+      Caption = str(''),
+      Height = 257,
+      Left = 0,
+      Name = str('pnPerformanceMeasures'),
+      TabOrder = 4,
+      Top = 359,
+      Width = 403,
+      Controls(
+        EDControl(GroupBox:
+          Caption = str('Performance Measures'),
+          Height = 240,
+          Left = 8,
+          Name = str('GroupBox12'),
+          TabOrder = 1,
+          Top = 8,
+          Width = 370,
+        Controls(
+EDControl(Table:
+          ColCount = 2,
+          DefaultWidth = 168,
+          FixedCols = 0,
+          FixedRows = 0,
+          Height = 160,
+          Left = 12,
+          Name = str('tbGroupStats'),
+          Options = set(FixedVertLine,FixedHorzLine,VertLine,HorzLine,ColSizing,RowSelect),
+          RowCount = 1,
+          SelectionColStart = 0,
+          SelectionRowEnd = 0,
+          SelectionRowStart = 0,
+          TabOrder = 2,
+          Top = 32,
+          Width = 344,
+          Events(
+            Update = str('if( GuiControl([rgType],GuiGet([ItemIndex])) = 2,   '#13#10'   do('#13#10#13#10'     if( GuiControl([tbGroupStats],GuiGet([RowCount])) <= 1,'#13#10'       do('#13#10'         GuiControl([btnEditStat],GuiSet([Enabled],False)),'#13#10'         GuiControl([btnDelStat],GuiSet([Enabled],False))'#13#10'       ),'#13#10'       do('#13#10'         GuiControl([btnEditStat],GuiSet([Enabled],True)),'#13#10'         GuiControl([btnDelStat],GuiSet([Enabled],True)),'#13#10'         GuiControl([tbGroupStats],GuiSet([FixedRows],1))'#13#10'       )'#13#10'     ),'#13#10'     '#13#10'     {Sort the table}'#13#10'     GuiControl([tbGroupStats],GUITableSortByColumn(0,1,1)), '#13#10#13#10'   {'#13#10'     if( or( GuiControl([rgType],GuiGet([ItemIndex])) = 1, GuiControl([rgType],GuiGet([ItemIndex])) = 3),    '#13#10'       if( or(GuiControl([tbAtomStats],GuiGet([RowCount])) <= 1 ,comparetext(GuiControl([edAtomSelected],GuiGet([Text])),[])),'#13#10'         do('#13#10'           GuiControl([btnOK],GuiSet([Enabled],0))'#13#10'         ),'#13#10'         do('#13#10'           GuiControl([btnOK],GuiSet([Enabled],1))'#13#10'         )'#13#10'       ),'#13#10'   }    '#13#10'       if( or(GuiControl([tbGroupStats],GuiGet([RowCount])) <= 1 ,comparetext(GuiControl([edGroupName],GuiGet([Text])),[]), GuiControl([lbxInGroup],GuiList([Items],[Count])) = 0 ),'#13#10'         do('#13#10'           GuiControl([btnOK],GuiSet([Enabled],0))'#13#10'         ),'#13#10'         do('#13#10'           GuiControl([btnOK],GuiSet([Enabled],1))'#13#10'         )'#13#10'       )'#13#10'   {    '#13#10'     )  '#13#10'   }  '#13#10'   )'#13#10')'))),
+        EDControl(Table:
+          ColCount = 2,
+          DefaultWidth = 168,
+          FixedCols = 0,
+          FixedRows = 0,
+          Height = 160,
+          Left = 12,
+          Name = str('tbAtomStats'),
+          Options = set(FixedVertLine,FixedHorzLine,VertLine,HorzLine,ColSizing,RowSelect),
+          RowCount = 1,
+          SelectionColStart = 0,
+          SelectionRowEnd = 0,
+          SelectionRowStart = 0,
+          TabOrder = 3,
+          Top = 33,
+          Width = 344,
+          Events(
+            Update = str('if( or( GuiControl([rgType],GuiGet([ItemIndex])) = 1, GuiControl([rgType],GuiGet([ItemIndex])) = 3),'#13#10'   do('#13#10'    '#13#10'     if( GuiControl([tbAtomStats],GuiGet([RowCount])) <= 1,'#13#10'       do('#13#10'         GuiControl([btnEditStat],GuiSet([Enabled],False)),'#13#10'         GuiControl([btnDelStat],GuiSet([Enabled],False))'#13#10'       ),'#13#10'       do('#13#10'         GuiControl([btnEditStat],GuiSet([Enabled],True)),'#13#10'         GuiControl([btnDelStat],GuiSet([Enabled],True)),'#13#10'         GuiControl([tbAtomStats],GuiSet([FixedRows],1))'#13#10'       )'#13#10'     ),'#13#10'     '#13#10'     {Sort the table}'#13#10'     GuiControl([tbAtomStats],GUITableSortByColumn(0,1,1)), '#13#10#13#10'   { '#13#10'      if( or( GuiControl([rgType],GuiGet([ItemIndex])) = 1, GuiControl([rgType],GuiGet([ItemIndex])) = 3),'#13#10'   }'#13#10'       if( or(GuiControl([tbAtomStats],GuiGet([RowCount])) <= 1 ,comparetext(GuiControl([edAtomSelected],GuiGet([Text])),[])),'#13#10'         do('#13#10'           GuiControl([btnOK],GuiSet([Enabled],0))'#13#10'         ),'#13#10'         do('#13#10'           GuiControl([btnOK],GuiSet([Enabled],1))'#13#10'         )'#13#10'       )'#13#10'       '#13#10'   {    if( or(GuiControl([tbGroupStats],GuiGet([RowCount])) <= 1 ,comparetext(GuiControl([edGroupName],GuiGet([Text])),[]), GuiControl([lbxInGroup],GuiList([Items],[Count])) = 0 ),'#13#10'         do('#13#10'           GuiControl([btnOK],GuiSet([Enabled],0))'#13#10'         ),'#13#10'         do('#13#10'           GuiControl([btnOK],GuiSet([Enabled],1))'#13#10'         )'#13#10'       )    '#13#10'     ) '#13#10'   }   '#13#10'   )'#13#10')'))),
+        EDControl(Button:
+          Caption = str('&Add'),
+          Left = 116,
+          Name = str('btnAddStat'),
+          TabOrder = 4,
+          Top = 200,
+          Events(
+            Click = str('do('#13'    {label to indicate we''re Adding a new Statistic}'#13'    label([StatAction],refExperimentSupport) := 1,'#13'    label([StatTypeSel],refExperimentSupport) := GuiControl([rgType],GuiGet([ItemIndex])),'#13#13'    Guicreate([frmSelectStat],[SelectStatForm],0,[],0,2)'#13')'#13))),
+        EDControl(Button:
+          Caption = str('&Edit'),
+          Left = 198,
+          Name = str('btnEditStat'),
+          TabOrder = 5,
+          Top = 200,
+          Events(
+            Click = str('do('#13'  '#13'  {Set a label to indicate we''re Editing a statistic}'#13'  label([StatAction],refExperimentSupport) := 2,'#13' '#13' {Set a label to the type of selection}  '#13'  label([StatTypeSel],refExperimentSupport) := GuiControl([rgType],GuiGet([ItemIndex])),'#13'  '#13'  if( GuiControl([rgType],GuiGet([ItemIndex])) = 2,'#13'    do('#13'       {Set a label to the value of the selected statistic}'#13'       label([RowSelected],refExperimentSupport) := GuiControl([tbGroupStats],GuiGet([ActiveRow])),'#13'       '#13'       label([NameSelected] ,refExperimentSupport) :=GuiControl([tbGroupStats],GuiGet([Cells],label([RowSelected],refExperimentSupport),0)) ,'#13'       label([CodeSelected],refExperimentSupport) := GuiControl([tbGroupStats],GuiGet([Cells],label([RowSelected],refExperimentSupport),1))      '#13'    '#13'    ),'#13'    do('#13'       {Set a label to the value of the selected statistic}'#13'       label([RowSelected],refExperimentSupport) := GuiControl([tbAtomStats],GuiGet([ActiveRow])),'#13'       '#13'       label([NameSelected] ,refExperimentSupport) :=GuiControl([tbAtomStats],GuiGet([Cells],label([RowSelected],refExperimentSupport),0)) ,'#13'       label([CodeSelected],refExperimentSupport) := GuiControl([tbAtomStats],GuiGet([Cells],label([RowSelected],refExperimentSupport),1)) '#13'    '#13'    )'#13'  ),'#13'    '#13'  Guicreate([frmSelectStat],[SelectStatForm],0,[],0,2)'#13'  '#13')'#13))),
+        EDControl(Button:
+          Caption = str('&Delete'),
+          Left = 280,
+          Name = str('btnDelStat'),
+          TabOrder = 6,
+          Top = 200,
+          Events(
+            Click = str('do('#13#10' if( GuiControl([rgType],GuiGet([ItemIndex])) = 2,'#13#10'   do('#13#10'     {remove record from list}'#13#10'     GuiControl([tbGroupStats],GUITableDeleteRow(GuiGet([ActiveRow]))),'#13#10'     GuiControl([tbGroupStats],GuiRun([Update]))    '#13#10'   '#13#10'   ),'#13#10'   do('#13#10'     {remove record from list}'#13#10'     GuiControl([tbAtomStats],GUITableDeleteRow(GuiGet([ActiveRow]))),'#13#10'     GuiControl([tbAtomStats],GuiRun([Update]))       '#13#10'   )'#13#10' )'#13#10#13#10')')))))))),
+  Events(
+    Destroy = str('do('#13#10'   {Destroy the labels}'#13#10'  label([StatGui],refExperimentSupport) := 0,'#13#10'  label([StatSelected],refExperimentSupport) := 0,'#13#10'  label([GroupSelected],refExperimentSupport) := 0,'#13#10'  label([StatType],refExperimentSupport) := 0'#13#10')'),
+    Show = str('do('#13'  {Set column headers}'#13'  GuiControl([tbAtomStats],GuiSet([Cells],0,0,[Name])),'#13'  GuiControl([tbAtomStats],GuiSet([Cells],0,1,[PFM])),'#13'  '#13'  GuiControl([tbGroupStats],GuiSet([Cells],0,0,[Name])),'#13'  GuiControl([tbGroupStats],GuiSet([Cells],0,1,[PFM])),'#13'      '#13'  {look of form depends on Atom or Group selection}'#13'  GuiControl([rgType],GuiSet([ItemIndex], label([StatType],refExperimentSupport ))),  '#13'  GuiControl([rgType],GuiRun([Change])),'#13'  '#13'  if( or(label([StatGui],refExperimentSupport) = 2, label([StatGui],refExperimentSupport) = 3 ),'#13'    do( {Editing current atom, or adding a copy of current atom}'#13'      {Get all info from selected record}'#13'      if( label([StatType],refExperimentSupport) = 1,'#13'         do( {Atom}'#13'           GuiControl([edAtomSelected],GuiSet([Text],GuiSelect([ExpWizForm],[tbStatistics], GuiGet([Cells],label([StatSelected],refExperimentSupport),0))))              '#13'         ),'#13'         do( {Group}'#13'           GuiControl([edGroupName],GuiSet([Text],GuiSelect([ExpWizForm],[tbStatistics], GuiGet([Cells],label([StatSelected],refExperimentSupport),0))))   '#13'         )'#13'      ),'#13'      '#13'      {fill  table, add as many rows as needed}'#13'      label([StopLoop],refExperimentSupport) := 0,'#13'      loopuntil( label([StopLoop],refExperimentSupport), '#13'        do('#13'          if( comparetext([],GuiSelect([ExpWizForm],[tbStatistics], GuiGet([Cells],label([StatSelected],refExperimentSupport),2*Count))),'#13'            do( {no other statistics defined}'#13'              label([StopLoop],refExperimentSupport) := 1'#13'            ),'#13'            do('#13'               if( GuiControl([rgType],GuiGet([ItemIndex]))=2, '#13'                 do('#13'                   {set grouptable size}'#13'                   GuiControl([tbGroupStats],GuiSet([RowCount],GuiGet([RowCount])+1)), '#13'                   '#13'                   GuiControl([tbGroupStats],GuiSet([Cells], count, 0, GuiSelect([ExpWizForm],[tbStatistics], GuiGet([Cells],label([StatSelected],refExperimentSupport),2*Count)))),'#13'                   GuiControl([tbGroupStats],GuiSet([Cells], count, 1, GuiSelect([ExpWizForm],[tbStatistics], GuiGet([Cells],label([StatSelected],refExperimentSupport),1+2*Count))))                    '#13'                    '#13'                 ),'#13'                 do('#13'                   {set atomtable size}'#13'                   GuiControl([tbAtomStats],GuiSet([RowCount],GuiGet([RowCount])+1)), '#13'                   '#13'                   GuiControl([tbAtomStats],GuiSet([Cells], count, 0, GuiSelect([ExpWizForm],[tbStatistics], GuiGet([Cells],label([StatSelected],refExperimentSupport),2*Count)))),'#13'                   GuiControl([tbAtomStats],GuiSet([Cells], count, 1, GuiSelect([ExpWizForm],[tbStatistics], GuiGet([Cells],label([StatSelected],refExperimentSupport),1+2*Count))))                    '#13'                      '#13'                 )               '#13'               )                        '#13'              '#13'            )'#13'          )                    '#13'        ),'#13'        /(GuiSelect([ExpWizForm],[tbStatistics], GuiGet([ColCount])) - 2, 2)'#13'      ),'#13'      label([StopLoop],refExperimentSupport) := 0'#13'    )    '#13'  ),'#13'  '#13' { if(  GuiControl([rgType],GuiGet([ItemIndex]))=2,   }'#13'{     GuiControl([tbGroupStats],GuiRun([Update])),}'#13'{    GuiControl([tbAtomStats],GuiRun([Update])) }'#13'{  ),}'#13#13'  '#13'  {Fill the group listboxes}'#13'  GuiControl([lbxNotGroup],GuiList([Items],[Clear])),'#13'  '#13'  {add all atoms in model}'#13'  ForAtomTreeUnder(model,'#13'    do('#13'        GuiControl([lbxNotGroup],GuiList([Items],[Add],name(a)))'#13'    ),'#13'    0'#13'  ),'#13'  '#13'  {enable the right buttons based on groups}    '#13'  GuiControl([lbxNotGroup],GuiRun([Change])),'#13'  GuiControl([lbxInGroup],GuiRun([Change])),  '#13'  '#13'  {if it''s a group and this group already contains atoms, one by one add these atoms to the InGroup List}'#13'  {do this by selecting the items and clicking the ''add to InGroup'' button}'#13'  '#13'  {first clear the group}  '#13'  GuiControl([lbxInGroup],GuiList([Items],[Clear])),'#13'    '#13'  if(label([GroupSelected],refExperimentSupport) > 0,'#13'    do('#13'      '#13'      label([StopLoop],refExperimentSupport) := 0,'#13'      label([CurCol],refExperimentSupport) := 1,      '#13'      loopuntil( label([StopLoop],refExperimentSupport),'#13'        do('#13'          label([AtomName],refExperimentSupport) := '#13'            GuiSelect([ExpWizForm],[tbGroups],GuiGet([Cells],label([GroupSelected],refExperimentSupport),label([CurCol],refExperimentSupport))),'#13'                   '#13'          if( comparetext([],label([AtomName],refExperimentSupport)),'#13'            do( {empty cell, stop the loop}'#13'              label([StopLoop],refExperimentSupport) := 1'#13'            ),'#13'            do( {add atom to the InGroup listbox}              '#13#13'              {find first atom in the NotGroup listbox}            '#13'              '#13'              label([AtomIndex],refExperimentSupport) := '#13'                GuiControl([lbxNotGroup],GuiList([Items],[Index],label([AtomName],refExperimentSupport))),'#13'              '#13'              {***This replaces the Index function***}'#13'             { label([AtomIndex],refExperimentSupport) := 0,  '#13'              loopuntil( label([AtomIndex],refExperimentSupport) >0,'#13'                do('#13'                  if( comparetext(label([AtomName],refExperimentSupport),GuiControl([lbxNotGroup],GuiGet([Items],count))),'#13'                    do('#13'                      label([AtomIndex],refExperimentSupport) := Count'#13'                    )'#13'                  )'#13'                ),                            '#13'                GuiControl([lbxNotGroup],GuiList([Items],[Count]))'#13'              ),}                  '#13'              {***}'#13'              '#13'              if( label([AtomIndex],refExperimentSupport) > 0,'#13'                do( {atom found in box, select it and move it to the InGroup listbox}'#13#13'                  GuiControl([lbxNotGroup],GuiSet([ItemIndex],label([AtomIndex],refExperimentSupport))),'#13'                  {Click will move the atom to the InGroup and enable the right buttons again automatically}'#13'                  GuiControl([btnSelToGroup],GuiRun([Click])),  '#13'                '#13'                  {remove label}'#13'                  label([AtomIndex],refExperimentSupport) := 0'#13'                )'#13'              )              '#13'            )'#13'          ),'#13'          label([CurCol],refExperimentSupport) := label([CurCol],refExperimentSupport)+1'#13'        ),'#13'        GuiSelect([ExpWizForm],[tbGroups],GuiGet([ColCount])-1)'#13'      ),'#13'      {remove labels}'#13'      label([StopLoop],refExperimentSupport) := 0,'#13'      label([CurCol],refExperimentSupport) :=0,'#13'      label([AtomName],refExperimentSupport) :=  0'#13'    )  '#13'  ),'#13'  '#13'  if(  GuiControl([rgType],GuiGet([ItemIndex]))=2,   '#13'     GuiControl([tbGroupStats],GuiRun([Update])),'#13'    GuiControl([tbAtomStats],GuiRun([Update]))'#13'  )  '#13'      '#13')'#13)))
+

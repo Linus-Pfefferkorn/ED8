@@ -1,0 +1,325 @@
+
+
+{Atom: Battery Charging Station}
+
+sets;
+BaseClass;
+CreateAtom(a, s, [], 1, false);
+int023([Battery Charging Station], 32768, 1194);
+Set(Icon(a), 
+	RegisterIcon(pDir([media\images\default.jpg]), [default.jpg]));
+SetMaterial(
+	RegisterMaterial([Default], 8421504, 8421504, 3289650, 0, 0.100000001490116, 0, false, false, 1, 0), 1, a);
+Set(Version(a), 7.3);
+SetTreeIcon(pDir([Media\Icons\Battery Charging Station.ico]));
+Set(Info, [Last Revision:
+---------------------
+March, 2008
+]);
+int001(87);
+SetSize(8.5, 3, 0.1);
+LockPosition(false);
+LockSize(false);
+DisableIconRotation(false);
+SetProductCode([]);
+CreateAttributes(4);
+SetAttributeName(r(1), [TreeCreation]);
+SetAttributeName(r(2), [Stations]);
+SetAttributeName(r(3), [ChargingCurrent]);
+SetAttributeName(r(4), [DockPosition]);
+SetAtt(r(1), 1);
+SetExprAtt(r(2), [4]);
+SetExprAtt(r(3), [100]);
+int024;
+Set(OnEntered, [MoveAtom(Last(c),First(c))   ]);
+Set(OnCreation, [{reference for charging station atoms}SetLabel([t-chargingstation],1,c)]);
+Set(OnReset, [{attributes}    dockposition:=0   ]);
+Set(OnUser, [Do( { Delete any current instances of this form.}  GuiDestroy([BatteryChargingStation]), { Register the GUI-form for this atom.} GuiRegister(PDir([\Atoms\BatteryChargingStation.gui]), 1), { Show the GUI-form.} GuiCreate([BatteryChargingStation], [BatteryChargingStation], 0, c, 0, 1))]);
+Set(On2DDraw, [diText(0,2,[Charging Station],ColorBlack,ColorTransparent,0.5,[Arial],xSize(c))]);
+SetStatus(0);
+int018;
+
+
+{Atom: Incoming Queue}
+
+sets;
+BaseClass;
+CreateAtom(a, s, [], 1, false);
+int023([Incoming Queue], 12615680, 3264);
+Set(Icon(a), 
+	RegisterIcon(IconsDir([bmp\atoms\queue.bmp]), [queue]));
+SetMaterial(
+	RegisterMaterial([Default], 8421504, 8421504, 3289650, 0, 0.100000001490116, 0, false, false, 1, 0), 1, a);
+Set(Version(a), 7.3);
+SetTreeIcon(pDir([Media\Icons\Queue.ico]));
+Set(Info, [Queue.
+General
+-----------
+Atoms that enter are sent out immediately if the output is open. If 
+not, the atoms are stored in the queue, until output is open. The 
+maximum queue capacity can be set, if the queue is full, the input 
+channel is closed. The user can define a trigger on entry and 
+a trigger on exit.
+The queue discipline can be specifie: entering atoms are placed 
+in a position of the queue according to the queue discipline 
+defined. 
+The atom at the front of the queue is sent out first always.
+The input strategy can be set as well: a specific channel will be 
+opened according to the selection.
+Channels:
+--------------
+N input channels
+N output channels
+Statuses:
+-------------
+ 13 - Empty
+ 14 - Full
+ 15 - Not Empty
+
+Last revision:
+------------------
+March, 2008
+]);
+Set(DdbRec, [>t-nocreate:1.]);
+SetChannels(1, 1);
+SetChannelRanges(1, 255, 1, 255);
+int001(88);
+SetSize(2, 1, 0);
+LockPosition(true);
+LockSize(true);
+DisableIconRotation(false);
+SetProductCode([]);
+CreateAttributes(8);
+SetAttributeName(r(1), [SendTo]);
+SetAttributeName(r(2), [Capacity]);
+SetAttributeName(r(3), [EntryTrigger]);
+SetAttributeName(r(4), [ExitTrigger]);
+SetAttributeName(r(5), [QueueDiscipline]);
+SetAttributeName(r(6), [DrawLoc]);
+SetAttributeName(r(7), [InStrategy]);
+SetAttributeName(r(8), [3DIcon]);
+SetExprAtt(r(1), [min(nroc(c),-(+(nroc(c),1),indexmatch(nroc(c),1,ocready(-(+(nroc(c),1),count),c))))]);
+SetAtt(r(2), 10);
+SetExprAtt(r(5), [{.content(c)|Fifo (First In First Out) .}content(c)]);
+SetAtt(r(6), 1);
+SetExprAtt(r(7), [{.openallic(c)|Any inputchannel .}openallic(c)]);
+SetAtt(r(8), 2);
+int024;
+Set(OnEvent, [Case(
+ EventCode,
+ {** Event  1: Open the output channel **}
+ OpenAllOc( c),
+ {** Event 2: Input strategy **}
+ InStrategy
+)
+]);
+Set(OnEntered, [Do( CloseAllIc(c), {* Set the status and create an event to open the inputchannels if the queue hasn't reached its capacity *} If(  Content(c) >= Capacity,  {** full **}  Status(c) := 14,  Do(   {** not empty **}   Status(c) := 15,    CreateEvent(0, c, 2)  ) ), {** Define the position in the queue of the entered product **} Rank(i) := QueueDiscipline, EntryTrigger, CreateEvent(0, c, 1),    SetAtt(6, xSize(c), c),   ForAtomLayerUnder(c, Do(setcs,inc(att(6,c),-(/(-(xsize(c),1.1),att(2,c)))),setloc(att(6,c),1.2,zsize(c),cs))))]);
+Set(OnExited, [Do( CloseAllOc(c), If(  Content(c)  = 0,  {** empty **}  Status(c) := 13,     Do(   {** not empty **}   Status(c) := 15,   createEvent(0, c, 1)  ) ), {** If the capacity is not reached, define the inputstrategy **} If(  Content(c) < Capacity,  CreateEvent(0, c, 2) ), ExitTrigger,    SetAtt(6, xSize(c), c),   ForAtomLayerUnder(c, Do(setcs,inc(att(6,c),-(/(-(xsize(c),1.1),att(2,c)))),setloc(att(6,c),1.2,zsize(c),cs))))]);
+Set(OnCreation, [do( if(   att([TreeCreation],up(c))=1,   do(     SetLoc(-2,0,0,c),     SetChannels(1,att([Stations],up(c)),c)     )   )              )]);
+Set(OnReset, [Do( {** empty **} Status(c) := 13, CloseAllOc(c), {Destroy all remaining atoms in queue} ForAtomLayerUnder(  c,  do(    setcs,    if(      Content(c)>0,      DestroyAtom(cs)      )    )   ))]);
+Set(OnOcReady, [If( Content(c) > 0, MoveRequest(First(c), SendTo))]);
+Set(On2DDraw, [Do(
+ StandardDisplay(Name, String(Content), Icon),
+ If(
+  Or(Not(GetSetting(saContents)), Capacity > 10),
+  {** Do not show the contents, but a status bar **}
+  Do(
+   SetSetting(saShowContents, 0, c),
+   diShape(0, 0.8, xSize(c), 0.4, 0, ColorBlack, ColorRed),
+   diShape(0, 0.8, *( xSize(c), /( -(Capacity, Content(c)), Capacity)), 0.4, 0, ColorBlack, ColorWhite)
+  ),
+  Do(
+   SetSetting(saShowContents, 1, c)
+  )
+ ) 
+)
+]);
+Set(On3DDraw, [Case( 3DIcon,  {** Draw a simple flat field **} Do(  SetSize(xSize, ySize, 0),  di3DBox(0, 0, 0, xSize, ySize, 0, Color) ), {** Draw a basket **} Do(  SetSize(xSize, ySize, 0),  DrawBasketEx( 1, Color) ),  {** Draw a table **} Do(  SetSize(xSize, ySize, 1),  DrawTable( 1) ))]);
+SetStatus(0);
+int018;
+
+
+{Atom: Docking Station}
+
+sets;
+BaseClass;
+CreateAtom(a, Up(s), [], 1, false);
+int023([Docking Station], 0, 3306);
+Set(Icon(a), 
+	RegisterIcon(pDir([media\images\default.jpg]), [default.jpg]));
+SetMaterial(
+	RegisterMaterial([Default], 8421504, 8421504, 3289650, 0, 0.100000001490116, 0, false, false, 1, 0), 1, a);
+Set(Version(a), 7.3);
+SetTreeIcon(pDir([Media\Icons\Server.ico]));
+Set(Info, [The docking station is responsible for charging the batteries.
+There are two possibilities for charging the batteries:
+1. The empty battery of a forklift is charged directly within the forklift.
+   Therefore that forklift is not available for the time of charging.
+   
+2. The empty battery of a forklift will be replaced by a full one. 
+   Therefore the forklift can continue working after the replacement of the
+   battery. The empty battery will be charged and placed in a storing area
+   when the charging is done.
+
+Last revision:
+------------------
+March, 2008
+]);
+Set(DdbRec, [>t-nocreate:1.]);
+SetChannels(1, 1);
+SetChannelRanges(1, 100, 1, 100);
+int001(89);
+SetSize(1, 1, 1);
+LockPosition(true);
+LockSize(true);
+DisableIconRotation(false);
+SetProductCode([]);
+CreateAttributes(6);
+SetAttributeName(r(1), [docknumber]);
+SetAttributeName(r(2), [exchangetime]);
+SetAttributeName(r(3), [chargingcurrent]);
+SetAttributeName(r(4), [chargingtime]);
+SetAttributeName(r(5), [batt_refreshrate]);
+SetAttributeName(r(6), [batt_curtime]);
+SetExprAtt(r(3), [100]);
+SetAtt(r(5), 1);
+int024;
+Set(OnEvent, [case(
+ EventCode,
+ {// Event 1: Battery Charging}
+ do(
+   Status(c):=2,
+   chargingtime:= 
+    hr((att([batterycapacity],first(c))-att([batt_curcapacity],first(c)))/chargingcurrent),
+   batt_curtime:=chargingtime,
+   CreateEvent(0,c,3),
+   CreateEvent(chargingtime,c,2)
+   ),
+ {// Event 2: Battery is full charged - release Battery/Transporter}
+ do(
+   Status(c):=1,
+   MoveAtom(first(c),vtp(att([TransporterRef],first(c))))
+   ),
+   
+ {// Event 3: Current load status}
+ do(
+   if(
+     round(Att([batt_curtime],c),3) >= Round(Att([batt_refreshrate],c),3),
+     {Battery consumption for each refreshrate - normally: A per second}
+     do(  
+       batt_curtime:= batt_curtime - batt_refreshrate,
+       att([batt_curcapacity],first(c)):=  att([batt_curcapacity],first(c)) + (chargingcurrent/3600)*batt_refreshrate,
+       att([batt_curpercentage],first(c)):= 100*att([batt_curcapacity],first(c))/(att([batterycapacity],first(c))),
+       CreateEvent(batt_refreshrate,c,3)
+       ),
+     {Battery consumption rest time that is smaller than batt_refreshrate time }
+     do(
+       if(
+          round(Att([batt_curtime],c),3)>0,      
+          do(                  
+            att([batt_curcapacity],first(c)) = att([batt_curcapacity],first(c)) + (chargingcurrent/3600)*batt_curtime,
+            att([batt_curpercentage],first(c)):= 100*att([batt_curcapacity],first(c))/(att([batterycapacity],first(c))*3600),
+            batt_curtime:= 0
+            )
+          )  
+       ) 
+     )
+   ),
+ {// Event 4: Open income channels again}  
+ do(
+   OpenAllIC(c)
+   )   
+ )   
+]);
+Set(OnEntered, [do(  if(    Content(c)>0,    CloseAllIC(c)     ),  SetLoc(0,0,zSize(c),i),  {Set the transporter in front of current charging position}  SetLoc(xAbsLoc(c,Model)+1,yAbsLoc(c,Model)+4,0,vtp(att([TransporterRef],i))),  CreateEvent(0,c,1)    )]);
+Set(OnExited, [CreateEvent(0,c,4)]);
+Set(OnCreation, [do(
+  if(
+    att([TreeCreation],up(c))=1,
+    do(
+      {To avoid the execution of the OnCreation code for battery-atoms while loading an existing model}
+      SetAtt([TreeCreation],0,up(c)),   
+      
+      {First docking station}
+      Name(c):=[Docking Station1],
+      Connect(1,first(up(c)),1,c),
+      SetAtt([docknumber],1,last(up(c))),
+      att([DockPosition],up(c)):= xSize(last(up(c)))+1.5,
+           
+      {Further docking stations}
+      Repeat(
+       att([stations],up(c))-1,
+       do(
+         CreateAtom(AtomByName([Docking Station],Library),up(c),concat([Docking Station],String(Count+1))),
+         
+         Connect(Count+1,first(up(c)),1,last(up(c))),
+        
+         SetAtt([docknumber],Count+1,last(up(c))),
+         SetAtt([exchangetime], att([exchangetime],up(c)),last(up(c))),
+         SetAtt([chargingcurrent], att([chargingcurrent],up(c)),last(up(c))),
+        
+         SetLoc(att([DockPosition],up(c)),0,0,last(up(c))),
+         att([DockPosition],up(c)):=att([DockPosition],up(c))+xSize(last(up(c)))+1.5
+         )
+       ),
+      xSize(up(c)):= att([DockPosition],up(c))-1.5,
+      ForAtomLayerUnder(up(c),SetSetting(saHideChannels,1))  
+      )
+   )             
+ )
+]);
+Set(OnReset, [do(  {Status idle}  Status(c):=1,  {Destroy battery when still in charging}  if(    Content(c)>0,    DestroyAtom(First(c))     )  )]);
+Set(OnOcReady, [MoveRequest(first(c),1)]);
+Set(On2DDraw, [do(
+  if(
+    Content(c)>0,
+    do(
+      Color(c):=ColorRed,
+      DrawText( 0, 0, xSize, ySize, String(docknumber),  ColorBlack, 0.7, [Arial],  0, 0, 0, VA_MIDDLE + HA_CENTER),
+      diText(-0.3,-1,concat(string(att([batt_curpercentage],first(c)),3,0),[%]),ColorBlack,ColorWhite,0.7, [Arial] )
+      ),
+    do(
+      Color(c):=ColorBlack,
+      DrawText( 0, 0, xSize, ySize, String(docknumber),  ColorWhite, 0.7, [Arial],  0, 0, 0, VA_MIDDLE + HA_CENTER)
+      )  
+    )
+  )
+]);
+SetStatus(0);
+int018;
+
+
+{Atom: Battery}
+
+sets;
+BaseClass;
+CreateAtom(a, Up(s), [], 1, false);
+int023([Battery], 0, 1226);
+Set(Icon(a), 
+	RegisterIcon(pDir([media\images\default.jpg]), [default.jpg]));
+SetMaterial(
+	RegisterMaterial([Default], 8421504, 8421504, 3289650, 0, 0.100000001490116, 0, false, false, 1, 0), 1, a);
+Set(Version(a), 7.3);
+SetTreeIcon(pDir([Media\Icons\Battery.ico]));
+Set(Info, [Last revision:
+------------------
+March, 2008
+]);
+Set(DdbRec, [>t-nocreate:1.]);
+int001(90);
+SetSize(0.2, 0.2, 0.2);
+LockPosition(false);
+LockSize(false);
+DisableIconRotation(false);
+SetProductCode([]);
+CreateAttributes(5);
+SetAttributeName(r(1), [batterycapacity]);
+SetAttributeName(r(2), [batt_curcapacity]);
+SetAttributeName(r(3), [batt_curpercentage]);
+SetAttributeName(r(4), [batt_strategy]);
+SetAttributeName(r(5), [TransporterRef]);
+int024;
+SetStatus(0);
+int018;
+Up;
+int007;

@@ -1,0 +1,67 @@
+
+
+{Atom: AutoFit Support}
+
+sets;
+BaseClass;
+createAtom(a, s, [], 1, false);
+Set(OnInit, [Do(
+ AddMenu(
+  [&Autofit],
+  [&Tools],
+  Concat([ExecOnUser(vtp(],String(ptv(c)),[))])
+ )
+)
+]);
+int023([AutoFit Support], 0, 0);
+Set(Icon(a), 
+	RegisterIcon(pDir([media\images\default.jpg]), [default.jpg]));
+SetMaterial(
+	RegisterMaterial([Default], 8421504, 8421504, 3289650, 0, 0.100000001490116, 0, false, false, 1, 0), 1, a);
+Set(Version(a), 7.3);
+SetTreeIcon(pDir([Media\Icons\Tools.ico]));
+Set(Info, [Fits a distribution to a dataset
+
+General
+------------
+If this atom is in the library it automatically creates an Autofit menuoption 
+in the Various menu.
+
+With this feature the user can fit a statistical distribution to a set of data.
+
+Last Revision:
+---------------------
+February, 2008
+]);
+Set(DdbRec, [>t-nocreate:1.]);
+int001(10);
+SetSize(1, 1, 1);
+LockPosition(false);
+LockSize(false);
+DisableIconRotation(false);
+SetProductCode([]);
+createAttributes(3);
+SetAttributeName(r(1), [ndata]);
+SetAttributeName(r(2), [expression]);
+SetAttributeName(r(3), [shift]);
+SetAtt(r(1), 100);
+SetExprAtt(r(2), [NegExp(50)]);
+int024;
+Set(OnDestruction, [If(
+ Not(AtomExists(m(c))),
+ DeleteMenu([&Autofit])
+)
+]);
+Set(OnUser, [Do(
+ GuiDestroy([Autofit]),
+ 
+ { Register the GUI-form for this atom.}
+ GuiRegister(PDir([\Atoms\Autofit data.gui]), 1),
+ 
+ { Show the GUI-form.}
+ Guicreate([Autofit], [AutoFit Data], 0, 0, 0, 1)
+)
+]);
+SetStatus(0);
+int018;
+int007;

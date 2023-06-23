@@ -1,0 +1,255 @@
+EDControl(EditForm:
+  BorderIcons = set(SystemMenu),
+  BorderStyle = Single,
+  Caption = str('Socket Send'),
+  Height = 301,
+  Name = str('SocketSend'),
+  Position = Default,
+  ShowHint = True,
+  Top = 465,
+  Visible = True,
+  Width = 395,
+  Controls(
+    EDControl(MultiPage:
+      ActivePage = 3,
+      Align = Client,
+      Anchors = set(Left,Top,Right,Bottom),
+      Height = 225,
+      Left = 0,
+      Name = str('MultiPage1'),
+      TabOrder = 1,
+      Top = 0,
+      Width = 395,
+      Controls(
+        EDControl(SinglePage:
+          Caption = str('General'),
+          Name = str('SinglePage1'),
+          PageIndex = 1,
+          Controls(
+            EDControl(GroupBox:
+              Caption = str(''),
+              Height = 64,
+              Left = 8,
+              Name = str('GroupBox12'),
+              TabOrder = 1,
+              Top = 8,
+              Width = 370,
+            Controls(
+EDControl(Edit:
+              Height = 21,
+              Left = 132,
+              Name = str('AtomName'),
+              TabOrder = 2,
+              Top = 26,
+              Width = 225),
+            EDControl(Label:
+              Caption = str('Atom name:'),
+              Color = -16777208,
+              Left = 12,
+              Name = str('StaticText1'),
+              Top = 32,
+              Width = 60))),
+EDControl(GroupBox:
+              Caption = str('Settings'),
+              Height = 128,
+              Left = 8,
+              Name = str('GroupBox1'),
+              TabOrder = 3,
+              Top = 88,
+              Width = 370,
+            Controls(
+EDControl(Label:
+              Caption = str('Host:'),
+              Color = -16777208,
+              Left = 12,
+              Name = str('StaticText122'),
+              Top = 32,
+              Width = 29),
+            EDControl(Label:
+              Caption = str('Portnumber:'),
+              Color = -16777208,
+              Left = 12,
+              Name = str('StaticText123'),
+              Top = 64,
+              Width = 61),
+            EDControl(Label:
+              Caption = str('Message:'),
+              Color = -16777208,
+              Left = 12,
+              Name = str('StaticText124'),
+              Top = 96,
+              Width = 50),
+            EDControl(Edit:
+              Height = 21,
+              Left = 132,
+              Name = str('Host'),
+              TabOrder = 4,
+              Top = 26,
+              Width = 225),
+            EDControl(Edit:
+              Height = 21,
+              Left = 132,
+              Name = str('PortNumber'),
+              TabOrder = 5,
+              Top = 58,
+              Width = 100),
+            EDControl(ScriptEdit:
+              Height = 21,
+              Left = 132,
+              Name = str('PostMessage'),
+              TabOrder = 6,
+              Top = 90,
+              Width = 225))))),
+EDControl(SinglePage:
+          Caption = str('Visualization'),
+          Name = str('SinglePage2'),
+          PageIndex = 2,
+          Controls(
+            EDControl(GroupBox:
+              Caption = str('Settings'),
+              Height = 64,
+              Left = 8,
+              Name = str('GroupBox122'),
+              TabOrder = 1,
+              Top = 8,
+              Width = 370,
+            Controls(
+EDControl(Icon:
+              Height = 24,
+              Left = 132,
+              Name = str('Icon'),
+              Top = 26,
+              Width = 225),
+            EDControl(Label:
+              Caption = str('Icon:'),
+              Color = -16777208,
+              Left = 12,
+              Name = str('StaticText12'),
+              Top = 32,
+              Width = 28))))),
+EDControl(SinglePage:
+          Caption = str('Test Center'),
+          Name = str('SinglePage3'),
+          PageIndex = 3,
+          Controls(
+            EDControl(GroupBox:
+              Caption = str('Settings'),
+              Height = 160,
+              Left = 8,
+              Name = str('GroupBox13'),
+              TabOrder = 1,
+              Top = 8,
+              Width = 370,
+            Controls(
+EDControl(Edit:
+              Height = 21,
+              Left = 132,
+              Name = str('Sender'),
+              TabOrder = 2,
+              Top = 26,
+              Width = 225),
+            EDControl(ScriptEdit:
+              Left = 132,
+              Name = str('ExecuteAtSender'),
+              TabOrder = 3,
+              Top = 58,
+              Width = 225),
+            EDControl(ScriptEdit:
+              Left = 132,
+              Name = str('ExecuteAtHost'),
+              TabOrder = 4,
+              Top = 90,
+              Width = 225),
+            EDControl(CheckBox:
+              Caption = str(''),
+              Left = 132,
+              Name = str('Receipt'),
+              TabOrder = 5,
+              Top = 124,
+              Width = 40),
+            EDControl(Button:
+              Caption = str('&Send Test Message'),
+              Left = 204,
+              Name = str('Button1'),
+              TabOrder = 6,
+              Top = 120,
+              Width = 150,
+              Events(
+                Click = str('do('#13' var([atmTemp], vbAtom, 0),'#13' if('#13'  att(7,GuiAtom) = True,'#13'  do('#13'   setatt(10,0,GuiAtom),'#13'   foratomlayerunder('#13'    model,'#13'    do('#13'     atmTemp := a,'#13'     if('#13'      and('#13'       atomexists(m(atmTemp)),'#13'       ddb([t-islistening],m(atmTemp))'#13'      ),'#13'      do('#13'       setatt(10,1,GuiAtom),'#13'       setatt(5,att(1,atmTemp),GuiAtom)'#13'      )'#13'     )'#13'    )'#13'   ),'#13'   if('#13'    =(att(10,GuiAtom),0),'#13'    msg([No server in the model.], 2)'#13'   )'#13'  )'#13' ),'#13' if('#13'  not('#13'   and('#13'    att(7),'#13'    =(att(10,GuiAtom),0))'#13'   ),'#13'   socketpost('#13'    if(att(7,GuiAtom),'#13'    concat('#13'     [do(socketpost(],'#13'     stringcopy([[]],1,1),'#13'     textatt(8,GuiAtom),'#13'     stringcopy([[]],2,1),'#13'     [,],'#13'     stringcopy([[]],1,1),'#13'     att(4,GuiAtom),'#13'     stringcopy([[]],2,1), '#13'     [,],'#13'     stringcopy([[]],1,1),'#13'     string(att(5,GuiAtom)),'#13'     stringcopy([[]],2,1),'#13'     [),],'#13'     textatt(9,GuiAtom),'#13'     [)]'#13'    ),'#13'    textatt(9,GuiAtom)'#13'   ),'#13'   textatt(2,GuiAtom),'#13'   textatt(3,GuiAtom)'#13'  )'#13' )'#13')'#13))),
+            EDControl(Label:
+              Caption = str('Sender:'),
+              Color = -16777208,
+              Left = 12,
+              Name = str('StaticText1222'),
+              Top = 32,
+              Width = 41),
+            EDControl(Label:
+              Caption = str('Exec. after confirmation:'),
+              Color = -16777208,
+              Left = 12,
+              Name = str('StaticText1232'),
+              Top = 64,
+              Width = 118),
+            EDControl(Label:
+              Caption = str('Execute at host:'),
+              Color = -16777208,
+              Left = 12,
+              Name = str('StaticText1242'),
+              Top = 96,
+              Width = 81),
+            EDControl(Label:
+              Caption = str('Receipt:'),
+              Color = -16777208,
+              Left = 12,
+              Name = str('StaticText12422'),
+              Top = 128,
+              Width = 44))))))),
+    EDControl(Panel:
+      Align = Bottom,
+      Anchors = set(Left,Right,Bottom),
+      BevelOuter = None,
+      Caption = str(''),
+      Height = 40,
+      Left = 0,
+      Name = str('Panel1'),
+      TabOrder = 2,
+      Top = 225,
+      Width = 395,
+      Controls(
+        EDControl(Button:
+          Caption = str('&Help'),
+          Left = 8,
+          Name = str('btnHelp'),
+          TabOrder = 1,
+          Top = 8,
+          Events(
+            Click = str('Help(PDir([HELP\ED Help.hlp]), [Socket Send])'#13))),
+        EDControl(Button:
+          Caption = str('&Ok'),
+          Default = True,
+          Left = 144,
+          Name = str('btnOk'),
+          TabOrder = 2,
+          Top = 8,
+          Events(
+            Click = str('Do('#13' GuiControl([btnApply]),'#13' GuiRun([Click]),'#13' GuiDestroy'#13')'#13))),
+        EDControl(Button:
+          Cancel = True,
+          Caption = str('&Cancel'),
+          Left = 230,
+          Name = str('btnCancel'),
+          TabOrder = 3,
+          Top = 8,
+          Events(
+            Click = str('GuiDestroy '#13))),
+        EDControl(Button:
+          Caption = str('&Apply'),
+          Left = 312,
+          Name = str('btnApply'),
+          TabOrder = 4,
+          Top = 8,
+          Events(
+            Click = str('do('#13'  {Save TextField}'#13'  '#13'  TextAtt([AtomName],GuiAtom) := GuiControl([AtomName],GuiGet([Text])),'#13'  '#13'  TextAtt([host],GuiAtom) := GuiControl([Host],GuiGet([Text])),'#13'  '#13'  TextAtt([sender],GuiAtom) := GuiControl([Sender],GuiGet([Text])),'#13' '#13'  Att([hostportnumber],GuiAtom) := Value(GuiControl([Portnumber],GuiGet([Text]))),'#13#13'  {Save 4D ScriptField}'#13'  '#13'  SetExprAtt([PostMessage],GuiControl([PostMessage],GuiGet([Code])),GuiAtom),'#13'  '#13'  SetExprAtt([execsender],GuiControl([ExecuteAtSender],GuiGet([Code])),GuiAtom),'#13'  '#13'  SetExprAtt([exechost],GuiControl([ExecuteAtHost],GuiGet([Code])),GuiAtom),'#13#13'  {Rest}'#13'  '#13'  Att([testreceipt], GuiAtom) := GuiControl([Receipt], GuiGet([Checked])),'#13'  '#13'  Icon(GuiAtom) := GuiControl([Icon],GuiGet([Icon]))'#13')'#13)))))),
+  Events(
+    Show = str('do('#13'  {Set Caption}'#13'  if('#13'   atomexists(m(GuiAtom)),'#13'   GuiControl([SocketSend],GuiSet([Caption],concat(name(m(GuiAtom)), [ - ], name(GuiAtom)))),'#13'   GuiControl([SocketSend],GuiSet([Caption],concat([Baseclass - ], name(GuiAtom))))'#13'  ),'#13#13'  {Set ActivePage}'#13'     '#13'  GuiControl([MultiPage1]),GuiSet([ActivePage],1),'#13'      '#13'  {Set TextField}'#13'  '#13'  GuiControl([AtomName],GuiSet([Text],Name(GuiAtom))),'#13'  '#13'  GuiControl([Host],GuiSet([Text],textatt([Host],GuiAtom))), '#13'  '#13'  GuiControl([Sender],GuiSet([Text],textatt([Sender],GuiAtom))), '#13'  '#13'  GuiControl([PortNumber],GuiSet([Text],textatt([hostportnumber],GuiAtom))), '#13#13'  {Set 4D ScriptField}'#13'  '#13'  GuiControl([PostMessage],GuiSet([Code], TextAtt([PostMessage],GuiAtom))),'#13'  '#13'  GuiControl([ExecuteAtSender],GuiSet([Code], TextAtt([execsender],GuiAtom))),'#13#13'  GuiControl([ExecuteAtHost],GuiSet([Code], TextAtt([exechost],GuiAtom))),'#13#13'  {Rest}'#13'  GuiControl([Receipt],GuiSet([Checked], Att([testreceipt],GuiAtom))),'#13'  '#13'  GuiControl([Icon],GuiSet([Icon], Icon(GuiAtom))),'#13'      '#13'  Gui_PositionGuiAroundAtom(GuiControl([SocketSend])),'#13#13'  GuiRun([Update])'#13')'#13)))
+

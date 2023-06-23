@@ -1,0 +1,389 @@
+
+
+{Preregister functions}
+
+PreregisterFunction([AdvancedTransporter_CalculateEnergyAcceleration], 3, 3);
+PreregisterFunction([AdvancedTransporter_t-switchnodes], 0, 0);
+PreregisterFunction([AdvancedTransporter_t-calcoffset], 0, 0);
+PreregisterFunction([AdvancedTransporter_smoothturn], 2, 2);
+PreregisterFunction([AdvancedTransporter_SetDestination], 2, 2);
+PreregisterFunction([AdvancedTransporter_LiftFork], 0, 0);
+PreregisterFunction([AdvancedTransporter_CalculateDistance], 0, 1);
+PreregisterFunction([AdvancedTransporter_PickAtom], 3, 3);
+PreregisterFunction([AdvancedTransporter_PlaceAtom], 3, 3);
+PreregisterFunction([Pickatom], 3, 3);
+PreregisterFunction([Placeatom], 3, 3);
+PreregisterFunction([AdvancedTransporter_FindOutputChannel], 2, 2);
+PreregisterFunction([AdvancedTransporter_UpdateBatteryCapacity], 1, 1);
+PreregisterFunction([AdvancedTransporter_Event6], 5, 5);
+
+
+{Atom: Advanced Transporter}
+
+sets;
+BaseClass;
+CreateAtom(a, s, [], 1, false);
+Set(OnInit, [Do( {pre-register Speedometer} dim([refdisplayforklift],vbAtom) )]);
+int023([Advanced Transporter], 767720, 66675);
+DefineFunction([AdvancedTransporter_CalculateEnergyAcceleration], [Transport], 3, 3, [Do(  { Calculate required energy to accelerate transporter to maximum speed } Var([valCurrentSpeed], vbValue, p(1)), Var([valNextSpeed], vbValue, p(2)), Var([valWeightTransporter], vbValue, p(3)),  Var([valRequiredEnergy], vbValue),  valRequiredEnergy := *( 0.5, valWeightTransporter, -(Sqr( valNextSpeed), Sqr( valCurrentSpeed))),  {Return the required energy in Joule }  valRequiredEnergy)], [This function calculates the kinetic energy in J necessary for the acceleration of the transporter atom.Parameters:  p1 current transporter speed in m/s, p2: desired transporter speed in m/s, p3: transporter weight in kg], [AdvancedTransporter_CalculateEnergyAcceleration(5, 20, 480)], 0, [Advanced Transporter.atm]);
+DefineFunction([AdvancedTransporter_t-switchnodes], [Transport], 0, 0, [do(    sddb([t-temp],ptv(out(2,c)),c),    connect(2,c,0,out(3,c)),    connect(3,c,0,vtp(ddb([t-temp],c))),    setatt([octoprev],indexmatch(nroc(out(2,c)),atomid(out(count,out(2,c))),atomid(out(3,c))),c),    setatt([octocur],indexmatch(nroc(out(3,c)),atomid(out(count,out(3,c))),atomid(out(2,c))),c),    sddb([t-temp],0,c)  )], [t-switchnodes], [AdvancedTransporter_t-switchnodes], 0, [Advanced Transporter.atm]);
+DefineFunction([AdvancedTransporter_t-calcoffset], [Transport], 0, 0, [do( Label([DrivingOffset], c) := true,     if(      or(       att([picking],c),       att([userpick],c),       ddb([t-operator],c)      ),      do(       setatt(        3,        +(         xloc(c),         xabsloc(in(2,c),model),         -(xabsloc(c,model)),         att(19,c)        ),        c       ),       setatt(        4,        +(         yloc(c),         yabsloc(in(2,c),model),         -(yabsloc(c,model)),         att(20,c)        ),        c       )      )    ),   if(    or(     att([placing],c),     att([userplace],c)    ),    do(     setatt(      3,      +(       xloc(c),       xabsloc(in(2,c),model)       -(xabsloc(c,model)),       att(22,c)      ),      c     ),     setatt(      4,      +(       yloc(c),       yabsloc(in(2,c),model)       -(yabsloc(c,model)),       att(23,c)      ),      c     )    )   )  )], [Calculates the offset], [AdvancedTransporter_t-calcoffset], 0, [Advanced Transporter.atm]);
+DefineFunction([AdvancedTransporter_smoothturn], [Transport], 2, 2, [if(    p(1)>0,    do(     sddb([t-dx],att(3,c)-xloc(c),c),     sddb([t-dy],att(4,c)-yloc(c),c),     if(and(ddb([t-dx],c)=0,ddb([t-dy],c)>=0),sddb([t-rotas],90,c)),     if(and(ddb([t-dx],c)=0,ddb([t-dy],c)<0),sddb([t-rotas],-90,c)),     if(ddb([t-dx],c)<0,sddb([t-rotas],arctan(ddb([t-dy],c)/ddb([t-dx],c))+180,c)),     if(ddb([t-dx],c)>0,sddb([t-rotas],arctan(ddb([t-dy],c)/ddb([t-dx],c)),c)),   if(ddb([t-rotas],c)>180,sddb([t-rotas],ddb([t-rotas],c)-360,c)),     if(      and(       *(ddb([t-rotas],c),rotationas(c))<0,       +(abs(ddb([t-rotas],c)),abs(rotationas(c)))>180      ),      if(ddb([t-rotas],c)<0,rotationas(c):=rotationas(c)-360,rotationas(c):=rotationas(c)+360)     ),     sddb([t-da],-(ddb([t-rotas],c),rotationas(c)),c),     if(      ddb([t-da],c)<0,      rotationspeedas(c):=min(-(p(2)),/(ddb([t-da],c),p(1))),      rotationspeedas(c):=max(p(2),/(ddb([t-da],c),p(1)))     ),     sddb([t-turntime],abs(/(ddb([t-da],c),rotationspeedas(c))),c),     sddb([t-dx],0,c),     sddb([t-dy],0,c),     sddb([t-da],0,c),     sddb([t-rotas],0,c),     ddb([t-turntime],c)    )  )], [e1 = transporttimee2 = minimum rotationspeed], [AdvancedTransporter_smoothturn], 0, [Advanced Transporter.atm]);
+DefineFunction([AdvancedTransporter_SetDestination], [Transport], 2, 2, [If( and(  AtomExists(p(1)), AtomExists(p(2)), AtomID(p(1)) <> AtomID(p(2)) ), Do(  CloseInput(p(1)),  CloseOutput(p(1)),  sDdb([t-setdestination], 1, p(1)),  Connect(0, p(2), 2, p(1)),  CreateEvent(0, p(1), 6) ), Do(  If(   not(    AtomExists(p(1))   ),   Do(    DisplayTracer,    Trace([Incorrect transporter reference in statement 'AdvancedTransporter_setdestination'.])   )  ),    If(   not(    AtomExists(p(2))   ),   Do(    DisplayTracer,    Trace([Incorrect destination reference in statement 'AdvancedTransporter_setdestination'.])   )  ) ))], [Only applies to Advanced Transporter and Operator atoms. Makes e1 travel to e2. e1 uses path network if e1 and e2 are connected to paths. While travelling e1 closes input.], [AdvancedTransporter_SetDestination(c, Rank(15, Model))], 0, [Advanced Transporter.atm]);
+DefineFunction([AdvancedTransporter_LiftFork], [Transport], 0, 0, [do(    setatt([lifting],true,c),    setatt([liftstart],time,c),    if(     >(ddb([t-node2],in(2,c)),0),     do(      if(       or(att([picking],c),          att([userpick],c)       ),       setatt([liftheight],         +(zabsloc(in(2,c),model),          att([zoffpick],c),          -(att([forkz],c))         ),       c)),      if(or(att([placing],c),att([userplace],c)),setatt([liftheight],       +(zabsloc(in(2,c),model),         att([zoffplace],c),         -(att([forkz],c))        ),      c))     ),     do(      if(or(att([picking],c),att([userpick],c)),setatt([liftheight],       +(zabsloc(in(2,c),model),         zsize(in(2,c)),         -(att([forkz],c))        ),        c)),      if(or(att([placing],c),att([userplace],c)),setatt([liftheight],       +(zabsloc(in(2,c),model),         zsize(in(2,c)),         -(att([forkz],c))       ),      c))     )    ),    if(att([liftfix],c),setatt([liftheight],att([fixheight],c)-att([forkz],c),c)),    setatt([liftfix],false,c),    if(     att([liftheight],c)=0,     setatt([liftdirection],0,c),     setatt([liftdirection],att([liftheight],c)/abs(att([liftheight],c)))    ),    createevent(abs(att([liftheight],c)/att([liftspeed],c)),c,11,1000)  )], [Lifts the fork], [AdvancedTransporter_liftfork], 0, [Advanced Transporter.atm]);
+DefineFunction([AdvancedTransporter_CalculateDistance], [Transport], 0, 1, [do(    c.n1:=att([nodenumber],out(2,c)), { atmNextNode }    c.n2:=att([nodenumber],out(3,c)), { atmPrevNode }    c.n3:=ddb([t-node1],in(2,c)), { Origin or Destination }    c.n4:=ddb([t-node2],in(2,c)), { Origin or Destination }    c.d1:=cell(c.n2,c.n3,vtp(att([distancetable],c)))+atomdistance(c,out(3,c)),    c.d3:=cell(c.n1,c.n3,vtp(att([distancetable],c)))+atomdistance(c,out(2,c)),        if(     c.n4>0,     {// The destination has more nodes attached to it //}     do(      c.d2:=cell(c.n2,c.n4,vtp(att([distancetable],c)))+atomdistance(c,out(3,c)),      c.d4:=cell(c.n1,c.n4,vtp(att([distancetable],c)))+atomdistance(c,out(2,c)),      if(       cell(c.n3,c.n4,vtp(att([connectiontable],c)))<>1,       do(c.d1:=1000000000000,c.d3:=1000000000000)      ),      if(       cell(c.n4,c.n3,vtp(att([connectiontable],c)))<>1,       do(c.d2:=1000000000000,c.d4:=1000000000000)      )     ),     do(c.d2:=1000000000000,c.d4:=1000000000000)    ),    if(     ddb([t-oneway],c),     do(c.d1:=1000000000000,c.d2:=1000000000000)    ),        case(     indexmin(4,ddb(concat([d],string(count)),c)),     do(      c.previousedstnode := Att([DestNode], c),      setatt([destnode],c.n3,c),      if(       not(p(1)),       AdvancedTransporter_t-switchnodes      )     ),     do(      c.previousedstnode := Att([DestNode], c),      setatt([destnode],c.n4,c),      if(       not(p(1)),       AdvancedTransporter_t-switchnodes      )     ),     do(      c.previousedstnode := Att([DestNode], c),      setatt([destnode],c.n3,c)     ),     do(      c.previousedstnode := Att([DestNode], c),      setatt([destnode],c.n4,c)     )    ),        if(     not(p(1)),     do(      setcs(out(2,c)),      setatt(3,xloc(c)+(xabsloc(cs,model)-xabsloc(c,model)),c),      setatt(4,yloc(c)+(yabsloc(cs,model)-yabsloc(c,model)),c)     )    )  )], [Calculates the distance. Sets the DestNode.optional:p(1) as 1 if you just want to get the DestNode.], [AdvancedTransporter_CalculateDistance], 0, [Advanced Transporter.atm]);
+DefineFunction([AdvancedTransporter_PickAtom], [Transport], 3, 3, [if( and(atomexists(p(1)),atomexists(p(2)),atomexists(p(3))), Do(  closeallic(p(1)),  closealloc(p(1)),  setatt([picking],0,p(1)),  setatt([placing],0,p(1)),  setatt([userplace],0,p(1)),  setatt([userpick],1,p(1)),  connect(0,p(2),2,p(1)),  connect(0,p(3),3,p(1)),  createevent(0,p(1),6,0,p(3)) ),  Do(  if(not(atomexists(p(1))),trace([Incorrect transporter reference in statement 'pickatom'.])),  if(not(atomexists(p(2))),trace([Incorrect container reference in statement 'pickatom'.])),  if(not(atomexists(p(3))),trace([Incorrect atom reference in statement 'pickatom'.])),  displaytracer ))], [Use this function only if you’ve switched off the Load Parameters | Load automatically option of the transporter.], [AdvancedTransporter_pickatom(c, Rank(4, Model), First(Rank(4, Model)))], 0, [Advanced Transporter.atm]);
+DefineFunction([AdvancedTransporter_PlaceAtom], [Transport], 3, 3, [If( and(atomexists(p(1)),atomexists(p(2)),atomexists(p(3))), Do(  If(   ddb([t-destinator],out(1,p(1))),   sddb([t-dest],indexmatch(nroc(out(1,p(1))),if(atomexists(out(count,out(1,p(1)))),atomid(out(count,out(1,p(1))))),atomid(p(2))),p(1)),   sddb([t-dest],indexmatch(1,if(atomexists(out(1,p(1))),atomid(out(1,p(1)))),atomid(p(2))),p(1))  ),    If(   ddb([t-dest],p(1))>0,   Do(    closeallic(p(1)),    closealloc(p(1)),    setrank(1,p(3)),    connect(0,p(2),2,p(1)),    connect(0,p(3),3,p(1)),    setatt([picking],0,p(1)),    setatt([placing],0,p(1)),    setatt([userpick],0,p(1)),    setatt([userplace],1,p(1)),    sddb([t-dest],ddb([t-dest],p(1)),p(3)),    sddb([t-dest],0,p(1)),    createevent(0,p(1),6,0,p(3))   ),      Do(    trace(concat(name(p(2)),[ not connected to transporter or destinator.])),    displaytracer   )  ) ),  Do(  If(not(atomexists(p(1))),trace([Incorrect transporter reference in statement 'placeatom'.])),  If(not(atomexists(p(2))),trace([Incorrect container reference in statement 'placeatom'.])),  If(not(atomexists(p(3))),trace([Incorrect atom reference in statement 'placeatom'.])),  displaytracer ))], [Use this function only if you’ve switched off the Load Parameters | Unload automatically option of the transporter.Only applies to Advanced Transporters. Makes transporter e1 place atom e3 in atom e2. e3 must be inside the transporter and e2 must be connected to the transporter or a destinator.], [AdvancedTransporter_PlaceAtom(c, Out(4, Out(1, c)), First(c))], 0, [Advanced Transporter.atm]);
+DefineFunction([Pickatom], [Transport], 3, 3, [AdvancedTransporter_PickAtom(p(1), p(2), p(3))], [Old function now replaced by AdvancedTransporter_PickAtom], [AdvancedTransporter_PickAtom(e1, e2, e3], 0, [Advanced Transporter.atm]);
+DefineFunction([Placeatom], [Transport], 3, 3, [AdvancedTransporter_PlaceAtom(p(1), p(2), p(3))], [Old function now replaced by AdvancedTransporter_PlaceAtom], [AdvancedTransporter_PlaceAtom(e1, e2, e3)], 0, [Advanced Transporter.atm]);
+DefineFunction([AdvancedTransporter_FindOutputChannel], [Transport], 2, 2, [do( Repeat(  NrOC(p(1)),  do(   if(    ptv(Out(Count, p(1))) = ptv(p(2)),    return(Count)   )  ) ))], [p(1) as node1p(2) as node2returns the number of the node1-oc where node2 is connected.], [AdvancedTransporter_FindOutputChannel(atmPrevNode, atmNextNode)], 0, [Advanced Transporter.atm]);
+DefineFunction([AdvancedTransporter_UpdateBatteryCapacity], [Various], 1, 1, [do( Att([batt_curcapacity], p(1)) := Att([batt_curcapacity], p(1)) - Att([batt_ConsumptionTyp], p(1)) * (Att([batt_curtime], p(1)) / 3600), Att([batt_curpercentage], p(1)) := 100 * (Att([batt_curcapacity], p(1)) / Att([batterycapacity], p(1))), { Check for critical battery status -> battery charging required? } if(  and(   Att([batt_curpercentage], p(1)) < Att([batt_minpercentage], p(1)),   Label([PrepareCharging], p(1)) = 0  ),  do(   Label([PrepareCharging], p(1)) := 1  ) )    )], [Updates the battery capacity.p(1) as transporter], [AdvancedTransporter_UpdateBatteryCapacity(c)], 0, [Advanced Transporter.atm]);
+DefineFunction([AdvancedTransporter_Event6], [Transport], 5, 5, [do( var([atmTransporter], vbAtom, p(1)), var([atmCurDest], vbAtom, p(2)), var([atmOrigin], vbAtom, p(3)), var([atmNextNode], vbAtom, p(4)), var([atmPrevNode], vbAtom, p(5)),  if(  { Do we have a current destination, or of network? }  or(        Label([t-node1],atmCurDest) = 0,   att([offnetwork], atmTransporter) = 1  ),    {--Destination calculation (absolut, related to the model origin)--}  do(   att([keepspeed], atmTransporter) := 0,   if(    atmOrigin = atmCurDest,    do(     Setatt([curxdest], xloc(atmTransporter) + xAbsLoc(atmOrigin, Model) - xAbsLoc(atmTransporter, Model) + xSize(atmOrigin) * Cos(RotationAs(atmOrigin)), atmTransporter),     Setatt([curydest], yloc(atmTransporter) + yAbsLoc(atmOrigin, Model) - yAbsLoc(atmTransporter, Model) + (ySize(atmOrigin) / 2) + (xSize(atmOrigin) * Sin(RotationAs(atmOrigin))), atmTransporter)    ),    do(     Setatt([curxdest], xloc(atmTransporter) + xAbsLoc(atmCurDest, Model) - xAbsLoc(atmTransporter, Model), atmTransporter),     Setatt([curydest], yloc(atmTransporter) + yAbsLoc(atmCurDest, Model) - yAbsLoc(atmTransporter, Model), atmTransporter)    )   ),   Att([offnetwork], atmTransporter) := true,   Att([offroad], atmTransporter) := false  ),    do( {** start do }   setatt([keepspeed], 1, atmTransporter),   setatt([next channel], 0, atmTransporter),      setcs(atmNextNode),    if(    Att([offroad], atmTransporter), { only true after a battery charge }     do(     if(      and(       Label([t-node2], atmCurDest) > 0,       Label([t-node1], atmCurDest) = Label([t-node1], vtp(att([prevatom], atmTransporter))),       Label([t-node2], atmCurDest) = Label([t-node2], vtp(att([prevatom], atmTransporter)))      ),      {// Next pick/place is along the same section //}      do(          AdvancedTransporter_t-calcoffset,       if(        or(         cell(att([nodenumber], atmNextNode), att([nodenumber], atmPrevNode), vtp(att([connectiontable], atmTransporter))),         atomdistance(atmTransporter, AtmNextNode) >= sqrt(sqr(xloc(atmNextNode) - att([curxdest], atmTransporter))           + sqr(yloc(atmNextNode) - att([curydest], atmTransporter)))        ),                {// Transporter can move backwards or next pick is down the road //}        do(         setatt([keepspeed], 0, atmTransporter)        ),                {// Transporter must move to second node on this path, destination stays the same //}        do(         Att([offroad], atmTransporter) := false        )       )      ),            {// Next pick/place is in another atom, determine the correct node to travel to //}      do(       Att([offroad], atmTransporter) := false      )     )    )   ),      If(     not(Att([offroad], atmTransporter)),       do(            if(       not(cell(att([nodenumber], atmNextNode), att([nodenumber], atmPrevNode), vtp(att([connectiontable], atmTransporter)))),       sddb([t-oneway], 1, atmTransporter),       sddb([t-oneway], 0, atmTransporter)      ),            { Setting DestNode in this function }      AdvancedTransporter_calculateDistance,            if(       not(Label([DrivingOffset], atmTransporter)),       do(        var([atmCurrent], vbAtom, atmNextNode),        {// If it's a one-way section, the transporter must move forward //}        atmNextNode := vtp( cell(cell(att([nodenumber], atmCurrent), att([destnode], atmTransporter), vtp(att([nodetable], atmTransporter))), 1, vtp(att([pointertable], atmTransporter))))       ),       do(        var([atmCurrent], vbAtom, atmPrevNode),        Label([DrivingOffset], atmTransporter) := 0       )      ),            {/// Check for Corner Node:  check angles at start of travel}      label([aheadnode], atmTransporter) := Cell(att([nodenumber], atmNextNode), att([destnode], atmTransporter), vtp(att([nodetable], atmTransporter))),      att([curangle], atmTransporter) := Cell(att([nodenumber], atmCurrent), att([nodenumber], atmNextNode), vtp(att([angletable], atmTransporter))),                   att([nextangle], atmTransporter) := Cell(att([nodenumber], atmNextNode), label([aheadnode], atmTransporter), vtp(att([angletable], atmTransporter))),       if(       Abs(att([curangle], atmTransporter) - att([nextangle], atmTransporter)) > 180,       att([angledifference], atmTransporter) := 360 - Abs(att([curangle], atmTransporter) - att([nextangle], atmTransporter)),       att([angledifference], atmTransporter) := Abs(att([curangle], atmTransporter) - att([nextangle], atmTransporter))      ),      if(       att([angledifference], atmTransporter) > att([minangle], atmTransporter),         {set corner node attribute at the beginning of travel}       att([corner], atmTransporter) := 1                      )     )    ),    if(     att([nodenumber], out(2, atmTransporter)) = att([destnode], atmTransporter),     do(      att([offroad], atmTransporter) := min(1,ddb([t-node2],in(2,atmTransporter))),      att([keepspeed], atmTransporter) := att([offroad], atmTransporter)     )    ) { ** end do}   )  ),  { *** set correct status *** } Case(  WhichIsTrue(   and(    Content(atmTransporter) = 0,    Label([charging], atmTransporter) = false   ),   and(    Content(atmTransporter) = 0,    Label([charging], atmTransporter) = true   ),   Content(atmTransporter) > 0  ),  SetStatus(7, atmTransporter),  SetStatus(3, atmTransporter),  SetStatus(6, atmTransporter) ),  if(  or(   att([liftdrive], atmTransporter),   and(    atomid(in(2, atmTransporter)) = atomid(vtp(att([prevatom], atmTransporter))),    ddb([t-node2], in(2, atmTransporter)) = 0   )  ),  do(    AdvancedTransporter_liftfork,    createevent(0, atmTransporter, 1)  ),  do(    att([liftfix], atmTransporter) := true,    AdvancedTransporter_liftfork,    createevent(abs(att([liftheight], atmTransporter) / att([liftspeed], atmTransporter)), atmTransporter, 8)  ) ), att([prevatom], atmTransporter) := ptv(in(2, atmTransporter)))], [Event 6 of the AT], [AdvancedTransporter_Event6(c, atmCurDest, atmOrigin, atmNextNode, atmPrevNode)], 0, [Advanced Transporter.atm]);
+Set(Icon(a), 
+	RegisterIcon(IconsDir([Bmp\Transp\trns1001.bmp]), [trns1001.bmp], 1, 0, 0, 0, 0, false, 0));
+SetMaterial(
+	RegisterMaterial([Default], 8421504, 8421504, 3289650, 0, 0.100000001490116, 0, false, false, 1, 0), 1, a);
+Set(Version(a), 7.3);
+SetTreeIcon(pDir([Media\Icons\Transporter2.ico]));
+Set(Info, [Advanced Transporter
+
+General
+------------
+Transports atoms free-range or via a node network. 
+Use the Network Node atom to layout the node network.
+
+Channels:
+---------------
+Input channels:  1: connect to any atom or to Dispatcher atom for multiple 
+                                    origins
+Output channel: 1: connect to any atom or to Destinator atom for multiple 
+                                   destinations
+
+Do not connect other in- and output channels.
+
+Note:
+--------
+Offset parameters only function if the origin or destination is connected 
+to 2 nodes.
+
+Last Revision:
+---------------------
+March, 2008
+]);
+SetChannels(3, 4);
+SetChannelRanges(3, 3, 4, 4);
+int001(75);
+int013(1, 0, false, false, 0, 0, [Product Origin], [Product Destination]);
+int013(2, 0, false, false, 1, 1, [Current goal (Origin or Destination)], [Next network node on path]);
+int013(3, 0, false, false, 1, 1, [Do not connect], [Previous network node on path]);
+int013(4, 0, false, false, 1, 0, [Do not connect], [Link to network]);
+SetSize(3, 2, 1);
+LockPosition(false);
+LockSize(true);
+DisableIconRotation(false);
+SetProductCode([]);
+CreateAttributes(94);
+SetAttributeName(r(1), [next channel]);
+SetAttributeName(r(2), [destnode]);
+SetAttributeName(r(3), [curxdest]);
+SetAttributeName(r(4), [curydest]);
+SetAttributeName(r(5), [curzdest]);
+SetAttributeName(r(6), [keepspeed]);
+SetAttributeName(r(7), [speed]);
+SetAttributeName(r(8), [acceleration]);
+SetAttributeName(r(9), [deceleration]);
+SetAttributeName(r(10), [betweennodes]);
+SetAttributeName(r(11), [unloadsequence]);
+SetAttributeName(r(12), [sendto]);
+SetAttributeName(r(13), [loadtime]);
+SetAttributeName(r(14), [unloadtime]);
+SetAttributeName(r(15), [loadquantity]);
+SetAttributeName(r(16), [entrytrigger]);
+SetAttributeName(r(17), [exittrigger]);
+SetAttributeName(r(18), [prevatom]);
+SetAttributeName(r(19), [xoffpick]);
+SetAttributeName(r(20), [yoffpick]);
+SetAttributeName(r(21), [zoffpick]);
+SetAttributeName(r(22), [xoffplace]);
+SetAttributeName(r(23), [yoffplace]);
+SetAttributeName(r(24), [zoffplace]);
+SetAttributeName(r(25), [3dicon]);
+SetAttributeName(r(26), [curload]);
+SetAttributeName(r(27), [loadrestriction]);
+SetAttributeName(r(28), [loadlabel]);
+SetAttributeName(r(29), [isplacing]);
+SetAttributeName(r(30), [offroad]);
+SetAttributeName(r(31), [offnetwork]);
+SetAttributeName(r(32), [picking]);
+SetAttributeName(r(33), [placing]);
+SetAttributeName(r(34), [liftdrive]);
+SetAttributeName(r(35), [lifting]);
+SetAttributeName(r(36), [forkz]);
+SetAttributeName(r(37), [liftstart]);
+SetAttributeName(r(38), [liftspeed]);
+SetAttributeName(r(39), [liftdirection]);
+SetAttributeName(r(40), [liftfix]);
+SetAttributeName(r(41), [fixheight]);
+SetAttributeName(r(42), [liftheight]);
+SetAttributeName(r(43), [curheight]);
+SetAttributeName(r(44), [distancetable]);
+SetAttributeName(r(45), [nodetable]);
+SetAttributeName(r(46), [pointertable]);
+SetAttributeName(r(47), [connectiontable]);
+SetAttributeName(r(48), [turnmode]);
+SetAttributeName(r(49), [transporttime]);
+SetAttributeName(r(50), [minrotspeed]);
+SetAttributeName(r(51), [atdestination]);
+SetAttributeName(r(52), [octoprev]);
+SetAttributeName(r(53), [octocur]);
+SetAttributeName(r(54), [octonext]);
+SetAttributeName(r(55), [unloadlabel]);
+SetAttributeName(r(56), [autoload]);
+SetAttributeName(r(57), [autounload]);
+SetAttributeName(r(58), [userpick]);
+SetAttributeName(r(59), [userplace]);
+SetAttributeName(r(60), [ConnectedTo]);
+SetAttributeName(r(61), [Cornermode]);
+SetAttributeName(r(62), [Corner]);
+SetAttributeName(r(63), [CornerSpeed]);
+SetAttributeName(r(64), [CurAngle]);
+SetAttributeName(r(65), [NextAngle]);
+SetAttributeName(r(66), [AngleDifference]);
+SetAttributeName(r(67), [MinAngle]);
+SetAttributeName(r(68), [AngleTable]);
+SetAttributeName(r(69), [Batterymode]);
+SetAttributeName(r(70), [BatteryCapacity]);
+SetAttributeName(r(71), [Batt_ConsumptionDrive]);
+SetAttributeName(r(72), [Batt_ConsumptionLift]);
+SetAttributeName(r(73), [Batt_MinCapacity]);
+SetAttributeName(r(74), [Batt_MinPercentage]);
+SetAttributeName(r(75), [Batt_CurCapacity]);
+SetAttributeName(r(76), [Batt_CurPercentage]);
+SetAttributeName(r(77), [Batt_CurTime]);
+SetAttributeName(r(78), [***]);
+SetAttributeName(r(79), [Batt_ConsumptionTyp]);
+SetAttributeName(r(80), [Batt_2DText]);
+SetAttributeName(r(81), [DestAtom]);
+SetAttributeName(r(82), [DestChannel]);
+SetAttributeName(r(83), [AtomTable]);
+SetAttributeName(r(84), [BatteryTable]);
+SetAttributeName(r(85), [BatteryDistanceTable]);
+SetAttributeName(r(86), [BatteryCurrent]);
+SetAttributeName(r(87), [Weight]);
+SetAttributeName(r(88), [Batt_ConsumptionAccelerate]);
+SetAttributeName(r(89), [Batt_ConsumptionLower]);
+SetAttributeName(r(90), [Batt_ConsumptionDecelerate]);
+SetAttributeName(r(91), [Lastspeed]);
+SetAttributeName(r(92), [Curspeed]);
+SetAttributeName(r(93), [***]);
+SetAttributeName(r(94), [Batt_Accel]);
+SetAtt(r(3), -65);
+SetAtt(r(4), -27);
+SetExprAtt(r(7), [3]);
+SetExprAtt(r(8), [1]);
+SetExprAtt(r(9), [1]);
+SetAtt(r(11), 1);
+SetExprAtt(r(12), [{.~1|1. Specific channel --> Always send to channel ~1~ .}1]);
+SetExprAtt(r(13), [0]);
+SetExprAtt(r(14), [0]);
+SetExprAtt(r(15), [1]);
+SetAtt(r(18), 58016728);
+SetExprAtt(r(19), [{.label([~1],first(in(2,c)))|2. Atom label (for picking) --> the offset is found on the label ~column~ of the first ranked atom of the destination..}label([column],first(in(2,c)))]);
+SetExprAtt(r(20), [{.yabsloc(c,model)-yabsloc(in(2,c),model)|3. Horizontal line --> the transporter travels in a horizontal line. ~Only use this option to define the Y offsets!~.}yabsloc(c,model)-yabsloc(in(2,c),model)]);
+SetExprAtt(r(21), [{.label([~1],first(in(2,c)))|2. Atom label (for picking) --> the offset is found on label ~row~ of the atom to be placed..}label([row],first(in(2,c)))]);
+SetExprAtt(r(22), [{.label([~1],i)|2. Atom label (for placing) --> the offset is found on label ~column~ of the atom to be picked or placed..}label([column],i)]);
+SetExprAtt(r(23), [{.yabsloc(c,model)-yabsloc(in(2,c),model)|3. Horizontal line --> the transporter travels in a horizontal line. ~Only use this option to define the Y offsets!~.}yabsloc(c,model)-yabsloc(in(2,c),model)]);
+SetExprAtt(r(24), [{.label([~1],i)|2. Atom label (for placing) --> the offset is found on the label ~row~ of the first ranked atom of the destination..}label([row],i)]);
+SetAtt(r(25), 1);
+SetAtt(r(27), 1);
+SetTextAtt(r(28), [LabelName]);
+SetAtt(r(31), 1);
+SetExprAtt(r(34), [true]);
+SetAtt(r(35), 1);
+SetAtt(r(37), 3552.6158561785);
+SetExprAtt(r(38), [0.5]);
+SetAtt(r(48), 3);
+SetExprAtt(r(49), [0]);
+SetAtt(r(50), 30);
+SetTextAtt(r(55), [LabelName]);
+SetAtt(r(56), 1);
+SetAtt(r(57), 1);
+SetAtt(r(61), 1);
+SetExprAtt(r(62), [0]);
+SetExprAtt(r(63), [{.if(att([angledifference],c)>~1,~3,~2)|2. Use two different corner speeds: if road angle is between min.angle and ~50~°,choose speed of ~1.5~ m/s, if angle is larger then choose ~0.5~ m/s .}if(att([angledifference],c)>50,0.5,1.5)]);
+SetExprAtt(r(66), [0]);
+SetExprAtt(r(67), [10]);
+SetExprAtt(r(68), [0]);
+SetExprAtt(r(70), [750]);
+SetExprAtt(r(71), [{~1|1. Constant: ~50~ Ah.}50]);
+SetExprAtt(r(72), [{~1|1. Constant: ~100~ Ah.}100]);
+SetExprAtt(r(73), [10]);
+SetExprAtt(r(74), [20]);
+SetExprAtt(r(75), [0]);
+SetExprAtt(r(76), [100]);
+SetTextAtt(r(78), [***]);
+SetExprAtt(r(79), [0]);
+SetExprAtt(r(88), [{~1|1. Constant: ~100~ Ah.}100]);
+SetExprAtt(r(89), [{~1|1. Constant: ~10~ Ah.}10]);
+SetExprAtt(r(90), [{~1|1. Constant: ~100~ Ah.}100]);
+SetTextAtt(r(93), [***]);
+SetAtt(r(94), 5000);
+int024;
+Set(OnEvent, [do(  if(AtomExists(out(1,c)),var([atmDestination],vbAtom,out(1,c))), { Atom where the products are to be transported to }  if(AtomExists(out(2,c)),var([atmNextNode],vbAtom,out(2,c))),    { The networknode to travel next to }  if(AtomExists(out(3,c)),var([atmPrevNode],vbAtom,out(3,c))),    { The networknode travelled from }  if(AtomExists(out(4,c)),var([atmLinkNode],vbAtom,out(4,c))),    { The networknode used to link the transporter to the network }  if(AtomExists(in(1,c)),var([atmOrigin],vbAtom,in(1,c))),        { Atom where the products are picked up }  if(AtomExists(in(2,c)),var([atmCurDest],vbAtom,in(2,c))),       { Current travel destination, either atmOrigin or atmDestination }  curspeed:=sqrt(sqr(xspeed(c))+sqr(yspeed(c))),      var([valPrevNodeChannel], vbValue, 0),  var([atmAheadNode], vbAtom),  var([valAheadNodeChannel], vbValue, 0),  var([atmAtomTable], vbAtom),   { Battery Consumption - Drive }  { This is computed _after_ the actual travelto() phase (acc, driving or decl) has happened }  { Reason: it is not possible to determine beforehand what travelto() will to, it just says it needs another call }  if(    and(      batterymode,                 transporttime > 0,   { Time used in the last move }        eventcode < 3        { 1 & 2 are traveleventcodes }    ),    do(      if(abs(Curspeed-Lastspeed)<0.001, { Yes, dirty, but equality test on float does not work }        do(          batt_ConsumptionTyp := batt_ConsumptionDrive        ),        if(Curspeed>Lastspeed,                                                do(            batt_ConsumptionTyp := batt_ConsumptionAccelerate             ),          do(            batt_ConsumptionTyp := batt_ConsumptionDecelerate          )        )                           ),            batt_curtime:= transporttime,      AdvancedTransporter_UpdateBatteryCapacity(c),                       lastspeed:=curspeed          )  ),  case(   eventcode,      {1. Start or continue travelling, check the speed }   do(    if(     and(      AtomExists(atmPrevNode),      AtomExists(atmNextNode)     ),          do(      { ** travel on network ** }      var([DesiredEndSpeed], vbValue),      var([MaximumDriveSpeed], vbValue),              valPrevNodeChannel := AdvancedTransporter_FindOutputChannel(atmPrevNode, atmNextNode),        { Check if there is a speed limit on the current segment }      if(       Cell(valPrevNodeChannel, 3, atmPrevNode) = true,       do(        MaximumDriveSpeed := Cell(valPrevNodeChannel, 4, atmPrevNode)       ),              { If there is no speed limit on the current segment, then check if there is a corner }       if(        and(         Cornermode,         Corner        ),        do(         DesiredEndSpeed := Cornerspeed,         { Deceleration at corner node: end speed equals maximum Cornerspeed }         MaximumDriveSpeed := att([speed],c)        ),        do(         atmAheadNode := vtp(Cell(Cell(Att([nodenumber], atmNextNode), DestNode, vtp(NodeTable)), 1, vtp(PointerTable))),         valAheadNodeChannel := AdvancedTransporter_FindOutputChannel(atmNextNode, atmAheadNode),                           { Check if the (over) next segment has a speed limit or if the path capacity is reached }         { Necessary, so that the transporter can decelerate before entering the (over) next segment }         Case(          WhichIsTrue(           Cell(valAheadNodeChannel, 3, atmNextNode) = true,           and(            Cell(valAheadNodeChannel, 1, atmNextNode) = Cell(valAheadNodeChannel, 2, atmNextNode),            valAheadNodeChannel <> 0           ),           or(            and(             Cell(valAheadNodeChannel, 3, atmNextNode) = false,             Cell(valAheadNodeChannel, 1, atmNextNode) > Cell(valAheadNodeChannel, 2, atmNextNode)            ),            valAheadNodeChannel = 0           )          ),          do(           { // A speed limit was identified }           DesiredEndSpeed := Cell(valAheadNodeChannel, 4, atmNextNode),           MaximumDriveSpeed := att([speed], c)          ),          do(           { // Path capacity is reached }           DesiredEndSpeed := 0,           MaximumDriveSpeed := att([speed], c)          ),          do(           { // Everything is free, so max. speed }           DesiredEndSpeed := keepspeed * speed, { Drive with max. speed: acceleration and deceleration only at origin/destination }           MaximumDriveSpeed := att([speed], c)          )         )        )       )      )     ),     do(      { ** free-range ** }      DesiredEndSpeed := keepspeed * speed, { Drive with max. speed: acceleration and deceleration only at origin/destination }      MaximumDriveSpeed := att([speed], c)     )    ),          transporttime:= travelto(c,                 { A reference to the atom that should be moved }                         case(turnmode,0,1,0),   { If e2 = 1 the atom will be rotated to face the moving direction }                         att([curxdest],c),      { x-coordinate of the end location }                         att([curydest],c),      { y-coordinate of the end location }                                                  if(                     { check if travelling free-range }                          and(                           AtomExists(atmPrevNode),                           AtomExists(atmNextNode)                          ),                          zloc(out(2, c)),       { z-coordinate of the end location }                          zloc(in(2, c))         { z-coordinate of the end location }                         ),                                                                      MaximumDriveSpeed,      { The maximum allowed speed during the move }                         DesiredEndSpeed,        { The desired end speed }                         att([acceleration],c),  { The desired acceleration of the atom }                          att([deceleration],c)), { The desired deceleration of the atom }                case(turnmode,[],[],createevent(AdvancedTransporter_smoothturn(transporttime,minrotspeed),                                      c,                                      12,    { Event 12: stop turning }                                      1000)),           {     if(        AtomExists(refdisplayforklift),       SendMessageDirect(refdisplayforklift,[Message],c)     ),}               ForAtomTreeUnder(      Model,      Do(       var([atmActive],vbAtom,a),       if(        and(         CompareText(name(atmActive),[Speedometer]),         in(1,atmActive) = c        ),        Do(         var([strRefDisplay],vbString),         strRefDisplay := concat([refdisplayforklift],string(att([SpeedoNumber],atmActive))),                       if(           AtomExists(strRefDisplay),          Do(           SendMessageDirect(ExecString(strRefDisplay),[Message],c)          )         )        )       )      )     ),          if(      or(       and(        c.AfterPicking = true,        not(ptv(atmNextNode) = ptv(atmPrevNode))       ),       c.NextCallIsOffroad = true      ),      do(       { incrementing path capacity }       valAheadNodeChannel := AdvancedTransporter_FindOutputChannel(atmPrevNode, atmNextNode),       SetCell(valAheadNodeChannel, 2, Cell(valAheadNodeChannel, 2, atmPrevNode) + 1, atmPrevNode),              c.AfterPicking := false,       c.NextCallIsOffroad := false      )     ),                                          createevent(transporttime,c,traveleventcode)  { Enter next travelto()-phase }    ),       {2. Arrival at next node or final destination }    do(      if(        atomexists(in(3,c)),        do(         createevent(0,c,att([keepspeed],c)+3,0,in(3,c))        ),        do(         createevent(0,c,att([keepspeed],c)+3)        )      )    ),       {3. Arrival at destination, bring fork to correct height }    do(               StopAtom(c),      Corner:=0,      if(        label([charging],c),        {Arrival at Battery-Charging Station}        do(          CreateEvent(0,c,16)         ),        {Arrival at origin or destination / pick or place location}        do(          if(            label([t-setDestination],c),            do(              SetLabel([t-setDestination],0,c),              OpenInput(c),              OpenOutput(c),              CreateEvent(0,c,10)            ),            do(              atdestination:=true,              forkz:=forkz+(liftdirection*liftspeed*(time-liftstart)),              AdvancedTransporter_liftfork            )          ),          createevent(abs(liftheight/liftspeed),c,13)        )      )    ),       {4. Arrival at node, select next destination }    do(       Corner := 0,      keepspeed := false,      sddb([t-continue], 1, c),            if(         offroad,         if(           ddb([t-node1], in(2, c)) = att([nodenumber], out(2, c)),           setatt([next channel], ddb([t-node2], in(2, c)), c),           setatt([next channel], ddb([t-node1], in(2, c)), c)         ),          setatt([next channel], cell(att([nodenumber], out(2,c)), destnode, vtp(nodetable)), c)       ),             if(        att([next channel],c)=0,        do(          msg(concat([Simulation stopped. ],name(in(2,c)),[ cannot be reached from ],name(out(2,c)),[. Check the network for one-way connections from ],name(out(2,c)),[ to ],name(in(2,c)),[. Check if two network controllers control the same network. Rebuild the network.]),3),          stop        ),        do(          setcs(out(att([next channel],c),vtp(pointertable))),            octonext := AdvancedTransporter_FindOutputChannel(atmNextNode, cs),                  if(          c.Event6 = true,          do(           c.Event6 := false,                      setcs(atmPrevNode),           octonext := AdvancedTransporter_FindOutputChannel(atmNextNode, atmPrevNode),           AdvancedTransporter_calculateDistance(1),                              if(            offroad,            if(             ddb([t-node1], atmPrevNode) = att([nodenumber], atmPrevNode),             setatt([next channel], ddb([t-node2], atmPrevNode), c),             setatt([next channel], ddb([t-node1], atmPrevNode), c)            ),            setatt([next channel], cell(att([nodenumber], atmPrevNode), DestNode, vtp(NodeTable)), c)           )          )         ),                    if(            or(              cell(octonext,2,out(2,c)) < cell(octonext,1,out(2,c)),              atomid(out(3,c))=atomid(cs)            ),            {// Transporter continues, path capacity not reached //}            do(                          { *** set correct status *** }             Case(              WhichIsTrue(               and(                Content(c) = 0,                Label([charging], c) = false               ),               and(                Content(c) = 0,                Label([charging], c) = true               ),               Content(c) > 0              ),              SetStatus(7, c),              SetStatus(3, c),              SetStatus(6, c)             ),                          { *** updating path capacity *** }             if(              and(               not(ptv(atmNextNode) = ptv(atmPrevNode)),               c.NextCallIsOffroad = false              ),              do(               { Entering path }               atmAheadNode := vtp(Cell(Cell(Att([nodenumber], atmNextNode), DestNode, vtp(NodeTable)), 1, vtp(PointerTable))),               valAheadNodeChannel := AdvancedTransporter_FindOutputChannel(atmNextNode, atmAheadNode),                              { If the AT is going to drive offroad, we have no channel }               if(                valAheadNodeChannel <> 0,                SetCell(valAheadNodeChannel, 2, Cell(valAheadNodeChannel, 2, atmNextNode) + 1, atmNextNode)               ),                              if(                not(ptv(atmNextNode) = ptv(atmPrevNode)),                do(                 { Releasing previous path }                 valPrevNodeChannel := AdvancedTransporter_FindOutputChannel(atmPrevNode, atmNextNode),                                 SetCell(valPrevNodeChannel, 2, Cell(valPrevNodeChannel, 2, atmPrevNode) - 1, atmPrevNode)                )               ),               if(                offroad,                do(                 c.NextCallIsOffroad := true                )               )              )             ),                           if(                and(                  content(out(2,c))>0,                  content(out(3,c))>0                ),                if(                  age(first(out(2,c))) >= age(first(out(3,c))),                  createevent(0,out(2,c),1),                  createevent(0,out(3,c),1)                  ),                if(                  content(out(2,c))>0,                  createevent(0,out(2,c),1),                  if(                    content(out(3,c))>0,                    createevent(0,out(3,c),1)                  )                )              ),              connect(3,c,0,out(2,c)),              connect(2,c,0,cs),                            { *** additional RFID-Gate: send message *** }              if(               and(                Label([IntelliNode], atmNextNode) = 2,                Label([IntelliNode], atmPrevNode) = 1               ),                              SendMessageDirect(atmPrevNode, ParString([ReadData], ptv(c)))              ),                        { *** }                            octocur:=octonext,                            if(                offroad,                {// Travel off the road to the final destination //}                AdvancedTransporter_t-calcoffset,                do(                  setatt([curxdest],xloc(c)+xabsloc(cs,model)-xabsloc(c,model),c),                  setatt([curydest],yloc(c)+yabsloc(cs,model)-yabsloc(c,model),c),                  keepspeed:=true,                  if(                    att([nodenumber],cs) = destnode,                    do(                      offroad := min(1,ddb([t-node2],in(2,c))),                      keepspeed:=offroad                    )                  ),                  {/// check angles during travel}                  c.aheadnode:= Cell(att([next channel],c),destnode,vtp(nodetable)),                  curangle := Cell(att([nodenumber],out(3,c)), att([next channel],c),vtp(angletable)),                  if(                    {if next channel is destination node}                    att([next channel],c)=att([destnode],c),                    nextangle:= curangle,                    nextangle:= Cell(att([next channel],c), c.aheadnode,vtp(angletable))                  ),                            if(                    Abs(curangle-nextangle)>180,                    angledifference:= 360-Abs(curangle-nextangle),                    angledifference:= Abs(curangle-nextangle)                  ),                  if(                    angledifference > minangle,                    do(                      {set corner node attribut while moving }                      corner:=1                       )                    )                    )                )              ),            {// Transporter stops, path capacity is reached //}            do(              SetStatus(5, c),              createatom(baseclass,out(2,c),concat(name(c),[ waiting])),              sddb([t-tspwait],ptv(c),last(out(2,c))),              sddb([t-continue],0,c),              stopatom(c)            )          )        )      ),      sddb([t-start],0,c),      if(        ddb([t-continue],c),        createevent(0,c,1)      )    ),       {5. Ready for picking, request a transport task }    do(     atdestination := false,     openic(1,c)    ),    { NIEUW }      {6. Travel between destination/origin and first node }    do(          { don't execute if driving free-range }     if(      and(       AtomExists(atmNextNode),       AtomExists(atmPrevNode)      ),            { *** network present *** }      do(       valAheadNodeChannel := AdvancedTransporter_FindOutputChannel(atmNextNode, atmPrevNode),              if(        Or(         Cell(valAheadNodeChannel, 1, atmNextNode) > Cell(valAheadNodeChannel, 2, atmNextNode),         valAheadNodeChannel = 0        ),        do(         { // Path capacity not reached, continue travel }                  { *** manipulate path capacity *** }         if(          not(ptv(atmNextNode) = ptv(atmPrevNode)),          do(           if(            Offroad = false,            if(             valAheadNodeChannel > 0,             Do(              { incrementing path capacity }              SetCell(valAheadNodeChannel, 2, Cell(valAheadNodeChannel, 2, atmNextNode) + 1, atmNextNode),                            { Releasing previous path }              valPrevNodeChannel := AdvancedTransporter_FindOutputChannel(atmPrevNode, atmNextNode),              SetCell(valPrevNodeChannel, 2, Cell(valPrevNodeChannel, 2, atmPrevNode) - 1, atmPrevNode)             )            ),                                    c.NextCallIsOffroad := false           )          ),          do(                      c.AfterPicking := true          )         ),         AdvancedTransporter_Event6(c, atmCurDest, atmOrigin, atmNextNode, atmPrevNode)                 ),        do(         { // Path capacity reached }         SetStatus(5, c),         createatom(baseclass,out(2,c),concat(name(c),[ waiting])),         sddb([t-tspwait],ptv(c),last(out(2,c))),         sddb([t-continue],0,c),                  c.Event6 := true        )       )       ),      AdvancedTransporter_Event6(c, atmCurDest, atmOrigin, atmCurDest, atmOrigin)     )        ),          {7. Load more atoms or start placing the current content? }    do(      {* i is the last entered atom *}      setrank(1,i),      prevatom := ptv( in(2,c)),      setcs(out(1,c)),      if(        content(c) = 1,        do(          curload := loadquantity,          Connect(1, c, DestChannel, vtp(DestAtom) )          )        ),      if(        label([t-destinator],cs),        {* If the transporter is connected to a destinator *}        do(          OpenAlloc(out(1,c)),          SetLabel([t-dest],max(1,sendto),c)          ),        {* Else *}        SetLabel([t-dest],1,c)        ),      {* Set a label with its destiny on the last entered product *}       SetLabel([t-dest], label([t-dest],c),i),      {* Set a label which rank it has on the last entered product *}      SetLabel([t-rank], content(c),i),      if(        and(          content(c) >= att([Curload],c),           autounload        ),        {* Start unloading *}        do(          setcs(first(c)),          Transporter_t-sortload(unloadsequence),          placing:=true,          createevent(0,c,6,0,cs)          ),        {* Pick another product *}        if(          and(            content(c) < att([Curload],c),            autoload          ),          createevent(0,c,5)        )      ),      setcs(out(1,c)),      if(        label([t-destinator],cs),        connect( 0, out( label( [t-dest], first(c)), cs), 2, c),        connect( 0, cs, 2, c)      ),      connect(0,first(c),3,c)    ),       {8. Fork at drive height, start driving }    do(      if(        not(liftdrive),        createevent(0,c,1)      )     ),       {9. Load or unload }    do(      setstatus(1,c),      if(        picking,        do(          if(            label([t-dispatcher],in(1,c)),            {* If the transporter is connected to a dispatcher, open the inputchannel of the dispatcher *}            do(              SetLabel( concat([t-ic], string( label([t-ic],c))), 1, in(1,c)),              openic(label([t-ic],c),in(1,c))              ),            {* Else open the inputchannel of the transporter *}            openic(1,c)          )        ),        do(          if(            or(placing,userplace),            do(              setstatus(5,c),              openoc(1,c)              ),            if(              userpick,              moveatom(in(3,c),c)            )          )         )      )    ),        {10. Place more or start picking? }    do(      if(        not(label([t-setDestination],c)),        do(          setstatus(1,c),          if(            content(c)=0,            do(              if(                Label([preparecharging],c),                do(                  SetLabel([charging],1,c),                  CreateEvent(0,c,15)                  ),                do(                                  if(                    autoload,                    createevent(0,c,5)                  )                )              )            ),             do(              if(                autounload,                do(                  connect(0,first(c),3,c),                  if(                    ddb([t-destinator],out(1,c)),                    connect(0,out(ddb([t-dest],first(c)),out(1,c)),2,c),                    connect(0,out(1,c),2,c)                    ),                  placing:=true,                  createevent(0,c,6,0,first(c))                )              )              )          )        )       )    ),        {11. Stop lifting //}    do(      if(        batterymode,        do(         batt_curtime:= abs(liftheight/liftspeed),         if(          batt_curtime>0,          do(           if(liftheight>0,           do(            batt_ConsumptionTyp:= batt_ConsumptionLift           ),           do(            batt_ConsumptionTyp:= batt_ConsumptionLower            )           ),           AdvancedTransporter_UpdateBatteryCapacity(c)          )         )          )      ),      liftdirection:=0,      forkz:=forkz+liftheight,      liftheight:=0    ),        {12. Stop turning //}    do(      rotationspeedas(c):=0    ),       {13. Fork is at correct height, load or unload //}    do(      if(        or(picking,userpick),        do(          setstatus(16,c),{load}          createevent(loadtime+abs(liftheight/liftspeed),c,9)          ),        do(                   setstatus(17,c),{unload}                 createevent(unloadtime+abs(liftheight/liftspeed),c,9)        )        )    ),       {14. Battery Consumption}    do(     { Event moved to AdvancedTransporter_UpdateBatteryCapacity }     0      ),       {15. Prepare moving to battery-charging station}       do(      setcs(out(2,c)),      if(        nRows(vtp(BatteryTable))>1,        do(          c.CurAtom:=     IndexMatch(                           nRows(vtp(AtomTable)),                           att([nodenumber],cs),                           Cell(Count,2,vtp(AtomTable))),          c.CurCharging:= IndexMin(                            nRows(vtp(att([BatteryDistanceTable],c))),                           Cell(Count,c.CurAtom,vtp(BatteryDistanceTable))),                          if(            Cell(c.CurCharging,c.CurAtom,vtp(BatteryDistanceTable)) < 1000000,            do(              Connect(1, c, 0, vtp(cell(c.CurCharging,1,vtp(BatteryTable)))),              Connect(0,vtp(cell(c.CurCharging,1,vtp(BatteryTable))), 2, c),              CreateEvent(0,c,6)              ),            do(              Stop,              msg([From this location, there is no corect path to a Battery-Charging Station possible!])            )          )                     ),        do(          if(            and(               nRows(vtp(BatteryTable))=1,               Cell(1,att([nodenumber],cs),vtp(BatteryDistanceTable)) < 1000000            ),            do(              Connect(1, c, 0, vtp(Cell(1,1,vtp(BatteryTable)))),              Connect(0, vtp(Cell(1,1,vtp(BatteryTable))), 2, c),              CreateEvent(0,c,6)            ),            do(              Stop,              msg([You have to use the "Battery-Charging Station" atom and a network within your model if you want the transporter to run on battery mode! The "Battery Charging Station" needs to be connected to the a network, so the transporter knows where it can be recharged.])            )              )          )       )        ),        {16. At battery-charging location}      do(      CreateAtom(AtomByName([Battery],Library),c,[EmptyBattery]),      Connect(0,last(c),3,c),      SetAtt([TransporterRef],    ptv(c),                     last(c)), { Copy battery atts to battery }      SetAtt([batterycapacity],   att([batterycapacity],c),   last(c)),      SetAtt([batt_curcapacity],  att([batt_curcapacity],c),  last(c)),      SetAtt([batt_curpercentage],att([batt_curpercentage],c),last(c)),      SetLabel([empty_battery],ptv(last(c)), c),      Input(c) := Input(c) - 1,   {  not counted for results  }      CreateEvent(0,c,17)    ),       {17. At battery-charging location: release battery for charging}         do(           {Switch of Display of current charging status}      batt_2DText:=0,            { Releasing previous path }      valPrevNodeChannel := AdvancedTransporter_FindOutputChannel(atmPrevNode, atmNextNode),      SetCell(valPrevNodeChannel, 2, Cell(valPrevNodeChannel, 2, atmPrevNode) - 1, atmPrevNode),            { Label needed for E6 }      Repeat(       nRows(vtp(BatteryTable)),       if(        or(         Cell(Count, 2, vtp(BatteryTable)) = Label([t-node1], atmNextNode),         Cell(Count, 2, vtp(BatteryTable)) = Label([t-node], atmNextNode)        ),        c.BatteryRow := Count       )      ),            octocur:=0,         {Move battery atom to a docking station of current battery-charging station}      MoveAtom(last(c), Out(1, c))    ),       {18. Destroy battery atom and prepare for loading/unloading}      do(      SetLabel([empty_battery],0,c),            Connect(1, c, DestChannel, vtp(DestAtom) ),      Connect(3,c,0,out(2,c)),         if(        label([t-dispatcher],in(1,c)),        OpenIc(1, c),         do(          Connect(0,atmOrigin,2,c), { Set current destination to origin }          CreateEvent(0,c,6)        )      ),      offroad:=true,      offnetwork:=false,      picking:= true,      DestroyAtom(i)    ),         { 19. Event to set references to network tables }    Do(      if(       and(         { Check whether the transporter is linked to a network(node) }          atomexists(out(4,c)),          atomexists(vtp(label([t-netreference],out(4,c))))       ),       do(         offnetwork:=false,         {Set references to Network Controller tables}         distancetable:=ptv(first(vtp(ddb([t-netreference],out(4,c))))),         nodetable:=ptv(next(vtp(distancetable))),               pointertable:=ptv(next(vtp(nodetable))),         AngleTable:= ptv(next(vtp(pointertable))),         AtomTable:= ptv(next(vtp(angletable))),         BatteryTable:= ptv(next(vtp(atomtable))),         BatteryDistanceTable:= ptv(next(vtp(batterytable))),         connectiontable:=ptv(up(vtp(distancetable)))            )     )    )    ))]);
+Set(OnEntered, [do(  CloseAllIC(c),    if(    and(      Label([empty_battery],c)>0,      AtomExists(vtp(label([empty_battery],c))),      i=vtp(Label([empty_battery],c))      ),   {// entered atom is the charged battery}    do(      batt_2DText:=1,      batt_curcapacity:= att([batt_curcapacity],first(c)),      batt_curpercentage:= att([batt_curpercentage],first(c)),      c.preparecharging:=0,      Input(c) := Input(c) - 1,   {  not counted for results  }      CreateEvent(0, c, 18, 0, first(c))      ),   {// entered atom is a product}      do(         SetLoc(0.3,0,0.2,i),      picking:=false,      userpick:=false,      atdestination:=false,      {* If the transporter is connected to a dispatcher, open inputchannel 1 of the dispachter *}      if(        Label([t-dispatcher],in(1,c)),        OpenIC(Label([t-ic],c),in(1,c))        ),      SetLabel([t-ic],0,c),      entrytrigger,      CreateEvent(0,c,7,0,i)      )    )    )]);
+Set(OnExited, [do(    CloseAllOC(c),  liftdirection:=0,  atdestination:=false,  placing:=false,  userplace:=false,   if(    and(      label([empty_battery],c)>0,      AtomExists(vtp(label([empty_battery],c))),      i=vtp(label([empty_battery],c))      ),   {// exiting atom is an empty battery -> charging process!}    do(      c.preparecharging:=0,      c.charging:=0,      RotationAs(c):=90,      Output(c) := Output(c) - 1    {  not counted for results  }      ),   {// exiting atom is a product}     do(      sddb([t-rank],0,i),       if(        ddb([t-destinator],out(1,c)),        do(          createatomcopy(i,c,name(i)),          i.copy:=ptv(last(c)),          setrank(1,last(c)),          sddb([t999-icdestinator],ocicno(1,c),i),          Input(c) := Input(c) - 1   {  not counted for results  }          ),        do(          sddb([t-dest],0,i),          exittrigger,          createevent(0,c,10)          )        )        )    )  )]);
+Set(OnCreation, [do( sddb([t-transporter],1,c), autoconnect)]);
+Set(OnReset, [do(
+  {**Fix Old transporter**} 
+  if(
+    and(
+      NrOC(c) = 3,
+      OcConnected(2, c)
+    ),
+    do(
+      SetChannels(3, 4, c),
+      SetChannelRanges(3, 3, 4, 4, c),
+      Connect(4, c, 0, out(2, c)),
+      ConnectedTo := name(out(2, c))
+    )
+  ),
+  
+  { If there are any atoms (especially the battery) in the transporter then delete them }
+  if(
+   Content(c) > 0,
+   ForAtomTreeUnder(
+    c,
+    DestroyAtom(a)
+   )
+  ),
+
+  CloseAllOC(c),
+  StopAtom(c),
+  SetStatus(1,c),
+  RotationSpeedAs(c):=0,
+  Connect(0,c,2,c),
+  RotationAs(c):=0,
+  
+  { Update the connectedto attribute in case the 4th output channel is connected. }
+  if(
+   OcConnected(4, c),
+   ConnectedTo := Name(out(4,c)) 
+  ), 
+
+  if(
+    AtomExists(AtomByName(TextAtt([ConnectedTo], c),Model)),
+    do(
+      SetCs,
+      SetLoc(
+       +(xloc(c),-(xabsloc( cs, model), xabsloc( c, model)), 0.5),
+       +(yloc(c),-(yabsloc( cs, model),yabsloc(c,model))),
+       zloc(c),c
+       ),
+      Connect(2,c,0, cs),
+      Connect(3,c,0, cs)
+    )
+  ),
+  if(
+   AtomExists(Out(1,c)),
+   If(
+    not(Label([t-chargingstation],Out(1,c))),
+    do(
+     DestAtom:= ptv(Out(1,c)),
+     DestChannel:= OcIcNo(1, c)
+    ),
+    msg(Concat(Name(c), [: Do not connect the transporter to a Battery-Charging Station! Choose another destination!]))
+   ),
+   do(
+    if(
+     AtomExists(vtp(DestAtom)),
+     Connect(1,c,DestChannel,vtp(DestAtom)),
+     msg(Concat(Name(c), [: Is not connected to a destination! Connect the first outputchannel!]))
+    )
+   )
+  ),
+  if(
+    and(
+      AtomExists(in(1,c)),
+      not(ddb([t-dispatcher],in(1,c)))
+    ),
+    if(
+      indexmatch(
+      NrOC(in(1,c)),
+      if(
+        AtomExists(out(count,in(1,c))),
+        ddb([t-transporter],out(count,in(1,c)))
+      ),
+      true) > 1,
+      do(
+        msg(concat(name(in(1,c)),[ may be connected to 1 transporter only. ],name(c),[ disconnected from ],name(in(1,c)),[. Use a dispatcher to send to multiple transporters.]),2),
+        Connect(0,c,1,c)
+      )
+    )
+  ),
+  
+  {// set attribute values //}
+  transporttime:=0,
+  picking:=true,
+  placing:=false,
+  offroad:=false,
+  offnetwork:=false,
+  atdestination:=false,
+  forkz:=0,
+  liftdirection:=0,
+  lastspeed:=0,
+  liftheight:=0,
+  setatt(1,0,c),
+  setatt(2,1,c),
+  setatt(3,xloc(c),c),
+  setatt(4,yloc(c),c),
+  setatt(6,1,c),
+  setatt(10,0,c),
+  setatt(29,0,c),
+  octoprev:=0,
+  octocur:=0,
+  octonext:=0,
+  if(not(autoload),closeallic(c)),
+  userpick:=false,
+  userplace:=false,
+  batt_curcapacity:=batterycapacity,
+  batt_curtime:=0,
+  batt_curpercentage:= 100, {battery is completely charged at beginning!}
+  corner:=0,
+  if(
+    Batterymode,
+    Batt_2DText:=1,
+    Batt_2DText:=0
+  ),
+
+  {// set label values //}
+  sddb([t-start],1,c),
+  sddb([t-oneway],0,c),
+  sddb([t-setdestination],0,c),
+  sddb([t_rr], 0, c),
+  SetLabel([preparecharging],0,c),
+  SetLabel([charging],0,c),
+  SetLabel([empty_battery],0,c),
+  SetLabel([aheadnode],0,c),
+  c.CurCharging:=0,
+  c.CurAtom:=0,
+  
+  c.NextCallIsOffroad := false,
+  c.AfterPicking := false,
+  c.Event6 := false,
+
+  offnetwork:=true,
+  
+  { Create event to set network controller references, the network controller atom has to set the network reference on the nodes first.}
+  CreateEvent(0, c, 19, 999)
+
+)
+]);
+Set(OnUser, [do(  { Delete any current instances of this form.}    GuiDestroy([AdvancedTransporter]),  { Register the GUI-form for this atom.}   GuiRegister(PDir([\Atoms\AdvancedTransporter.gui]), 1),  { Show the GUI-form.}   GuiCreate([AdvancedTransporter], [AdvancedTransporter], 0, c, 0, 1)   ) ]);
+Set(OnOcReady, [if(content(c)>0,moverequest(first(c),1))]);
+Set(OnIcReady, [do( var([atmTransporter],vbAtom,c), var([atmSource],vbAtom,in(1,atmTransporter)), if(  not(label([t-dispatcher],atmSource)),  if(   not(atdestination),   do(    { Connect the central channel of the source to the 2nd ic of the transporter }    connect(0,atmSource,2,atmTransporter),     closeallic(atmTransporter),    picking:=true,    if(and(input(atmTransporter)=0,atomexists(out(2,c))),     prevatom:=vtp(out(2,c))    ),    createevent(0,c,6,0)   )  ) ))]);
+Set(On2DDraw, [do(  if(    batt_2DText,    do(      diText(0,2,Concat([Battery: ],String(att([batt_curpercentage],c),5,2),[%]),             ColorBlack, ColorTransparent, 0.5, [Arial])      )    )  )]);
+Set(On3DDraw, [do( if(  status(c)<>12,  c.zdraw:=forkz+(liftdirection*liftspeed*(time-liftstart)),  do(   liftheight:=liftheight-(c.zdraw-forkz),   forkz:=c.zdraw,   liftstart:=time  ) ), if(  boxvisible(0,0,0,4,4,4),  case(   att(25,c),   drawsimpletruck,   drawlifttruck,   drawpalletjack,   drawpalletwagon,   drawrollcontainer,   drawrollcontainerb,   drawwalkyrider  ) ), foratomlayerunder(  c,  do(   setcs,   setloc(xloc(cs),yloc(cs),c.zdraw+0.1,cs)  ) ))]);
+Set(OnMessage, [if( message>0, {// Receive task from dispatcher //} if(  icready(1,c),  do(   setcs(vtp(message)),   closeallic(c),   connect(0,in(1,cs),2,c),   connect(0,in(3,cs),3,c),   setlabel([t-oc],icocno(1,c),in(3,c)),   setlabel([t-ic],label([t-ic],cs),c),   destroyatom(cs),   picking:=true,   openalloc(in(1,c)),   if(and(input(c)=0,atomexists(out(2,c))),prevatom:=vtp(out(2,c))),   createevent(0,c,6,0,in(3,c))  ) ), {// Exittrigger //} exittrigger)]);
+SetStatus(0);
+int018;
+int007;

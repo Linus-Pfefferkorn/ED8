@@ -1,0 +1,187 @@
+
+
+{Atom: Turntable Unit}
+
+sets;
+BaseClass;
+CreateAtom(a, s, [], 1, false);
+int023([Turntable Unit], 15, 3122);
+Set(Icon(a), 
+	RegisterIcon(IconsDir([bmp\atoms\trans.bmp]), [transport]));
+SetMaterial(
+	RegisterMaterial([Default], 8421504, 8421504, 3289650, 0, 0.100000001490116, 0, false, false, 1, 0), 1, a);
+Set(Version(a), 7.3);
+SetTreeIcon(pDir([Media\Icons\TurnTable.ico]));
+Set(Info, [Turntable.
+
+General
+------------
+This atom is used for turning incoming product in any direction. 
+When an atom enters it will transport it to the end of its 
+conveying length. Then the turntable will turn towards the 
+direction where it will drop off the product. It will then 
+activate it's inputstrategy and will turn empty in the direction 
+of where the new atom is coming from.
+
+In the table you can enter in the first colomn for each input 
+channel, the angle it has to pick up an atom from. 
+Edit angles between 360° and -360°.
+Positive angles result in clockwise rotation.
+Negative angles result in counterclockwise rotation.
+Ensure that the angles fit to the rotation of dedicated atom 
+connected to oc according to table row.
+In the second column you can enter per atom the angle where it has 
+to drop the atom off.
+
+Statuses:
+-------------
+  1 - Idle
+  4 - Waiting (on destination for input)
+  5 - Blocked 
+  6 - Travel Full   (rotating full)
+  7 - Travel Empty   (rotating empty)
+ 26 - Conveying  (lateral movement)
+
+Last revision:
+--------------------
+November, 2008
+]);
+int001(67);
+SetSize(4, 4, 0);
+LockPosition(false);
+LockSize(false);
+DisableIconRotation(false);
+SetProductCode([]);
+int024;
+Set(OnCreation, [AutoConnect]);
+Set(OnUser, [ExecOnUser(First(c))]);
+Set(On2DDraw, [Do(
+ diArc(
+ -(
+  -(
+   xSize(c) / 2,
+   -(xSize(c) / 2, *(Cos(RotationAs(c)), xSize(c) / 2))
+  ),
+  *(Sin(RotationAs(c)), ySize(c) / 2)
+ ),
+ +(
+  -(
+   ySize(c) / 2,
+   -(ySize(c) / 2, *(Cos(RotationAs(c)), ySize(c) / 2))
+  ),
+  *(Sin(RotationAs(c)), xSize(c) / 2)
+ ),
+ xSize(c) / 2, 0, 359, Color(c))
+)
+]);
+Set(On3DDraw, [Do( Cylinder( -(-(xSize(c) / 2,     -(xSize(c) /2 ,*(Cos(RotationAs(c)), xSize(c) / 2))     ),     *(Sin(RotationAs(c)), ySize(c) / 2)   ),   +(-(ySize(c) / 2,     -(ySize(c) / 2, *(Cos(RotationAs(c)), ySize(c) / 2))    ),    *(Sin(RotationAs(c)), xSize(c) / 2)    ),   0, zSize(First(c)), 360, xSize(c) / 2, 0, 90, 90, Color(First(c))))]);
+SetStatus(0);
+int018;
+
+
+{Preregister functions}
+
+PreregisterFunction([Turntable_2DDraw_Arrow], 1, 1);
+
+
+{Atom: Turntable}
+
+sets;
+BaseClass;
+CreateAtom(a, s, [], 1, false);
+int023([Turntable], 11249415, 1266);
+DefineFunction([Turntable_2DDraw_Arrow], [Conveyors], 1, 1, [Do(
+ SetVector(0, 0, 0, 0.2, RotationAs(p(1)), 0, 0),
+ 
+ DrawArrow(
+  0 -  ySize(p(1))/2 * Sin(RotationAs(p(1))), 
+       ySize(p(1))/2 * Cos(RotationAs(p(1))),
+  vx - ySize(p(1))/2 * Sin(RotationAs(p(1))), 
+  vy + ySize(p(1))/2 * Cos(RotationAs(p(1))),
+  0.15, 
+  0.15, 
+  ColorWhite, 
+  True, 
+  100, 
+  0
+ )
+)
+], [Draw an 2D arrow for Turntable p(1)
+], [Turntable_2DDraw_Arrow(c)], 0, [Turntable]);
+Set(Icon(a), 
+	RegisterIcon(IconsDir([bmp\atoms\trans.bmp]), [transport]));
+SetMaterial(
+	RegisterMaterial([Default], 8421504, 8421504, 3289650, 0, 0.100000001490116, 0, false, false, 1, 0), 1, a);
+Set(Version(a), 7.3);
+SetTreeIcon(pDir([Media\Icons\TurnTable.ico]));
+Set(Info, [is not intended to be dragged into the model
+]);
+Set(DdbRec, [>t-nocreate:1.>v-turn table:1.]);
+SetChannels(1, 1);
+SetChannelRanges(1, 255, 1, 255);
+int001(68);
+SetLoc(2, 2, 0);
+SetSize(4, 1, 1);
+SetTranslation(-2, -0.5, 0);
+LockPosition(false);
+LockSize(false);
+DisableIconRotation(false);
+SetProductCode([]);
+CreateAttributes(12);
+SetAttributeName(r(1), [Speed]);
+SetAttributeName(r(2), [TurnSpeed]);
+SetAttributeName(r(3), [NextAngle]);
+SetAttributeName(r(4), [InitialRotation]);
+SetAttributeName(r(5), [Turn]);
+SetAttributeName(r(6), [SendTo]);
+SetAttributeName(r(7), [InStrategy]);
+SetAttributeName(r(8), [CurOc]);
+SetAttributeName(r(9), [CurIc]);
+SetAttributeName(r(10), [IsOnDest]);
+SetAttributeName(r(11), [EntryTrigger]);
+SetAttributeName(r(12), [ExitTrigger]);
+SetExprAtt(r(1), [1]);
+SetExprAtt(r(2), [10]);
+SetAtt(r(3), 90);
+SetExprAtt(r(4), [0]);
+SetAtt(r(5), 1);
+SetExprAtt(r(6), [1]);
+SetExprAtt(r(7), [{.openallic(c)|1. Any inputchannel .}openallic(c)]);
+int024;
+SetTable(1, 2);
+int015(0, 0, [`Channel No's`
+1
+]);
+int015(1, 0, [`Angle Input`
+0
+]);
+int015(2, 0, [`Angle Output`
+180
+]);
+Set(OnEvent, [Case( EventCode, {// 1: Stop product, start turning //} Do(  StopAtom(i),  CurOc := SendTo,  NextAngle := Cell(CurOc, 2, c) - RotationAs(c),  if(   {--More than 360° or equal to 360°--}   Abs(NextAngle) > 360,   {--adjust to range from -360° to 360°--}   NextAngle := Mod(NextAngle, 360)  ),      Status(c) := 6,  Status(Up(c)) := 6,  RotationSpeedAs(c) :=    If(    NextAngle > 0,     TurnSpeed,    0 - TurnSpeed   ),  CreateEvent(Abs(NextAngle / TurnSpeed), c, 2) ), {// 2: Stop turning open output //} Do(  NextAngle := 0,  RotationSpeedAs(c) := 0,  RotationAs(c) := Cell(CurOc, 2, c),  Status(c) := 5,  Status(Up(c)) := 5,  OpenOc(CurOc, c) ), {// 3: Not used //} Do(    [ NOT USED ] ), {// 4: Accept a new product //} Do(  IsOnDest := True,  NextAngle := 0,  RotationSpeedAs(c) := 0,  RotationAs(c) := Cell(CurIc, 1, c),  Status(c) := 4,  Status(Up(c)) := 4,  OpenIc(CurIc, c) ), {// 5: input strategy } Do(  Status(c) := 1,  Status(Up(c)) := 1,  IsOnDest := False,  InStrategy ), {// 6 move to pick up pos} Do(  NextAngle := RotationAs(c) - Cell(CurIc, 1, c),  if(   {--More than 360° or equal to 360°--}   Abs(NextAngle) > 360,   {--adjust to range from -360° to 360°--}   NextAngle := Mod(NextAngle, 360)  ),     Status(c) := 7,  Status(Up(c)) := 7,  RotationSpeedAs(c) :=    If(    NextAngle < 0,     TurnSpeed,    0 - TurnSpeed   ),  CreateEvent(Abs(NextAngle / TurnSpeed), c, 4) ))]);
+Set(OnEntered, [Do( CloseAllIc(c), SetLoc(-(-(xSize(c) / 2), xSize(i)), /(-(ySize(c), ySize(i)), 2) - ySize(c) / 2, zSize(c), i), SetSpeed(Speed, 0, 0, i), Status(c) := 26, Status(Up(c)) := 26, CreateEvent(TravelTime(Speed, xSize(c)), c, 1), EntryTrigger)]);
+Set(OnExited, [Do( CloseAllOC(c), Status(c) := 26, Status(Up(c)) := 26, CreateEvent(TravelTime(Speed, xSize(i)), c, 5), ExitTrigger)]);
+Set(OnCreation, [AutoConnect]);
+Set(OnReset, [Do(
+ CloseAllOc(c),
+ SetLoc(xSize(Up(c)) / 2, ySize(Up(c)) / 2, 0, c),
+ SetTranslation(-(xSize(Up(c)) / 2), -(ySize(c) / 2), 0, c),
+ SetSize(xSize(Up(c)), ySize(c), zSize(c), c),
+ IsOnDest := False,
+ RotationAs(c) := InitialRotation,
+ RotationSpeedAs(c) := 0,
+ NextAngle := 0,
+ Status(c) := 1,
+ Status(Up(c)) := 1
+)
+]);
+Set(OnUser, [Do( SetTable(Max(NrIc(c), NrOc(c)), 2, c), Repeat(nRows(c) - NrIc(c),   SetCell(nRows(c) + 1 - Count, 1, [   ---], c)), Repeat(nRows(c) - NrOc(c),   SetCell(nRows(c) + 1 - Count, 2, [   ---], c)),Do(  { Delete any current instances of this form.}   GuiDestroy([Turntable Unit]),  { Register the GUI-form for this atom.}  GuiRegister(PDir([\Atoms\Turntable Unit.gui]), 1),  { Show the GUI-form.}   GuiCreate([Turntable Unit], [Turntable Unit], 0, c, 0, 1) ))]);
+Set(OnOcReady, [If( and(  Content(c) > 0,  {--On destination--}  Status(c) = 5 ), MoveRequest(First(c), CurOc))]);
+Set(OnIcReady, [If( Not(IsOnDest), Do(  CloseAllIc(c),  Status(c) := 7,  Status(Up(c)) := 7,  CurIc := ic(c),  CreateEvent(0, c, 6) ))]);
+Set(On2DDraw, [Turntable_2DDraw_Arrow(c)
+]);
+Set(On3DDraw, [Draw3DIcon(20)]);
+SetStatus(0);
+int018;
+Up;
+int007;

@@ -1,0 +1,1327 @@
+
+
+{Preregister functions}
+
+PreregisterFunction([ScatterPlot_SetNumberOfRegistrations], 2, 2);
+PreregisterFunction([ScatterPlot_GetNumberOfRegistrations], 1, 1);
+PreregisterFunction([ScatterPlot_Initialize], 1, 1);
+PreregisterFunction([ScatterPlot_Animate2D], 1, 1);
+PreregisterFunction([ScatterPlot_GetTotalScore], 1, 1);
+PreregisterFunction([ScatterPlot_GetLegendVisible], 1, 1);
+PreregisterFunction([ScatterPlot_SetBorderColor], 2, 2);
+PreregisterFunction([ScatterPlot_GetBorderColor], 1, 1);
+PreregisterFunction([ScatterPlot_SetScoresVisible], 2, 2);
+PreregisterFunction([ScatterPlot_GetScoresVisible], 1, 1);
+PreregisterFunction([ScatterPlot_SetTitle], 2, 2);
+PreregisterFunction([ScatterPlot_GetTitle], 1, 1);
+PreregisterFunction([ScatterPlot_SetTitleVisible], 2, 2);
+PreregisterFunction([ScatterPlot_GetTitleVisible], 1, 1);
+PreregisterFunction([ScatterPlot_SetTextColor], 2, 2);
+PreregisterFunction([ScatterPlot_GetTextColor], 1, 1);
+PreregisterFunction([ScatterPlot_SetTextSizeTitle], 2, 2);
+PreregisterFunction([ScatterPlot_GetTextSizeTitle], 1, 1);
+PreregisterFunction([ScatterPlot_GuiDataTypeAndRangeValidation], 1, 1);
+PreregisterFunction([ScatterPlot_GuiApplyChanges], 1, 1);
+PreregisterFunction([ScatterPlot_SetTextSizeYAxis], 2, 2);
+PreregisterFunction([ScatterPlot_GetTextSizeYAxis], 1, 1);
+PreregisterFunction([ScatterPlot_SetYAxisValuesVisible], 2, 2);
+PreregisterFunction([ScatterPlot_GetYAxisValuesVisible], 1, 1);
+PreregisterFunction([ScatterPlot_SetYAxisNumberOfValues], 2, 2);
+PreregisterFunction([ScatterPlot_GetYAxisNumberOfValues], 1, 1);
+PreregisterFunction([ScatterPlot_SetYAxisLinesVisible], 2, 2);
+PreregisterFunction([ScatterPlot_GetYAxisLinesVisible], 1, 1);
+PreregisterFunction([ScatterPlot_SetYAxisLinesColor], 2, 2);
+PreregisterFunction([ScatterPlot_GetYAxisLinesColor], 1, 1);
+PreregisterFunction([ScatterPlot_StartCollectingStatusInformation], 1, 1);
+PreregisterFunction([ScatterPlot_Setid], 2, 2);
+PreregisterFunction([ScatterPlot_Getid], 1, 1);
+PreregisterFunction([ScatterPlot_SetWidthBoundingBox], 2, 2);
+PreregisterFunction([ScatterPlot_GetWidthBoundingBox], 1, 1);
+PreregisterFunction([ScatterPlot_SetMaximumXValue], 2, 2);
+PreregisterFunction([ScatterPlot_GetMaximumXValue], 1, 1);
+PreregisterFunction([ScatterPlot_SetMaximumYValue], 2, 2);
+PreregisterFunction([ScatterPlot_GetMaximumYValue], 1, 1);
+PreregisterFunction([ScatterPlot_SetHeightBoundingBox], 2, 2);
+PreregisterFunction([ScatterPlot_GetHeightBoundingBox], 1, 1);
+PreregisterFunction([ScatterPlot_InsertRegistration], 3, 3);
+PreregisterFunction([ScatterPlot_SetXAxisValuesVisible], 2, 2);
+PreregisterFunction([ScatterPlot_GetXAxisValuesVisible], 1, 1);
+PreregisterFunction([ScatterPlot_SetXAxisNumberOfValues], 2, 2);
+PreregisterFunction([ScatterPlot_GetXAxisNumberOfValues], 1, 1);
+PreregisterFunction([ScatterPlot_SetXAxisLinesVisible], 2, 2);
+PreregisterFunction([ScatterPlot_GetXAxisLinesVisible], 1, 1);
+PreregisterFunction([ScatterPlot_SetXAxisLinesColor], 2, 2);
+PreregisterFunction([ScatterPlot_GetXAxisLinesColor], 1, 1);
+PreregisterFunction([ScatterPlot_SetDotsRadius], 2, 2);
+PreregisterFunction([ScatterPlot_GetDotsRadius], 1, 1);
+PreregisterFunction([ScatterPlot_SetDotsBorderWidth], 2, 2);
+PreregisterFunction([ScatterPlot_GetDotsBorderWidth], 1, 1);
+PreregisterFunction([ScatterPlot_SetDotsColor], 2, 2);
+PreregisterFunction([ScatterPlot_GetDotsColor], 1, 1);
+PreregisterFunction([ScatterPlot_SetDotsBorderColor], 2, 2);
+PreregisterFunction([ScatterPlot_GetDotsBorderColor], 1, 1);
+PreregisterFunction([ScatterPlot_SetSumXValues], 2, 2);
+PreregisterFunction([ScatterPlot_GetSumXValues], 1, 1);
+PreregisterFunction([ScatterPlot_SetSumYValues], 2, 2);
+PreregisterFunction([ScatterPlot_GetSumYValues], 1, 1);
+PreregisterFunction([ScatterPlot_SetLeastSquaresCoefficient], 2, 2);
+PreregisterFunction([ScatterPlot_GetLeastSquaresCoefficient], 1, 1);
+PreregisterFunction([ScatterPlot_SetLeastSquaresConstant], 2, 2);
+PreregisterFunction([ScatterPlot_GetLeastSquaresConstant], 1, 1);
+PreregisterFunction([ScatterPlot_DeterminLeastSquaresEstimator], 1, 1);
+PreregisterFunction([ScatterPlot_SetLeastSquaresValid], 2, 2);
+PreregisterFunction([ScatterPlot_GetLeastSquaresValid], 1, 1);
+PreregisterFunction([ScatterPlot_SetLeastSquaresRSquared], 2, 2);
+PreregisterFunction([ScatterPlot_GetLeastSquaresRSquared], 1, 1);
+PreregisterFunction([ScatterPlot_GetTextSizeXAxis], 1, 1);
+PreregisterFunction([ScatterPlot_SetTextSizeXAxis], 2, 2);
+PreregisterFunction([ScatterPlot_SetLeastSquaresExpressionVisible], 2, 2);
+PreregisterFunction([ScatterPlot_GetLeastSquaresExpressionVisible], 1, 1);
+PreregisterFunction([ScatterPlot_SetTextSizeLeastSquaresExpression], 2, 2);
+PreregisterFunction([ScatterPlot_GetTextSizeLeastSquaresExpression], 1, 1);
+PreregisterFunction([ScatterPlot_SetLeastSquaresLineVisible], 2, 2);
+PreregisterFunction([ScatterPlot_GetLeastSquaresLineVisible], 1, 1);
+PreregisterFunction([ScatterPlot_SetLeastSquaresLinewidth], 2, 2);
+PreregisterFunction([ScatterPlot_GetLeastSquaresLinewidth], 1, 1);
+PreregisterFunction([ScatterPlot_SetLeastSquaresLineColor], 2, 2);
+PreregisterFunction([ScatterPlot_GetLeastSquaresLineColor], 1, 1);
+PreregisterFunction([ScatterPlot_SetDotsVisible], 2, 2);
+PreregisterFunction([ScatterPlot_GetDotsVisible], 1, 1);
+
+
+{Atom: ScatterPlot}
+
+sets;
+BaseClass;
+createAtom(a, s, [], 1, false);
+Set(OnInit, [do(
+ { Define some columnnumber constants for the ScatterPlot}
+ dim([SCATTERPLOT_COLUMNNUMBER_XVALUE], vbValue, 1),
+ dim([SCATTERPLOT_COLUMNNUMBER_YVALUE], vbValue, 2)
+)
+]);
+int023([ScatterPlot], 0, 40);
+DefineFunction([ScatterPlot_SetNumberOfRegistrations], [ScatterPlot], 2, 2, [do(
+ Att([NumberOfRegistrations], p(1)) := p(2),
+
+ if(
+  p(2) > 0,
+  nrows(p(1)) := p(2),
+  do(
+   cell(1, SCATTERPLOT_COLUMNNUMBER_XVALUE, p(1)) := 0,
+   cell(1, SCATTERPLOT_COLUMNNUMBER_YVALUE, p(1)) := 0
+  )
+ )
+)
+], [p(1) as ScatterPlot
+p(2) as integer, the number of registrations
+
+Result: none. Sets the property NumberOfRegistrations of ScatterPlot.], [ScatterPlot_SetNumberOfRegistrations(c, 15)], 0, [ScatterPlot.atm]);
+DefineFunction([ScatterPlot_GetNumberOfRegistrations], [ScatterPlot], 1, 1, [Att([NumberOfRegistrations], p(1))
+], [p(1) as ScatterPlot
+
+Result: integer. Get the property NumberOfRegistrations of ScatterPlot.], [newNumberOfSegments := ScatterPlot_GetNumberOfSegments( atmScatterPlot )], 0, [ScatterPlot.atm]);
+DefineFunction([ScatterPlot_Initialize], [ScatterPlot], 1, 1, [do(
+ ScatterPlot_SetMaximumXValue(p(1), 0),
+ ScatterPlot_SetMaximumYValue(p(1), 0),
+ 
+ ScatterPlot_SetSumXValues(p(1), 0),
+ ScatterPlot_SetSumYValues(p(1), 0),
+ 
+ ScatterPlot_SetLeastSquaresCoefficient(p(1), -1),
+ ScatterPlot_SetLeastSquaresConstant(p(1), -1),
+ 
+ ScatterPlot_SetNumberOfRegistrations(p(1), 0),
+ 
+ nRows(p(1)) := 1
+)
+], [p(1) as ScatterPlot
+
+Result: none. Initializes the scatterplot.
+], [ScatterPlot_Initialize(c)], 0, [ScatterPlot.atm]);
+DefineFunction([ScatterPlot_Animate2D], [ScatterPlot], 1, 1, [do(
+ var([indexer], vbValue, 0),
+ var([degrees], vbValue, 0),
+ var([x1], vbValue, 0),
+ var([x2], vbValue, 0),
+ var([y1], vbValue, 0),
+ var([y2], vbValue, 0),
+
+ { The Diagram's Title }
+ if(
+  ScatterPlot_GetTitleVisible(p(1)),
+  DrawText(
+   1,
+   1 + ScatterPlot_GetTextSizeXAxis(p(1)),
+   100,
+   20,
+   ScatterPlot_GetTitle(p(1)),
+   ScatterPlot_GetTextColor(p(1)),
+   ScatterPlot_GetTextSizeTitle(p(1)),
+   [Arial],
+   0,
+   0,
+   0,
+   HA_LEFT + VA_TOP
+  )
+ ),
+
+ { default View when not connected or no scores yet available. }
+ if(
+  ScatterPlot_GetNumberOfRegistrations(p(1)) = 0,
+  do(
+   DrawRectangle(
+    1,
+    0,
+    6,
+    -5,
+    colorblack,
+    colorblack,
+    1
+   ),
+  
+   { Return nothing to quit the function. }
+   return(0)
+  )
+ ),
+ 
+ { Y-Axis }
+
+ if(
+  ScatterPlot_GetYAxisValuesVisible(p(1)) = true,
+  do(
+   { ********************** Y-AXIS ITSELF ******************* }
+   DrawLine(
+    1,
+    0,
+    1,
+    -1 * ScatterPlot_GetHeightBoundingBox(p(1)),
+    ScatterPlot_GetBorderColor(p(1)), 
+    1
+   ),
+   
+   { ********************** Y-AXIS VALUES ******************* }
+   for(
+    indexer := 1, indexer <= ScatterPlot_GetYAxisNumberOfValues(p(1)), inc(indexer),
+    do(
+     DrawText(
+      -99.25,
+      -1 * (ScatterPlot_GetHeightBoundingBox(p(1)) / ScatterPlot_GetYAxisNumberOfValues(p(1))) * indexer,
+      100,
+      50,
+      String((ScatterPlot_GetMaximumYValue(p(1))/ScatterPlot_GetYAxisNumberOfValues(p(1))) * indexer, 0, 0),
+      ScatterPlot_GetTextColor(p(1)),
+      ScatterPlot_GetTextSizeYAxis(p(1)),
+      [Arial],
+      0,
+      0,
+      0,
+      HA_RIGHT
+     ),
+     
+     { ********************** Y-AXIS HORIZONTAL LINES ******************* }
+     if(
+      ScatterPlot_GetYAxisLinesVisible(p(1)) = true,
+      DrawLine(
+       1,
+       -1 * (ScatterPlot_GetHeightBoundingBox(p(1)) / ScatterPlot_GetYAxisNumberOfValues(p(1))) * indexer,
+       1 + ScatterPlot_GetWidthBoundingBox(p(1)),
+       -1 * (ScatterPlot_GetHeightBoundingBox(p(1)) / ScatterPlot_GetYAxisNumberOfValues(p(1))) * indexer,
+       ScatterPlot_GetYAxisLinesColor(p(1)), 
+       1
+      )
+     )
+    )
+   )
+  )
+ ),
+ 
+ { X-Axis }
+
+ if(
+  ScatterPlot_GetXAxisValuesVisible(p(1)) = true,
+  do(
+   { ********************** X-AXIS ITSELF ******************* }
+   DrawLine(
+    1,
+    0,
+    1 + ScatterPlot_GetWidthBoundingBox(p(1)),
+    0,
+    ScatterPlot_GetBorderColor(p(1)), 
+    1
+   ),
+   
+   { ********************** X-AXIS VALUES ******************* }
+   for(
+    indexer := 1, indexer <= ScatterPlot_GetXAxisNumberOfValues(p(1)), inc(indexer),
+    do(
+     DrawText(
+      1 + (ScatterPlot_GetWidthBoundingBox(p(1)) / ScatterPlot_GetXAxisNumberOfValues(p(1))) * indexer - 50,
+      0.25,
+      100,
+      50,
+      String((ScatterPlot_GetMaximumXValue(p(1))/ScatterPlot_GetXAxisNumberOfValues(p(1))) * indexer, 0, 0),
+      ScatterPlot_GetTextColor(p(1)),
+      ScatterPlot_GetTextSizeXAxis(p(1)),
+      [Arial],
+      0,
+      0,
+      0,
+      HA_CENTER
+     ),
+     
+     { ********************** X-AXIS HORIZONTAL LINES ******************* }
+     if(
+      ScatterPlot_GetXAxisLinesVisible(p(1)) = true,
+      DrawLine(
+       1 + (ScatterPlot_GetWidthBoundingBox(p(1)) / ScatterPlot_GetXAxisNumberOfValues(p(1))) * indexer,
+       0,
+       1 + (ScatterPlot_GetWidthBoundingBox(p(1)) / ScatterPlot_GetXAxisNumberOfValues(p(1))) * indexer,
+       -1 * ScatterPlot_GetHeightBoundingBox(p(1)),
+       ScatterPlot_GetXAxisLinesColor(p(1)), 
+       1
+      )
+     )
+    )
+   )
+  )
+ ),
+
+ { ********************** THE REGISTRATION PAIRS!!!! ******************* }
+ if(
+  ScatterPlot_GetDotsVisible(p(1)) = True,
+ 
+  for(
+   indexer := 1, indexer <= ScatterPlot_GetNumberOfRegistrations(p(1)), inc(indexer),
+   drawcircle(
+    if(
+     ScatterPlot_GetMaximumXValue(p(1)) > 0,
+     1 + (cell(indexer, SCATTERPLOT_COLUMNNUMBER_XVALUE, p(1)) / ScatterPlot_GetMaximumXValue(p(1))) * ScatterPlot_GetWidthBoundingBox(p(1)),
+     1 + ScatterPlot_GetWidthBoundingBox(p(1))
+    ),
+    if(
+     ScatterPlot_GetMaximumYValue(p(1)) > 0,
+     -1 * (cell(indexer, SCATTERPLOT_COLUMNNUMBER_YVALUE, p(1)) / ScatterPlot_GetMaximumYValue(p(1))) * ScatterPlot_GetHeightBoundingBox(p(1)),
+     1 + ScatterPlot_GetHeightBoundingBox(p(1))
+    ),
+    ScatterPlot_GetDotsRadius(p(1)),
+    ScatterPlot_GetDotsColor(p(1)),
+    ScatterPlot_GetDotsBorderColor(p(1)),
+    ScatterPlot_GetDotsBorderWidth(p(1))
+   )
+  )
+ ),
+ 
+ { ********************** THE LEAST SQUARES ESTIMATOR ******************* }
+ if(
+  ScatterPlot_GetLeastSquaresValid(p(1)) = True,
+  do(
+   if(
+    ScatterPlot_GetLeastSquaresLineVisible(p(1)) = True,
+    do(
+     { Calculate the x and y values for the line representing the Least Squares Estimator Expression. 
+       And eventually correct them if they cross the bounding box anywhere. }
+     
+     { Values }
+     x1 := 0,
+     x2 := ScatterPlot_GetMaximumXValue(p(1)),
+     y1 := ScatterPlot_GetLeastSquaresConstant(p(1)),
+     y2 := ScatterPlot_GetLeastSquaresCoefficient(p(1)) * ScatterPlot_GetMaximumXValue(p(1)) + ScatterPlot_GetLeastSquaresConstant(p(1)),
+
+    { Check out if the y value is out of the bounding box at the upper side }
+     if(
+      y1 > ScatterPlot_GetMaximumYValue(p(1)),
+      
+      { If so, adjust the y value to the maximum y value that lies at the top border of the bounding box}
+      y1 := ScatterPlot_GetMaximumYValue(p(1)),
+      
+      { Else check if it's below the minimum of the bounding box at the bottom. }
+      if(
+       y1 < 0,
+       { If so, adjust the y value to zero = bottom of the bounding box}
+       y1 := 0
+      )
+     ),
+     
+     { Now we calculate the possible adjusted x1 when y1 wasn't outside the bounding box it's still equal to the LSE constant and x1 will
+       become 0. As it should be in the none adjusted case. }
+     x1 := (y1 - ScatterPlot_GetLeastSquaresConstant(p(1))) / ScatterPlot_GetLeastSquaresCoefficient(p(1)),
+     
+     { Check out if the y value is out of the bounding box at the upper side }
+     if(
+      y2 > ScatterPlot_GetMaximumYValue(p(1)),
+      
+      { If so, adjust the y value to the maximum y value that lies at the top border of the bounding box}
+      y2 := ScatterPlot_GetMaximumYValue(p(1)),
+      
+      { Else check if it's below the minimum of the bounding box at the bottom. }
+      if(
+       y2 < 0,
+       { If so, adjust the y value to zero = bottom of the bounding box}
+       y2 := 0
+      )
+     ),
+     
+     { Now we calculate the possible adjusted x1 when y1 wasn't outside the bounding box it's still equal to the LSE constant and x1 will
+       become 0. As it should be in the none adjusted case. }
+     x2 := (y2 - ScatterPlot_GetLeastSquaresConstant(p(1))) / ScatterPlot_GetLeastSquaresCoefficient(p(1)),
+
+     { Now convert the values to points that can be used in the drawline command }
+     x1 := (x1 / ScatterPlot_GetMaximumXValue(p(1))) * ScatterPlot_GetWidthBoundingBox(p(1)) + 1,
+     x2 := (x2 / ScatterPlot_GetMaximumXValue(p(1))) * ScatterPlot_GetWidthBoundingBox(p(1)) + 1,
+     y1 := -1 * (y1 / ScatterPlot_GetMaximumYValue(p(1))) * ScatterPlot_GetHeightBoundingBox(p(1)),
+     y2 := -1 * (y2 / ScatterPlot_GetMaximumYValue(p(1))) * ScatterPlot_GetHeightBoundingBox(p(1)),
+
+     drawline(
+      x1,
+      y1,
+      x2,
+      y2,
+      ScatterPlot_GetLeastSquaresLineColor(p(1)),
+      ScatterPlot_GetLeastSquaresLinewidth(p(1))
+     )
+    )
+   ),
+   
+   if(
+    ScatterPlot_GetLeastSquaresExpressionVisible(p(1)),
+    drawtext(
+     1,
+     ScatterPlot_GetTextSizeTitle(p(1)) + ScatterPlot_GetTextSizeXAxis(p(1)) + 1.5,
+     100,
+     50,
+     concat(
+      [Least Squares Estimator: y = ],
+      String(ScatterPlot_GetLeastSquaresCoefficient(p(1)), 0, 2),
+      [x + ],
+      String(ScatterPlot_GetLeastSquaresConstant(p(1)), 0, 2),
+      char(13),
+      [R-Squared = ],
+      String(ScatterPlot_GetLeastSquaresRSquared(p(1)), 0, 2)
+     ),
+     Colorblack,
+     ScatterPlot_GetTextSizeLeastSquaresExpression(p(1))
+    )
+   )
+  )
+ )
+)
+], [p(1) as ScatterPlot
+], [ScatterPlot_Animate2D(c)], 0, [ScatterPlot.atm]);
+DefineFunction([ScatterPlot_GetTotalScore], [ScatterPlot], 1, 1, [Att([TotalScore], p(1))
+], [p(1) as ScatterPlot
+
+Result: double. Get the property TotalScore of ScatterPlot.], [newTotalScore := ScatterPlot_GetTotalScore( atmScatterPlot )], 0, [ScatterPlot.atm]);
+DefineFunction([ScatterPlot_GetLegendVisible], [ScatterPlot], 1, 1, [Att([LegendVisible], p(1))
+], [p(1) as ScatterPlot
+
+Result: Boolean. Get the property LegendVisible of ScatterPlot.], [newLegendVisible := ScatterPlot_GetLegendVisible( atmScatterPlot )], 0, [ScatterPlot.atm]);
+DefineFunction([ScatterPlot_SetBorderColor], [ScatterPlot], 2, 2, [Att([BorderColor], p(1)) := p(2)
+], [p(1) as ScatterPlot
+p(2) as Double
+
+Result: none. Sets the property BorderColor of ScatterPlot.], [ScatterPlot_SetBorderColor( atmScatterPlot, newBorderColor )], 0, [ScatterPlot.atm]);
+DefineFunction([ScatterPlot_GetBorderColor], [ScatterPlot], 1, 1, [Att([BorderColor], p(1))
+], [p(1) as ScatterPlot
+
+Result: Double. Get the property BorderColor of ScatterPlot.], [newBorderColor := ScatterPlot_GetBorderColor( atmScatterPlot )], 0, [ScatterPlot.atm]);
+DefineFunction([ScatterPlot_SetScoresVisible], [ScatterPlot], 2, 2, [Att([ScoresVisible], p(1)) := p(2)
+], [p(1) as ScatterPlot
+p(2) as Boolean
+
+Result: none. Sets the property ScoresVisible of ScatterPlot.], [ScatterPlot_SetScoresVisible(c, true)], 0, [ScatterPlot.atm]);
+DefineFunction([ScatterPlot_GetScoresVisible], [ScatterPlot], 1, 1, [Att([ScoresVisible], p(1))
+], [p(1) as ScatterPlot
+
+Result: Boolean. Get the property PercentagesVisible of ScatterPlot.], [ScatterPlot_GetScoresVisible(c)], 0, [ScatterPlot.atm]);
+DefineFunction([ScatterPlot_SetTitle], [ScatterPlot], 2, 2, [Att([Title], p(1)) := p(2)
+], [p(1) as ScatterPlot
+p(2) as String
+
+Result: none. Sets the property Title of ScatterPlot.], [ScatterPlot_SetTitle( atmScatterPlot, newTitle )], 0, [ScatterPlot.atm]);
+DefineFunction([ScatterPlot_GetTitle], [ScatterPlot], 1, 1, [Att([Title], p(1))
+], [p(1) as ScatterPlot
+
+Result: String. Get the property Title of ScatterPlot.], [newTitle := ScatterPlot_GetTitle( atmScatterPlot )], 0, [ScatterPlot.atm]);
+DefineFunction([ScatterPlot_SetTitleVisible], [ScatterPlot], 2, 2, [Att([TitleVisible], p(1)) := p(2)
+], [p(1) as ScatterPlot
+p(2) as Boolean
+
+Result: none. Sets the property TitleVisible of ScatterPlot.], [ScatterPlot_SetTitleVisible( atmScatterPlot, newTitleVisible )], 0, [ScatterPlot.atm]);
+DefineFunction([ScatterPlot_GetTitleVisible], [ScatterPlot], 1, 1, [Att([TitleVisible], p(1))
+], [p(1) as ScatterPlot
+
+Result: Boolean. Get the property TitleVisible of ScatterPlot.], [newTitleVisible := ScatterPlot_GetTitleVisible( atmScatterPlot )], 0, [ScatterPlot.atm]);
+DefineFunction([ScatterPlot_SetTextColor], [ScatterPlot], 2, 2, [Att([TextColor], p(1)) := p(2)
+], [p(1) as ScatterPlot
+p(2) as Color
+
+Result: none. Sets the property TextColor of ScatterPlot.], [ScatterPlot_SetTextColor( atmScatterPlot, newTextColor )], 0, [ScatterPlot.atm]);
+DefineFunction([ScatterPlot_GetTextColor], [ScatterPlot], 1, 1, [Att([TextColor], p(1))
+], [p(1) as ScatterPlot
+
+Result: Color. Get the property TextColor of ScatterPlot.], [newTextColor := ScatterPlot_GetTextColor( atmScatterPlot )], 0, [ScatterPlot.atm]);
+DefineFunction([ScatterPlot_SetTextSizeTitle], [ScatterPlot], 2, 2, [Att([TextSizeTitle], p(1)) := p(2)
+], [p(1) as ScatterPlot
+p(2) as Double
+
+Result: none. Sets the property TextSizeTitle of ScatterPlot.], [ScatterPlot_SetTextSizeTitle( atmScatterPlot, newTextSizeTitle )], 0, [ScatterPlot.atm]);
+DefineFunction([ScatterPlot_GetTextSizeTitle], [ScatterPlot], 1, 1, [Att([TextSizeTitle], p(1))
+], [p(1) as ScatterPlot
+
+Result: Double. Get the property TextSizeTitle of ScatterPlot.], [newTextSizeTitle := ScatterPlot_GetTextSizeTitle( atmScatterPlot )], 0, [ScatterPlot.atm]);
+DefineFunction([ScatterPlot_GuiDataTypeAndRangeValidation], [ScatterPlot], 1, 1, [do(
+ var([PassCheck], vbValue, true),
+ var([TextValue], vbString, 0),
+ var([NumericValue], vbValue, 0),
+
+ { First we do a DataType and DataRange validation before we really apply the changes...}
+
+ { ATOMNAME }
+ textvalue := GuiControl([ebAtomName], GuiGet([Text])),
+ 
+ if(
+  StringLength(textvalue) = 0,
+  do(
+   passcheck := false,   
+   msg([The atomname has to contain at least one character.])
+  )
+ ),
+ 
+ { TITLE }
+ textvalue := GuiControl([ebTitle], GuiGet([Text])),
+ 
+ if(
+  StringLength(textvalue) = 0,
+  do(
+   passcheck := false,   
+   msg([The title has to contain at least one character.], 2),
+   return(passcheck)
+  )
+ ),
+ 
+ { TEXTSIZE TITLE } 
+ textvalue := GuiControl([ebTextSizeTitle], GuiGet([Text])),
+ numericvalue := Value(GuiControl([ebTextSizeTitle], GuiGet([Text]))),
+ if(
+  or(
+   StringLength(textvalue) = 0,
+   numericvalue <= 0
+  ),
+  do(
+   passcheck := false,   
+   msg([The inserted value for the textsize of the title is invalid.], 2),
+   return(passcheck)
+  )
+ ),
+
+ { TEXTSIZE LEAST SQUARES EXPRESSION } 
+ textvalue := GuiControl([ebTextSizeLeastSquaresExpression], GuiGet([Text])),
+ numericvalue := Value(GuiControl([ebTextSizeLeastSquaresExpression], GuiGet([Text]))),
+ if(
+  or(
+   StringLength(textvalue) = 0,
+   numericvalue <= 0
+  ),
+  do(
+   passcheck := false,   
+   msg([The inserted value for the textsize of the least squares expression is invalid.], 2),
+   return(passcheck)
+  )
+ ),
+
+ { TEXTSIZE Y AXIS } 
+ textvalue := GuiControl([ebTextSizeYAxis], GuiGet([Text])),
+ numericvalue := Value(GuiControl([ebTextSizeYAxis], GuiGet([Text]))),
+ if(
+  or(
+   StringLength(textvalue) = 0,
+   numericvalue <= 0
+  ),
+  do(
+   passcheck := false,   
+   msg([The inserted value for the textsize of the Y-Axis is invalid.], 2),
+   return(passcheck)
+  )
+ ),
+
+ { TEXTSIZE X AXIS } 
+ textvalue := GuiControl([ebTextSizeXAxis], GuiGet([Text])),
+ numericvalue := Value(GuiControl([ebTextSizeXAxis], GuiGet([Text]))),
+ if(
+  or(
+   StringLength(textvalue) = 0,
+   numericvalue <= 0
+  ),
+  do(
+   passcheck := false,   
+   msg([The inserted value for the textsize of the X-Axis is invalid.], 2),
+   return(passcheck)
+  )
+ ),
+
+ { HEIGHT BOUNDING BOX } 
+ textvalue := GuiControl([ebHeightBoundingBox], GuiGet([Text])),
+ numericvalue := Value(GuiControl([ebHeightBoundingBox], GuiGet([Text]))),
+ if(
+  or(
+   StringLength(textvalue) = 0,
+   numericvalue <= 0
+  ),
+  do(
+   passcheck := false,   
+   msg([The inserted value for the height of the bounding box is invalid.], 2),
+   return(passcheck)
+  )
+ ),
+
+ { WIDTH BOUNDING BOX } 
+ textvalue := GuiControl([ebWidthBoundingBox], GuiGet([Text])),
+ numericvalue := Value(GuiControl([ebWidthBoundingBox], GuiGet([Text]))),
+ if(
+  or(
+   StringLength(textvalue) = 0,
+   numericvalue <= 0
+  ),
+  do(
+   passcheck := false,   
+   msg([The inserted value for the width of the bounding box is invalid.], 2),
+   return(passcheck)
+  )
+ ),
+
+ { NUMBER OF VALUES Y-AXIS } 
+ textvalue := GuiControl([ebYAxisNumberOfValues], GuiGet([Text])),
+ numericvalue := Value(GuiControl([ebYAxisNumberOfValues], GuiGet([Text]))),
+ if(
+  or(
+   StringLength(textvalue) = 0,
+   numericvalue <= 0
+  ),
+  do(
+   passcheck := false,   
+   msg([The inserted value for the number of values on the Y-Axis is invalid.], 2),
+   return(passcheck)
+  )
+ ),
+
+ { NUMBER OF VALUES X-AXIS } 
+ textvalue := GuiControl([ebXAxisNumberOfValues], GuiGet([Text])),
+ numericvalue := Value(GuiControl([ebXAxisNumberOfValues], GuiGet([Text]))),
+ if(
+  or(
+   StringLength(textvalue) = 0,
+   numericvalue <= 0
+  ),
+  do(
+   passcheck := false,   
+   msg([The inserted value for the number of values on the X-Axis is invalid.], 2),
+   return(passcheck)
+  )
+ ),
+
+ { DOTS RADIUS } 
+ textvalue := GuiControl([ebDotsRadius], GuiGet([Text])),
+ numericvalue := Value(GuiControl([ebDotsRadius], GuiGet([Text]))),
+ if(
+  or(
+   StringLength(textvalue) = 0,
+   numericvalue <= 0
+  ),
+  do(
+   passcheck := false,   
+   msg([The inserted value for the radius of the dots is invalid.], 2),
+   return(passcheck)
+  )
+ ),  
+
+ { DOTS BORDERWIDTH } 
+ textvalue := GuiControl([ebDotsBorderWidth], GuiGet([Text])),
+ numericvalue := Value(GuiControl([ebDotsBorderWidth], GuiGet([Text]))),
+ if(
+  or(
+   StringLength(textvalue) = 0,
+   numericvalue <= 0
+  ),
+  do(
+   passcheck := false,   
+   msg([The inserted value for the borderwidth of the dots is invalid.], 2),
+   return(passcheck)
+  )
+ ),  
+ 
+ { LEAST SQUARES LINE WIDTH } 
+ textvalue := GuiControl([ebLeastSquaresLinewidth], GuiGet([Text])),
+ numericvalue := Value(GuiControl([ebLeastSquaresLinewidth], GuiGet([Text]))),
+ if(
+  or(
+   StringLength(textvalue) = 0,
+   numericvalue <= 0
+  ),
+  do(
+   passcheck := false,   
+   msg([The inserted value for the width of the least squares line is invalid.], 2),
+   return(passcheck)
+  )
+ ),  
+ 
+ { If the check succeeds then apply the changes to the ScatterPlot }
+ if(
+  passcheck = true,
+  ScatterPlot_GuiApplyChanges(p(1))
+ ),
+  
+ return(passcheck)
+)
+], [p(1) as ScatterPlot
+
+Result: Boolean. Returns tru if the data validation succeeds else false 
+], [ScatterPlot_GuiDataTypeAndRangeValidation(GuiAtom)], 0, [ScatterPlot.atm]);
+DefineFunction([ScatterPlot_GuiApplyChanges], [ScatterPlot], 1, 1, [do(
+ name(p(1)) := GuiControl([ebAtomName], GuiGet([Text])),
+ 
+ ScatterPlot_SetTitle(
+  p(1),
+  GuiControl([ebTitle], GuiGet([Text]))
+ ),
+
+ ScatterPlot_SetTextColor(
+  p(1),
+  GuiControl([cpText], GuiGet([Color]))
+ ),
+
+ ScatterPlot_SetBorderColor(
+  p(1),
+  GuiControl([cpBorder], GuiGet([Color]))
+ ),
+
+ ScatterPlot_SetYAxisLinesColor(
+  p(1),
+  GuiControl([cpYAxisLinesColor], GuiGet([Color]))
+ ),
+
+ ScatterPlot_SetXAxisLinesColor(
+  p(1),
+  GuiControl([cpXAxisLinesColor], GuiGet([Color]))
+ ),
+
+ ScatterPlot_SetDotsColor(
+  p(1),
+  GuiControl([cpDotsColor], GuiGet([Color]))
+ ),
+
+ ScatterPlot_SetDotsBorderColor(
+  p(1),
+  GuiControl([cpDotsBorderColor], GuiGet([Color]))
+ ),
+
+ ScatterPlot_SetLeastSquaresLineColor(
+  p(1),
+  GuiControl([cpLeastSquaresLineColor], GuiGet([Color]))
+ ),
+
+ ScatterPlot_SetTextSizeTitle(
+  p(1),
+  Value(GuiControl([ebTextSizeTitle], GuiGet([Text])))
+ ),
+
+ ScatterPlot_SetTextSizeLeastSquaresExpression(
+  p(1),
+  Value(GuiControl([ebTextSizeLeastSquaresExpression], GuiGet([Text])))
+ ),
+
+ ScatterPlot_SetTextSizeYAxis(
+  p(1),
+  Value(GuiControl([ebTextSizeYAxis], GuiGet([Text])))
+ ),
+
+ ScatterPlot_SetTextSizeXAxis(
+  p(1),
+  Value(GuiControl([ebTextSizeXAxis], GuiGet([Text])))
+ ),
+
+ ScatterPlot_SetYAxisNumberOfValues(
+  p(1),
+  Value(GuiControl([ebYAxisNumberOfValues], GuiGet([Text])))
+ ),
+
+ ScatterPlot_SetXAxisNumberOfValues(
+  p(1),
+  Value(GuiControl([ebXAxisNumberOfValues], GuiGet([Text])))
+ ),
+
+ ScatterPlot_SetHeightBoundingBox(
+  p(1),
+  Value(GuiControl([ebHeightBoundingBox], GuiGet([Text])))
+ ),
+
+ ScatterPlot_SetWidthBoundingBox(
+  p(1),
+  Value(GuiControl([ebWidthBoundingBox], GuiGet([Text])))
+ ),
+
+ ScatterPlot_SetDotsRadius(
+  p(1),
+  Value(GuiControl([ebDotsRadius], GuiGet([Text])))
+ ),
+
+ ScatterPlot_SetDotsBorderWidth(
+  p(1),
+  Value(GuiControl([ebDotsBorderWidth], GuiGet([Text])))
+ ),
+
+ ScatterPlot_SetLeastSquaresLinewidth(
+  p(1),
+  Value(GuiControl([ebLeastSquaresLinewidth], GuiGet([Text])))
+ ),
+ 
+ ScatterPlot_SetTitleVisible(
+  p(1),
+  GuiControl([cbTitleVisible], GuiGet([Checked]))
+ ),
+
+ ScatterPlot_SetDotsVisible(
+  p(1),
+  GuiControl([cbDotsVisible], GuiGet([Checked]))
+ ),
+
+ ScatterPlot_SetYAxisLinesVisible(
+  p(1),
+  GuiControl([cbYAxisLinesVisible], GuiGet([Checked]))
+ ),
+
+ ScatterPlot_SetXAxisLinesVisible(
+  p(1),
+  GuiControl([cbXAxisLinesVisible], GuiGet([Checked]))
+ ),
+
+ ScatterPlot_SetYAxisValuesVisible(
+  p(1),
+  GuiControl([cbYAxisValuesVisible], GuiGet([Checked]))
+ ),
+
+ ScatterPlot_SetXAxisValuesVisible(
+  p(1),
+  GuiControl([cbXAxisValuesVisible], GuiGet([Checked]))
+ ),
+
+ ScatterPlot_SetLeastSquaresExpressionVisible(
+  p(1),
+  GuiControl([cbLeastSquaresExpressionVisible], GuiGet([Checked]))
+ ),
+
+ ScatterPlot_SetLeastSquaresLineVisible(
+  p(1),
+  GuiControl([cbLeastSquaresLineVisible], GuiGet([Checked]))
+ ),
+
+ UpdateAnimator
+)
+], [p(1) as ScatterPlot
+
+Result: none. Applies all the inserted values for the ScatterPlot atom
+], [ScatterPlot_GuiApplyChanges(GuiAtom)], 0, [ScatterPlot.atm]);
+DefineFunction([ScatterPlot_SetTextSizeYAxis], [ScatterPlot], 2, 2, [Att([TextSizeYAxis], p(1)) := p(2)
+], [p(1) as ScatterPlot
+p(2) as Double
+
+Result: none. Sets the property TextSizeYAxis of ScatterPlot.], [ScatterPlot_SetTextSizeYAxis( atmScatterPlot, newTextSizeYAxis )], 0, [ScatterPlot.atm]);
+DefineFunction([ScatterPlot_GetTextSizeYAxis], [ScatterPlot], 1, 1, [Att([TextSizeYAxis], p(1))
+], [p(1) as ScatterPlot
+
+Result: Double. Get the property TextSizeYAxis of ScatterPlot.], [newTextSizeYAxis := ScatterPlot_GetTextSizeYAxis( atmScatterPlot )], 0, [ScatterPlot.atm]);
+DefineFunction([ScatterPlot_SetYAxisValuesVisible], [ScatterPlot], 2, 2, [Att([YAxisValuesVisible], p(1)) := p(2)
+], [p(1) as ScatterPlot
+p(2) as Boolean
+
+Result: none. Sets the property YAxisValuesVisible of ScatterPlot.], [ScatterPlot_SetYAxisValuesVisible( atmScatterPlot, newYAxisValuesVisible )], 0, [ScatterPlot.atm]);
+DefineFunction([ScatterPlot_GetYAxisValuesVisible], [ScatterPlot], 1, 1, [Att([YAxisValuesVisible], p(1))
+], [p(1) as ScatterPlot
+
+Result: Boolean. Get the property YAxisValuesVisible of ScatterPlot.], [newYAxisValuesVisible := ScatterPlot_GetYAxisValuesVisible( atmScatterPlot )], 0, [ScatterPlot.atm]);
+DefineFunction([ScatterPlot_SetYAxisNumberOfValues], [ScatterPlot], 2, 2, [Att([YAxisNumberOfValues], p(1)) := p(2)
+], [p(1) as ScatterPlot
+p(2) as Integer
+
+Result: none. Sets the property YAxisNumberOfValues of ScatterPlot.], [ScatterPlot_SetYAxisNumberOfValues( atmScatterPlot, newYAxisNumberOfValues )], 0, [ScatterPlot.atm]);
+DefineFunction([ScatterPlot_GetYAxisNumberOfValues], [ScatterPlot], 1, 1, [Att([YAxisNumberOfValues], p(1))
+], [p(1) as ScatterPlot
+
+Result: Integer. Get the property YAxisNumberOfValues of ScatterPlot.], [newYAxisNumberOfValues := ScatterPlot_GetYAxisNumberOfValues( atmScatterPlot )], 0, [ScatterPlot.atm]);
+DefineFunction([ScatterPlot_SetYAxisLinesVisible], [ScatterPlot], 2, 2, [Att([YAxisLinesVisible], p(1)) := p(2)
+], [p(1) as ScatterPlot
+p(2) as Boolean
+
+Result: none. Sets the property YAxisLinesVisible of ScatterPlot.], [ScatterPlot_SetYAxisLinesVisible( atmScatterPlot, newYAxisLinesVisible )], 0, [ScatterPlot.atm]);
+DefineFunction([ScatterPlot_GetYAxisLinesVisible], [ScatterPlot], 1, 1, [Att([YAxisLinesVisible], p(1))
+], [p(1) as ScatterPlot
+
+Result: Boolean. Get the property YAxisLinesVisible of ScatterPlot.], [newYAxisLinesVisible := ScatterPlot_GetYAxisLinesVisible( atmScatterPlot )], 0, [ScatterPlot.atm]);
+DefineFunction([ScatterPlot_SetYAxisLinesColor], [ScatterPlot], 2, 2, [Att([YAxisLinesColor], p(1)) := p(2)
+], [p(1) as ScatterPlot
+p(2) as Color
+
+Result: none. Sets the property YAxisLinesColor of ScatterPlot.], [ScatterPlot_SetYAxisLinesColor( atmScatterPlot, newYAxisLinesColor )], 0, [ScatterPlot.atm]);
+DefineFunction([ScatterPlot_GetYAxisLinesColor], [ScatterPlot], 1, 1, [Att([YAxisLinesColor], p(1))
+], [p(1) as ScatterPlot
+
+Result: Color. Get the property YAxisLinesColor of ScatterPlot.], [newYAxisLinesColor := ScatterPlot_GetYAxisLinesColor( atmScatterPlot )], 0, [ScatterPlot.atm]);
+DefineFunction([ScatterPlot_StartCollectingStatusInformation], [ScatterPlot], 1, 1, [if(
+ atomexists(in(1, c)) = True,
+
+ { When an atom is connected to the Status Monitor
+   start collecting status information on this atom }
+ EnableStatusMonitor(in(1, p(1)), true)
+)
+], [p(1) as ScatterPlot
+
+Result: none. Starts collecting status information at the connected atom.
+], [ScatterPlot_StartCollectingStatusInformation(c)], 0, [ScatterPlot.atm]);
+DefineFunction([ScatterPlot_Setid], [ScatterPlot], 2, 2, [Att([id], p(1)) := p(2)
+], [p(1) as ScatterPlot
+p(2) as Integer
+
+Result: none. Sets the property id of ScatterPlot.], [ScatterPlot_Setid( atmScatterPlot, newid )], 0, [ScatterPlot.atm]);
+DefineFunction([ScatterPlot_Getid], [ScatterPlot], 1, 1, [Att([id], p(1))
+], [p(1) as ScatterPlot
+
+Result: Integer. Get the property id of ScatterPlot.], [newid := ScatterPlot_Getid( atmScatterPlot )], 0, [ScatterPlot.atm]);
+DefineFunction([ScatterPlot_SetWidthBoundingBox], [ScatterPlot], 2, 2, [Att([WidthBoundingBox], p(1)) := p(2)
+], [p(1) as ScatterPlot
+p(2) as Double
+
+Result: none. Sets the property WidthBoundingBox of ScatterPlot.], [ScatterPlot_SetWidthBoundingBox( atmScatterPlot, newWidthBoundingBox )], 0, [ScatterPlot.atm]);
+DefineFunction([ScatterPlot_GetWidthBoundingBox], [ScatterPlot], 1, 1, [Att([WidthBoundingBox], p(1))
+], [p(1) as ScatterPlot
+
+Result: Double. Get the property WidthBoundingBox of ScatterPlot.], [newWidthBoundingBox := ScatterPlot_GetWidthBoundingBox( atmScatterPlot )], 0, [ScatterPlot.atm]);
+DefineFunction([ScatterPlot_SetMaximumXValue], [ScatterPlot], 2, 2, [Att([MaximumXValue], p(1)) := p(2)
+], [p(1) as ScatterPlot
+p(2) as Double
+
+Result: none. Sets the property MaximumXValue of ScatterPlot.], [ScatterPlot_SetMaximumXValue( atmScatterPlot, newMaximumXValue )], 0, [ScatterPlot.atm]);
+DefineFunction([ScatterPlot_GetMaximumXValue], [ScatterPlot], 1, 1, [Att([MaximumXValue], p(1))
+], [p(1) as ScatterPlot
+
+Result: Double. Get the property MaximumXValue of ScatterPlot.], [newMaximumXValue := ScatterPlot_GetMaximumXValue( atmScatterPlot )], 0, [ScatterPlot.atm]);
+DefineFunction([ScatterPlot_SetMaximumYValue], [ScatterPlot], 2, 2, [Att([MaximumYValue], p(1)) := p(2)
+], [p(1) as ScatterPlot
+p(2) as Double
+
+Result: none. Sets the property MaximumYValue of ScatterPlot.], [ScatterPlot_SetMaximumYValue( atmScatterPlot, newMaximumYValue )], 0, [ScatterPlot.atm]);
+DefineFunction([ScatterPlot_GetMaximumYValue], [ScatterPlot], 1, 1, [Att([MaximumYValue], p(1))
+], [p(1) as ScatterPlot
+
+Result: Double. Get the property MaximumYValue of ScatterPlot.], [newMaximumYValue := ScatterPlot_GetMaximumYValue( atmScatterPlot )], 0, [ScatterPlot.atm]);
+DefineFunction([ScatterPlot_SetHeightBoundingBox], [ScatterPlot], 2, 2, [Att([HeightBoundingBox], p(1)) := p(2)
+], [p(1) as ScatterPlot
+p(2) as Double
+
+Result: none. Sets the property HeightBoundingBox of ScatterPlot.], [ScatterPlot_SetHeightBoundingBox(c, 0.4)], 0, [ScatterPlot.atm]);
+DefineFunction([ScatterPlot_GetHeightBoundingBox], [ScatterPlot], 1, 1, [Att([HeightBoundingBox], p(1))
+], [p(1) as ScatterPlot
+
+Result: Double. Get the property HeightBoundingBox of ScatterPlot.], [ScatterPlot_GetHeightBoundingBox(c)], 0, [ScatterPlot.atm]);
+DefineFunction([ScatterPlot_InsertRegistration], [ScatterPlot], 3, 3, [do(
+ var([valuex], vbValue, 0),
+ var([valuey], vbValue, 0),
+
+ valuex := p(2),
+ valuey := p(3),
+
+ ScatterPlot_SetNumberOfRegistrations(p(1), ScatterPlot_GetNumberOfRegistrations(p(1)) + 1), 
+
+ if(
+  ScatterPlot_GetNumberOfRegistrations(p(1)) > 1,
+  nRows(p(1)) := ScatterPlot_GetNumberOfRegistrations(p(1))
+ ),
+ 
+ Cell(ScatterPlot_GetNumberOfRegistrations(p(1)), SCATTERPLOT_COLUMNNUMBER_XVALUE, p(1)) := valuex,
+ Cell(ScatterPlot_GetNumberOfRegistrations(p(1)), SCATTERPLOT_COLUMNNUMBER_YVALUE, p(1)) := valuey,
+ 
+ { Check out if a maximum is inserted in either the X or Y value. }
+ if(
+  valuex > ScatterPlot_GetMaximumXValue(p(1)),
+  ScatterPlot_SetMaximumXValue(p(1), valuex)
+ ),
+ 
+ if(
+  valuey > ScatterPlot_GetMaximumYValue(p(1)),
+  ScatterPlot_SetMaximumYValue(p(1), valuey)
+ ),
+ 
+ { Keep track of the sum of X and Y values for the calucation of the Least Squares Estimator. }
+ ScatterPlot_SetSumXValues(p(1), ScatterPlot_GetSumXValues(p(1)) + valuex),
+ ScatterPlot_SetSumYValues(p(1), ScatterPlot_GetSumYValues(p(1)) + valuey),
+ 
+ { Determine the new Least Squares Estimator }
+ ScatterPlot_DeterminLeastSquaresEstimator(p(1))
+)
+], [p(1) as ScatterPlot
+p(2) as Double, x value
+p(3) as Double, y value
+], [ScatterPlot_InsertRegistration(c, 0.3, 0.5)], 0, [ScatterPlot.atm]);
+DefineFunction([ScatterPlot_SetXAxisValuesVisible], [ScatterPlot], 2, 2, [Att([XAxisValuesVisible], p(1)) := p(2)
+], [p(1) as ScatterPlot
+p(2) as Boolean
+
+Result: none. Sets the property XAxisValuesVisible of ScatterPlot.], [ScatterPlot_SetXAxisValuesVisible( atmScatterPlot, newXAxisValuesVisible )], 0, [ScatterPlot.atm]);
+DefineFunction([ScatterPlot_GetXAxisValuesVisible], [ScatterPlot], 1, 1, [Att([XAxisValuesVisible], p(1))
+], [p(1) as ScatterPlot
+
+Result: Boolean. Get the property XAxisValuesVisible of ScatterPlot.], [newXAxisValuesVisible := ScatterPlot_GetXAxisValuesVisible( atmScatterPlot )], 0, [ScatterPlot.atm]);
+DefineFunction([ScatterPlot_SetXAxisNumberOfValues], [ScatterPlot], 2, 2, [Att([XAxisNumberOfValues], p(1)) := p(2)
+], [p(1) as ScatterPlot
+p(2) as Integer
+
+Result: none. Sets the property XAxisNumberOfValues of ScatterPlot.], [ScatterPlot_SetXAxisNumberOfValues( atmScatterPlot, newXAxisNumberOfValues )], 0, [ScatterPlot.atm]);
+DefineFunction([ScatterPlot_GetXAxisNumberOfValues], [ScatterPlot], 1, 1, [Att([XAxisNumberOfValues], p(1))
+], [p(1) as ScatterPlot
+
+Result: Integer. Get the property XAxisNumberOfValues of ScatterPlot.], [newXAxisNumberOfValues := ScatterPlot_GetXAxisNumberOfValues( atmScatterPlot )], 0, [ScatterPlot.atm]);
+DefineFunction([ScatterPlot_SetXAxisLinesVisible], [ScatterPlot], 2, 2, [Att([XAxisLinesVisible], p(1)) := p(2)
+], [p(1) as ScatterPlot
+p(2) as Boolean
+
+Result: none. Sets the property XAxisLinesVisible of ScatterPlot.], [ScatterPlot_SetXAxisLinesVisible( atmScatterPlot, newXAxisLinesVisible )], 0, [ScatterPlot.atm]);
+DefineFunction([ScatterPlot_GetXAxisLinesVisible], [ScatterPlot], 1, 1, [Att([XAxisLinesVisible], p(1))
+], [p(1) as ScatterPlot
+
+Result: Boolean. Get the property XAxisLinesVisible of ScatterPlot.], [newXAxisLinesVisible := ScatterPlot_GetXAxisLinesVisible( atmScatterPlot )], 0, [ScatterPlot.atm]);
+DefineFunction([ScatterPlot_SetXAxisLinesColor], [ScatterPlot], 2, 2, [Att([XAxisLinesColor], p(1)) := p(2)
+], [p(1) as ScatterPlot
+p(2) as Boolean
+
+Result: none. Sets the property XAxisLinesColor of ScatterPlot.], [ScatterPlot_SetXAxisLinesColor( atmScatterPlot, newXAxisLinesColor )], 0, [ScatterPlot.atm]);
+DefineFunction([ScatterPlot_GetXAxisLinesColor], [ScatterPlot], 1, 1, [Att([XAxisLinesColor], p(1))
+], [p(1) as ScatterPlot
+
+Result: Boolean. Get the property XAxisLinesColor of ScatterPlot.], [newXAxisLinesColor := ScatterPlot_GetXAxisLinesColor( atmScatterPlot )], 0, [ScatterPlot.atm]);
+DefineFunction([ScatterPlot_SetDotsRadius], [ScatterPlot], 2, 2, [Att([DotsRadius], p(1)) := p(2)
+], [p(1) as ScatterPlot
+p(2) as Double
+
+Result: none. Sets the property DotsRadius of ScatterPlot.], [ScatterPlot_SetDotsRadius( atmScatterPlot, newDotsRadius )], 0, [ScatterPlot.atm]);
+DefineFunction([ScatterPlot_GetDotsRadius], [ScatterPlot], 1, 1, [Att([DotsRadius], p(1))
+], [p(1) as ScatterPlot
+
+Result: Double. Get the property DotsRadius of ScatterPlot.], [newDotsRadius := ScatterPlot_GetDotsRadius( atmScatterPlot )], 0, [ScatterPlot.atm]);
+DefineFunction([ScatterPlot_SetDotsBorderWidth], [ScatterPlot], 2, 2, [Att([DotsBorderWidth], p(1)) := p(2)
+], [p(1) as ScatterPlot
+p(2) as Double
+
+Result: none. Sets the property DotsBorderWidth of ScatterPlot.], [ScatterPlot_SetDotsBorderWidth(c, 0.3)], 0, [ScatterPlot.atm]);
+DefineFunction([ScatterPlot_GetDotsBorderWidth], [ScatterPlot], 1, 1, [Att([DotsBorderWidth], p(1))
+], [p(1) as ScatterPlot
+
+Result: Double. Get the property DotsBorderWidth of ScatterPlot.], [ScatterPlot_GetDotsBorderWidth(c)], 0, [ScatterPlot.atm]);
+DefineFunction([ScatterPlot_SetDotsColor], [ScatterPlot], 2, 2, [Att([DotsColor], p(1)) := p(2)
+], [p(1) as ScatterPlot
+p(2) as Color
+
+Result: none. Sets the property DotsColor of ScatterPlot.], [ScatterPlot_SetDotsColor( atmScatterPlot, newDotsColor )], 0, [ScatterPlot.atm]);
+DefineFunction([ScatterPlot_GetDotsColor], [ScatterPlot], 1, 1, [Att([DotsColor], p(1))
+], [p(1) as ScatterPlot
+
+Result: Color. Get the property DotsColor of ScatterPlot.], [newDotsColor := ScatterPlot_GetDotsColor( atmScatterPlot )], 0, [ScatterPlot.atm]);
+DefineFunction([ScatterPlot_SetDotsBorderColor], [ScatterPlot], 2, 2, [Att([DotsBorderColor], p(1)) := p(2)
+], [p(1) as ScatterPlot
+p(2) as Color
+
+Result: none. Sets the property DotsBorderColor of ScatterPlot.], [ScatterPlot_SetDotsBorderColor(c, colorgreen)], 0, [ScatterPlot.atm]);
+DefineFunction([ScatterPlot_GetDotsBorderColor], [ScatterPlot], 1, 1, [Att([DotsBorderColor], p(1))
+], [p(1) as ScatterPlot
+
+Result: Color. Get the property DotsBorderColor of ScatterPlot.], [ScatterPlot_GetDotsBorderColor(c)], 0, [ScatterPlot.atm]);
+DefineFunction([ScatterPlot_SetSumXValues], [ScatterPlot], 2, 2, [Att([SumXValues], p(1)) := p(2)
+], [p(1) as ScatterPlot
+p(2) as Double
+
+Result: none. Sets the property SumXValues of ScatterPlot.], [ScatterPlot_SetSumXValues( atmScatterPlot, newSumXValues )], 0, [ScatterPlot.atm]);
+DefineFunction([ScatterPlot_GetSumXValues], [ScatterPlot], 1, 1, [Att([SumXValues], p(1))
+], [p(1) as ScatterPlot
+
+Result: Double. Get the property SumXValues of ScatterPlot.], [newSumXValues := ScatterPlot_GetSumXValues( atmScatterPlot )], 0, [ScatterPlot.atm]);
+DefineFunction([ScatterPlot_SetSumYValues], [ScatterPlot], 2, 2, [Att([SumYValues], p(1)) := p(2)
+], [p(1) as ScatterPlot
+p(2) as Double
+
+Result: none. Sets the property SumYValues of ScatterPlot.], [ScatterPlot_SetSumYValues( atmScatterPlot, newSumYValues )], 0, [ScatterPlot.atm]);
+DefineFunction([ScatterPlot_GetSumYValues], [ScatterPlot], 1, 1, [Att([SumYValues], p(1))
+], [p(1) as ScatterPlot
+
+Result: Double. Get the property SumYValues of ScatterPlot.], [newSumYValues := ScatterPlot_GetSumYValues( atmScatterPlot )], 0, [ScatterPlot.atm]);
+DefineFunction([ScatterPlot_SetLeastSquaresCoefficient], [ScatterPlot], 2, 2, [Att([LeastSquaresCoefficient], p(1)) := p(2)
+], [p(1) as ScatterPlot
+p(2) as Double
+
+Result: none. Sets the property LeastSquaresCoefficient of ScatterPlot.], [ScatterPlot_SetLeastSquaresCoefficient( atmScatterPlot, newLeastSquaresCoefficient )], 0, [ScatterPlot.atm]);
+DefineFunction([ScatterPlot_GetLeastSquaresCoefficient], [ScatterPlot], 1, 1, [Att([LeastSquaresCoefficient], p(1))
+], [p(1) as ScatterPlot
+
+Result: Double. Get the property LeastSquaresCoefficient of ScatterPlot.], [newLeastSquaresCoefficient := ScatterPlot_GetLeastSquaresCoefficient( atmScatterPlot )], 0, [ScatterPlot.atm]);
+DefineFunction([ScatterPlot_SetLeastSquaresConstant], [ScatterPlot], 2, 2, [Att([LeastSquaresConstant], p(1)) := p(2)
+], [p(1) as ScatterPlot
+p(2) as Double
+
+Result: none. Sets the property LeastSquaresConstant of ScatterPlot.], [ScatterPlot_SetLeastSquaresConstant( atmScatterPlot, newLeastSquaresConstant )], 0, [ScatterPlot.atm]);
+DefineFunction([ScatterPlot_GetLeastSquaresConstant], [ScatterPlot], 1, 1, [Att([LeastSquaresConstant], p(1))
+], [p(1) as ScatterPlot
+
+Result: Double. Get the property LeastSquaresConstant of ScatterPlot.], [newLeastSquaresConstant := ScatterPlot_GetLeastSquaresConstant( atmScatterPlot )], 0, [ScatterPlot.atm]);
+DefineFunction([ScatterPlot_DeterminLeastSquaresEstimator], [ScatterPlot], 1, 1, [do(
+ { The Least Squares expression looks like this:
+ 
+   y = ax + b
+ 
+   Where:
+   
+   a = sum (xi - avg(x)) * (yi - avg(y)) / sum((xi - avg(x))^2)
+   b = avg(y) - a * avg(x)  }
+
+ var([indexer], vbValue, 0),
+ var([temp1], vbValue, 0),
+ var([temp2], vbValue, 0),
+ var([xi], vbValue, 0),
+ var([yi], vbValue, 0),
+ var([averageX], vbValue, 0),
+ var([averageY], vbValue, 0),
+
+ averageX := ScatterPlot_GetSumXValues(p(1)) / ScatterPlot_GetNumberOfRegistrations(p(1)),
+ averageY := ScatterPlot_GetSumYValues(p(1)) / ScatterPlot_GetNumberOfRegistrations(p(1)),
+ 
+ for(
+  indexer := 1, indexer <= ScatterPlot_GetNumberOfRegistrations(p(1)), inc(indexer),
+  do(
+   xi := Cell(indexer, SCATTERPLOT_COLUMNNUMBER_XVALUE, p(1)),
+   yi := Cell(indexer, SCATTERPLOT_COLUMNNUMBER_YVALUE, p(1)),
+
+   temp1 := temp1 + (xi - averageX) * (yi - averageY),
+   temp2 := temp2 + Sqr(xi - averageX)
+  )
+ ),
+ 
+ if(
+  temp2 <> 0,
+  do(
+   ScatterPlot_SetLeastSquaresCoefficient(p(1), temp1 / temp2),
+   ScatterPlot_SetLeastSquaresConstant(p(1), averageY - ScatterPlot_GetLeastSquaresCoefficient(p(1)) * averageX),
+   ScatterPlot_SetLeastSquaresValid(p(1), True)
+  ),
+  ScatterPlot_SetLeastSquaresValid(p(1), False)
+ ),
+ 
+ { Now determine the R Squared which is a measure for the effectiveness of the Least Square Estimator. 
+   
+   R2 = 1 - sum(yi - estimated(yi)) / sum(yi - avg(y)) }
+
+ temp1 := 0,
+ temp2 := 0,
+
+ for(
+  indexer := 1, indexer <= ScatterPlot_GetNumberOfRegistrations(p(1)), inc(indexer),
+  do(
+   xi := Cell(indexer, SCATTERPLOT_COLUMNNUMBER_XVALUE, p(1)),
+   yi := Cell(indexer, SCATTERPLOT_COLUMNNUMBER_YVALUE, p(1)),
+
+   temp1 := temp1 + Sqr(yi - ScatterPlot_GetLeastSquaresCoefficient(p(1)) * xi - ScatterPlot_GetLeastSquaresConstant(p(1))),
+   temp2 := temp2 + Sqr(yi - averageY)
+  )
+ ),
+ 
+ if(
+  temp2 > 0,
+  ScatterPlot_SetLeastSquaresRSquared(p(1), 1 - (temp1 / temp2))
+ )
+)
+], [p(1) as ScatterPlot
+
+Result: none. Determines the coefficient and the constant for the least squares estimator.], [ScatterPlot_DeterminLeastSquaresEstimator(c)], 0, [ScatterPlot.atm]);
+DefineFunction([ScatterPlot_SetLeastSquaresValid], [ScatterPlot], 2, 2, [Att([LeastSquaresValid], p(1)) := p(2)
+], [p(1) as ScatterPlot
+p(2) as Boolean
+
+Result: none. Sets the property LeastSquaresValid of ScatterPlot.], [ScatterPlot_SetLeastSquaresValid( atmScatterPlot, newLeastSquaresValid )], 0, [ScatterPlot.atm]);
+DefineFunction([ScatterPlot_GetLeastSquaresValid], [ScatterPlot], 1, 1, [Att([LeastSquaresValid], p(1))
+], [p(1) as ScatterPlot
+
+Result: Boolean. Get the property LeastSquaresValid of ScatterPlot.], [newLeastSquaresValid := ScatterPlot_GetLeastSquaresValid( atmScatterPlot )], 0, [ScatterPlot.atm]);
+DefineFunction([ScatterPlot_SetLeastSquaresRSquared], [ScatterPlot], 2, 2, [Att([LeastSquaresRSquared], p(1)) := p(2)
+], [p(1) as ScatterPlot
+p(2) as Double
+
+Result: none. Sets the property LeastSquaresRSquared of ScatterPlot.], [ScatterPlot_SetLeastSquaresRSquared( atmScatterPlot, newLeastSquaresRSquared )], 0, [ScatterPlot.atm]);
+DefineFunction([ScatterPlot_GetLeastSquaresRSquared], [ScatterPlot], 1, 1, [Att([LeastSquaresRSquared], p(1))
+], [p(1) as ScatterPlot
+
+Result: Double. Get the property LeastSquaresRSquared of ScatterPlot.], [newLeastSquaresRSquared := ScatterPlot_GetLeastSquaresRSquared( atmScatterPlot )], 0, [ScatterPlot.atm]);
+DefineFunction([ScatterPlot_GetTextSizeXAxis], [ScatterPlot], 1, 1, [Att([TextSizeXAxis], p(1))
+], [p(1) as ScatterPlot
+
+Result: double. The textsize for the values at the x-axis.
+], [ScatterPlot_GetTextSizeXAxis(c)], 0, [ScatterPlot.atm]);
+DefineFunction([ScatterPlot_SetTextSizeXAxis], [ScatterPlot], 2, 2, [att([TextSizeXAxis], p(1)) := p(2)
+], [p(1) as ScatterPlot
+p(2) as Double, the size for the text in centimetres.
+
+Result: none. Set the text size for the values at the X-axis], [ScatterPlot_SetTextSizeXAxis(c, 3)], 0, [ScatterPlot.atm]);
+DefineFunction([ScatterPlot_SetLeastSquaresExpressionVisible], [ScatterPlot], 2, 2, [Att([LeastSquaresExpressionVisible], p(1)) := p(2)
+], [p(1) as ScatterPlot
+p(2) as Boolean
+
+Result: none. Sets the property LeastSquaresExpressionVisible of ScatterPlot.], [ScatterPlot_SetLeastSquaresExpressionVisible( atmScatterPlot, newLeastSquaresExpressionVisible )], 0, [ScatterPlot.atm]);
+DefineFunction([ScatterPlot_GetLeastSquaresExpressionVisible], [ScatterPlot], 1, 1, [Att([LeastSquaresExpressionVisible], p(1))
+], [p(1) as ScatterPlot
+
+Result: Boolean. Get the property LeastSquaresExpressionVisible of ScatterPlot.], [newLeastSquaresExpressionVisible := ScatterPlot_GetLeastSquaresExpressionVisible( atmScatterPlot )], 0, [ScatterPlot.atm]);
+DefineFunction([ScatterPlot_SetTextSizeLeastSquaresExpression], [ScatterPlot], 2, 2, [Att([TextSizeLeastSquaresExpression], p(1)) := p(2)
+], [p(1) as ScatterPlot
+p(2) as Double
+
+Result: none. Sets the property TextSizeLeastSquaresExpression of ScatterPlot.], [ScatterPlot_SetTextSizeLeastSquaresExpression( atmScatterPlot, newTextSizeLeastSquaresExpression )], 0, [ScatterPlot.atm]);
+DefineFunction([ScatterPlot_GetTextSizeLeastSquaresExpression], [ScatterPlot], 1, 1, [Att([TextSizeLeastSquaresExpression], p(1))
+], [p(1) as ScatterPlot
+
+Result: Double. Get the property TextSizeLeastSquaresExpression of ScatterPlot.], [newTextSizeLeastSquaresExpression := ScatterPlot_GetTextSizeLeastSquaresExpression( atmScatterPlot )], 0, [ScatterPlot.atm]);
+DefineFunction([ScatterPlot_SetLeastSquaresLineVisible], [ScatterPlot], 2, 2, [Att([LeastSquaresLineVisible], p(1)) := p(2)
+], [p(1) as ScatterPlot
+p(2) as Boolean
+
+Result: none. Sets the property LeastSquaresLineVisible of ScatterPlot.], [ScatterPlot_SetLeastSquaresLineVisible( atmScatterPlot, newLeastSquaresLineVisible )], 0, [ScatterPlot.atm]);
+DefineFunction([ScatterPlot_GetLeastSquaresLineVisible], [ScatterPlot], 1, 1, [Att([LeastSquaresLineVisible], p(1))
+], [p(1) as ScatterPlot
+
+Result: Boolean. Get the property LeastSquaresLineVisible of ScatterPlot.], [newLeastSquaresLineVisible := ScatterPlot_GetLeastSquaresLineVisible( atmScatterPlot )], 0, [ScatterPlot.atm]);
+DefineFunction([ScatterPlot_SetLeastSquaresLinewidth], [ScatterPlot], 2, 2, [Att([LeastSquaresLinewidth], p(1)) := p(2)
+], [p(1) as ScatterPlot
+p(2) as Double
+
+Result: none. Sets the property LeastSquaresLinewidth of ScatterPlot.], [ScatterPlot_SetLeastSquaresLinewidth( atmScatterPlot, newLeastSquaresLinewidth )], 0, [ScatterPlot.atm]);
+DefineFunction([ScatterPlot_GetLeastSquaresLinewidth], [ScatterPlot], 1, 1, [Att([LeastSquaresLinewidth], p(1))
+], [p(1) as ScatterPlot
+
+Result: Double. Get the property LeastSquaresLinewidth of ScatterPlot.], [newLeastSquaresLinewidth := ScatterPlot_GetLeastSquaresLinewidth( atmScatterPlot )], 0, [ScatterPlot.atm]);
+DefineFunction([ScatterPlot_SetLeastSquaresLineColor], [ScatterPlot], 2, 2, [Att([LeastSquaresLineColor], p(1)) := p(2)
+], [p(1) as ScatterPlot
+p(2) as Color
+
+Result: none. Sets the property LeastSquaresLineColor of ScatterPlot.], [ScatterPlot_SetLeastSquaresLineColor( atmScatterPlot, newLeastSquaresLineColor )], 0, [ScatterPlot.atm]);
+DefineFunction([ScatterPlot_GetLeastSquaresLineColor], [ScatterPlot], 1, 1, [Att([LeastSquaresLineColor], p(1))
+], [p(1) as ScatterPlot
+
+Result: Color. Get the property LeastSquaresLineColor of ScatterPlot.], [newLeastSquaresLineColor := ScatterPlot_GetLeastSquaresLineColor( atmScatterPlot )], 0, [ScatterPlot.atm]);
+DefineFunction([ScatterPlot_SetDotsVisible], [ScatterPlot], 2, 2, [Att([DotsVisible], p(1)) := p(2)
+], [p(1) as ScatterPlot
+p(2) as Boolean
+
+Result: none. Sets the property DotsVisible of ScatterPlot.], [ScatterPlot_SetDotsVisible( atmScatterPlot, newDotsVisible )], 0, [ScatterPlot.atm]);
+DefineFunction([ScatterPlot_GetDotsVisible], [ScatterPlot], 1, 1, [Att([DotsVisible], p(1))
+], [p(1) as ScatterPlot
+
+Result: Boolean. Get the property DotsVisible of ScatterPlot.], [newDotsVisible := ScatterPlot_GetDotsVisible( atmScatterPlot )], 0, [ScatterPlot.atm]);
+Set(Icon(a), 
+	RegisterIcon(pDir([media\images\default.jpg]), [default.jpg]));
+SetMaterial(
+	RegisterMaterial([Default], 8421504, 8421504, 3289650, 0, 0.100000001490116, 0, false, false, 1, 0), 1, a);
+Set(Version(a), 7.3);
+SetTreeIcon(pDir([Media\Icons\Scatterplot.ico]));
+SetChannels(1, 1);
+SetChannelRanges(1, 1, 1, 1);
+int001(71);
+SetSize(8, 3, 1);
+LockPosition(false);
+LockSize(false);
+DisableIconRotation(false);
+SetProductCode([]);
+createAttributes(39);
+SetAttributeName(r(1), [id]);
+SetAttributeName(r(2), [Title]);
+SetAttributeName(r(3), [NumberOfRegistrations]);
+SetAttributeName(r(4), [WidthBoundingBox]);
+SetAttributeName(r(5), [HeightBoundingBox]);
+SetAttributeName(r(6), [TextColor]);
+SetAttributeName(r(7), [BorderColor]);
+SetAttributeName(r(8), [TextSizeTitle]);
+SetAttributeName(r(9), [TextSizeYAxis]);
+SetAttributeName(r(10), [TextSizeXAxis]);
+SetAttributeName(r(11), [TextSizeLeastSquaresExpression]);
+SetAttributeName(r(12), [TitleVisible]);
+SetAttributeName(r(13), [MaximumXValue]);
+SetAttributeName(r(14), [MaximumYValue]);
+SetAttributeName(r(15), [ScoresVisible]);
+SetAttributeName(r(16), [ScatterPlotVisible]);
+SetAttributeName(r(17), [YAxisValuesVisible]);
+SetAttributeName(r(18), [YAxisNumberOfValues]);
+SetAttributeName(r(19), [YAxisLinesVisible]);
+SetAttributeName(r(20), [YAxisLinesColor]);
+SetAttributeName(r(21), [XAxisValuesVisible]);
+SetAttributeName(r(22), [XAxisNumberOfValues]);
+SetAttributeName(r(23), [XAxisLinesVisible]);
+SetAttributeName(r(24), [XAxisLinesColor]);
+SetAttributeName(r(25), [DotsRadius]);
+SetAttributeName(r(26), [DotsBorderWidth]);
+SetAttributeName(r(27), [DotsColor]);
+SetAttributeName(r(28), [DotsBorderColor]);
+SetAttributeName(r(29), [DotsVisible]);
+SetAttributeName(r(30), [LeastSquaresLinewidth]);
+SetAttributeName(r(31), [LeastSquaresLineVisible]);
+SetAttributeName(r(32), [LeastSquaresLineColor]);
+SetAttributeName(r(33), [LeastSquaresExpressionVisible]);
+SetAttributeName(r(34), [SumXValues]);
+SetAttributeName(r(35), [SumYValues]);
+SetAttributeName(r(36), [LeastSquaresCoefficient]);
+SetAttributeName(r(37), [LeastSquaresConstant]);
+SetAttributeName(r(38), [LeastSquaresValid]);
+SetAttributeName(r(39), [LeastSquaresRSquared]);
+SetTextAtt(r(2), [ScatterPlot]);
+SetAtt(r(4), 10);
+SetAtt(r(5), 10);
+SetExprAtt(r(6), [colorblack]);
+SetExprAtt(r(7), [colorblack]);
+SetAtt(r(8), 0.6);
+SetAtt(r(9), 0.4);
+SetAtt(r(10), 0.4);
+SetAtt(r(11), 0.3);
+SetAtt(r(12), 1);
+SetAtt(r(15), 1);
+SetAtt(r(16), 1);
+SetAtt(r(17), 1);
+SetAtt(r(18), 5);
+SetExprAtt(r(20), [ColorGray]);
+SetAtt(r(21), 1);
+SetAtt(r(22), 5);
+SetExprAtt(r(24), [ColorGray]);
+SetAtt(r(25), 0.1);
+SetAtt(r(26), 0.1);
+SetExprAtt(r(27), [colorred]);
+SetExprAtt(r(28), [colorblack]);
+SetAtt(r(29), 1);
+SetAtt(r(30), 2);
+SetAtt(r(31), 1);
+SetExprAtt(r(32), [colorblack]);
+SetAtt(r(33), 1);
+int024;
+SetTable(1, 2);
+int015(0, 0, [ 
+1
+]);
+int015(1, 0, [`XValue`
+]);
+int015(2, 0, [`YValue`
+]);
+Set(OnUser, [Do(
+ { Delete any current instances of this form.} 
+ GuiDestroy([Scatterplot]),
+
+ { Register the GUI-form for this atom.}
+ GuiRegister(PDir([\Atoms\Scatterplot.gui]), 1),
+
+ { Show the GUI-form.}
+ Guicreate([formScatterplot], [Scatterplot], 0, c, 0, 1)
+)
+]);
+Set(On2DDraw, [ScatterPlot_Animate2D(c)
+]);
+SetStatus(0);
+int018;
+int007;

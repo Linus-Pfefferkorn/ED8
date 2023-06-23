@@ -1,0 +1,120 @@
+
+
+{Atom: Socket Send}
+
+sets;
+BaseClass;
+CreateAtom(a, s, [], 1, false);
+Set(OnInit, [Do(
+ if(
+  not(FunctionExists([Symbol3DDraw])),
+  ExecFile(pDir([Atoms\Socket Listen.atm]))
+ )
+)
+]);
+int023([Socket Send], 10512442, 1264);
+Set(Icon(a), 
+	RegisterIcon(pDir([Media\Images\Symbols\sockout.bmp]), [sockout]));
+SetMaterial(
+	RegisterMaterial([Default], 8421504, 8421504, 3289650, 0, 0.100000001490116, 0, false, false, 1, 0), 1, a);
+Set(Version(a), 7.3);
+SetTreeIcon(pDir([Media\Icons\SocketSend.ico]));
+Set(Info, [Sockets
+
+General
+------------
+Socket client that sends information when an atom enters and 
+(immediately leaves) this atom.
+
+Main variables: 
+- Atom name
+- host (the name or ip-address you want to send a message to)
+- portnumber (a number what the host is listening to)
+- post message (message you want to post)
+
+Right click:
+  portnumber and define the response to incoming messages
+
+Double click:
+  Test sending a message: Define:
+     - the name/ip-address of your computer, 
+     - code to be executed on host
+     - code to be executed on your machine (only if you check receipt 
+       confirmation) if receipt confirmation arrives
+
+Channels:
+---------------
+1 input, 1 output
+
+Important:
+--------------
+TCP/IP must be installed
+
+Last revision:
+-------------------
+February, 2008
+]);
+SetChannels(1, 1);
+SetChannelRanges(1, 1, 1, 1);
+int001(66);
+SetSize(5, 2, 1);
+LockPosition(false);
+LockSize(false);
+DisableIconRotation(false);
+SetProductCode([]);
+CreateAttributes(10);
+SetAttributeName(r(1), [postmessage]);
+SetAttributeName(r(2), [host]);
+SetAttributeName(r(3), [hostportnumber]);
+SetAttributeName(r(4), [sender]);
+SetAttributeName(r(5), [listenportnumber]);
+SetAttributeName(r(6), [testmessage]);
+SetAttributeName(r(7), [testreceipt]);
+SetAttributeName(r(8), [execsender]);
+SetAttributeName(r(9), [exechost]);
+SetAttributeName(r(10), [ServerFound]);
+SetTextAtt(r(1), [label([socketpostmessage],i)]);
+SetExprAtt(r(3), [7122]);
+SetExprAtt(r(5), [7122]);
+SetTextAtt(r(6), [This is a test]);
+SetExprAtt(r(8), [msg([Sending the message was succesfull])]);
+SetExprAtt(r(9), [msg([This should be displayed on the host])]);
+int024;
+Set(OnEvent, [MoveRequest(First(c),1)
+]);
+Set(OnEntered, [do(
+ closeic(1,c),
+ createevent(0,c,1),
+ socketpost(Att(1,c),att(2,c),att(3,c)),
+ trace(concat([Posting message ],TextAtt(1,c)))
+)
+]);
+Set(OnExited, [OpenIc(1, c)
+]);
+Set(OnCreation, [AutoConnect
+]);
+Set(OnUser, [Do(
+ { Delete any current instances of this form.} 
+ GuiDestroy([SocketSend]),
+
+ { Register the GUI-form for this atom.}
+ GuiRegister(PDir([\Atoms\SocketSend.gui]), 1),
+
+ { Show the GUI-form.}
+ Guicreate([SocketSend], [SocketSend], 0, c, 0, 1)
+)
+]);
+Set(OnOcReady, [OpenIc(1, c)
+]);
+Set(OnIcReady, [if(
+ Not(OcReady(1, c)),
+ CloseIc(1, c)
+)
+]);
+Set(On2DDraw, [StandardDisplay(Name, [Client], Icon)
+]);
+Set(On3DDraw, [Symbol3DDraw
+]);
+SetStatus(0);
+int018;
+int007;

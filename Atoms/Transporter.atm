@@ -1,0 +1,309 @@
+
+
+{Preregister functions}
+
+PreregisterFunction([Transporter_t-sortby], 2, 2);
+PreregisterFunction([Transporter_t-sortload], 1, 1);
+PreregisterFunction([Transporter_loadpermission], 2, 2);
+PreregisterFunction([loadpermission], 2, 2);
+PreregisterFunction([t-sortby], 2, 2);
+PreregisterFunction([t-sortload], 1, 1);
+
+
+{Atom: Transporter}
+
+sets;
+BaseClass;
+CreateAtom(a, s, [], 1, false);
+int023([Transporter], 767720, 66643);
+DefineFunction([Transporter_t-sortby], [Transport], 2, 2, [Do(
+ Repeat(
+  {for all contents of p(2)}
+  Content( p(2) ),
+  Repeat(
+   {countdown}
+   -(Content( p(2) ), 1),
+   Do(
+    {set cs with count rank}
+    Setcs(Rank(Count, p(2))),
+    If(
+     {p(1) is true}
+     p(1),
+     {set the rank of the next atom to the current position}
+     SetRank(Count,Next(cs))
+    )
+   )
+  )
+ )
+)
+], [Sort the contents of an atom.
+e1: Sorting condition
+e2: Atom reference], [Transporter_t-sortby(<(Label([t-dest], Next(cs)), Label([t-dest], cs)),c)], 0, [Transporter.atm]);
+DefineFunction([Transporter_t-sortload], [Transport], 1, 1, [Do(
+ {Set cs with the first atom in c}
+ Setcs(First(c)),
+ Case(
+  {sortingload condition}
+  p(1),
+  {1: Compare labels t-rank from next and current atom and sort when the next is smaller}
+  Transporter_t-sortby( <(Label([t-rank], Next(cs)), Label([t-rank], cs)),c),
+
+  {2: No sort}
+  [no sort required],
+  
+  {3: Compare labels named TextAtt 55 from next and current atom and sort when the next is smaller}
+  {TextAtt 55 applies only to Advanced Transporter}
+  Transporter_t-sortby( <(Label(TextAtt(55, c), Next(cs)), Label(TextAtt(55, c), cs)), c),
+
+  {4: Compare labels named TextAtt 55 from next and current atom and sort when the next is higher}
+  {TextAtt 55 applies only to Advanced Transporter}
+  Transporter_t-sortby( >(Label(TextAtt(55, c), Next(cs)), Label(TextAtt(55, c), cs)), c),
+  
+  {5: Compare labels t-dest from next and current atom and sort when the next is smaller}
+  Transporter_t-sortby( <(Label([t-dest], Next(cs)), Label([t-dest], cs)), c),
+  
+  {6: Compare labels t-dest from next and current atom and sort when the next is higher}
+  Transporter_t-sortby( >(Label([t-dest], Next(cs)), Label([t-dest], cs)), c)
+ )
+)
+], [Sort the load of a transporter.
+e1: Sortingload condition
+1: Compare labels t-rank from next and current atom and sort when the next is smaller
+2: No sort
+3: Compare labels named TextAtt 55 from next and current atom and sort when the next is smaller (only appies to Advanced Transporter)
+4: Compare labels named TextAtt 55 from next and current atom and sort when the next is higher (only appies to Advanced Transporter)
+5: Compare labels t-dest from next and current atom and sort when the next is smaller
+6: Compare labels t-dest from next and current atom and sort when the next is higher], [Transporter_t-sortload(1)], 0, [Transporter.atm]);
+DefineFunction([Transporter_loadpermission], [Transport], 2, 2, [If(
+ Content( p(1) ) = 0,
+ True,
+ Case(
+  Att([loadrestriction],p(1)),
+  {// no restriction //}
+  True,
+  {// same name: only accept atoms that have the same name //}
+  If(CompareText(Name(First(p(1))),Name(p(2))),True,False),
+  {// same label value: only accept atoms that have the same value on label ~LabelName~ //}
+  If(=(Label(Att([loadlabel],p(1)),First(p(1))),Label(Att([loadlabel],p(1)),p(2))),True,False),
+  {// same label text: only accept atoms that have the same text on label ~LabelName //}
+  If(CompareText(Label(Att([loadlabel],p(1)),First(p(1))),Label(Att([loadlabel],p(1)),p(2))),True,False),
+  {// same container: only accept atoms that come out of the same container //}
+  If(=(Label([t-container],First(p(1))),AtomID(up(p(2)))),True,False),
+  {// same mother: only accept atoms that have the same mother //}
+  If(=(AtomID(m(First(p(1)))),AtomID(m(p(2)))),True,False)
+ )
+)
+], [Checks permission criteria based on [loadrestriction] attribute 
+e1 = atom with the loadrestriction attribute
+e2 = reference to the other atom used in the restriction where:
+attribute loadrestriction can be:
+1: no restriction
+2: atomname of p(1) and p(2) are equal
+3: loadlabel attribute of p(1) and p(2) are equal (value)
+4: loadlabel attribute of p(1) and p(2) are equal (text)
+5: out of same container; label t-container First(p(1)) equals AtomID(up(p(2)))
+6: same mother m(p(1)) and m(p(2)) are equal], [Transporter_loadpermission(c, i)], 0, [Transporter.atm]);
+DefineFunction([loadpermission], [Transport], 2, 2, [do(
+ Transporter_loadpermission(p(1),p(2))
+)
+], [See Transporter_loadpermission], [See Transporter_loadpermission], 0, [Transporter.atm]);
+DefineFunction([t-sortby], [Transport], 2, 2, [do(
+ Transporter_t-sortby(p(1),p(2))
+)
+], [See Transporter_t-sortby], [Enter Syntax Example], 0, [Transporter.atm]);
+DefineFunction([t-sortload], [Transport], 1, 1, [do(
+ Transporter_t-sortload(p(1))
+)
+], [See Transporter_t-sortload], [Enter Syntax Example], 0, [Transporter.atm]);
+Set(Icon(a), 
+	RegisterIcon(pDir([Media\Images\Transport\truck2.bmp]), [truck 1]));
+AddModel3D(
+	RegisterModel3D(Model3DDir([\Forklift.wrl]), [Forklift.wrl], 0, 0, 0, 1, 1, -1, -90, 0, 0), a);
+SetMaterial(
+	RegisterMaterial([Default], 8421504, 8421504, 3289650, 0, 0.100000001490116, 0, false, false, 1, 0), 1, a);
+Set(Version(a), 7.3);
+SetTreeIcon(pDir([Media\Icons\Transporter1.ico]));
+Set(Info, [Transports atoms between other atoms.
+
+General
+------------
+A general transporter that can pick up atoms at N locations 
+and bring them to M locations. Transports one atom at a time. 
+
+Travels the shortest distance between atoms in the XY plane.
+
+Connect the inputchannels of the transporter with the 
+outputchannels of pick up places. Connect the outputchannels 
+with the inputhannels of drop-off places. 
+
+The user can specify the transporters speed, loadtime, 
+unloadtime and outputchannel to use. After the loadtime the 
+transporter selects a destination and starts travelling. Upon 
+arrival the unloadtime starts and then the atom is sent out. 
+After droping off  the transporter will evaluate the 
+inputstrategy as soon as an input channel is ready.
+
+Channels:
+---------------
+N inputchannels, M outputchannels
+
+Statuses:
+--------------
+   1 - Idle
+   5 - Blocked
+   6 - Travel Full
+   7 - Travel Empty
+  16 - Load
+  17 - Unload
+
+Rightclick: 
+  Edit speed, loadtime, unloadtime, send to, input strategy, triggers
+
+Last Revision:
+---------------------
+February, 2008
+]);
+SetChannels(1, 1);
+SetChannelRanges(1, 255, 1, 255);
+int001(85);
+SetSize(3, 2, 1);
+LockPosition(false);
+LockSize(false);
+DisableIconRotation(false);
+SetProductCode([]);
+CreateAttributes(16);
+SetAttributeName(r(1), [curoc]);
+SetAttributeName(r(2), [curic]);
+SetAttributeName(r(3), [acceleration]);
+SetAttributeName(r(4), [deceleration]);
+SetAttributeName(r(5), [curzdest]);
+SetAttributeName(r(6), [isondest]);
+SetAttributeName(r(7), [speed]);
+SetAttributeName(r(8), [instrategy]);
+SetAttributeName(r(9), [3dicon]);
+SetAttributeName(r(10), [entrytrigger]);
+SetAttributeName(r(11), [exittrigger]);
+SetAttributeName(r(12), [sendto]);
+SetAttributeName(r(13), [loadtime]);
+SetAttributeName(r(14), [unloadtime]);
+SetAttributeName(r(15), [EndOfLoadTrigger]);
+SetAttributeName(r(16), [StartOfUnloadTrigger]);
+SetAtt(r(1), 1);
+SetAtt(r(7), 1);
+SetExprAtt(r(8), [{.openallic(c)|Any inputchannel .}openallic(c)]);
+SetAtt(r(9), 1);
+SetExprAtt(r(12), [1]);
+SetExprAtt(r(13), [0]);
+SetExprAtt(r(14), [0]);
+int024;
+Set(OnEvent, [case(
+ eventcode,
+ do( { 1: at pick-up location before loading time }
+  stopatom(c),
+  isondest := 1,
+  openic(curic,c)
+ ),
+ do( { 2: at drop-off location unloading  }
+  setstatus(17,c),
+  stopatom(c),
+  isondest := 1,
+  createevent(unloadtime,c,4),
+  StartOfUnloadTrigger
+ ),
+ do( { 3: direct after loading start traveling } 
+  EndOfLoadTrigger,
+  setstatus(6,c),
+  openalloc(c), 
+  { determine the destination }
+  curoc := sendto,
+  closealloc(c),
+  createevent(0,c,7)  
+ ),
+ do( { 4: dropping off }
+  setstatus(5,c),
+  openoc(curoc,c)
+ ),
+ { 5: input strategy }
+ instrategy,
+ 
+ { 6: travel to pickup }
+ createevent(
+  travelto(c, 1, xLoc(in(CurIc, c)) + xSize(in(CurIc, c)) * Cos(RotationAs(in(CurIc, c))), yLoc(in(CurIc, c)) + (ySize(in(CurIc, c)) / 2) + (xSize(in(CurIc, c)) * Sin(RotationAs(in(CurIc, c)))), zLoc(in(CurIc, c)), Speed, 0, Acceleration, Deceleration),
+  c,case(traveleventcode,6,1)
+ ),
+ 
+ { 7: travel to putaway } 
+ createevent(
+  travelto(c,1,xloc(out(att(1,c),c)),yloc(out(att(1,c),c)),zloc(out(att(1,c),c)),att(7,c),0,att(3,c),att(4,c)),
+  c,case(traveleventcode,7,2)
+ )
+)
+]);
+Set(OnEntered, [do(
+ setstatus(16,c),
+ SetLoc(0, 0, 0.2, i),
+ isondest := 0,
+ closeallic(c),
+ closealloc(c),
+ createevent(loadtime, c, 3),
+ entrytrigger
+)
+]);
+Set(OnExited, [do(
+ setstatus(1,c),
+ setatt(6,0,c),
+ closealloc(c),
+ att(11,c),
+ sddb([t-container],0,i),
+ createevent(0,c,5)
+)
+]);
+Set(OnCreation, [autoconnect
+]);
+Set(OnReset, [do(
+ closealloc(c),
+ setstatus(1,c),
+ stopatom,
+ setatt(6,0,c)
+)
+]);
+Set(OnUser, [Do(
+  { Delete any current instances of this form.} 
+  GuiDestroy([Transporter]),
+  { Register the GUI-form for this atom.}
+  GuiRegister(PDir([\Atoms\Transporter.gui]), 1),
+  { Show the GUI-form.}
+   Guicreate([Transporter], [Transporter], 0, c, 0, 1)
+)
+]);
+Set(OnOcReady, [if(
+ att(6,c), {is on destination to drop-off}
+ moverequest(first(c),att(1,c))  {THEN drop -off}
+)
+]);
+Set(OnIcReady, [if(
+ not(att(6,c)),
+ do(
+  setstatus(7,c),
+  setatt(2,ic(c),c),
+  closeallic(c),
+  createevent(0,c,6)
+ )
+)
+]);
+Set(On3DDraw, [Case(
+ 3DIcon,
+   DrawSimpleTruck,
+   DrawLiftTruck,
+   DrawPalletJack,
+   DrawPalletWagon,
+   DrawRollContainer,
+   DrawRollContainerb,
+   DrawWalkyRider
+)
+]);
+Set(OnMessage, [sddb([t-container],atomid(up(in(3,c))),in(3,c))
+]);
+SetStatus(0);
+int018;
+int007;

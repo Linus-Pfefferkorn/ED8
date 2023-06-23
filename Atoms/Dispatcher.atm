@@ -1,0 +1,106 @@
+
+
+{Preregister functions}
+
+PreregisterFunction([Dispatcher_dispatch_minload], 0, 0);
+PreregisterFunction([Dispatcher_dispatch_maxload], 0, 0);
+PreregisterFunction([Dispatcher_dispatch_ftf], 0, 0);
+PreregisterFunction([dispatch_ftf], 0, 0);
+PreregisterFunction([dispatch_maxload], 0, 0);
+PreregisterFunction([dispatch_minload], 0, 0);
+
+
+{Atom: Dispatcher}
+
+sets;
+BaseClass;
+CreateAtom(a, s, [], 1, false);
+int023([Dispatcher], 16711808, 96);
+DefineFunction([Dispatcher_dispatch_minload], [Transport], 0, 0, [Do( SetLabel([minload],10000000000,c), SetAtt([occurrent],0,c), Repeat(  NrOC(c),  If(   And(    ICReady(1,Out(Count,c)),    Content(Out(Count,c)) < Label([minload],c),    Transporter_loadpermission(Out(Count,c),in(3,cs))   ),   Do(    SetLabel([minload],Content(Out(Count,c)),c),    SetAtt([occurrent],Count,c)   )  ) ), SetLabel([minload],0,c), Att([occurrent],c))], [Enter helptext], [Enter Syntax Example], 0, [Dispatcher.atm]);
+DefineFunction([Dispatcher_dispatch_maxload], [Transport], 0, 0, [Do( SetLabel([maxload],-1,c), SetAtt([occurrent],0,c), Repeat(  NrOC(c),  If(   And(    ICReady(1,Out(Count,c)),    Content(Out(Count,c)) > Label([maxload],c),    Transporter_loadpermission(Out(Count,c),In(3,cs))   ),   Do(    SetLabel([maxload],Content(Out(Count,c)),c),    SetAtt([occurrent],Count,c)   )  ) ), SetLabel([maxload],0,c), Att([occurrent],c))], [Enter helptext], [Enter Syntax Example], 0, [Dispatcher.atm]);
+DefineFunction([Dispatcher_dispatch_ftf], [Transport], 0, 0, [Do( SetAtt([occurrent],0,c), LoopUntil(  Att([occurrent],c) > 0,  If(   And(    ICReady(1,Out(Count,c)),    Transporter_loadpermission(Out(Count,c),In(3,cs))   ),   SetAtt([occurrent],Count,c)  ),  NrOC(c) ), Att([occurrent],c))], [Enter helptext], [Enter Syntax Example], 0, [Dispatcher.atm]);
+DefineFunction([dispatch_ftf], [Transport], 0, 0, [Dispatcher_dispatch_ftf], [Enter helptext], [Enter Syntax Example], 0, [Dispatcher.atm]);
+DefineFunction([dispatch_maxload], [Various], 0, 0, [Dispatcher_dispatch_maxload], [Enter helptext], [Enter Syntax Example], 0, [Dispatcher.atm]);
+DefineFunction([dispatch_minload], [Various], 0, 0, [Dispatcher_dispatch_minload], [Enter helptext], [Enter Syntax Example], 0, [Dispatcher.atm]);
+Set(Icon(a), 
+	RegisterIcon(IconsDir([bmp\atoms\queue.bmp]), [queue]));
+SetMaterial(
+	RegisterMaterial([Default], 8421504, 8421504, 3289650, 0, 0.100000001490116, 0, false, false, 1, 0), 1, a);
+Set(Version(a), 7.3);
+SetTreeIcon(pDir([Media\Icons\Dispatcher.ico]));
+Set(Info, [Dispatcher
+
+General
+------------
+Dispatches transport tasks to Advanced Transporters.
+
+Use the sort option to give priority task, default is FIFO.
+
+Channels:
+---------------
+Input channels:    connect to any atom that sends atoms into the 
+                                 transport system.
+Output channels: must be connected to input channel 1 of an 
+                                  Advanced Transporter.
+
+Last Revision:
+---------------------
+March, 2008
+]);
+SetChannels(1, 1);
+SetChannelRanges(1, 255, 1, 255);
+int001(92);
+SetSize(6, 2, 0);
+LockPosition(false);
+LockSize(false);
+DisableIconRotation(false);
+SetProductCode([]);
+CreateAttributes(18);
+SetAttributeName(r(1), [dispatchto]);
+SetAttributeName(r(2), [usercontrol]);
+SetAttributeName(r(3), [sortby]);
+SetAttributeName(r(4), [exittrigger]);
+SetAttributeName(r(5), [pickatatom]);
+SetAttributeName(r(6), [atomtopick]);
+SetAttributeName(r(7), [occurrent]);
+SetAttributeName(r(8), [yoffset]);
+SetAttributeName(r(9), [zoffset]);
+SetAttributeName(r(10), [curoc]);
+SetAttributeName(r(11), [prevoc]);
+SetAttributeName(r(12), [buildonreset]);
+SetAttributeName(r(13), [showbuild]);
+SetAttributeName(r(14), [editmode]);
+SetAttributeName(r(15), [distancetable]);
+SetAttributeName(r(16), [nodetable]);
+SetAttributeName(r(17), [pointertable]);
+SetAttributeName(r(18), [connectiontable]);
+SetExprAtt(r(1), [{.If(Transporter_loadpermission(out(~1,c),in(3,cs)),~1,0)|1. Specific channel --> always send to channel ~1~ .}If(Transporter_loadpermission(Out(1,c),in(3,cs)),1,0)]);
+SetExprAtt(r(3), [{.[no sort required]|1. FIFO --> first in first out. .}[no sort required]]);
+SetExprAtt(r(5), [in(message,c)]);
+SetExprAtt(r(6), [first(in(message,c))]);
+SetAtt(r(12), 1);
+SetAtt(r(14), 1);
+int024;
+Set(OnEvent, [{// Look for a transporter to dispatch each task to //}if( content(c)>0, do(  occurrent:=0,  loopuntil(   occurrent>0,    do(    if(count=1,setcs(first(c)),setcs(next(cs))),    occurrent:=dispatchto   ),   content(c)  ),  sendmessage(occurrent,ptv(cs),c) ))]);
+Set(OnEntered, [do( closeic(ic(c),c), sddb(concat([t-ic],string(ic(c))),0,c), moveatom(i,out(ddb([t-oc],i),c)))]);
+Set(OnExited, [sddb([t-oc],0,i)]);
+Set(OnCreation, [sddb([t-dispatcher],1,c)]);
+Set(OnReset, [do( foratomlayerunder(c,destroyatom), repeat(  nric(c),  do(   sddb(concat([t-ic],string(count)),0,c),   if(    atomexists(in(count,c)),    do(     setcs(in(count,c)),     if(      nroc(cs)>1,      msg(       concat(        [Atoms that are connected to a dispatcher should only have 1 output channel. ],        [Reduce the number of output channels of ],name(cs),[ that is connected to ],name(c),[.]       ),2      )     )    )   )  ) ))]);
+Set(OnUser, [Do(
+ { Delete any current instances of this form.} 
+ GuiDestroy([Dispatcher]),
+
+ { Register the GUI-form for this atom.}
+ GuiRegister(PDir([\Atoms\Dispatcher.gui]), 1),
+
+ { Show the GUI-form.}
+ GuiCreate([Dispatcher], [Dispatcher], 0, c, 0, 1)
+)
+]);
+Set(OnOcReady, [if(>(content(c),0),createevent(0,c))]);
+Set(OnIcReady, [if( not(ddb(concat([t-ic],string(ic(c))),c)), do(  closeic(ic(c),c),  if(   not(att(2,c)),   sendmessagedirect(c,ic(c),first(in(ic(c),c)))  ) ))]);
+Set(On2DDraw, [draw2dicon(3,name(c),string(content))]);
+Set(OnMessage, [do( createatom(baseclass,c,[Task]), setcs(last(c)), setsetting(sa3dshape,0), setchannels(3,0,cs), sddb([t-ic],ic(c),cs), connect(0,att(5,c),1,cs), connect(0,up(i),2,cs), connect(0,i,3,cs), setlabel([t-container],atomid(up(i)),i), setatt(2,message,cs), att(3,c), createevent(0,c,1))]);
+SetStatus(0);
+int018;
+int007;

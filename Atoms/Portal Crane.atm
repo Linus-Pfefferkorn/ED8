@@ -1,0 +1,249 @@
+
+
+{Atom: Portal Crane}
+
+sets;
+BaseClass;
+CreateAtom(a, s, [], 1, false);
+int023([Portal Crane], 1760767, 3120);
+Set(Icon(a), 
+	RegisterIcon(pDir([media\images\default.jpg]), [default.jpg]));
+SetMaterial(
+	RegisterMaterial([Default], 8421504, 8421504, 3289650, 0, 0.100000001490116, 0, false, false, 1, 0), 1, a);
+Set(Version(a), 7.3);
+SetTreeIcon(pDir([Media\Icons\PortalCrane.ico]));
+Set(Info, [Portal Crane.General------------A Portal crane that can pick up atoms at N locations and bring them to M locations.Connect the inputchannels of the Portal crane with the outputchannels of pick up places.Connect the outputchannels of the Portal crane with the inputhannels of destinations.Channels:---------------N inputchannels, M outputchannelsStatuses:--------------   1 - Idle   2 - Busy   5 - Blocked   6 - Travel Full   7 - Travel Empty  16 - Load  17 - Unload  22 - CollectingRightclick:  Positioning, Control parameters, Dimension parameters,   Movement parametersLast Revision:---------------------March, 2008]);
+int001(240);
+SetSize(40, 20, 6);
+LockPosition(false);
+LockSize(false);
+DisableIconRotation(false);
+SetProductCode([]);
+CreateAttributes(3);
+SetAttributeName(r(1), [XDirection]);
+SetAttributeName(r(2), [3DAppearance]);
+SetAttributeName(r(3), [NrOfDirections]);
+SetAtt(r(1), 1);
+SetAtt(r(2), 1);
+int024;
+Set(OnCreation, [Label([CraneExists], c) := 1]);
+Set(OnReset, [do( SetRank(1, c), Label([CraneExists], c) := 1)]);
+Set(OnUser, [Do(  { Delete any current instances of this form.}   GuiDestroy([Portal Crane]),  { Register the GUI-form for this atom.}  GuiRegister(PDir([\Atoms\Portal Crane.gui]), 1),  { Show the GUI-form.}   GuiCreate([Portal Crane], [Portal Crane], 0, c, 0, 1))]);
+Set(On2DDraw, [Do(  if(  Label([CraneExists], c),  setcs(first(first(first(c)))),  setcs(c) ),   diShape(  0,   0,   If(   att([XDirection], c),    xSize(c),    0.6  ),     If(   att([XDirection], c),    0.6,    ySize(c)  ),   0,   Color(c),   Color(c) ), diShape(  If(   att([XDirection], c),    0,    xSize(c) - 0.6  ),   If(   att([XDirection], c),    ySize(c) - 0.6,    0  ),     If(   att([XDirection], c),    xSize(c),    0.6  ),     If(   att([XDirection], c),    0.6,    ySize(c)  ),   0,   Color(c),   Color(c) ), diShape(  If(   att([XDirection], c),    +(-(xAbsLoc(cs, Model),    xAbsLoc(c, Model)),    0.2  ),   0.6 ),  If(   att([XDirection], c),    0.6,    +(-(yAbsLoc(cs, Model),    yAbsLoc(c, Model)),    0.2  ) ), If(  att([XDirection], c),   0.6,   xSize(c) - 1.2 ),   If(  att([XDirection], c),   ySize(c) - 1.2,   0.6 ),  0,  Color(c),  Color(c) ))]);
+Set(On3DDraw, [Do( Setcs(first(first(first(c)))),  Case(  3DAppearance,   Do(   di3DBox(0, 0, zSize(c), If(XDirection, xSize(c), 0.6), If(XDirection, 0.6, ySize(c)), 0.6, Color(c)),    di3DBox(If(XDirection, 0, xSize(c)-0.6), If(XDirection, ySize(c)-0.6, 0), zSize(c), If(XDirection, xSize(c), 0.6), If(XDirection, 0.6, ySize(c)), 0.6, Color(c)),    di3DBox(If(XDirection, +(-(xAbsLoc(cs, Model), xAbsLoc(c, Model)), 0.2), 0.6), If(XDirection, 0.6, +(-(yAbsLoc(cs, Model), yAbsLoc(c, Model)), 0.2)), zSize(c), If(XDirection, 0.6, xSize(c) - 1.2), If(XDirection, ySize(c) - 1.2, 0.6), 0.6, Color(c))  ),   Do(   di3DBox(0, 0, 0, If(XDirection, xSize(c), 0.6), If(XDirection, 0.6, ySize(c)), 0.6, Color(c)),    di3DBox(If(XDirection, 1, xSize(c)-0.6), If(XDirection, ySize(c)-0.6, 0), 0, If(XDirection, xSize(c), 0.6), If(XDirection, 0.6, ySize(c)), 0.6, Color(c)),    di3DBox(If(XDirection, +(-(xAbsLoc(cs, Model), xAbsLoc(c, Model)), 0.2), 0.6), If(XDirection, 0.6, +(-(yAbsLoc(cs, Model), yAbsLoc(c, Model)), 0.2)), zSize(c), If(XDirection, 0.6, xSize(c) - 1.2), If(XDirection, ySize(c) - 1.2, 0.6), 0.6, Color(c)),    di3DBox(If(XDirection, +(-(xAbsLoc(cs, Model), xAbsLoc(c, Model)), 2.2), 0), If(XDirection, 0, +(-(yAbsLoc(cs, Model), yAbsLoc(c, Model)), 2.2)), 0.6, 0.6, 0.6, zSize(c), Color(c)),    di3DBox(If(XDirection, +(-(xAbsLoc(cs, Model), xAbsLoc(c, Model)), 2.2), xSize(c)-0.6), If(XDirection, ySize(c)-0.6, +(-(yAbsLoc(cs, Model), yAbsLoc(c, Model)), 2.2)), 0.6, 0.6, 0.6, zSize(c), Color(c)),     di3DBox(If(XDirection, -(-(xAbsLoc(cs, Model), xAbsLoc(c, Model)), 1.6), 0), If(XDirection, 0, -(-(yAbsLoc(cs, Model), yAbsLoc(c, Model)), 1.6)), 0.6, 0.6, 0.6, zSize(c), Color(c)),    di3DBox(If(XDirection, -(-(xAbsLoc(cs, Model), xAbsLoc(c, Model)), 1.6), xSize(c)-0.6), If(XDirection, ySize(c)-0.6, -(-(yAbsLoc(cs, Model), yAbsLoc(c, Model)), 1.6)), 0.6, 0.6, 0.6, zSize(c), Color(c)),    di3DBox(If(XDirection, -(-(xAbsLoc(cs, Model), xAbsLoc(c, Model)), 1), 0), If(XDirection, 0, -(-(yAbsLoc(cs, Model), yAbsLoc(c, Model)), 1)), zSize(c), If(XDirection, 3.2, 0.6), If(XDirection, 0.6, 3.2), 0.6, Color(c)),    di3DBox(If(XDirection, -(-(xAbsLoc(cs, Model), xAbsLoc(c, Model)), 1), xSize(c)-0.6), If(XDirection, ySize(c)-0.6, -(-(yAbsLoc(cs, Model), yAbsLoc(c, Model)), 1)), zSize(c), If(XDirection, 3.2, 0.6), If(XDirection, 0.6, 3.2), 0.6, Color(c)),     di3DBox(If(XDirection, -(-(xAbsLoc(cs, Model), xAbsLoc(c, Model)), 3.6), 0), If(XDirection, 0, -(-(yAbsLoc(cs, Model), yAbsLoc(c, Model)), 3.6)), 0.6, 0.6, 0.6, 1.4, Color(c)),    di3DBox(If(XDirection, -(-(xAbsLoc(cs, Model), xAbsLoc(c, Model)), 3.6), xSize(c)-0.6), If(XDirection, ySize(c)-0.6, -(-(yAbsLoc(cs, Model), yAbsLoc(c, Model)), 3.6)), 0.6, 0.6, 0.6, 1.4, Color(c)),    di3DBox(If(XDirection, -(-(xAbsLoc(cs, Model), xAbsLoc(c, Model)), 4), 0), If(XDirection, 0, -(-(yAbsLoc(cs, Model), yAbsLoc(c, Model)), 4)), 2, If(XDirection, 2.4, 0.6), If(XDirection, 0.6, 2.4), 0.6, Color(c)),    di3DBox(If(XDirection, -(-(xAbsLoc(cs, Model), xAbsLoc(c, Model)), 4), xSize(c)-0.6), If(XDirection, ySize(c)-0.6, -(-(yAbsLoc(cs, Model), yAbsLoc(c, Model)), 4)), 2, If(XDirection, 2.4, 0.6), If(XDirection, 0.6, 2.4), 0.6, Color(c)),     di3DBox(If(XDirection, +(-(xAbsLoc(cs, Model), xAbsLoc(c, Model)), 4.2), 0), If(XDirection, 0, +(-(yAbsLoc(cs, Model), yAbsLoc(c, Model)), 4.2)), 0.6, 0.6, 0.6, 1.4, Color(c)),    di3DBox(If(XDirection, +(-(xAbsLoc(cs, Model), xAbsLoc(c, Model)), 4.2), xSize(c)-0.6), If(XDirection, ySize(c)-0.6, +(-(yAbsLoc(cs, Model), yAbsLoc(c, Model)), 4.2)), 0.6, 0.6, 0.6, 1.4, Color(c)),    di3DBox(If(XDirection, +(-(xAbsLoc(cs, Model), xAbsLoc(c, Model)), 2.8), 0), If(XDirection, 0, +(-(yAbsLoc(cs, Model), yAbsLoc(c, Model)), 2.8)), 2, If(XDirection, 2.4, 0.6), If(XDirection, 0.6, 2.4), 0.6, Color(c)),    di3DBox(If(XDirection, +(-(xAbsLoc(cs, Model), xAbsLoc(c, Model)), 2.8), xSize(c)-0.6), If(XDirection, ySize(c)-0.6, +(-(yAbsLoc(cs, Model), yAbsLoc(c, Model)), 2.8)), 2, If(XDirection, 2.4, 0.6), If(XDirection, 0.6, 2.4), 0.6, Color(c))  ) ))]);
+SetStatus(0);
+int018;
+
+
+{Atom: X Direction}
+
+sets;
+BaseClass;
+CreateAtom(a, s, [], 1, false);
+int023([X Direction], 0, 3072);
+Set(Icon(a), 
+	RegisterIcon(pDir([media\images\default.jpg]), [default.jpg]));
+SetMaterial(
+	RegisterMaterial([Default], 8421504, 8421504, 3289650, 0, 0.100000001490116, 0, false, false, 1, 0), 1, a);
+Set(Version(a), 7.3);
+SetTreeIcon(pDir([Media\Icons\PortalCrane.ico]));
+Set(Info, [Last Revision:---------------------March, 2008]);
+Set(DdbRec, [>t-nocreate:1.]);
+int001(241);
+SetSize(1, 1, 1);
+LockPosition(false);
+LockSize(false);
+DisableIconRotation(false);
+SetProductCode([]);
+int024;
+Set(OnEvent, [Do( Setcs(First(First(c))), Case(  EventCode,  {1 X Direction}  CreateEvent(   TravelTo(c, 0, Att(13, cs), yLoc(c), zLoc(c), Att(1, cs), 0, Att(4, cs), Att(7, cs)),   c,   Case(TravelEventCode, 1, 2)  ),  {2 travel to is finished}  Do(   StopAtom(c),   CreateEvent(0, cs, 17)  ),  {3 Move to fixed X-location}  CreateEvent(   TravelTo(c, 0, Att(47, cs), yLoc(c), zLoc(c), Att(1,cs), 0, Att(4, cs), Att(7, cs)),   c,   Case(TravelEventCode, 3, 2)  ) ))]);
+Set(OnReset, [Do( SetRank(1, c), StopAtom(c))]);
+Set(OnUser, [ExecOnUser(Up(c))]);
+SetStatus(0);
+int018;
+
+
+{Atom: Y Direction}
+
+sets;
+BaseClass;
+CreateAtom(a, s, [], 1, false);
+int023([Y Direction], 0, 3072);
+Set(Icon(a), 
+	RegisterIcon(pDir([media\images\default.jpg]), [default.jpg]));
+SetMaterial(
+	RegisterMaterial([Default], 8421504, 8421504, 3289650, 0, 0.100000001490116, 0, false, false, 1, 0), 1, a);
+Set(Version(a), 7.3);
+SetTreeIcon(pDir([Media\Icons\PortalCrane.ico]));
+Set(Info, [Last Revision:---------------------March, 2008]);
+Set(DdbRec, [>t-nocreate:1.]);
+int001(242);
+SetSize(1, 1, 1);
+LockPosition(false);
+LockSize(false);
+DisableIconRotation(false);
+SetProductCode([]);
+int024;
+Set(OnEvent, [Do( Setcs(First(c)), Case(  EventCode,  {1 Y Direction}  CreateEvent(   TravelTo(c, 0, xLoc(c), Att(15, cs), zLoc(c), Att(2, cs), 0, Att(5, cs), Att(8, cs)),   c,   Case(TravelEventCode, 1, 2)  ),  {2 travel to is finished}  Do(   StopAtom(c),   CreateEvent(0, cs, 17)  ),  {3 Move to fixed Y-Position}  CreateEvent(   TravelTo(c, 0, xLoc(c), Att(48, cs), zLoc(c), Att(2, cs), 0, Att(5, cs), Att(8, cs)),   c,   Case(TravelEventCode, 3, 2)  ) ))]);
+Set(OnReset, [Do( SetRank(1, c), StopAtom(c))]);
+Set(OnUser, [ExecOnUser(Up(Up(c)))]);
+SetStatus(0);
+int018;
+
+
+{Preregister functions}
+
+PreregisterFunction([Place], 3, 3);
+
+
+{Atom: Crane}
+
+sets;
+BaseClass;
+CreateAtom(a, s, [], 1, false);
+int023([Crane], 255, 1074);
+DefineFunction([Place], [Various], 3, 3, [do( setatt(13, att(13, c) + p(1), c), setatt(15, att(15, c) + p(2), c), setatt(17, att(17, c) + p(3), c))], [Gives relative place in destination], [Enter Syntax Example], 0, [Portal Crane.atm]);
+Set(Icon(a), 
+	RegisterIcon(pDir([media\images\default.jpg]), [default.jpg]));
+SetMaterial(
+	RegisterMaterial([Default], 8421504, 8421504, 3289650, 0, 0.100000001490116, 0, false, false, 1, 0), 1, a);
+Set(Version(a), 7.3);
+SetTreeIcon(pDir([Media\Icons\PortalCrane.ico]));
+Set(Info, [Last Revision:
+---------------------
+March, 2008
+]);
+Set(DdbRec, [>t-nocreate:1.>start:1.]);
+SetChannels(1, 1);
+SetChannelRanges(1, 255, 1, 255);
+int001(243);
+SetSize(1, 1, 4);
+LockPosition(false);
+LockSize(false);
+DisableIconRotation(false);
+SetProductCode([]);
+CreateAttributes(66);
+SetAttributeName(r(1), [x-speed]);
+SetAttributeName(r(2), [y-speed]);
+SetAttributeName(r(3), [z-speed]);
+SetAttributeName(r(4), [x-acceleration]);
+SetAttributeName(r(5), [y-acceleration]);
+SetAttributeName(r(6), [z-acceleration]);
+SetAttributeName(r(7), [x-deceleration]);
+SetAttributeName(r(8), [y-deceleration]);
+SetAttributeName(r(9), [z-deceleration]);
+SetAttributeName(r(10), [loadtime]);
+SetAttributeName(r(11), [unloadtime]);
+SetAttributeName(r(12), [cur-x]);
+SetAttributeName(r(13), [next-x]);
+SetAttributeName(r(14), [cur-y]);
+SetAttributeName(r(15), [next-y]);
+SetAttributeName(r(16), [cur-z]);
+SetAttributeName(r(17), [next-z]);
+SetAttributeName(r(18), [transport-height]);
+SetAttributeName(r(19), [capacity]);
+SetAttributeName(r(20), [channel]);
+SetAttributeName(r(21), [x-position]);
+SetAttributeName(r(22), [y-position]);
+SetAttributeName(r(23), [lenght]);
+SetAttributeName(r(24), [width]);
+SetAttributeName(r(25), [busy]);
+SetAttributeName(r(26), [pickup 1]);
+SetAttributeName(r(27), [pickup 2]);
+SetAttributeName(r(28), [pickup 3]);
+SetAttributeName(r(29), [pickup 4]);
+SetAttributeName(r(30), [pickup 5]);
+SetAttributeName(r(31), [pickup 6]);
+SetAttributeName(r(32), [pickup 7]);
+SetAttributeName(r(33), [Dropdown 1]);
+SetAttributeName(r(34), [Dropdown 2]);
+SetAttributeName(r(35), [Dropdown 3]);
+SetAttributeName(r(36), [Dropdown 4]);
+SetAttributeName(r(37), [Dropdown 5]);
+SetAttributeName(r(38), [Dropdown 6]);
+SetAttributeName(r(39), [Dropdown 7]);
+SetAttributeName(r(40), [Set pickup locs]);
+SetAttributeName(r(41), [Set dropdown locs]);
+SetAttributeName(r(42), [movement ctr]);
+SetAttributeName(r(43), [sendto]);
+SetAttributeName(r(44), [instrategy]);
+SetAttributeName(r(45), [entrytrigger]);
+SetAttributeName(r(46), [exittrigger]);
+SetAttributeName(r(47), [fixed x axis]);
+SetAttributeName(r(48), [fixed y axis]);
+SetAttributeName(r(49), [detail]);
+SetAttributeName(r(50), [simple]);
+SetAttributeName(r(51), [defaultx]);
+SetAttributeName(r(52), [defaulty]);
+SetAttributeName(r(53), [defaultz]);
+SetAttributeName(r(54), [popup]);
+SetAttributeName(r(55), [curoc]);
+SetAttributeName(r(56), [counter]);
+SetAttributeName(r(57), [direct]);
+SetAttributeName(r(58), [default loc]);
+SetAttributeName(r(59), [Craneappearance]);
+SetAttributeName(r(60), [x-pos]);
+SetAttributeName(r(61), [y-pos]);
+SetAttributeName(r(62), [z-pos]);
+SetAttributeName(r(63), [detailed dest]);
+SetAttributeName(r(64), [counter]);
+SetAttributeName(r(65), [2directions]);
+SetAttributeName(r(66), [curload]);
+SetExprAtt(r(1), [1]);
+SetExprAtt(r(2), [1]);
+SetExprAtt(r(3), [1]);
+SetExprAtt(r(4), [0.1]);
+SetExprAtt(r(5), [0.1]);
+SetExprAtt(r(6), [0.1]);
+SetExprAtt(r(7), [0.1]);
+SetExprAtt(r(8), [0.1]);
+SetExprAtt(r(9), [0.1]);
+SetExprAtt(r(18), [3]);
+SetExprAtt(r(19), [1]);
+SetAtt(r(23), 20);
+SetAtt(r(24), 10);
+SetExprAtt(r(26), [{.2|Up.}2]);
+SetExprAtt(r(27), [{.6|XY Direction.}6]);
+SetExprAtt(r(28), [{.3|Down.}3]);
+SetExprAtt(r(29), [{.1|Nothing.}1]);
+SetExprAtt(r(30), [{.1|Nothing.}1]);
+SetExprAtt(r(31), [{.1|Nothing.}1]);
+SetExprAtt(r(32), [{.1|Nothing.}1]);
+SetExprAtt(r(33), [{.2|Up.}2]);
+SetExprAtt(r(34), [{.6|XY Direction.}6]);
+SetExprAtt(r(35), [{.3|Down.}3]);
+SetExprAtt(r(36), [{.1|Nothing.}1]);
+SetExprAtt(r(37), [{.1|Nothing.}1]);
+SetExprAtt(r(38), [{.1|Nothing.}1]);
+SetExprAtt(r(39), [{.1|Nothing.}1]);
+SetExprAtt(r(40), [{Set next locations for pickup}do( setatt(  13,  +(   xabsloc(first(in(att(20,c),c)),model)-xabsloc(cs,model),   /(xsize(first(in(att(20,c),c))),2)-0.5  ),  c ), setatt(  15,  +(   yabsloc(first(in(att(20,c),c)),model)-yabsloc(cs,model),   /(ysize(first(in(att(20,c),c))),2)-0.5  ),  c ), setatt(  17,  +(   zabsloc(first(in(att(20,c),c)),model)-zabsloc(cs,model),   zsize(first(in(att(20,c),c)))  ),  c ))]);
+SetExprAtt(r(41), [{Set locations for drop down position}do( setatt(  13,  +(   xabsloc(out(att(20,c),c),model)-xabsloc(cs,model),   /(xsize(first(c)),2)-0.5,   if(att(63,c),att(60,c))  ),  c ), setatt(  15,  +(   yabsloc(out(att(20,c),c),model)-yabsloc(cs,model),   /(ysize(first(c)),2)-0.5,   if(att(63,c),att(61,c))  ),  c ), setatt(  17,  +(   zabsloc(out(att(20,c),c),model)-zabsloc(cs,model),   if(    att(63,c),    att(62,c),    zsize(out(att(20,c),c))   ),   zsize(first(c))  ),  c ))]);
+SetExprAtt(r(43), [1]);
+SetExprAtt(r(44), [{.openallic(c)|1. Any inputchannel .}openallic(c)]);
+SetExprAtt(r(47), [0]);
+SetExprAtt(r(48), [0]);
+SetTextAtt(r(50), [{.do(setatt(26,7,c),setatt(33,7,c),repeat(6,setatt(+(count,26),1,c)),repeat(6,setatt(+(count,33),1,c)))|1. All directions together (using Y-speed) .}do(setatt(26,7,c),setatt(33,7,c),repeat(6,setatt(+(count,26),1,c)),repeat(6,setatt(+(count,33),1,c)))]);
+SetExprAtt(r(51), [xsize(cs)/2]);
+SetExprAtt(r(52), [ysize(cs)/2]);
+SetExprAtt(r(53), [att([transport-height],c)]);
+SetAtt(r(57), 1);
+SetAtt(r(59), 1);
+SetExprAtt(r(60), [0]);
+SetExprAtt(r(61), [0]);
+SetExprAtt(r(62), [0]);
+int024;
+Set(OnEvent, [Do( Setcs(Up(Up(Up(c)))),  Case( EventCode,  {1: set next locations for pickup} Do(  Att(40, c),  CreateEvent(0, c, 3) ),  {2: set next locations for unload} Do(  Att(41, c),   CreateEvent(0, c, 4) ),  {3: Selecting the right movements for picking up depending on the order that is defined by the user} If(  Or(   Att(att(42, c), c),    Att(42, c) > 33  ),   Do(   StopAtom,    SetAtt(42, 33, c),     CreateEvent(0, c, 13) {Load}    ),   Do(   StopAtom,    CreateEvent(0, c, 3 + Att(Att(42, c), c)), {create event that correspondents with the movement described in the attribute}   Inc(Att(42, c))  )    ),   {4: Selecting the right movements for dropping off depending on the order that is defined by the user} If(  Or(   Att(Att(42, c), c),    Att(42, c) > 39  ),   Do(   StopAtom,   SetAtt(42, 26, c),    CreateEvent(0, c, 13) {unload}    ),   Do(   StopAtom,    CreateEvent(0, c, 3 + Att(Att(42, c), c)), {create event that correspondents with the movement described in the attribute}   Inc(Att(42, c))  )    ), {5: Up movement to transportheight} CreateEvent(  TravelTo(c, 0, xLoc(c), yLoc(c), Att(18, c), Att(3, c), 0, Att(6, c), Att(9, c)),   c,   Case(TravelEventCode, 5, If(Att(42, c) > 32, 4, 3)) ), {6: Down movement to pickup position} CreateEvent(  TravelTo(c, 0, xLoc(c), yLoc(c), Att(17, c), Att(3, c), 0, Att(6, c), Att(9, c)),   c,   Case(TravelEventCode, 6, If(Att(42, c) > 32, 4, 3)) ),  {7: move to x-position} Do(  SetAtt(3, 1, cs),   CreateEvent(0, First(cs), 1) ),  {8: move to y-position} Do(  SetAtt(3, 1, cs),   CreateEvent(0, Up(c), 1) ),  {9: move xy together} Do(  SetAtt(3, 2, cs),   CreateEvent(0, First(cs), 1),   CreateEvent(0, Up(c), 1) ),  {10: move all together} Do(  SetAtt(3, 3, cs),   CreateEvent(0, First(cs), 1),   CreateEvent(0, Up(c), 1),   CreateEvent(0, c, 18) ),  {11: move to fixed-x} Do(  SetAtt(3, 1, cs),   CreateEvent(0, First(cs), 3) ),  {12: move to fixed-y} Do(  SetAtt(3, 1, cs),   CreateEvent(0, Up(c), 3) ),  {13: load/unload} If(Content(c) = 0,  If(   Not(Att(25, c)),  Do(StopAtom,If(Content(c) > 0, SetStatus(22, Up(c)), SetStatus(1, Up(c))), CloseAllIc(c), SetAtt(56, 0, c), SetAtt(42, 26, c), Att(44, c)),  Do(    StopAtom(c),     CreateEvent(Att(10, c), c, 14),     SetStatus(16, cs)   )  ),  Do(   StopAtom(c),    If(    Not(Att(25, c)),     If(     =(Att(56, c), 1),      Do(CloseAllIc(c), If(Content(c) > 0, SetStatus(22, cs), SetStatus(1, cs)), SetAtt(56, 0, c), SetAtt(42, 26, c), Att(44, c)),      CreateEvent(0, c, 14)    ),     Do(     SetStatus(17, cs),      CreateEvent(Att(11, c), c, 15)    )   )  ) ),  {14: load}   OpenIc(Att(20, c), c),  {15: unload} Do(  SetStatus(5, cs),   OpenOc(Att(20, c), c) ),  {16: default location} If(Att(58, c),   Do(   If(Content(c) > 0, SetStatus(22, cs), SetStatus(1, cs)),    SetAtt(25, 0, c),    CloseAllIc(c),    Repeat(    NrIc(c),     If(     AtomExists(In(Count, c)),       If(      OcOpen(IcOcNo(Count, c), In(Count, c)),       SetAtt(25, 1, c)     )    )   ),    If(    Att(25, c),     Do(     SetAtt(42, 26, c),      Att(44, c)    ),     Do(     If(Content(c) > 0, SetStatus(6, cs), SetStatus(7, cs)),      SetAtt(56, 1, c),      SetAtt(13, Att(51, c), c),      SetAtt(15, Att(52, c), c),      SetAtt(17, Att(53, c), c),      CreateEvent(0, c, 4)    )   )  ),   Do(   If(Content(c) > 0, SetStatus(22, cs), SetStatus(1, cs)),   SetAtt(25, 1, c),    Att(44, c)  ) ),  {17 Check for 2 directions} Do(  Inc(Att(65, c)),   If(   Att(65, c) = Att(3, cs),    Do(    SetAtt(65, 0, c),     CreateEvent(0, c, If(Att(42, c) > 32, 4, 3))   )  ) ),  {18 Moving in z direction} CreateEvent(  TravelTo(c, 0, xLoc(c), yLoc(c), Att(17, c), Att(3, c), 0, Att(6, c), Att(9, c)),   c,   Case(TravelEventCode, 18, 19) ),  {19 stop atom} Do(  StopAtom,   CreateEvent(0, c, 17) )))]);
+Set(OnEntered, [Do( Setcs(Up(up(Up(c)))), CloseAllIc(c),  Att(45, c),  {entry trigger} SetLoc(-(0.5, /(xSize(i), 2)), -(0.5,/(ySize(i), 2)), -(0, Sum(Content(c) - 1, zSize(Rank(Count, c))), 1), i), If(  Content(c)=1,  Curload := Capacity ), If(  Content(c) >= Curload,  Do(   SetAtt(25, 1, c),    SetAtt(42, 33, c),    SetAtt(20, Att(43, c), c),  {Set the destination to sendto channel}   SetStatus(6, cs),    CreateEvent(0, c, 2)  ),   Do(   SetStatus(16, cs),   CreateEvent(Att(10, c), c, 16, -9999)  ) ))]);
+Set(OnExited, [Do( Setcs(Up(Up(Up(c)))),  CloseAllOc(c),  StopAtom(c),  Att(46, c),  {exittrigger} If(Content(c) = 0,   Do(   SetAtt(42, 26, c),    CreateEvent(0, c, 16),    SetStatus(1, cs)  ),   Do(   SetStatus(22, cs),    SetAtt(20, Att(43, c), c),    If(=(Att(20, c), Att(55, c)),     CreateEvent(0, c, 13),     Do(     SetAtt(42, 33, c),      CreateEvent(0, c, 2)    )   )  ) ),  Repeat(  Content(c),   Do(   SetAtt(64, Count, c),     SetLoc(/(xSize(Rank(Att(64, c), c)), 2) - 0.5, /(ySize(Rank(Att(64, c), c)), 2) - 0.5, -(0, Sum(Content(c) - Count, zSize(Rank(Count, c))), 1), Rank(Att(64, c), c))  ) ))]);
+Set(OnDestruction, [Label([CraneExists], up(up(up(c)))) := 0]);
+Set(OnReset, [Do( SetStatus(1, Up(Up(Up(c)))), SetRank(1, c), CloseAllOc(c), SetAtt(20, 0, c), SetAtt(42, 26, c), SetAtt(25, 0, c), SetAtt(56, 0, c), SetAtt(65, 0, c), StopAtom, If(Not(Att(49, c)),    ExecString(Att(50, c))), CreateEvent(0, c, 16))]);
+Set(OnOcReady, [Do( SetAtt(55, oc(c), c), If(Content(c) > 0,  MoveRequest(First(c), Att(20, c)) ))]);
+Set(OnIcReady, [do( setcs(up(up(up(c)))), if(  =(att(42,c),26),  if(   and(    content(c)>0,    att(25,c)   ),   if(    <>(att(20,c),ic(c)),    do(     setatt(20,ic(c),c),     setatt(25,0,c),     closeallic(c),     createevent(0,c,1),     setstatus(6,cs)    )   ),   do(    setatt(20,ic(c),c),     if(content(c)>0,     do(      setstatus(6,cs),      setatt(25,0,c)     ),     do(      setstatus(7,cs),      setatt(25,1,c)     )    ),    closeallic(c),    createevent(0,c,1)   )  ) ))]);
+Set(On2DDraw, [diShape(0, 0, 1, 1, 0, Color(c), Color(c)) ]);
+Set(On3DDraw, [Do( Setcs(Up(Up(Up(c)))),  Case(  Att(59, c),   Do(   di3DBox(if(Att(1, cs), 0, -0.2), 0, -(zSize(cs), zLoc(c)), 0.2, 1, 0.6, Color(c), if(Att(1, cs), 0, -90)),    di3DBox(xSize(c) - 0.2, if(Att(1, cs), 0, -1), -(zSize(cs), zLoc(c)), 0.2, 1, 0.6, Color(c), if(Att(1, cs), 0, 90)),    di3DBox(0, 0, -(zSize(cs), zLoc(c)) - 0.2, 1, 1, 0.2, Color(c), 0),    di3DBox(0, 0, -(zSize(cs), zLoc(c)) + 0.6, 1, 1, 0.2, Color(c), 0),    Cylinder(/(xSize(c), 2), /(xSize(c), 2), 0, -(zSize(cs), zLoc(c)), 360, 0.1, 0, 90, 0, Colorsilver),    Cylinder(/(xSize(c), 2), /(xSize(c), 2), -(zSize(cs), zLoc(c) - 0.8), 1.5, 360, 0.2, 0, 90, 0, ColorBlack),    di3DFrame(/(xSize(c), 2) - 0.05, /(xSize(c), 2) - 0.1, 0, 0.1, 0.2, -0.2, ColorBlack, 0, 0, 0, 1, 0, 0, 1, 1)  ),   Do(   di3DBox(if(Att(1, cs), 0, -0.2), 0, -(zSize(cs), zLoc(c)), 0.2, 1, 0.6, Color(c), if(Att(1, cs), 0, -90)),    di3DBox(xSize(c)-0.2, if(Att(1, cs), 0, -1), -(zSize(cs), zLoc(c)), 0.2, 1, 0.6, Color(c), if(Att(1, cs), 0, 90)),    di3DBox(0, 0, -(zSize(cs), zLoc(c))-0.2, 1, 1, 0.2, Color(c), 0),    di3DBox(0, 0, -(zSize(cs), zLoc(c))+0.6, 1, 1, 0.2, Color(c), 0),    di3DBox(0, 0, 0, 1, 1, 0.5, Color(c)),     di3DBox(1, -0.1, 0, 0.1, 0.1, -(0.8, -(zLoc(c), zSize(cs))), Color(c)),      di3DBox(-0.1, 1, 0, 0.1, 0.1, -(0.8, -(zLoc(c), zSize(cs))), Color(c)),    di3DBox(-0.1, -0.1, 0, 0.1, 0.1, -(0.8, -(zLoc(c), zSize(cs))), Color(c)),    di3DBox(1, 1, 0, 0.1, 0.1, -(0.8, -(zLoc(c), zSize(cs))), Color(c)),    di3DBox(1, -0.1, 0, 0.1, 0.1, -1, Color(c)),      di3DBox(-0.1, 1, 0, 0.1, 0.1, -1, Color(c)),    di3DBox(-0.1, -0.1, 0, 0.1, 0.1, -1, Color(c)),    di3DBox(1, 1, 0, 0.1, 0.1, -1, Color(c)),    di3DBox(1, -0.1, -1.1, 0.1, 1.2, 0.1, ColorBlack),    di3DBox(-0.1, 1, -1.1, 1.1, 0.1, 0.1, ColorBlack),    di3DBox(-0.1, -0.1, -1.1, 1.1, 0.1, 0.1, ColorBlack),    di3DBox(-0.1, 0, -1.1, 0.1, 1, 0.1, ColorBlack)  ) ))]);
+SetStatus(0);
+int018;
+Up;
+Up;
+Up;
+int007;

@@ -1,0 +1,104 @@
+EDControl(EditForm:
+  BorderIcons = set(SystemMenu),
+  BorderStyle = Single,
+  Caption = str('User Events'),
+  Height = 290,
+  Left = 2785,
+  Name = str('frmUserEvents'),
+  Position = Default,
+  ShowHint = True,
+  Top = 645,
+  Visible = False,
+  Width = 406,
+  Controls(
+    EDControl(Panel:
+      Align = Bottom,
+      Anchors = set(Left,Right,Bottom),
+      BevelOuter = None,
+      Caption = str(''),
+      Height = 40,
+      Left = 0,
+      Name = str('Panel1'),
+      TabOrder = 2,
+      Top = 250,
+      Width = 406,
+      Controls(
+        EDControl(Button:
+          Caption = str('Help'),
+          Left = 8,
+          Name = str('btnHelp'),
+          TabOrder = 1,
+          Top = 8,
+          Events(
+            Click = str('Help(PDir([HELP\ED Help.hlp]), [User Events])'#13))),
+        EDControl(Button:
+          Caption = str('Event Table'),
+          Left = 216,
+          Name = str('Button5'),
+          TabOrder = 2,
+          Top = 8,
+          Events(
+            Click = str('do('#13' UserEvents__SetHeaders(GuiAtom),'#13' if('#13'  nRows(GuiAtom) > 0,'#13'  EditTable(GuiAtom),'#13'  msg([No Events are yet defined.], 1)'#13' )'#13')'#13))),
+        EDControl(Button:
+          Anchors = set(Right,Bottom),
+          Cancel = True,
+          Caption = str('&Close'),
+          Left = 323,
+          Name = str('Button4'),
+          TabOrder = 3,
+          Top = 8,
+          Events(
+            Click = str('GuiDestroy'))))),
+    EDControl(Panel:
+      Align = Client,
+      Anchors = set(Left,Top,Right,Bottom),
+      Caption = str(''),
+      Height = 250,
+      Left = 0,
+      Name = str('Panel3'),
+      TabOrder = 1,
+      Top = 0,
+      Width = 406,
+      Controls(
+        EDControl(RadioGroup:
+          Caption = str('Event List'),
+          Height = 238,
+          ItemIndex = 0,
+          Left = 9,
+          Name = str('RadioGroup1'),
+          TabOrder = 1,
+          Top = 1,
+          Width = 388),
+        EDControl(ListBox:
+          Height = 169,
+          Left = 17,
+          Name = str('ListedEvents'),
+          TabOrder = 2,
+          Top = 25,
+          Width = 368),
+        EDControl(Button:
+          Caption = str('A&dd'),
+          Left = 120,
+          Name = str('Button1'),
+          TabOrder = 3,
+          Top = 202,
+          Events(
+            Click = str('Do('#13' model.selectedFunction := GuiControl([ListedEvents], GuiGet([ItemIndex])),'#13#13' model.newFunction := true,'#13#13' { Delete any current instances of this form.} '#13' GuiDestroy([frmUserEventsAdd]),'#13#13' { Register the GUI-form for this atom.}'#13' GuiRegister(PDir([\Atoms\UserEventsAdd.gui]), 1),'#13#13' { Show the GUI-form.}'#13' GuiCreate([frmUserEventsAdd], [frmUserEventsAdd], 0, GuiAtom, 0, 1),'#13#13' GuiInstance('#13'  [frmUserEvents],'#13'  GuiDestroy'#13' )'#13')'#13))),
+        EDControl(Button:
+          Caption = str('&Edit'),
+          Left = 204,
+          Name = str('Button3'),
+          TabOrder = 4,
+          Top = 202,
+          Events(
+            Click = str('Do('#13' model.selectedFunction := GuiControl([ListedEvents], GuiGet([ItemIndex])),'#13#13' model.newFunction := false,'#13#13' if('#13'  model.selectedFunction = 0,'#13'  do('#13'   Msg([Select an Event to edit.], 1),'#13'   return(-1)'#13'  )'#13' ),'#13#13' { Delete any current instances of this form.} '#13' GuiDestroy([frmUserEventsAdd]),'#13#13' { Register the GUI-form for this atom.}'#13' GuiRegister(PDir([\Atoms\UserEventsAdd.gui]), 1),'#13#13' { Show the GUI-form.}'#13' GuiCreate([frmUserEventsAdd], [frmUserEventsAdd], 0, GuiAtom, 0, 1),'#13' '#13' GuiInstance('#13'  [frmUserEvents],'#13'  GuiDestroy'#13' )'#13')'#13))),
+        EDControl(Button:
+          Caption = str('De&lete'),
+          Left = 288,
+          Name = str('Button2'),
+          TabOrder = 5,
+          Top = 202,
+          Events(
+            Click = str('Do('#13' var([strTime],vbString),'#13' var([strEventAtom],vbString),'#13' var([strEventCode],vbString),'#13' var([strPriority],vbString),'#13' var([strInvolvedAtom],vbString),'#13' var([strScript],vbString),   '#13#13' model.selectedEvents := GuiControl([ListedEvents], GuiGet([ItemIndex])),'#13#13' UnRegisterFunction(Guicontrol([ListedEvents], GuiGet([Items], model.selectedEvents))),'#13' '#13' { If model.selectedEvents is 0, it means that the user clicked on ''Delete'' without choosing an item from the eventlist. }'#13' { Another possibility is, that the eventlist is empty. }'#13#13' { Remove from the listbox }'#13' if('#13'  model.selectedEvents > 0,'#13'  do('#13'   GuiControl('#13'    [ListedEvents],'#13'    GuiList('#13'     [Items],'#13'     [Delete],'#13'     model.selectedEvents '#13'    )'#13'   ),'#13'   '#13'   {Move all the attributes one place lower}'#13'   Repeat('#13'    NrOfAttributes(GuiAtom) - model.selectedEvents,'#13'    Do('#13'     SetAttributeName(model.selectedEvents + count - 1, AttributeName(model.selectedEvents + count, GuiAtom), GuiAtom),'#13'     TextAtt(model.selectedEvents + count - 1, GuiAtom) := TextAtt(model.selectedFunction + count,GuiAtom),  '#13'     Cell(model.selectedEvents + count - 1, 1, GuiAtom) := Cell(model.selectedEvents + count, 1, GuiAtom),'#13'     Cell(model.selectedEvents + count - 1, 2, GuiAtom) := Cell(model.selectedEvents + count, 2, GuiAtom),'#13'     Cell(model.selectedEvents + count - 1, 3, GuiAtom) := Cell(model.selectedEvents + count, 3, GuiAtom),'#13'     Cell(model.selectedEvents + count - 1, 4, GuiAtom) := Cell(model.selectedEvents + count, 4, GuiAtom),'#13'     Cell(model.selectedEvents + count - 1, 5, GuiAtom) := Cell(model.selectedEvents + count, 5, GuiAtom),'#13'     Cell(model.selectedEvents + count - 1, 6, GuiAtom) := Cell(model.selectedEvents + count, 6, GuiAtom),'#13'     Cell(model.selectedEvents + count - 1, 7, GuiAtom) := Cell(model.selectedEvents + count, 7, GuiAtom),'#13'     '#13'     {if event is not timeschedule, the unregister and register with new eventcode number!}'#13'     if('#13'      Cell(model.selectedEvents + count - 1, USEREVENTS__NOTIMESCHEDULE, GuiAtom) = 1,'#13'      do('#13'       UnregisterFunction(StringReplace(AttributeName(model.selectedEvents + count - 1, GuiAtom),[att_], [])), {minus att_!!!}'#13'       '#13'       strTime := string(Cell(model.selectedEvents + count - 1, USEREVENTS__TIME, GuiAtom)),'#13'       strEventAtom := {[c]}concat([vtp(],string(ptv(GuiAtom)),[)]),'#13'       strEventCode := string(model.selectedEvents + count - 1) {this value must be updated when events are deleted/edited, iow, when the nr of atts changes etc.},'#13'       strPriority := [9999999999],'#13'       {strPriority := string(Cell(model.selectedEvents + count - 1, USEREVENTS__PRIORITY, GuiAtom)),'#13'       strInvolvedAtom := string(Cell(model.selectedEvents + count - 1, USEREVENTS__INVOLVEDATOM, GuiAtom)),}'#13'       strScript := concat([CreateEvent(],strTime, [,] , strEventAtom, [,] , strEventCode, [,] , strPriority, {[,] , strInvolvedAtom,}[)]),       '#13'       '#13'       RegisterFunction('#13'        StringReplace(AttributeName(model.selectedEvents + count - 1, GuiAtom),[att_], []), {minus att_!!!}'#13'        [Various],'#13'        0,'#13'        0,'#13'        strScript,'#13'        [],'#13'        [],'#13'        True'#13'       )'#13'       '#13'      )'#13'     )'#13'     '#13'    )'#13'   ),'#13'   '#13'   SetAttributes(NrOfAttributes(Guiatom) - 1, GuiAtom),'#13'   DeleteRow(model.selectedEvents)'#13'  ),'#13'  msg([Select an Event to delete.], 1)'#13' )'#13')'#13)))))),
+  Events(
+    Show = str('Do('#13' '#13' if('#13'  Label([t-NewUserEvents], GuiAtom) = False,'#13'  UserEvents_ConvertOldAtom(GuiAtom)'#13' ),'#13' '#13' Repeat('#13'  NrOfAttributes(GuiAtom),'#13'  GuiControl('#13'   [ListedEvents],'#13'   GuiList('#13'    [Items],'#13'    [Add],'#13'    StringReplace(AttributeName(Count, Guiatom), [att_], []) {minus att_!!!}'#13'   )'#13'  )'#13' ),'#13' '#13' Gui_PositionGuiAroundAtom(GuiControl([frmUserEvents]))'#13')'#13)))

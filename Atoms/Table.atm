@@ -1,0 +1,151 @@
+
+
+{Preregister functions}
+
+PreregisterFunction([EmptyTable], 1, 3);
+PreregisterFunction([Table_CheckAliasFit], 2, 2);
+PreregisterFunction([Table_CreateAliases], 1, 1);
+PreregisterFunction([Table_DeleteAliases], 1, 1);
+PreregisterFunction([Table_MaybeCreateAliases], 1, 1);
+PreregisterFunction([Table_MaybeDeleteAliases], 1, 1);
+PreregisterFunction([Table_GetAliasName], 1, 1);
+PreregisterFunction([Table_SetAliasName], 2, 2);
+PreregisterFunction([Table_GetCreateAlias], 1, 1);
+PreregisterFunction([Table_SetCreateAlias], 2, 2);
+PreregisterFunction([Table_GetAliasesCreated], 1, 1);
+PreregisterFunction([Table_SetAliasesCreated], 2, 2);
+PreregisterFunction([Table_GetUseAtomName], 1, 1);
+PreregisterFunction([Table_SetUseAtomName], 2, 2);
+PreregisterFunction([Table_ChangeName], 2, 2);
+PreregisterFunction([Table_OnCreation], 1, 1);
+PreregisterFunction([Table_UpgradeAtom], 1, 1);
+PreregisterFunction([ClearTable], 1, 2);
+PreregisterFunction([Table_NeedsUpgradeED81], 1, 1);
+PreregisterFunction([Table_RepairAliasOnPaste], 1, 1);
+
+
+{Atom: Table}
+
+sets;
+BaseClass;
+CreateAtom(a, s, [], 1, false);
+int023([Table], 32896, 32);
+DefineFunction([EmptyTable], [Tables], 1, 3, [Do( If(p(2) > 0,  SetTable(p(2), p(3), p(1)) ), Repeat(nRows(p(1)),  Do(sDdb([t-count], Count, p(1)),   Repeat(nCols( p(1)),    SetCell(Ddb([t-count], p(1)), Count, 0, p(1))   )  ) ), sDdb([t-count],  0,  p(1) ))], [Sets all cells of table e1 to 0. If e2 and e3 are specified (more than 0), then table is set to e2 rows and e3 columns (excluding headers)], [EmptyTable(c, 2, 3)], 0, [Table.atm]);
+DefineFunction([Table_CheckAliasFit], [Tables], 2, 2, [do( var([strAlias], vbString, p(1)), var([atmTable], vbAtom, p(2)), {--check if alias is valid --} if(  StringLength(strAlias) = 0,  do(   Msg(    Concat(     [The three 4DScript functions to easily read, write and reference to the table named "],      Name(atmTable), ["], cr, lf,     [ without using channels could not be created. ], cr, lf,     [ The Alias Name which is used for the function names is not suitable.], cr, lf,     [ Function names need at least 1 character.], cr, lf,     [ Change the Alias Name of the table in the user interface of the table.]    ),     1   ),   return(0)  ) ), if(  StringPos([ ], strAlias) > 0,  do(   Msg(    Concat(     [The three 4DScript functions to easily read, write and reference to the table named "],     Name(atmTable),  ["], cr, lf,     [ without using channels could not be created. ], cr, lf,     [ The Alias Name which is used for the function names is not suitable.], cr, lf,     [ Function names cannot contain spaces.], cr, lf,     [ Change the Alias Name of the table in the user interface of the table.]    ),     1   ),   return(0)  ) ),  if(  FunctionExists(strAlias),  do(   Msg(    Concat(     [Cannot create the 4DScript functions to read, write and reference the table named "],     Name(atmTable), ["], cr, lf,     [because the function ], strAlias, [ already exists. Choose a different Alias Name.]    )   ),   Return(0)  ) ), if(  FunctionExists(Concat([Set], strAlias)),  do(   Msg(    Concat(     [Cannot create the 4DScript functions to read, write and reference the table named "],     Name(atmTable), ["], cr, lf,     [because the function Set], strAlias, [ already exists. Choose a different Alias Name.]    )   ),   Return(0)  ) ),  { Alias seems ok } return(1))], [Tests if a chosen alias is suitable, i.e., function names may not contain spaces, should have more then 1 character and should not exist already.], [Table_CheckAliasFit([MySuggestedTableAlias], c)], 0, [Table.atm]);
+DefineFunction([Table_CreateAliases], [Tables], 1, 1, [do( var([atmTable], vbAtom, p(1)),  var([strCodeGetvalue], vbString),  var([strCodeSetvalue], vbString),  var([strCodeRef], vbString),  Dim(Concat([ref], Table_GetAliasName(atmTable)), vbAtom, atmTable), OnInit(atmTable) := Concat([Dim(], sbo, [ref], Table_GetAliasName(atmTable), sbc, [, vbAtom, c)]),  strCodeGetvalue :=   Concat(   [cell(p(1),p(2), ref],   Table_GetAliasName(atmTable),   [)]  ),   DefineFunction(     Table_GetAliasName(atmTable),            { Name }  [Basic],                                 { Category }              2, 2,                                    { Parameters Min, Max }  strCodeGetvalue,                         { Code }  [Returns the value of cell(e1, e2)],     { Help Text }  [No example],                            { Syntax Example }  True,                                    { Scope }   [Table.atm]                              { Creator }  ),    strCodeSetvalue :=    Concat(                                         [setcell(p(1),p(2),p(3), ref],   Table_GetAliasName(atmTable),   [)]  ),     DefineFunction(     Concat([Set], Table_GetAliasName(atmTable)),   { Name }    [Basic],                                       { Category }              3, 3,                                          { Parameters Min, Max }  strCodeSetvalue,                               { Code }  [Sets cell(e1, e2) to value e3],               { Help Text }  [No example],                                  { Syntax Example }  True,                                          { Scope }   [Table.atm]                                    { Creator }   ), { Set attribute 3 AliasesCreated to show that the functions have been created } Table_SetAliasesCreated(atmTable,1))], [Defines 3 function on the atom To Read Write and Reference to the Table], [Table_CreateAliases(c)], 0, [Table.atm]);
+DefineFunction([Table_DeleteAliases], [Tables], 1, 1, [Do( var([atmTable], vbAtom, p(1)),   if(  IndexMatch(   NrFunctionsOnAtom(atmTable),   FunctionOnAtomName(atmTable, Count),   Table_GetAliasName(atmTable)  ) > 0,    { then undefine the functions }  Do(   if(FunctionExists(Table_GetAliasName(atmTable)), UnDefineFunction(Table_GetAliasName(atmTable))),   if(FunctionExists(Concat([ref],Table_GetAliasName(atmTable))), UnDefineFunction(Concat([ref],Table_GetAliasName(atmTable)))),   if(FunctionExists(Concat([set],Table_GetAliasName(atmTable))), UnDefineFunction(Concat([set],Table_GetAliasName(atmTable))))  ),  { else unregister the functions }  Do(   if(FunctionExists(Table_GetAliasName(atmTable)), UnregisterFunction(Table_GetAliasName(atmTable))),   if(FunctionExists(Concat([ref],Table_GetAliasName(atmTable))), UnregisterFunction(Concat([ref],Table_GetAliasName(atmTable)))),   if(FunctionExists(Concat([set],Table_GetAliasName(atmTable))), UnregisterFunction(Concat([set],Table_GetAliasName(atmTable))))  ) ),  { if functions have been deleted, the ref should not be recreated on load } OnInit(atmTable) := [ ], Table_SetAliasesCreated(atmTable, 0) { to show the functions are not there anymore })], [Undefines or unregister the aliases for the table], [Table_DeleteAliases(c)], 0, [Table.atm]);
+DefineFunction([Table_MaybeCreateAliases], [Tables], 1, 1, [do( var([atmTable], vbAtom, p(1)),   { will be overridden by Table_CreateAliases, if that function is run } Table_SetAliasesCreated(atmTable, 0),  if(  Table_GetCreateAlias(atmTable),  { Aliases must be created }  if(   Table_CheckAliasFit(Table_GetAliasName(atmTable), atmTable),   Table_CreateAliases(atmTable)  ) ))], [Internal function of the table atom to test if aliasses can and need to be created for the table. ], [Table_MaybeCreateAliases(c)], 0, [Table.atm]);
+DefineFunction([Table_MaybeDeleteAliases], [Tables], 1, 1, [do( var([atmTable], vbAtom, p(1)), { if necessary, delete the aliases } if(  Table_GetAliasesCreated(atmTable),  Table_DeleteAliases(atmTable) ))], [Internal function of the table atom to test if the aliasses need to be deleted for the table of the table.], [Table_MaybeDeleteAliases(c)], 0, [Table.atm]);
+DefineFunction([Table_GetAliasName], [Atom Parameters], 1, 1, [TextAtt(1, p(1))], [Returns the string value of attribute AliasName (# 1) of Table e1], [Table_GetAliasName(c)], 0, [Table.atm]);
+DefineFunction([Table_SetAliasName], [Atom Parameters], 2, 2, [TextAtt(1, p(1)) := p(2)], [Sets the string value of attribute AliasName (# 1) of Table e1 to e2], [Table_SetAliasName(c, [TableName])], 0, [Table.atm]);
+DefineFunction([Table_GetCreateAlias], [Atom Parameters], 1, 1, [Att(4, p(1))], [Returns the value of attribute CreateAlias (# 4) of Table e1], [Table_GetCreateAlias(c)], 0, [Table.atm]);
+DefineFunction([Table_SetCreateAlias], [Atom Parameters], 2, 2, [Att(4, p(1)) := p(2)], [Sets the value of attribute CreateAlias (# 4) of Table e1 to e2], [Table_SetCreateAlias(c, 1)], 0, [Table.atm]);
+DefineFunction([Table_GetAliasesCreated], [Atom Parameters], 1, 1, [Att(3, p(1))], [Returns the value of attribute AliasesCreated (# 3) of Table e1], [Table_GetAliasesCreated(c)], 0, [Table.atm]);
+DefineFunction([Table_SetAliasesCreated], [Atom Parameters], 2, 2, [Att(3, p(1)) := p(2)], [Sets the value of attribute AliasesCreated (# 3) of Table e1 to e2], [Table_SetAliasesCreated(c, 1)], 0, [Table.atm]);
+DefineFunction([Table_GetUseAtomName], [Atom Parameters], 1, 1, [Att(7, p(1))], [Returns the value of attribute UseAtomName (# 7) of Table e1], [Table_GetUseAtomName(c)], 0, [Table.atm]);
+DefineFunction([Table_SetUseAtomName], [Atom Parameters], 2, 2, [Att(7, p(1)) := p(2)], [Sets the value of attribute UseAtomName (# 7) of Table e1 to e2], [Table_SetUseAtomName(c, 1)], 0, [Table.atm]);
+DefineFunction([Table_ChangeName], [Tables], 2, 2, [do( var([strNewName], vbString, p(1)), var([atmTable], vbAtom, p(2)),  Name(atmTable) := strNewName,  Table_MaybeDeleteAliases(atmTable),  if(  Table_GetUseAtomName(atmTable),  Table_SetAliasName(atmTable, strNewName) ), Table_MaybeCreateAliases(atmtable))], [Changing the name can also have influences on the aliases. If beside changing the names the aliases should if be changed as well then use this function to change the name.], [Table_ChangeName([NewName], c)], 0, [Table.atm]);
+DefineFunction([Table_OnCreation], [Tables], 1, 1, [do( var([atmTable], vbAtom, p(1)),  { Sometimes OnCreation is called while loading the model from disk.   We suppress this by checking if the Name has already been set. } if(  StringLength(Name(atmTable)) = 0,  return(0) ),  if(  Table_GetUseAtomName(atmTable),  Table_SetAliasName(atmTable, Name(atmTable)) ),  Table_MaybeCreateAliases(atmTable))], [Internal function of the table atom containing the OnCreation actions.], [Table_OnCreation(c)], 0, [Table.atm]);
+DefineFunction([Table_UpgradeAtom], [Tables], 1, 1, [{ This function is to upgrade the table atom.  From ED8.0 to ED 8.1 The Registered functions are replaced by DefineFunction  Also other changes were made.}Do( var([atmTable], vbAtom, p(1)),   { old versions of the Table atom have a string in the AliasesCreated attribute if they had an alias } if(  not(IsNumeric(String(Table_GetAliasesCreated(atmTable)))),  Table_SetAliasesCreated(atmTable, 1) ),   Table_MaybeDeleteAliases(atmTable),  { the old version checked for untitled every time it tried to create aliases,   the new version doesn't. Here we do it once and for all. } if(  CompareText(Table_GetAliasName(atmTable), [untitled]),  Table_SetCreateAlias(atmTable, 0) ),  { mark the table atom as upgraded, previous value contained the string [RegisterFunction] } SetAtt(2, 0, atmTable),  Table_OnCreation(atmTable) )], [This function is to upgrade the table atom from version in ED8.0 to ED8.1 style.], [Table_UpGradeAtom(c)], 0, [Table.atm]);
+DefineFunction([ClearTable], [Tables], 1, 2, [Do(  var([atmTable], vbAtom, p(1)), var([valHeader], vbValue, p(2)), { should be zero or 1 if 1 then also clear headers} MatrixRepeat( nRows(atmTable) + valHeader, nCols(atmTable) + valHeader, ClearCell(mcX - valHeader, mcY - valHeader, atmTable) ) )], [ClearTable(e1, {e2}) clears all cells of table e1. If e2 is nonzero, the headers are also cleared.], [ClearTable(AnimAtom, 0)], 0, [Table.atm]);
+DefineFunction([Table_NeedsUpgradeED81], [Tables], 1, 1, [StringPos([e], TextAtt(2,p(1))) > 0], [Returns 1 if this is an old style table atom], [Table_NeedsUpgradeED81(c)], 0, [Table.atm]);
+DefineFunction([Table_RepairAliasOnPaste], [Tables], 1, 1, [do(
+ var([atmTable], vbAtom, p(1)), 
+
+ If(
+  Table_GetCreateAlias(atmTable) = 1,
+  Do(
+   var([strRef], vbString, Concat([ref], Table_GetAliasName(atmTable))),
+   if(
+    And(VariableExists(strRef), AtomID(ExecString(strRef)) <> AtomID(atmTable)),
+    Do(
+     {this atom is a copy and the original has aliases}
+     
+     {Aliasses have not been created for the copy thus should be 0}
+     Table_SetAliasesCreated(atmTable, 0),
+     
+     {Remove the global variable declaration on the oninit event }
+     OnInit(atmTable) := [],
+     
+     {if alias should be based on the atom name then correct the alias}
+     if(
+      Table_GetUseAtomName(atmTable) = 1,
+      Table_SetAliasName(atmTable, Name(atmTable))
+     ),
+     
+     {Also set CreateAlias of atmTable to zero}
+     Table_SetCreateAlias(atmTable, 0)
+    )
+   )
+  )
+ )
+ 
+)
+], [For internal use. Necessary to make sure that when a table is copied, its aliases still belong to the right atom and not to the copy.
+], [Table_RepairAliasOnPaste(c)], 0, [Table]);
+Set(Icon(a), 
+	RegisterIcon(pDir([media\images\default.jpg]), [default.jpg]));
+SetMaterial(
+	RegisterMaterial([Default], 8421504, 8421504, 3289650, 0, 0.100000001490116, 0, false, false, 1, 0), 1, a);
+Set(Version(a), 8.1);
+SetTreeIcon(pDir([Media\Icons\Table.ico]));
+Set(Info, [Allows you to use tables in your model.
+
+To use a table, just drag a table atom into your model. You can 
+define the table name and table size and edit the table's contents. 
+
+There are two ways to access the table's values from another 
+atom. The first possibility is to connect an atom to the table's 
+central channel. Suppose you connected outputchannel 1 of an 
+atom XYZ to the table, then you can access cell 2,3 from XYZ as 
+follows: cell(2,3,out(1,c)) or setcell(2,3,100,out(1,c)).
+
+As in many cases it is not very comfortable to make all these 
+connections, you can have the table automatically create two 
+4DScript words (aliases) for direct tables access. Example: if you 
+name the table 'mydata', and you check the create alias box, two 
+4DScript words will be created: 'mydata' and 'setmydata'. You can 
+now use these words to access the table from an other atom 
+without connecting channels.
+
+Doubleclick: User interface for the table.
+
+Last revision
+
+February, 2008
+]);
+Set(DdbRec, [>t-alloworganize:1.]);
+int001(38);
+SetSize(5, 2, 1);
+LockPosition(false);
+LockSize(false);
+DisableIconRotation(false);
+SetProductCode([]);
+CreateAttributes(8);
+SetAttributeName(r(1), [AliasName]);
+SetAttributeName(r(2), [createfunctions]);
+SetAttributeName(r(3), [AliasesCreated]);
+SetAttributeName(r(4), [CreateAlias]);
+SetAttributeName(r(5), [nrows]);
+SetAttributeName(r(6), [ncols]);
+SetAttributeName(r(7), [UseAtomName]);
+SetAttributeName(r(8), [ClearOnReset]);
+SetTextAtt(r(1), [untitled]);
+SetAtt(r(5), 5);
+SetAtt(r(6), 5);
+SetAtt(r(7), 1);
+int024;
+SetTable(1, 1);
+int015(0, 64, [ 
+1
+]);
+int015(1, 64, [1
+]);
+Set(OnCreation, [Do( Label([t-table], c) := 1, SetRank(1, c), Table_OnCreation(c))]);
+Set(OnDestruction, [{Only necessary for old Table atoms}if( Table_NeedsUpgradeED81(c), Table_DeleteAliases(c))]);
+Set(OnReset, [do( if(  Table_NeedsUpgradeED81(c),  Table_UpGradeAtom(c) ), Table_RepairAliasOnPaste(c), if(ClearOnReset, ClearTable(c)))]);
+Set(OnUser, [if( DoubleClick, Do(  { Delete any current instances of this form.}   GuiDestroy([Table]),   { Register the GUI-form for this atom.}  GuiRegister(PDir([\Atoms\Table.gui]), 1),   { Show the GUI-form.}  Guicreate([Table], [Table], 0, c, 0, 1) ),  EditTable(c))]);
+Set(On2DDraw, [Draw2Dicon(3, [Table], TextAtt(1, c))]);
+SetStatus(0);
+int018;
+int007;

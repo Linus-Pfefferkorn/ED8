@@ -1,0 +1,157 @@
+
+
+{Preregister functions}
+
+PreregisterFunction([AC_Conveyor_Curved_Left_3D], 1, 1);
+PreregisterFunction([AC_curved_left_old], 1, 1);
+
+
+{Atom: Left Curved Accumulating Conveyor}
+
+sets;
+BaseClass;
+CreateAtom(a, s, [], 1, false);
+Set(OnInit, [do(  {**Load Functions Atom if required**}  if(not(AtomExists(AtomByName([General Conveyor Functions]),Library)),  int035([General Conveyor Functions], pDir([Atoms\General Conveyor Functions.atm]))    ))]);
+int023([Left Curved Accumulating Conveyor], 11249415, 1266);
+DefineFunction([AC_Conveyor_Curved_Left_3D], [Conveyors], 1, 1, [If(  att([Radius], p(1)) > ySize(p(1)),  Do(    var([atmC], vbAtom),        atmC:= p(1),          var([valNrOfParts], vbValue),    var([valAngle], vbValue, att([angle], atmC)),    var([valElevation], vbValue, att([Elevation], atmC)),    var([valRadius], vbValue, att([Radius], atmC)),    var([valRotation], vbValue),    var([val3DIconCode], vbValue, att([3DIconCode], atmC)),        var([valNrOfLegs], vbValue, Label([NumberOfSupports], atmC)),    var([valLegExtend], vbValue, att([LegExtend], atmC)),    var([valDrawLegs], vbValue, att([DrawLegs], atmC)),    var([valAngleStep], vbValue, att([AngleStep], atmC)),      var([valSensorAngle], vbValue),    var([valLegSpacing], vbValue, att([legspacing], atmC)),      var([valEndAngle], vbValue, att([EndAngle], atmC)),    var([valStartAngle], vbValue, att([StartAngle], atmC)),    var([valHeight], vbValue, zSize(atmC)),    var([valCurSize], vbValue, 0),    var([valLegSize], vbValue, 0),    var([valLength], vbValue, att([Length], atmC)),      var([valSegment], vbValue),      If(      valRadius>2,      valNrOfParts:=Round(2*pi*(valRadius-1+0.5*ySize(atmC)) * abs((valAngle)/360)/0.131+1,0),      valNrOfParts:=Round(2*pi*(valRadius +0.5*ySize(atmC))* (abs(valAngle)/360)/0.261+1,0)    ),          Repeat(      valNrOfParts,      Do(        PushCoords,        RotateCoords((valAngle/valNrOfParts)*(Count-1) - 90 + valStartAngle, 0, 0, 1, 0,0,0),                DrawModel3DMesh(          model3d(1,atmC),          Case(            InList(              val3DIconCode,              1,              2,              3            ),            Do(              SetMaterialColor(Color(atmC), DIFFUSE_AND_AMBIENT_COLOR),              SetMaterialTwoSided(True),              SetMaterialOverride(True),                         if(valElevation<0,3,7) {Mesh with selected color}            ),            if(valElevation<0,3,7), {Mesh conveyor belt}            Do(              SetmaterialShininess(0.8),              SetMaterialOverride(True),              5  {Mesh rollers}            )          ),          valRadius-ySize(atmC),           0,          (valElevation/valNrOfParts) * Count + zSize(atmC),           ySize(atmC),          1,          1        ),         PopCoords      )    ),      Repeat(      valNrOfParts,      Do(        PushCoords,        RotateCoords((valAngle/valNrOfParts)*(Count -1) - 90 + valStartAngle, 0, 0, 1, 0,0,0),                SetMaterialColor(Color(atmC), DIFFUSE_AND_AMBIENT_COLOR),        SetMaterialTwoSided(True),        SetMaterialOverride(True),        DrawModel3DMesh(          model3d(1,atmC),          if(valElevation<0,4,6), {Mesh borders/skirts}          valRadius-ySize(atmC),           0,          (valElevation/valNrOfParts)*Count+zSize(atmC)+0.001,           1,          1,          If(            valElevation<>0,            abs((valElevation/valNrOfParts)/0.04)*-1,            -(0.001)          )        ),        DrawModel3DMesh(          model3d(1,atmC),          if(valElevation<0,1,8), {Mesh borders/skirts}          valRadius,           0,          (valElevation/valNrOfParts)*Count+zSize(atmC)+0.001,           1,          1,          If(            valElevation<>0,            abs((valElevation/valNrOfParts)/0.04)*-1,            -(0.001)          )        ),                        PopCoords      )    {The small additions (0.001) are to prevent interference when polygons are placed at the same height!}    ),      {Drawing the legs of the conveyors}    if(     valLegSpacing > 0,     Do(                Repeat(         valNrOfLegs,         Do(           PushCoords,            RotateCoords(valEndAngle - 90 + (valAngleStep * (count-1)),0 , 0, 1),                      SetMaterialColor(Color(atmC), DIFFUSE_AND_AMBIENT_COLOR),           SetMaterialTwoSided(True),           SetMaterialOverride(True),           DrawModel3DMesh(             Model3D(1,atmC),             2,             valRadius - ySize(atmC),             0,             0,             1,             1,             if(               valElevation>0,               valElevation + valHeight - abs( valElevation / valAngle) * valAngleStep * (Count-1),              if(                            (mod(abs(valAngle), 360))  - valAngleStep * (Count - 1) >= 0,              valHeight- abs(valElevation) + abs(valElevation) *  (abs(valAngle) - (mod(abs(valAngle), 360))  + valAngleStep * (Count - 1)) / abs(valAngle),                            valHeight- abs(valElevation) + abs(valElevation) * (abs(valAngle) - 360 - (mod(abs(valAngle), 360)) + valAngleStep * (Count - 1)) / abs(valAngle)             )             )           ),           DrawModel3DMesh(             Model3D(1,atmC),             9,             valRadius,             0,             0,             1,             1,            if(              valElevation>0,                            valElevation + valHeight - (abs(valElevation) / abs(valAngle)) * valAngleStep * (Count-1),              if(                            (mod(abs(valAngle), 360))  - valAngleStep * (Count - 1) >= 0,              valHeight- abs(valElevation) + abs(valElevation) *  (abs(valAngle) - (mod(abs(valAngle), 360))  + valAngleStep * (Count - 1)) / abs(valAngle),                            valHeight- abs(valElevation) + abs(valElevation) * (abs(valAngle) - 360 - (mod(abs(valAngle), 360)) + valAngleStep * (Count - 1)) / abs(valAngle)             )            )           ),           popCoords         )       )     )    )   ))], [Draws the conveyor out of 3D meshes. e(1) is a pointer to the curved conveyor that needs to be drawn.], [AC_Conveyor_Curved_Left_3D(c)], 0, [Left Curved Accumulating Conveyor]);
+DefineFunction([AC_curved_left_old], [Conveyors], 1, 1, [do(  var([atmC], vbatom),    atmC:=p(1),   att(15,atmC),  setatt(16,min(att(12,atmC),att(14,atmC)),atmC),  repeat(   /(abs(att(13,atmC)),att(17,atmC)),   do(    setatt(21,+(zsize(atmC),*(-(count,1),/(att(18,atmC),/(att(13,atmC),att(17,atmC)))),if(<(att(13,atmC),0),att(18,atmC)))),     case(      att(19,atmC),      do(       di3dbox(0,-(att(11,atmC)),0,att(20,atmC),ysize(atmC),att(21,atmC),colorsilver,att(16,atmC),/(att(17,atmC),2)),       di3dbox(0,-(att(11,atmC)),att(21,atmC),att(20,atmC),-0.05,0.1,color,att(16,atmC),/(att(17,atmC),2)),       di3dbox(0,-(ysize(atmC),att(11,atmC)),att(21,atmC),att(20,atmC),0.05,0.1,color,att(16,atmC),/(att(17,atmC),2))      ),      do(       if(<(mod(-(count,1),*(/(/(abs(att(13,atmC)),att(17,atmC)),att(7,atmC)),att(28,atmC))),1),        do(         di3dbox(0,-(0,att(11,atmC)),0,0.05,0.05,att(21,atmC),14473664,att(16,atmC),0),         di3dbox(0,-(ysize(atmC),att(11,atmC)),0,0.05,0.05,att(21,atmC),14473664,att(16,atmC),0)        )       ),       di3dbox(0,-(0.2,att(11,atmC)),-(att(21,atmC),0.1),att(20,atmC),-(ysize(atmC),0.4),0.07,5263440,att(16,atmC),/(att(17,atmC),2)),       di3dbox(0,-(-(ysize(atmC),0.06),att(11,atmC)),-(att(21,atmC),0.2),att(20,atmC),0.03,0.3,color,att(16,atmC),/(att(17,atmC),2)),       di3dbox(0,-(0.06,att(11,atmC)),-(att(21,atmC),0.2),att(20,atmC),0.03,0.3,color,att(16,atmC),/(att(17,atmC),2))      ),      do(       if(<(mod(-(count,1),*(/(/(abs(att(13,atmC)),att(17,atmC)),att(7,atmC)),att(28,atmC))),1),        do(         di3dbox(0,-(0,att(11,atmC)),0,0.05,0.05,att(21,atmC),14473664,att(16,atmC),0),         di3dbox(0,-(ysize(atmC),att(11,atmC)),0,0.05,0.05,att(21,atmC),14473664,att(16,atmC),0)        )       ),       repeat(        /(att(20,atmC),0.15),        di3dbox(0,-(0.17,att(11,atmC)),-(att(21,atmC),0.1),0.08,-(ysize(atmC),0.3),0.08,bernoulli(50,colorgray,colorsilver),+(att(16,atmC),*(-(count,1),/(1.125,att(20,atmC)))),0)       ),       di3dbox(0,-(-(ysize(atmC),0.06),att(11,atmC)),-(att(21,atmC),0.2),att(20,atmC),0.03,0.3,color,att(16,atmC),/(att(17,atmC),2)),       di3dbox(0,-(0.06,att(11,atmC)),-(att(21,atmC),0.2),att(20,atmC),0.03,0.3,color,att(16,atmC),/(att(17,atmC),2))      )    ),    setatt(16,+(att(16,atmC),att(17,atmC)),atmC)   )  ),  att(22,atmC))], [Draws the conveyor out of ED 3D objects. e(1) is a pointer to the curved conveyor that needs to be drawn.], [AC_curved_old(c)], 0, [Left Curved Accumulating Conveyor]);
+Set(Icon(a), 
+	RegisterIcon(IconsDir([bmp\atoms\conveyor.bmp]), [conveyor]));
+AddModel3D(
+	RegisterModel3D(Model3DDir([Industrial\Conveyors\SpiralPart1.wrl]), [SpiralPart1.wrl], 0, 0, 0, 1, 1, -1, -90, 90, 0), a);
+SetMaterial(
+	RegisterMaterial([Default], 8421504, 8421504, 3289650, 0, 0.100000001490116, 0, false, false, 1, 0), 1, a);
+Set(Version(a), 7.3);
+SetTreeIcon(pDir([Media\Icons\LeftCurvedConveyor.ico]));
+Set(Info, [An accumulating conveyor with curves. 
+
+General
+------------
+Accumulating conveyor. If an atom enters the conveyor 
+closes input and the atom is conveyed up to the end of the 
+conveyor or until it reaches another atom (distance depends 
+on length of products). The speed in m/s can be specified. 
+When the atom that entered is conveyed by its length the input 
+opens again.
+
+The capacity of the conveyor always equals its 
+length in meters. If an atom reaches the end of the conveyor it 
+is moved out. The user can specify a speed, radius, starting 
+angle, total angle and elevation.
+
+The total angle may exceed 360 degrees, but this is generally 
+only usefull if it has an elevation <>0 (spiral up). The length of 
+the conveyor is calculated automatically from its radius, total angle and 
+elevation.
+
+It is possible to change the position of conveyor on z axis with use of GUI. Z offset.
+
+Width of the conveyor can be change now also in GUI.
+
+
+REMARK:
+---------------
+If you have changed the conveyor size: first press reset 
+before simulating.
+
+Statuses:
+-------------
+  13 - Empty
+  26 - Conveying
+    5 - Blocked
+
+Last revision:
+-------------------
+November, 4, 2008
+]);
+SetChannels(1, 1);
+SetChannelRanges(1, 255, 1, 255);
+int001(54);
+SetSize(1, 1, 1);
+LockPosition(false);
+LockSize(false);
+DisableIconRotation(false);
+SetProductCode([]);
+CreateAttributes(29);
+SetAttributeName(r(1), [speed]);
+SetAttributeName(r(2), [traveltime]);
+SetAttributeName(r(3), [tempmaxloc]);
+SetAttributeName(r(4), [curloc]);
+SetAttributeName(r(5), [exittime]);
+SetAttributeName(r(6), [curcontent]);
+SetAttributeName(r(7), [length]);
+SetAttributeName(r(8), [sendto]);
+SetAttributeName(r(9), [timeofentry]);
+SetAttributeName(r(10), [exitlength]);
+SetAttributeName(r(11), [radius]);
+SetAttributeName(r(12), [startangle]);
+SetAttributeName(r(13), [angle]);
+SetAttributeName(r(14), [endangle]);
+SetAttributeName(r(15), [setanglestep]);
+SetAttributeName(r(16), [curangle]);
+SetAttributeName(r(17), [anglestep]);
+SetAttributeName(r(18), [elevation]);
+SetAttributeName(r(19), [3diconcode]);
+SetAttributeName(r(20), [iconlength]);
+SetAttributeName(r(21), [curzsize]);
+SetAttributeName(r(22), [calclocations]);
+SetAttributeName(r(23), [entrytrigger]);
+SetAttributeName(r(24), [spacing]);
+SetAttributeName(r(25), [lengthcalc]);
+SetAttributeName(r(26), [exittrigger]);
+SetAttributeName(r(27), [spacingrule]);
+SetAttributeName(r(28), [legspacing]);
+SetAttributeName(r(29), [IsConveyor]);
+SetExprAtt(r(1), [1]);
+SetExprAtt(r(2), [/(att(7,c),att(1,c))]);
+SetExprAtt(r(4), [min(att(3,c),*(att(1,c),-(time,entrytime(cs))))]);
+SetAtt(r(7), 7.853981634);
+SetExprAtt(r(8), [1]);
+SetExprAtt(r(11), [5]);
+SetAtt(r(12), 180);
+SetAtt(r(13), -90);
+SetExprAtt(r(14), [+(att(12,c),att(13,c))]);
+SetExprAtt(r(15), [do( setatt(17, 10,c), setatt(20,*(*(att(11,c),att(17,c)),0.017444444),c))]);
+SetExprAtt(r(18), [0]);
+SetAtt(r(19), 3);
+SetExprAtt(r(22), [if( <>(content(c),0), do(  setatt(   3,   min(    att(7,c),    +(     -(att(7,c),att(10,c)),     *(      att(1,c),      -(time,att(5,c))     )    )   ),   c  ),  foratomlayerunder(   c,   do(    setcs,    if(     >(att(13,c),0),     set(rotationac(cs),+(att(12,c),*(att(13,c),/(-(att(4,c),xsize(cs)),att(7,c))))),     set(rotationac(cs),+(att(12,c),*(att(13,c),/(att(4,c),att(7,c)))))    ),    RotationAs(cs):= 180,    setloc((xSize(cs)),-(-(/(ysize(c),2),/(ysize(cs),2)) + ysize(cs),att(11,c)),+(*(att(18,c),/(att(4,c),att(7,c))),zsize(c)),cs),    setatt(3,-(att(3,c),productspacing(att([spacingrule], c),xsize(cs),att([spacing], c))),c)   )  ) ))]);
+SetExprAtt(r(25), [SQRT( +(  SQR(*(*(0.01745329252,abs(ATT(13,C))),att(11,c))),  SQR(att(18,c)) ))]);
+SetAtt(r(27), 1);
+SetExprAtt(r(28), [1]);
+SetAtt(r(29), 7);
+int024;
+Set(OnEvent, [case(
+ eventcode,
+ do(setstatus(5,c),openalloc(c)),
+ if(
+  =(content(c),0),
+  openallic(c),
+  if(and(<(att(6,c),att(7,c)),<=(/(xsize(last(c)),att(1,c)),+(-(time,entrytime(last(c))),0.00001))),
+   openallic(c)
+   )
+ )
+)
+]);
+Set(OnEntered, [do( setatt(9,time,c), setatt(6,+(att(6,c),productspacing(att([spacingrule], c),xsize(i),att([spacing], c)) ),c), closeallic(c), {entrytrigger} att(23,c), if(  =(content(c),1),  do(   setstatus(26,c),   createevent(att([traveltime], c),c,1,1,i)  ) ), {** check if this product can be on the conveyor **} if(  <(att([curcontent]),c),att([length],c)),  createevent(/(productspacing(att([spacingrule], c),xsize(i),att([spacing], c)),att([speed],c)),c,2))]);
+Set(OnExited, [do( closealloc(c), setatt([curcontent],-(att([curcontent],c),productspacing(att([spacingrule], c),xsize(i),att([spacing], c))),c), set(rotationac(i),0), setatt(5,time,c), setatt(10,productspacing(att([spacingrule], c),xsize(c),att([spacing], c)),c), if(  <>(content(c),0),  do(   createevent(    max(/(productspacing(att([spacingrule], c),xsize(i),att([spacing], c)),att(1,c)),-(att(2,c),-(time,entrytime(first(c))))),    c,1,1,first(c)   ),   if(    <(att([curcontent],c),att([length],c)),    createevent(     max(      /(-(+(productspacing(att([spacingrule], c),xsize(i),att([spacing], c)),att(6,c)),att(7,c)),att(1,c)),      max(       0,       -(/(productspacing(att([spacingrule], c),xsize(last(c)),att([spacing], c)),att(1,c)),-(time,att(9,c)))      )     ),     c,2)   ),   setstatus(26,c)  ),  do(   setstatus(13,c),   createevent(0,c,2)  ) ),  if(  RotationAs(i) = 180,   RotationAs(i) := 0   ),  {exittrigger} att(26,c))]);
+Set(OnCreation, [do( autoconnect, var([valRadius], vbValue, att([Radius], c)), var([valLegSpacing], vbValue, att([legspacing], c)), var([valAngle], vbValue, att([angle],c)), att([AngleStep], c) := valLegSpacing * 180 / (pi * valRadius), Label([NumberOfSupports],c) := Round(Max(1, trunc((min(abs(valAngle), 360)/att([AngleStep], c)))),0) + 1)]);
+Set(OnReset, [do( closealloc(c), setstatus(13,c), setatt(5,0,c), setatt(6,0,c), setatt(9,0,c), setatt(7,att(25,c),c),if(  att([legspacing], c) > 0,  do(   var([valRadius], vbValue, att([Radius], c)),   var([valLegSpacing], vbValue, att([legspacing], c)),   var([valAngle], vbValue, att([angle],c)),       att([AngleStep], c) := valLegSpacing * 180 / (pi * valRadius),   Label([NumberOfSupports],c) := Round(Max(1, trunc((min(abs(valAngle), 360)/att([AngleStep], c)))),0) + 1   ) ))]);
+Set(OnUser, [Do(  { Delete any current instances of this form.}   GuiDestroy([Left Curved Accumulating Conveyor]),  { Register the GUI-form for this atom.}  GuiRegister(PDir([\Atoms\Left Curved Accumulating Conveyor.gui]), 1),  { Show the GUI-form.}   GuiCreate([frmLeftCurvedAccumulatingConveyor], [Left Curved Accumulating Conveyor], 0, c, 0, 1) )]);
+Set(OnOcReady, [if( <>(content(c),0), do(  setstatus(5,c),  moverequest(first(c),att(8,c)) ))]);
+Set(On2DDraw, [do(
+ att([calclocations], c),
+ 
+ PushCoords,
+ RotateCoords(att([StartAngle], c)),
+ RotateCoords(-(180), 0, 1, 0),
+ diarc(0, 0, att([radius], c), 0,  abs(att([angle], c)), color),
+ diarc(0, 0, att([radius], c) - ysize(c), 0, abs(att([angle], c)), color),
+ 
+ DrawArrow(0.15,   - (att([radius], c)) + 0.5 * ysize(c),0.25, - (att([radius], c)) + 0.5 * ysize(c), 0.15, 0.15, Color(c), True, 100, 0),
+ PopCoords
+)
+]);
+Set(On3DDraw, [If(  Model3DExists(1),  Do(    att([calclocations],c),    AC_Conveyor_Curved_Left_3D(c)  ),  AC_curved_left_old(c))  ]);
+SetStatus(0);
+int018;
+int007;

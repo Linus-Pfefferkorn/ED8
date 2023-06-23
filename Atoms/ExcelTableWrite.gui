@@ -1,0 +1,381 @@
+EDControl(EditForm:
+  BorderIcons = set(SystemMenu),
+  BorderStyle = Single,
+  Caption = str('ExcelTableWrite'),
+  Height = 556,
+  Name = str('ExcelTableWrite'),
+  Position = Default,
+  ShowHint = True,
+  Top = 312,
+  Visible = True,
+  Width = 395,
+  Controls(
+    EDControl(MultiPage:
+      ActivePage = 3,
+      Align = Client,
+      Anchors = set(Left,Top,Right,Bottom),
+      Height = 480,
+      Left = 0,
+      Name = str('MultiPage1'),
+      TabOrder = 1,
+      Top = 0,
+      Width = 395,
+      Controls(
+        EDControl(SinglePage:
+          Caption = str('General'),
+          Name = str('SinglePage1'),
+          PageIndex = 1,
+          Controls(
+            EDControl(GroupBox:
+              Caption = str(''),
+              Height = 58,
+              Left = 8,
+              Name = str('GroupBox1'),
+              TabOrder = 1,
+              Top = 8,
+              Width = 370,
+            Controls(
+EDControl(Edit:
+              Height = 21,
+              Left = 132,
+              Name = str('ebAtomName'),
+              TabOrder = 2,
+              Top = 26,
+              Width = 225),
+            EDControl(Label:
+              Caption = str('Atom name:'),
+              Color = -16777208,
+              Left = 12,
+              Name = str('StaticText122'),
+              Top = 32,
+              Width = 60))),
+EDControl(GroupBox:
+              Caption = str('Settings'),
+              Height = 128,
+              Left = 8,
+              Name = str('GroupBox2'),
+              TabOrder = 3,
+              Top = 88,
+              Width = 369,
+            Controls(
+EDControl(Edit:
+              Height = 21,
+              Left = 132,
+              Name = str('TableName'),
+              TabOrder = 4,
+              Top = 26,
+              Width = 225),
+            EDControl(CheckBox:
+              Caption = str(''),
+              Left = 132,
+              Name = str('createAlias'),
+              TabOrder = 5,
+              Top = 60),
+            EDControl(ScriptEdit:
+              Height = 21,
+              Left = 132,
+              Name = str('TimeInterval'),
+              TabOrder = 6,
+              Top = 90,
+              Width = 225),
+            EDControl(Label:
+              Caption = str('Table name:'),
+              Color = -16777208,
+              Left = 12,
+              Name = str('StaticText1'),
+              Top = 32,
+              Width = 63),
+            EDControl(Label:
+              Caption = str('create alias:'),
+              Color = -16777208,
+              Left = 12,
+              Name = str('StaticText23'),
+              Top = 64,
+              Width = 61),
+            EDControl(Label:
+              Caption = str('Time interval:'),
+              Color = -16777208,
+              Left = 12,
+              Name = str('StaticText2322'),
+              Top = 96,
+              Width = 67))),
+EDControl(GroupBox:
+              Caption = str('File'),
+              Height = 160,
+              Left = 8,
+              Name = str('GroupBox13'),
+              TabOrder = 7,
+              Top = 232,
+              Width = 370,
+            Controls(
+EDControl(Edit:
+              Height = 21,
+              Left = 132,
+              Name = str('ebFileName'),
+              TabOrder = 8,
+              Top = 26,
+              Width = 225),
+            EDControl(Button:
+              Caption = str('&Browse...'),
+              Left = 280,
+              Name = str('Select_Btn'),
+              TabOrder = 9,
+              Top = 52,
+              Events(
+                Click = str('do('#13' if(ddeready,excelclose),'#13' sddb([T000-MustloadExcel],1,model),'#13' settextatt([bookname],getfileopen([*.xls],[Excel files (*.xls)|*.xls|All files (*.*)|*.*]),guiatom),'#13' if('#13'  >(stringlength(textatt([bookname],guiatom)),0),'#13'  do('#13'   guicontrol([ebFileName]),'#13'   guiset([Text],textatt([bookname],guiatom))'#13'  ),'#13'  msg([You didn''t select a valid file.])'#13' )'#13')'#13))),
+            EDControl(Edit:
+              Height = 21,
+              Left = 132,
+              Name = str('ebSheetName'),
+              TabOrder = 10,
+              Top = 90,
+              Width = 225),
+            EDControl(CheckBox:
+              Caption = str(''),
+              Left = 132,
+              Name = str('cbExcelVisible'),
+              TabOrder = 11,
+              Top = 124,
+              Width = 25,
+              Events(
+                Change = str('SetAtt([Visible],GuiGet([Checked]),GuiAtom)'#13))),
+            EDControl(Label:
+              Caption = str('Excel visible at startup:'),
+              Color = -16777208,
+              Left = 12,
+              Name = str('StaticText123'),
+              Top = 128,
+              Width = 112),
+            EDControl(Label:
+              Caption = str('Sheetname:'),
+              Color = -16777208,
+              Left = 12,
+              Name = str('StaticText1222'),
+              Top = 96,
+              Width = 61),
+            EDControl(Label:
+              Caption = str('Filename:'),
+              Color = -16777208,
+              Left = 12,
+              Name = str('StaticText132'),
+              Top = 32,
+              Width = 49))),
+EDControl(GroupBox:
+              Caption = str('Miscellaneous'),
+              Height = 64,
+              Left = 8,
+              Name = str('GroupBox222'),
+              TabOrder = 12,
+              Top = 408,
+              Width = 369,
+            Controls(
+EDControl(Button:
+              Caption = str('C&onnect'),
+              Hint = str('This will automatically apply the changes'),
+              Left = 12,
+              Name = str('btnConnect'),
+              TabOrder = 13,
+              Top = 24,
+              Events(
+                Click = str('do('#13' { First apply the changes }'#13' GuiControl([btnApply]),'#13' GuiRun([Click]), '#13#13' var([filename], vbString, 0),'#13' var([sheetname], vbString, 0),'#13' var([excelvisible], vbValue, 0),'#13#13' '#13' filename := GuiControl([ebFileName], GuiGet([Text])),'#13' sheetname := GuiControl([ebSheetName], GuiGet([Text])),'#13' excelvisible := Value(GuiControl([cbExcelVisible], Guiget([Checked]))),'#13' '#13' { Check out if the file is useable... }'#13' if('#13'  or('#13'   comparetext('#13'    filename, '#13'    [Untitled]'#13'   ) = true,'#13'   fileexists(filename) = false'#13'  ),'#13'  do('#13'   msg([The specified filename isnt'' a valid Excel Workbook], 3),'#13'   return(-1)'#13'  )'#13' ),'#13' '#13' {open excel}'#13' if('#13'  ddeready,'#13'  excelclose'#13' ), '#13'  '#13' excelopen(filename, excelvisible),'#13' excelsheet(sheetname),'#13#13' if('#13'  not(ddeready),'#13'  msg('#13'   concat('#13'    [The Sheetname that you specified is not correct.],'#13'    cr,'#13'    lf,'#13'    cr,'#13'    lf,'#13'    [Close Excel and change the Sheetname!]'#13'   ),'#13'   3'#13'  )'#13' ),'#13' '#13' msg([Connected succesfully], 1)'#13')'#13))),
+            EDControl(Button:
+              Caption = str('V&iew Table'),
+              Hint = str('This will automatically apply the changes'),
+              Left = 100,
+              Name = str('btnConnect2'),
+              TabOrder = 14,
+              Top = 24,
+              Events(
+                Click = str('edittable(GuiAtom)'#13))))))),
+EDControl(SinglePage:
+          Caption = str('Excel Properties'),
+          Name = str('SinglePage2'),
+          PageIndex = 2,
+          Controls(
+            EDControl(GroupBox:
+              Caption = str('Settings'),
+              Height = 160,
+              Left = 8,
+              Name = str('GroupBox3'),
+              TabOrder = 1,
+              Top = 8,
+              Width = 370,
+            Controls(
+EDControl(CheckBox:
+              Caption = str(''),
+              Left = 132,
+              Name = str('TableWritingEnabled'),
+              TabOrder = 2,
+              Top = 31),
+            EDControl(CheckBox:
+              Caption = str(''),
+              Left = 132,
+              Name = str('ExcelWritingEnabled'),
+              TabOrder = 3,
+              Top = 63),
+            EDControl(Edit:
+              Height = 21,
+              Left = 132,
+              Name = str('StartingRowInExcel'),
+              TabOrder = 4,
+              Top = 90,
+              Width = 100),
+            EDControl(Edit:
+              Height = 21,
+              Left = 132,
+              Name = str('StartingColumnInExcel'),
+              TabOrder = 5,
+              Top = 122,
+              Width = 100),
+            EDControl(Label:
+              Caption = str('Starting row in Excel:'),
+              Color = -16777208,
+              Left = 12,
+              Name = str('StaticText2327'),
+              Top = 96,
+              Width = 103),
+            EDControl(Label:
+              Caption = str('Starting column in Excel:'),
+              Color = -16777208,
+              Left = 12,
+              Name = str('StaticText2328'),
+              Top = 128,
+              Width = 120),
+            EDControl(Label:
+              Caption = str('Excel writing enabled:'),
+              Color = -16777208,
+              Left = 12,
+              Name = str('StaticText2324'),
+              Top = 64,
+              Width = 107),
+            EDControl(Label:
+              Caption = str('Table writing enabled:'),
+              Color = -16777208,
+              Left = 12,
+              Name = str('StaticText2323'),
+              Top = 32,
+              Width = 108))))),
+EDControl(SinglePage:
+          Caption = str('Variables'),
+          Name = str('SinglePage3'),
+          PageIndex = 3,
+          Controls(
+            EDControl(GroupBox:
+              Caption = str('Settings'),
+              Height = 265,
+              Left = 8,
+              Name = str('GroupBox22'),
+              TabOrder = 1,
+              Top = 8,
+              Width = 369,
+            Controls(
+EDControl(Table:
+              ColCount = 3,
+              Height = 176,
+              Left = 12,
+              Name = str('tblVariables'),
+              Options = set(FixedVertLine,FixedHorzLine,VertLine,HorzLine,RangeSelect,ColSizing,RowSelect),
+              RowCount = 2,
+              SelectionColEnd = 2,
+              TabOrder = 2,
+              Top = 32,
+              Width = 344),
+            EDControl(Button:
+              Caption = str('&Insert'),
+              Hint = str('Insert a variable abefore the currently slected one'),
+              Left = 28,
+              Name = str('Button222'),
+              TabOrder = 3,
+              Top = 224,
+              Events(
+                Click = str('do('#13' GuiControl([lblAddOrEdit], GuiSet([Caption], [2])),'#13'  '#13' GuiDestroy([frmExcelTableWriteEditVariable]),'#13'  '#13' GuiRegister(PDir([\Atoms\frmExcelTableWriteEditVariable.gui]), 1),'#13'  '#13' Guicreate([frmExcelTableWriteEditVariable], [frmExcelTableWriteEditVariable], 0, GuiAtom, 0, 1)'#13')'#13#13))),
+            EDControl(Button:
+              Caption = str('A&dd'),
+              Hint = str('Add a variable at the end of the list'),
+              Left = 112,
+              Name = str('Button22'),
+              TabOrder = 4,
+              Top = 224,
+              Events(
+                Click = str('do('#13' '#13'  GuiControl([lblAddOrEdit], GuiSet([Caption], [1])),'#13'   '#13'  GuiDestroy([frmExcelTableWriteEditVariable]),'#13'   '#13'  GuiRegister(PDir([\Atoms\frmExcelTableWriteEditVariable.gui]), 1),'#13'   '#13'  Guicreate([frmExcelTableWriteEditVariable], [frmExcelTableWriteEditVariable], 0, GuiAtom, 0, 1)'#13'  '#13')'#13#13))),
+            EDControl(Button:
+              Caption = str('&Edit'),
+              Left = 196,
+              Name = str('Button32'),
+              TabOrder = 5,
+              Top = 224,
+              Events(
+                Click = str('do('#13' GuiControl([lblAddOrEdit], GuiSet([Caption], [3])),'#13'   '#13' GuiDestroy([frmExcelTableWriteEditVariable]),'#13' '#13' GuiRegister(PDir([\Atoms\frmExcelTableWriteEditVariable.gui]), 1),'#13' '#13' Guicreate([frmExcelTableWriteEditVariable], [frmExcelTableWriteEditVariable], 0, GuiAtom, 0, 1)'#13')'#13))),
+            EDControl(Button:
+              Caption = str('De&lete'),
+              Left = 280,
+              Name = str('Button42'),
+              TabOrder = 6,
+              Top = 224,
+              Events(
+                Click = str('do('#13'  var([numberofvariables], vbValue),'#13'  '#13'  numberofvariables := Value(GuiControl([lblNumberOfVariables], Guiget([Caption]))),'#13'  '#13'  if('#13'   numberofvariables > 0, '#13'      '#13'   {**Arrival exists**}'#13'   do('#13'    GuiControl('#13'     [tblVariables],'#13'     do( '#13'          GuiTableDeleteRow(GuiGet([ActiveRow])),'#13'{          DeleteColumn(nCols(GuiAtom)+1, GuiAtom),}'#13'          dec(numberofvariables),'#13'          if('#13'            numberofvariables = 0,'#13'            do('#13'              GuiTableInsertRow(1),'#13'              GuiSet([FixedRows], 1),'#13'              GuiSet([cells], 1, 1, []),'#13'              GuiSet([cells], 1, 2, [])'#13'            ),'#13'            do('#13'              Repeat('#13'                numberofvariables,'#13'                GuiSet([Cells], count, 0, ValueToString(count))'#13'              )'#13'            )'#13'          )'#13'        )'#13'      ),'#13'      '#13'      {**Update nrArrivals Lable**}'#13'      '#13'      Value(GuiControl([lblNumberOfVariables], GuiSet([Caption], valuetostring(numberofvariables))))'#13'    )'#13'  )'#13')'#13#13))),
+            EDControl(Label:
+              Caption = str('0'),
+              Color = -16777208,
+              Left = 292,
+              Name = str('lblNumberOfVariables'),
+              Top = 4,
+              Visible = False,
+              Width = 10),
+            EDControl(Label:
+              Caption = str('0'),
+              Color = -16777208,
+              Left = 276,
+              Name = str('lblAddOrEdit'),
+              Top = 4,
+              Visible = False,
+              Width = 10))))))),
+    EDControl(Panel:
+      Align = Bottom,
+      Anchors = set(Left,Right,Bottom),
+      BevelOuter = None,
+      Caption = str(''),
+      Height = 40,
+      Left = 0,
+      Name = str('Panel1'),
+      TabOrder = 2,
+      Top = 480,
+      Width = 395,
+      Controls(
+        EDControl(Button:
+          Caption = str('&Help'),
+          Left = 8,
+          Name = str('btnHelp'),
+          TabOrder = 1,
+          Top = 8,
+          Events(
+            Click = str('Help(PDir([HELP\ED Help.hlp]), [ExcelTableWrite])'#13))),
+        EDControl(Button:
+          Caption = str('&Ok'),
+          Default = True,
+          Left = 144,
+          Name = str('btnOk'),
+          TabOrder = 2,
+          Top = 8,
+          Events(
+            Click = str('Do('#13' GuiControl([btnApply]),'#13' GuiRun([Click]),'#13' GuiDestroy'#13')'#13))),
+        EDControl(Button:
+          Cancel = True,
+          Caption = str('&Cancel'),
+          Left = 230,
+          Name = str('btnCancel'),
+          TabOrder = 3,
+          Top = 8,
+          Events(
+            Click = str('GuiDestroy '#13))),
+        EDControl(Button:
+          Caption = str('&Apply'),
+          Left = 312,
+          Name = str('btnApply'),
+          TabOrder = 4,
+          Top = 8,
+          Events(
+            Click = str('do('#13' var([indexer], vbValue, 0),'#13' var([createfunction], vbValue, 0),'#13' '#13' { create an Alias (= function in this case) to easily acces the table. Check if the name is correct, else quit applying and give the user a message. }'#13' if('#13'  GuiControl([createAlias], GuiGet([Checked])) = True,'#13'  do('#13'   { Check if the proposed function name already exists and that it''s not equal to the current tablename property, because then we just '#13'     invalidate it and register it again. }'#13'   if('#13'    and('#13'     functionexists(GuiControl([TableName], GuiGet([Text]))),'#13'     comparetext('#13'      TextAtt([tablename], GuiAtom), '#13'      GuiControl([TableName], GuiGet([Text]))'#13'     ) = False'#13'    ),'#13'    { Apparently the function is already defined and not to this atom, ask the user if he wants to delete this current registration'#13'      to transport it this atom. }'#13'    if('#13'     confirm([A function with the name defined at the input field table name already exists. Overwrite this registration?]) = true,'#13'     createfunction := True'#13'    ),'#13'    createfunction := True'#13'   )'#13'  )'#13' ),'#13#13' if('#13'  comparetext('#13'   GuiControl([TableName], GuiGet([Text])), '#13'   [untitled]'#13'  ) = True,'#13'  msg([The inserted table name is not valid to serve as function name. It will not be registered.], 2)'#13' ),'#13'  '#13' if('#13'  createfunction =  True,'#13'  do('#13'   { First invalidate the current functions that are named after the tablename attribute. }'#13'   invalidatefunction(textatt([tablename])),'#13'   invalidatefunction(concat([set],textatt([tablename]))),'#13'   TextAtt([TableName],GuiAtom) := GuiControl([TableName],GuiGet([Text])),'#13'   Att([createfunctions], GuiAtom)'#13'  )'#13' ),'#13' '#13' {Save TextField}'#13' name(GuiAtom) := GuiControl([ebAtomName], Guiget([Text])),'#13' '#13' TextAtt([TableName],GuiAtom) := GuiControl([TableName],GuiGet([Text])),'#13' '#13' TextAtt([bookname],GuiAtom) := GuiControl([ebFileName],GuiGet([Text])),'#13' '#13' TextAtt([sheetname],GuiAtom) := GuiControl([ebSheetName],GuiGet([Text])),'#13' '#13' Att([nrvariables],GuiAtom) := Value(GuiControl([lblNumberOfVariables], GuiGet([Caption]))),'#13' '#13' Att([startrowexcel],GuiAtom) := Value(GuiControl([StartingRowInExcel],GuiGet([Text]))),'#13' '#13' Att([startcolumnexcel],GuiAtom) := Value(GuiControl([StartingColumnInExcel],GuiGet([Text]))),'#13#13' {Save CheckBox}'#13' Att([viewexcel], GuiAtom) := GuiControl([cbExcelVisible], GuiGet([Checked])),'#13' '#13' Att([createAlias],GuiAtom) := GuiControl([createAlias],GuiGet([Checked])),'#13' '#13' Att([tableenabled],GuiAtom) := GuiControl([TableWritingEnabled],GuiGet([Checked])),'#13' '#13' Att([excelenabled],GuiAtom) := GuiControl([ExcelWritingEnabled],GuiGet([Checked])),'#13#13' {Save 4D ScriptField}'#13' TextAtt([timeinterval],GuiAtom) := ExecScript(GuiControl([TimeInterval],GuiGet([Code]))),'#13' '#13' SetAttributes(16 + Att([nrvariables],GuiAtom), GuiAtom),'#13' '#13' ncols(GuiAtom) := Att([nrvariables],GuiAtom),'#13' '#13' for('#13'  indexer := 1, indexer <= Att([nrvariables],GuiAtom), inc(indexer),'#13'  do('#13'   SetAttributeName(16 + indexer, GuiControl([tblVariables], GuiGet([Cells], indexer, 1)), GuiAtom),'#13'   SetExprAtt(16 + indexer, GuiControl([tblVariables], GuiGet([Cells], indexer, 2)), GuiAtom),'#13'   cell(0, indexer, GuiAtom) := GuiControl([tblVariables], GuiGet([Cells], indexer, 1))'#13'  )'#13' )'#13')'#13)))))),
+  Events(
+    Show = str('do('#13' var([indexer], vbValue, 0), '#13' var([numberofvariables], vbValue, 0),'#13#13' {Set Caption}'#13' if('#13'  atomexists(m(GuiAtom)),'#13'  GuiControl([ExcelTableWrite],GuiSet([Caption],concat(name(m(GuiAtom)), [ - ], name(GuiAtom)))),'#13'  GuiControl([ExcelTableWrite],GuiSet([Caption],concat([Baseclass - ], name(GuiAtom))))'#13' ),'#13#13' {Set ActivePage}'#13' GuiControl([MultiPage1]),GuiSet([ActivePage],1),'#13'     '#13' {Set TextField}'#13' GuiControl([ebAtomName], GuiSet([Text], name(GuiAtom))),'#13' '#13' GuiControl([TableName],GuiSet([Text],TextAtt([tablename],GuiAtom))),'#13' '#13' GuiControl([ebFileName],GuiSet([Text],TextAtt([bookname],GuiAtom))),'#13' '#13' GuiControl([ebSheetName],GuiSet([Text],TextAtt([sheetname],GuiAtom))),'#13#13' GuiControl([StartingRowInExcel],GuiSet([Text],TextAtt([startrowexcel],GuiAtom))),'#13' '#13' GuiControl([StartingColumnInExcel],GuiSet([Text],TextAtt([startcolumnexcel],GuiAtom))),'#13#13' {Set CheckBox}'#13' GuiControl([cbExcelVisible], GuiSet([Checked], Att([viewexcel], GuiAtom))),'#13' '#13' GuiControl([createAlias],GuiSet([Checked], Att([createalias],GuiAtom))),'#13' '#13' GuiControl([TableWritingEnabled],GuiSet([Checked], Att([tableenabled],GuiAtom))),'#13' '#13' GuiControl([ExcelWritingEnabled],GuiSet([Checked], Att([excelenabled],GuiAtom))),'#13#13' {Set 4D ScriptField}'#13' '#13' GuiControl([TimeInterval],GuiSet([Code], TextAtt([TimeInterval],GuiAtom))),'#13' '#13' GuiControl([lblNumberOfVariables], Guiset([Caption], TextAtt([NrVariables], GuiAtom))),'#13' numberofvariables := Att([NrVariables], GuiAtom),'#13#13' { Fill the table with the available variables. }'#13' for('#13'  indexer := 1, indexer <= numberofvariables, inc(indexer),'#13'  do('#13'   if('#13'    indexer > 1,'#13'    GuiControl([tblVariables], GuiTableInsertRow(indexer))'#13'   ),'#13'   GuiControl([tblVariables], GuiSet([Cells], indexer, 1, AttributeName(16+indexer, GuiAtom))),'#13'   GuiControl([tblVariables], GuiSet([Cells], indexer, 2, TextAtt(16+indexer, GuiAtom)))'#13'  )'#13' ),'#13#13' GuiControl('#13'  [tblVariables],'#13'  do('#13'   GuiSet([FixedRows], 1),'#13'   GuiSet([ColWidths], 0, 25),'#13'   GuiSet([ColWidths], 1, 100),'#13'   GuiSet([ColWidths], 2, 150),'#13'   { Finally adjust the numbering of the table rows...}'#13'   For('#13'    indexer := 1, indexer <= numberofvariables, inc(indexer),'#13'    GuiSet([Cells], indexer, 0, String(indexer))'#13'   )'#13'  )'#13' ),'#13#13' Gui_PositionGuiAroundAtom(GuiControl([ExcelTableWrite])),'#13#13' GuiRun([Update])'#13')'#13)))
+

@@ -1,0 +1,132 @@
+
+
+{Atom: Kanban Bin}
+
+sets;
+BaseClass;
+CreateAtom(a, s, [], 1, false);
+int023([Kanban Bin], 6184495, 240);
+Set(Icon(a), 
+	RegisterIcon(IconsDir([bmp\atoms\storage.bmp]), [storage]));
+SetMaterial(
+	RegisterMaterial([Default], 8421504, 8421504, 3289650, 0, 0.100000001490116, 0, false, false, 1, 0), 1, a);
+Set(Version(a), 7.3);
+SetTreeIcon(pDir([Media\Icons\KanbanBin.ico]));
+Set(Info, [Kanban Bin
+
+Channels:
+---------------
+Input channel 1: Replenishment parts
+Input channel 2: Connect to product atom to define products in bin.
+Output channel 1: Connect to an atom which will pull in products
+Output channel 2: Connect to the atom where you want the 
+  "Replenishment Quantity" to be sent
+
+
+Last Revision:
+---------------------
+March, 2008
+]);
+SetChannels(2, 2);
+SetChannelRanges(2, 2, 2, 2);
+int001(183);
+int013(1, 0, false, false, 0, 0, [], []);
+int013(2, 0, false, false, 5, 0, ["Replenishment Order" channel], []);
+SetSize(6, 2, 1);
+LockPosition(false);
+LockSize(false);
+DisableIconRotation(false);
+SetProductCode([]);
+CreateAttributes(5);
+SetAttributeName(r(1), [initinventory]);
+SetAttributeName(r(2), [replenishqty]);
+SetAttributeName(r(3), [reorderlevel]);
+SetAttributeName(r(4), [manipulatecs]);
+SetAttributeName(r(5), [reorderedqty]);
+SetAtt(r(1), 10);
+SetAtt(r(2), 12);
+SetAtt(r(3), 5);
+SetExprAtt(r(4), [ 0]);
+int024;
+Set(OnEvent, [case(
+ eventcode,
+ if(
+  >(content(c),0),
+  moverequest(first(c),1),
+  setstatus(13,c)
+ ),
+ do(
+  repeat(att(1,c),
+   do(
+    createatom(in(2,c),c,name(in(2,c))),
+    setcs,
+    att(4,c)
+    )
+  ),
+  createevent(0,c,1)
+ )
+)
+]);
+Set(OnEntered, [do(
+ if(
+  ic(c),
+  {--Reduce reordered quantiy--}
+  Inc(Att(5,c), -1)
+ ), 
+
+ createevent(0,c,1)
+)
+]);
+Set(OnExited, [do(
+ setsetting(sahidechannels,1,i),
+ if(
+  =(oc(c),1),
+  do(
+   createevent(0,c,1),
+   if(
+    <=(content(c) + Att(5,c), Att(3,c)),
+    do(
+     {--Store reordered quantiy--}
+     Inc(Att(5,c), Att(2,c)),
+     repeat(att(2,c),
+      do(
+       createatomcopy(i,c,name(i)),
+       setcs,
+       moverequest(cs,2)
+      )
+     )
+    )
+   )
+  )
+ )
+)
+]);
+Set(OnReset, [do(
+ if(
+  not(atomexists(in(2,c))),
+  do(
+   createatomcopy(
+    atombyname([Product],library),
+    up(c),
+    [Product]
+   ),
+   setcs,
+   connect(0,cs,2,c),
+   setloc(-(xloc(c),2),+(yloc(c),1),0,cs),
+   setrank(getrank(c),cs)
+  ),
+  if(not(comparetext(ddbnotemptyname(1,in(2,c)),[t-nodestroy])),msg(concat(name(c),[ is not connected to a valid atom from the products group!]),2))
+ ),
+ 
+ {--Set back reordered quantity--}
+ Att(5,c) := 0,
+ 
+ createevent(0,c,2),
+ setstatus(15,c)
+)
+]);
+Set(OnUser, [Do(  { Delete any current instances of this form.}   GuiDestroy([KanBanBin]),  { Register the GUI-form for this atom.}  GuiRegister(PDir([\Atoms\KanBan Bin.gui]), 1),  { Show the GUI-form.}   GuiCreate([KanBanBin], [KanBanBin], 0, c, 0, 1))]);
+Set(On2DDraw, [standarddisplay(name(c),concat([Qty: ],string(content(c))),icon(c))]);
+SetStatus(0);
+int018;
+int007;

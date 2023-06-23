@@ -1,0 +1,152 @@
+
+
+{Atom: Condition Control}
+
+sets;
+BaseClass;
+CreateAtom(a, s, [], 1, false);
+int023([Condition Control], 4227072, 1256);
+Set(Icon(a), 
+	RegisterIcon(pDir([media\images\default.jpg]), [default.jpg]));
+SetMaterial(
+	RegisterMaterial([Default], 8421504, 8421504, 3289650, 0, 0.100000001490116, 0, false, false, 1, 0), 1, a);
+Set(Version(a), 7.3);
+SetTreeIcon(pDir([Media\Icons\ConditionControl.ico]));
+Set(Info, [Condition Controller
+
+General
+------------
+With this atom you can listen to certain atoms on which you 
+want to base a control rule in order to manipulate other atoms. 
+Link the input channel(s) to the central channel of atom(s) you want 
+monitor in order to base your control rule.
+
+If you do this a lightblue circle will appear on the input channel 
+after pressing the reset. The lightblue circle signifies that the 
+channel listens to that atom, this means that 
+whenever an event occurs on the atom you listen to, this atom 
+re-evaluates the condition statement you entered.
+
+The atoms linked to the outputchannels are the atoms you 
+want to control. If the condition changes to true it will perform the 
+action defined on the 'Flow control on TRUE' box.
+
+It is also possible to define user-actions when the status 
+changes.
+
+Channels:
+---------------
+N inputchannel (connect to central channel of the 
+atoms that are listened to, or to an output channel of the notify 
+rerouter)
+N outputchannels (connect to the central channel of the atoms 
+that are controlled)
+
+Statuses:
+-------------
+  18 - Open (= True)
+  19 - Closed (= False)
+
+REMARK:
+---------------
+If more than 1 controls have to listen to the same atom you will 
+be needing de Notify Router. In this case pay extra attention 
+to the atom references in the condition statement.
+
+Last revision:
+-------------------
+February, 2008
+]);
+Set(DdbRec, [>t-alloworganize:1.]);
+SetChannels(1, 1);
+SetChannelRanges(1, 255, 1, 255);
+int001(153);
+int013(1, 0, false, false, 0, 0, [control], []);
+SetSize(6, 2, 0.1);
+LockPosition(false);
+LockSize(false);
+DisableIconRotation(false);
+SetProductCode([]);
+CreateAttributes(7);
+SetAttributeName(r(1), [curstatus]);
+SetAttributeName(r(2), [prevstatus]);
+SetAttributeName(r(3), [condition]);
+SetAttributeName(r(4), [what to control]);
+SetAttributeName(r(5), [User_on_true]);
+SetAttributeName(r(6), [User_on_false]);
+SetAttributeName(r(7), [docheck]);
+SetAtt(r(1), 1);
+SetAtt(r(2), 1);
+SetExprAtt(r(3), [content(in(1,c))>7]);
+SetAtt(r(4), 1);
+int024;
+Set(OnEvent, [case(eventcode,
+ {1 // executed 1 time in order to reset the settings }
+  do(
+   setatt(1,att(3,c),c),
+   if(
+    =(time,0),
+    do(
+     setstatus(-(19,att(1,c)),c),
+     setatt(2,att(1,c),c),
+     repeat(
+     nroc,
+      if(atomexists(out(count,c)),
+       do(
+        if(or(=(att(4,c),2),=(att(4,c),3)),if(att(1,c),closeinput(out(count,c)),openinput(out(count,c)))),
+        if(or(=(att(4,c),2),=(att(4,c),4)),if(att(1,c),closeoutput(out(count,c)),openoutput(out(count,c))))
+       )
+      )
+     ),
+     if(att(1,c),att(5,c),att(6,c))
+    )  
+   )
+  ),
+  {2 //. check the logic }
+  do(
+   docheck:=0,
+   setatt(1,att(3,c),c),
+   if(
+    <>(att(1,c),att(2,c)),
+    do(
+     setstatus(-(19,att(1,c)),c),
+     setatt(2,att(1,c),c),
+     repeat(
+      nroc(c),
+      if(atomexists(out(count,c)),
+       do(
+        if(or(=(att(4,c),2),=(att(4,c),3)),if(att(1,c),closeinput(out(count,c)),openinput(out(count,c)))),
+        if(or(=(att(4,c),2),=(att(4,c),4)),if(att(1,c),closeoutput(out(count,c)),openoutput(out(count,c))))
+       )
+      )
+     )
+    )
+   ),
+   if(att(1,c),att(5,c),att(6,c))
+  )
+)
+]);
+Set(OnReset, [do(
+ setstatus(18,c),
+ docheck:=0,
+ repeat(
+  nric(c),
+  { make sure start en stop listen for customer}
+  do(
+   stoplisten(count,c),
+   if(and(atomexists(in(count,c)),not(ddb([NotifyRouter],in(count,c)))),
+    if(not(startlisten(count,c)),
+     msg(concat([Use the NotifyRouter for ],name(in(count,c)),[currently on],lf,cr, [inputchannel ],string(count),[ of controler atom:],name(c)))
+    )
+   )
+  )
+ ),
+ createevent(0,c,1,9999)
+)
+]);
+Set(OnUser, [Do(  { Delete any current instances of this form.}   GuiDestroy([Condition Control]),  { Register the GUI-form for this atom.}  GuiRegister(PDir([\Atoms\ConditionControl.gui]), 1),  { Show the GUI-form.}   Guicreate([ConditionControl], [ConditionControl], 0, c, 0, 1) )]);
+Set(On2DDraw, [draw2dicon(3,name(c),textatt(3,c))]);
+Set(OnMessage, [{Notice that the message received is 'notify'}if( not(docheck), do(  docheck:=1,  createevent(0,c,2,99999999) ))]);
+SetStatus(0);
+int018;
+int007;

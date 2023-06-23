@@ -1,0 +1,77 @@
+
+
+{Atom: Destinator}
+
+sets;
+BaseClass;
+CreateAtom(a, s, [], 1, false);
+int023([Destinator], 16711808, 96);
+Set(Icon(a), 
+	RegisterIcon(IconsDir([bmp\atoms\queue.bmp]), [queue]));
+SetMaterial(
+	RegisterMaterial([Default], 8421504, 8421504, 3289650, 0, 0.100000001490116, 0, false, false, 1, 0), 1, a);
+Set(Version(a), 7.3);
+SetTreeIcon(pDir([Media\Icons\Destinator.ico]));
+Set(Info, [Destinator
+
+General
+------------
+Determines the destination for Advanced Transporters connected to it.
+
+Channels:
+--------------
+Input channels:    must be connected to a Advanced Transporter.
+Output channels: connect to any destination.
+
+Last Revision:
+---------------------
+March, 2008
+]);
+SetChannels(1, 1);
+SetChannelRanges(1, 255, 1, 255);
+int001(93);
+SetSize(6, 2, 0);
+LockPosition(false);
+LockSize(false);
+DisableIconRotation(false);
+SetProductCode([]);
+CreateAttributes(6);
+SetAttributeName(r(1), [sendto]);
+SetAttributeName(r(2), [capacity]);
+SetAttributeName(r(3), [queue discipline]);
+SetAttributeName(r(4), [exittrigger]);
+SetAttributeName(r(5), [pickatatom]);
+SetAttributeName(r(6), [atomtopick]);
+SetExprAtt(r(1), [1]);
+SetAtt(r(2), 10);
+SetExprAtt(r(5), [in(ic(c),c)]);
+SetAtt(r(6), 1);
+int024;
+int020(r(2), false, true);
+Set(OnEvent, [openalloc(c)]);
+Set(OnEntered, [createevent(0,c,1,0,i)]);
+Set(OnExited, [do( if(content(c)=0,closealloc(c)), setcs(in(label([t999-icdestinator],i),c)), destroyatom(vtp(i.copy)), sddb([t-dest],0,i), sddb([t999-icocdestinator],0,i), i.copy:=0, setstatus(1,cs), sendmessagedirect(cs,0,i), createevent(0,cs,10))]);
+Set(OnCreation, [sddb([t-destinator],1,c)]);
+Set(OnUser, [Do(
+ { Delete any current instances of this form.} 
+ GuiDestroy([Destinator]),
+
+ { Register the GUI-form for this atom.}
+ GuiRegister(PDir([\Atoms\Destinator.gui]), 1),
+
+ { Show the GUI-form.}
+ GuiCreate([Destinator], [Destinator], 0, c, 0, 1)
+)
+]);
+Set(OnOcReady, [foratomlayerunder(
+ c,
+ do(
+  setcs,
+  moverequest(cs,ddb([t-dest],cs))
+ )
+)
+]);
+Set(On2DDraw, [draw2dicon(3,name(c),string(content))]);
+SetStatus(0);
+int018;
+int007;

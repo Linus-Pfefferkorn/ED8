@@ -1,0 +1,96 @@
+EDControl(EditForm:
+  BorderIcons = set(SystemMenu),
+  BorderStyle = Single,
+  Caption = str('Function Manager'),
+  Height = 342,
+  Name = str('FunctionEditor'),
+  Position = Default,
+  ShowHint = True,
+  Top = 365,
+  Visible = False,
+  Width = 388,
+  Controls(
+    EDControl(Panel:
+      Align = Client,
+      Anchors = set(Left,Top,Right,Bottom),
+      Caption = str(''),
+      Height = 302,
+      Left = 0,
+      Name = str('Panel2'),
+      TabOrder = 1,
+      Top = 0,
+      Width = 388,
+      Controls(
+        EDControl(RadioGroup:
+          Caption = str('Function List'),
+          Height = 243,
+          ItemIndex = 0,
+          Left = 8,
+          Name = str('RadioGroup1'),
+          TabOrder = 1,
+          Top = 8,
+          Width = 370),
+        EDControl(ListBox:
+          Height = 163,
+          Left = 16,
+          Name = str('ListBox1'),
+          TabOrder = 2,
+          Top = 32,
+          Width = 354),
+        EDControl(Button:
+          Caption = str('A&dd'),
+          Left = 120,
+          Name = str('Button1'),
+          TabOrder = 3,
+          Top = 210,
+          Events(
+            Click = str('Do('#13' model.selectie := GuiControl([ListBox1], GuiGet([ItemIndex])),'#13#13' t := [Add new function],'#13#13' { Delete any current instances of this form.} '#13' GuiDestroy([FunctionEditorAdd]),'#13#13' { Register the GUI-form for this atom.}'#13' GuiRegister(PDir([\Atoms\FunctionEditorAdd.gui]), 1),'#13#13' { Show the GUI-form.}'#13' GuiCreate([FunctionEditorAdd], [FunctionEditorAdd], 0, GuiAtom, 0, 1),'#13#13' GuiInstance('#13'  [FunctionEditor],'#13'  GuiDestroy'#13' )'#13')'#13))),
+        EDControl(Button:
+          Caption = str('&Edit'),
+          Left = 204,
+          Name = str('Button3'),
+          TabOrder = 4,
+          Top = 210,
+          Events(
+            Click = str('Do('#13' model.selectie := GuiControl([ListBox1], GuiGet([ItemIndex])),'#13#13' if('#13'  model.selectie = 0,'#13'  do('#13'   msg([Select a function to edit.]),'#13'   return(-1)'#13'  )'#13' ),'#13#13' t := [Edit function],'#13#13' { Delete any current instances of this form.} '#13' GuiDestroy([FunctionEditorAdd]),'#13#13' { Register the GUI-form for this atom.}'#13' GuiRegister(PDir([\Atoms\FunctionEditorAdd.gui]), 1),'#13#13' { Show the GUI-form.}'#13' GuiCreate([FunctionEditorAdd], [FunctionEditorAdd], 0, GuiAtom, 0, 1),'#13' '#13' GuiInstance('#13'  [FunctionEditor],'#13'  GuiDestroy'#13' )'#13')'#13))),
+        EDControl(Button:
+          Caption = str('De&lete'),
+          Left = 288,
+          Name = str('Button2'),
+          TabOrder = 5,
+          Top = 210,
+          Events(
+            Click = str('Do('#13#13' model.selectie := GuiControl([ListBox1], GuiGet([ItemIndex])),'#13#13' UnRegisterFunction( Guicontrol([ListBox1], GuiGet([Items],model.selectie))),'#13#13' {Remove from the listbox}'#13' GuiControl('#13'  [ListBox1],'#13'  GuiList('#13'   [Items],'#13'   [Delete],'#13'   model.selectie'#13'  )'#13' ),'#13#13' {Move all the attributes one place lower}'#13' Repeat('#13'  NrOfAttributes(GuiAtom) - model.selectie,'#13'  Do('#13'   SetAttributeName(model.selectie + count - 1, AttributeName(model.selectie + count, GuiAtom), GuiAtom ),'#13'   TextAtt(model.selectie + count - 1, GuiAtom) := TextAtt(model.selectie + count,GuiAtom),  '#13'   Cell(model.selectie + count - 1, 1, GuiAtom) := Cell(model.selectie + count, 1, GuiAtom),'#13'   Cell(model.selectie + count - 1, 2, GuiAtom) := Cell(model.selectie + count, 2, GuiAtom),'#13'   Cell(model.selectie + count - 1, 3, GuiAtom) := Cell(model.selectie + count, 3, GuiAtom),'#13'   Cell(model.selectie + count - 1, 4, GuiAtom) := Cell(model.selectie + count, 4, GuiAtom),'#13'   Cell(model.selectie + count - 1, 5, GuiAtom) := Cell(model.selectie + count, 5, GuiAtom),'#13'   Cell(model.selectie + count - 1, 6, GuiAtom) := Cell(model.selectie + count, 6, GuiAtom),'#13'   Cell(model.selectie + count - 1, 7, GuiAtom) := Cell(model.selectie + count, 7, GuiAtom)'#13#13'  )'#13' ),'#13#13' {Remove the last attribute}'#13' if('#13'  NrOfAttributes(GuiAtom) > 0,'#13'  do('#13'   SetAttributes(nrofattributes(Guiatom) - 1, GuiAtom),'#13'    Repeat('#13'    7,'#13'    Cell(NrOfAttributes(GuiAtom)+1, count, GuiAtom) := []'#13'   )'#13'  )'#13' )'#13')'#13))))),
+EDControl(Panel:
+      Align = Bottom,
+      Anchors = set(Left,Right,Bottom),
+      BevelOuter = None,
+      Caption = str(''),
+      Height = 40,
+      Left = 0,
+      Name = str('Panel1'),
+      TabOrder = 2,
+      Top = 302,
+      Width = 388,
+      Controls(
+        EDControl(Button:
+          Caption = str('Help'),
+          Left = 8,
+          Name = str('btnHelp'),
+          TabOrder = 1,
+          Top = 8,
+          Events(
+            Click = str('Help(PDir([HELP\ED Help.hlp]), [Function Editor])'#13))),
+        EDControl(Button:
+          Anchors = set(Right,Bottom),
+          Cancel = True,
+          Caption = str('&Close'),
+          Left = 305,
+          Name = str('Button4'),
+          TabOrder = 2,
+          Top = 8,
+          Events(
+            Click = str('GuiDestroy')))))),
+  Events(
+    Show = str('Do('#13' Repeat('#13'  NrOfAttributes(GuiAtom),'#13'  GuiControl('#13'   [ListBox1],'#13'   GuiList('#13'    [Items],'#13'    [Add],'#13'    AttributeName(count)'#13'   )'#13'  )'#13' ),'#13' '#13' Gui_PositionGuiAroundAtom(GuiControl([FunctionEditor]))'#13')'#13)))
+

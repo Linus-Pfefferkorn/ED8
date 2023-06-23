@@ -1,0 +1,153 @@
+EDControl(EditForm:
+  BorderIcons = set(SystemMenu),
+  BorderStyle = Single,
+  Caption = str('NodeManipulator'),
+  Height = 447,
+  Name = str('NodeManipulator'),
+  ShowHint = True,
+  Top = 188,
+  Visible = True,
+  Width = 395,
+  Controls(
+    EDControl(MultiPage:
+      ActivePage = 1,
+      Align = Client,
+      Anchors = set(Left,Top,Right,Bottom),
+      Height = 407,
+      Left = 0,
+      Name = str('MultiPage1'),
+      TabOrder = 1,
+      Top = 0,
+      Width = 395,
+      Controls(
+        EDControl(SinglePage:
+          Caption = str('General'),
+          Name = str('SinglePage1'),
+          PageIndex = 1,
+          Controls(
+            EDControl(GroupBox:
+              Caption = str('Method'),
+              Height = 160,
+              Left = 8,
+              Name = str('GroupBox1'),
+              TabOrder = 1,
+              Top = 8,
+              Width = 370,
+              Controls(
+                EDControl(RadioButton:
+                  Caption = str('Connect bidirectional'),
+                  Left = 12,
+                  Name = str('rbConnectBidirectional'),
+                  TabOrder = 1,
+                  TabStop = False,
+                  Top = 32,
+                  Width = 177),
+                EDControl(RadioButton:
+                  Caption = str('Connect unidirectional'),
+                  Left = 12,
+                  Name = str('rbConnectUnidirectional'),
+                  TabOrder = 2,
+                  Top = 64,
+                  Width = 177),
+                EDControl(RadioButton:
+                  Caption = str('Disconnect bidirectional'),
+                  Left = 12,
+                  Name = str('rbDisconnectBidirectional'),
+                  TabOrder = 3,
+                  Top = 96,
+                  Width = 177),
+                EDControl(RadioButton:
+                  Caption = str('Disconnect unidirectional'),
+                  Left = 12,
+                  Name = str('rbDisconnectUnidirectional'),
+                  TabOrder = 4,
+                  Top = 128,
+                  Width = 177))),
+            EDControl(GroupBox:
+              Caption = str('Miscellaneous'),
+              Height = 160,
+              Left = 8,
+              Name = str('GroupBox122'),
+              TabOrder = 2,
+              Top = 184,
+              Width = 370,
+              Controls(
+                EDControl(CheckBox:
+                  Caption = str('Show nodes'),
+                  Left = 12,
+                  Name = str('cbShowNodes'),
+                  TabOrder = 1,
+                  Top = 32,
+                  Width = 129,
+                  Events(
+                    Change = str('if('#13' GuiControl([cbShowNodes], GuiGet([checked])) = True,'#13' do('#13'  GuiControl([cbShowPaths], GuiSet([Enabled], True)),'#13'  GuiControl([cbShowNodeNames], GuiSet([Enabled], True)),'#13'  GuiControl([cbShowConnectionsToAtoms], GuiSet([Enabled], True))'#13' ),'#13' do('#13'  GuiControl([cbShowPaths], GuiSet([Enabled], False)),'#13'  GuiControl([cbShowNodeNames], GuiSet([Enabled], False)),'#13'  GuiControl([cbShowConnectionsToAtoms], GuiSet([Enabled], False))'#13' ) '#13')'#13))),
+                EDControl(CheckBox:
+                  Caption = str('Show paths between nodes'),
+                  Left = 12,
+                  Name = str('cbShowPaths'),
+                  TabOrder = 2,
+                  Top = 64,
+                  Width = 153),
+                EDControl(CheckBox:
+                  Caption = str('Show connections to atoms'),
+                  Left = 12,
+                  Name = str('cbShowConnectionsToAtoms'),
+                  TabOrder = 3,
+                  Top = 96,
+                  Width = 169),
+                EDControl(CheckBox:
+                  Caption = str('Show node names'),
+                  Left = 12,
+                  Name = str('cbShowNodeNames'),
+                  TabOrder = 4,
+                  Top = 128,
+                  Width = 145))))))),
+    EDControl(Panel:
+      Align = Bottom,
+      Anchors = set(Left,Right,Bottom),
+      BevelOuter = None,
+      Caption = str(''),
+      Height = 40,
+      Left = 0,
+      Name = str('Panel1'),
+      TabOrder = 2,
+      Top = 407,
+      Width = 395,
+      Controls(
+        EDControl(Button:
+          Caption = str('&Apply'),
+          Left = 312,
+          Name = str('btnApply'),
+          TabOrder = 4,
+          Top = 8,
+          Events(
+            Click = str('do('#13' var([atmActive], vbAtom, 0),'#13#13' { Check out for which option of connecting the user chooses and change the right '#13'   attributes according to this choice. }'#13' if('#13'  GuiControl([rbConnectBidirectional], GuiGet([Checked])) = true,'#13'  do('#13'   Att([connecting], GuiAtom) := true,'#13'   Att([twoway], GuiAtom) := true,'#13'   color(GuiAtom) := colorgreen'#13'  ),'#13'  if('#13'   GuiControl([rbConnectUnidirectional], GuiGet([Checked])) = true,'#13'   do('#13'    Att([connecting], GuiAtom) := true,'#13'    Att([twoway], GuiAtom) := false,'#13'    color(GuiAtom) := colorgreen'#13'   ),'#13'   if('#13'    GuiControl([rbDisconnectBidirectional], GuiGet([Checked])) = true,'#13'    do('#13'     Att([connecting], GuiAtom) := false,'#13'     Att([twoway], GuiAtom) := true,'#13'     color(GuiAtom) := colorred'#13'    ),'#13'    if('#13'     GuiControl([rbDisconnectUnidirectional], GuiGet([Checked])) = true,'#13'     do('#13'      Att([connecting], GuiAtom) := false,'#13'      Att([twoway], GuiAtom) := false,'#13'      color(GuiAtom) := colorred'#13'     )'#13'    )'#13'   )'#13'  )'#13' ),'#13' '#13' { Check out which options the user checked. And save thos to the Node manipulator atom }'#13' Att([ShowPaths], GuiAtom) := GuiControl([cbShowPaths], GuiGet([Checked])),'#13' Att([ShowNodes], GuiAtom) := GuiControl([cbShowNodes], GuiGet([Checked])),'#13' Att([ShowNodeNames], GuiAtom) := GuiControl([cbShowNodeNames], GuiGet([Checked])),'#13' Att([ShowConnectionsToAtoms], GuiAtom) := GuiControl([cbShowConnectionsToAtoms], GuiGet([Checked])),'#13#13' { Now update all nodes in the model according to the setting of the NodeManipulator. }'#13' foratomtreeunder('#13'  model,'#13'  do('#13'   atmActive := a,'#13'   if('#13'    ddb([t-node], atmActive),'#13'    do('#13'     att([ShowPaths], atmActive) := GuiControl([cbShowPaths], GuiGet([Checked])),'#13'     att([ShowNode], atmActive) := GuiControl([cbShowNodes], GuiGet([Checked])),'#13'     att([ShowName], atmActive) := GuiControl([cbShowNodeNames], GuiGet([Checked])),'#13'     att([ShowConnectionsToAtoms], atmActive) := GuiControl([cbShowConnectionsToAtoms], GuiGet([Checked]))'#13'    )'#13'   )'#13'  )'#13' ),'#13' GuiRun([Update])'#13')'#13))),
+        EDControl(Button:
+          Cancel = True,
+          Caption = str('&Cancel'),
+          Left = 230,
+          Name = str('btnCancel'),
+          TabOrder = 3,
+          Top = 8,
+          Events(
+            Click = str('GuiDestroy '#13))),
+        EDControl(Button:
+          Caption = str('&Ok'),
+          Default = True,
+          Left = 144,
+          Name = str('btnOk'),
+          TabOrder = 2,
+          Top = 8,
+          Events(
+            Click = str('Do('#13' GuiControl([btnApply]),'#13' GuiRun([Click]),'#13' GuiDestroy'#13')'#13))),
+        EDControl(Button:
+          Caption = str('&Help'),
+          Left = 8,
+          Name = str('btnHelp'),
+          TabOrder = 1,
+          Top = 8,
+          Events(
+            Click = str('do('#13'  help(pdir([Help\ED HELP.HLP]), [Node Manipulator]) '#13')'#13)))))),
+  Events(
+    Show = str('do('#13'  {Set Caption}'#13'  if('#13'   atomexists(m(GuiAtom)),'#13'   GuiControl([NodeManipulator],GuiSet([Caption],concat(name(m(GuiAtom)), [ - ], name(GuiAtom)))),'#13'   GuiControl([NodeManipulator],GuiSet([Caption],concat([Baseclass - ], name(GuiAtom))))'#13'  ),'#13'  '#13'  { Set connection Method }'#13'  if('#13'   att([connecting], GuiAtom) = True,'#13'   if('#13'    att([twoway], GuiAtom) = True,'#13'    GuiControl([rbConnectBidirectional], GuiSet([Checked], True)),'#13'    GuiControl([rbConnectUnidirectional], GuiSet([Checked], True))'#13'   ),'#13'   if('#13'    att([twoway], GuiAtom) = True,'#13'    GuiControl([rbDisconnectBidirectional], GuiSet([Checked], True)),'#13'    GuiControl([rbDisconnectUnidirectional], GuiSet([Checked], True))'#13'   )'#13'  ),'#13'  '#13'  { Set optional properties }'#13'  GuiControl([cbShowPaths], GuiSet([Checked], att([ShowPaths], GuiAtom))),'#13'  GuiControl([cbShowNodes], GuiSet([Checked], att([ShowNodes], GuiAtom))),'#13'  GuiControl([cbShowNodeNames], GuiSet([Checked], att([ShowNodeNames], GuiAtom))),'#13'  GuiControl([cbShowConnectionsToAtoms], GuiSet([Checked], Att([ShowConnectionsToAtoms], GuiAtom))),'#13#13'  { Run the Change Event of the first CheckBox for ShowNodes, this determines  if the'#13'    other checkboxes for Name and Paths are enabled or disabled. }'#13'  GuiControl([cbShowNodes]),'#13'  GuiRun([Change]),'#13'    '#13'  {Set ActivePage}'#13'  GuiControl([MultiPage1]),GuiSet([ActivePage],1),'#13#13'  {Position the form}'#13'  Gui_PositionGuiAroundAtom(GuiControl([NodeManipulator])),'#13#13'  GuiRun([Update])'#13')'#13)))
+

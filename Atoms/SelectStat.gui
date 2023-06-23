@@ -1,0 +1,112 @@
+EDControl(EditForm:
+  BorderIcons = set(SystemMenu),
+  BorderStyle = Single,
+  Caption = str('Edit Performance Measure'),
+  Height = 194,
+  MinHeight = 127,
+  MinWidth = 376,
+  Name = str('frmSelectStat'),
+  Position = ScreenCenter,
+  ShowHint = True,
+  Top = 363,
+  Visible = False,
+  Width = 389,
+  Controls(
+    EDControl(Panel:
+      Align = Client,
+      Anchors = set(Left,Top,Right,Bottom),
+      Caption = str(''),
+      Height = 118,
+      Left = 0,
+      Name = str('Panel1'),
+      TabOrder = 1,
+      Top = 0,
+      Width = 389,
+      Controls(
+        EDControl(GroupBox:
+          Caption = str('Settings'),
+          Height = 96,
+          Left = 8,
+          Name = str('GroupBox1'),
+          TabOrder = 1,
+          Top = 8,
+          Width = 370,
+        Controls(
+EDControl(Label:
+          Caption = str('Name:'),
+          Color = -16777208,
+          Left = 12,
+          Name = str('StaticText1'),
+          Top = 32,
+          Width = 35),
+        EDControl(Edit:
+          Height = 21,
+          Left = 132,
+          Name = str('edStatName'),
+          TabOrder = 2,
+          Top = 24,
+          Width = 225,
+          Events(
+            Change = str('do('#13#10'  if( label([StatTypeSel],refExperimentSupport) = 2,'#13#10'    do('#13#10'       if( or(comparetext(GuiControl([edStatName],GuiGet([Text])),[]),comparetext(GuiControl([cobGroupStat],GuiGet([Text])),[]) ),'#13#10'         GuiControl([btnOK],GuiSet([Enabled],False)),'#13#10'         GuiControl([btnOK],GuiSet([Enabled],True))'#13#10'       )    '#13#10'    ),'#13#10'    do('#13#10'       if( or(comparetext(GuiControl([edStatName],GuiGet([Text])),[]),comparetext(GuiControl([synStatCode],GuiGet([ResultCode])),[]) ),'#13#10'            GuiControl([btnOK],GuiSet([Enabled],False)),'#13#10'            GuiControl([btnOK],GuiSet([Enabled],True))'#13#10'       )    '#13#10'    )'#13#10'  )'#13#10')'))),
+        EDControl(Label:
+          Caption = str('Performance measure:'),
+          Color = -16777208,
+          Left = 12,
+          Name = str('StaticText12'),
+          Top = 64,
+          Width = 110),
+        EDControl(ComboBox:
+          Height = 21,
+          Items = str('[OUTPUT]'#13#10'[INPUT]'#13#10'[CONTENT]'#13#10'[AVGCONTENT]'#13#10'[MAXCONTENT]'#13#10'[AVGSTAY]'#13#10'[MAXSTAY]'#13#10'[STATUS]'#13#10),
+          Left = 132,
+          Name = str('cobGroupStat'),
+          Style = DropDownList,
+          TabOrder = 3,
+          Top = 56,
+          Width = 225,
+          Events(
+            Change = str('do('#13#10#13#10'  if( or(comparetext(GuiControl([edStatName],GuiGet([Text])),[]),'#13#10'          comparetext(GuiControl([cobGroupStat],GuiGet([Text])),[]) '#13#10'      ),'#13#10'       GuiControl([btnOK],GuiSet([Enabled],False)),'#13#10'       GuiControl([btnOK],GuiSet([Enabled],True))'#13#10'  )'#13#10')'))),
+        EDControl(SyntaxComboBox:
+          CodeItems = str(#1'objectstart'#1'code:Output(cs)'#1'objectend'#1'objectstart'#1'code:Input(cs)'#1'objectend'#1'objectstart'#1'code:Content(cs)'#1'objectend'#1'objectstart'#1'code:AvgContent(cs)'#1'objectend'#1'objectstart'#1'code:MaximumContent(cs)'#1'objectend'#1'objectstart'#1'code:AvgStay(cs)'#1'objectend'#1'objectstart'#1'code:MaxStay(cs)'#1'objectend'#1'objectstart'#1'code:[STATUS]'#1'objectend'#1'objectstart'#1'code:Label([?],cs)'#1'objectend'#1'objectstart'#1'code:Att([?],cs)'#1'objectend'#1'objectstart'#1'code:[TABLE]'#1'objectend'#1'objectstart'#1'code:[USER DEFINED]'#1'objectend'),
+          Hint = str('Refer to atom with ''cs'''),
+          Left = 132,
+          Name = str('synStatCode'),
+          TabOrder = 4,
+          Top = 56,
+          Width = 225,
+          Events(
+            Change = str('do('#13#10#13#10'  if( or(comparetext(GuiControl([edStatName],GuiGet([Text])),[]),'#13#10'          comparetext(GuiControl([synStatCode],GuiGet([ResultCode])),[]) '#13#10'      ),'#13#10'       GuiControl([btnOK],GuiSet([Enabled],False)),'#13#10'       GuiControl([btnOK],GuiSet([Enabled],True))'#13#10'  )'#13#10')'))))))),
+EDControl(Panel:
+      Align = Bottom,
+      Anchors = set(Left,Right,Bottom),
+      BevelOuter = None,
+      Caption = str(''),
+      Height = 40,
+      Left = 0,
+      Name = str('Panel2'),
+      TabOrder = 2,
+      Top = 118,
+      Width = 389,
+      Controls(
+        EDControl(Button:
+          Caption = str('&Ok'),
+          Default = True,
+          Left = 230,
+          Name = str('btnOK'),
+          TabOrder = 1,
+          Top = 8,
+          Events(
+            Click = str('do('#13#10' '#13#10'{make sure row and column labels are set correctly}'#13#10' if( label([StatAction],refExperimentSupport) = 1, {Adding new Stat}'#13#10'   do('#13#10#13#10'      if(label([StatTypeSel],refExperimentSupport) = 2,'#13#10'        do('#13#10'          {first make sure the table is extended}       '#13#10'          GuiSelect([StatisticsForm],[tbGroupStats],GuiSet([RowCount], GuiGet([RowCount])+1)),'#13#10#13#10'          {set the Row label to the last Row}          '#13#10'          label([StatRow],refExperimentSupport) := GuiSelect([StatisticsForm],[tbGroupStats],GuiGet([RowCount]))-1                    '#13#10'        '#13#10'        ),'#13#10'        do(         '#13#10'          {first make sure the table is extended}       '#13#10'          GuiSelect([StatisticsForm],[tbAtomStats],GuiSet([RowCount], GuiGet([RowCount])+1)),'#13#10#13#10'          {set the Row label to the last Row}          '#13#10'          label([StatRow],refExperimentSupport) := GuiSelect([StatisticsForm],[tbAtomStats],GuiGet([RowCount]))-1                   '#13#10'        )'#13#10'      )    '#13#10'   ),'#13#10'   do( {Editing Stat}'#13#10'     label([StatRow],refExperimentSupport) := label([RowSelected],refExperimentSupport)'#13#10'   )'#13#10' ),'#13#10' '#13#10' if(label([StatTypeSel],refExperimentSupport) = 2,'#13#10'   do('#13#10#13#10'     {Put the values in the GroupStats table on the right position}'#13#10'     '#13#10'     GuiSelect([StatisticsForm],[tbGroupStats],GuiSet([Cells],label([StatRow],refExperimentSupport),0,'#13#10'                          GuiSelect([SelectStatForm],[edStatName],GuiGet([Text]))'#13#10'     )),'#13#10'      '#13#10'     GuiSelect([StatisticsForm],[tbGroupStats],GuiSet([Cells],label([StatRow],refExperimentSupport),1,'#13#10'                               GuiSelect([SelectStatForm],[cobGroupStat],GuiGet([Text]))'#13#10'     )),'#13#10'                '#13#10'     {updating the table will ensure first row to be fixed}'#13#10'     GuiSelect([StatisticsForm],[tbGroupStats],GuiRun([Update]))        '#13#10'   '#13#10'   ),'#13#10'   do('#13#10#13#10'     {Put the values in the AtomStats table on the right position}'#13#10'     '#13#10'     GuiSelect([StatisticsForm],[tbAtomStats],GuiSet([Cells],label([StatRow],refExperimentSupport),0,'#13#10'                          GuiSelect([SelectStatForm],[edStatName],GuiGet([Text]))'#13#10'      )),'#13#10'      '#13#10'     GuiSelect([StatisticsForm],[tbAtomStats],GuiSet([Cells],label([StatRow],refExperimentSupport),1,'#13#10'                               GuiSelect([SelectStatForm],[synStatCode],GuiGet([ResultCode]))'#13#10'     )) ,'#13#10'        '#13#10'     {updating the table will ensure first row to be fixed}'#13#10'     GuiSelect([StatisticsForm],[tbAtomStats],GuiRun([Update]))    '#13#10'   '#13#10'   )'#13#10' ),'#13#10'   '#13#10'  {remove the label}  '#13#10'  label([StatRow],refExperimentSupport) :=0,'#13#10'  '#13#10'  GuiDestroy'#13#10')'))),
+        EDControl(Button:
+          Cancel = True,
+          Caption = str('&Cancel'),
+          Left = 312,
+          Name = str('btnCancel'),
+          TabOrder = 2,
+          Top = 8,
+          Events(
+            Click = str('GuiDestroy')))))),
+  Events(
+    Destroy = str('do('#13#10'  {destroy the labels}'#13#10'  label([StatAction],refExperimentSupport) := 0,'#13#10'  label([RowSelected],refExperimentSupport) := 0,  '#13#10'  label([NameSelected] ,refExperimentSupport) := 0,'#13#10'  label([CodeSelected],refExperimentSupport) := 0,'#13#10'  label([StatTypeSel],refExperimentSupport) := 0'#13#10')'),
+    Show = str('do('#13#10#13#10'  if(   label([StatAction],refExperimentSupport) = 2,'#13#10'    do(  {Editing so copy selected values}'#13#10'       GuiControl([edStatName],GuiSet([Text],label([NameSelected] ,refExperimentSupport))), '#13#10'       if( label([StatTypeSel],refExperimentSupport) = 2,'#13#10'         do('#13#10'           GuiControl([cobGroupStat],GuiSet([Text], label([CodeSelected],refExperimentSupport))),'#13#10'           GuiControl([cobGroupStat],GuiSet([Visible],True)),'#13#10'           GuiControl([synStatCode],GuiSet([Visible], False)),'#13#10'           if( GuiControl([cobGroupStat],GuiList([Items],[Index],label([CodeSelected],refExperimentSupport))) = 0,'#13#10'             do( {no code for groups so clear text}'#13#10'                GuiControl([cobGroupStat],GuiSet([Text], [])),'#13#10'                GuiControl([btnOK],GuiSet([Enabled],False))'#13#10'             ),'#13#10'             GuiControl([btnOK],GuiSet([Enabled],True))'#13#10'           )              '#13#10'         ), '#13#10'         do('#13#10'           GuiControl([synStatCode],GuiSet([ResultCode], label([CodeSelected],refExperimentSupport))),'#13#10'           GuiControl([cobGroupStat],GuiSet([Visible],False)),'#13#10'           GuiControl([synStatCode],GuiSet([Visible], True)),'#13#10'           GuiControl([btnOK],GuiSet([Enabled],True))'#13#10'         )'#13#10'       )            '#13#10'    ),'#13#10'    do(  {Adding new}'#13#10'       GuiControl([btnOK],GuiSet([Enabled],False)),'#13#10'       if( label([StatTypeSel],refExperimentSupport) = 2,'#13#10'         do('#13#10'           GuiControl([cobGroupStat],GuiSet([Visible],True)),'#13#10'           GuiControl([synStatCode],GuiSet([Visible], False))'#13#10'         ), '#13#10'         do('#13#10'           GuiControl([cobGroupStat],GuiSet([Visible],False)),'#13#10'           GuiControl([synStatCode],GuiSet([Visible], True))'#13#10'         )'#13#10'       )            '#13#10'    )'#13#10'  )'#13#10')')))
+

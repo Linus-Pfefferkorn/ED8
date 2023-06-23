@@ -1,0 +1,166 @@
+EDControl(EditForm:
+  BorderIcons = set(SystemMenu),
+  BorderStyle = Single,
+  Caption = str('Sink'),
+  Height = 233,
+  Name = str('Sink'),
+  Position = Default,
+  ShowHint = True,
+  Top = 348,
+  Visible = True,
+  Width = 395,
+  Controls(
+    EDControl(MultiPage:
+      ActivePage = 2,
+      Align = Client,
+      Anchors = set(Left,Top,Right,Bottom),
+      Left = 0,
+      Name = str('MultiPage1'),
+      TabOrder = 1,
+      Top = 0,
+      Width = 395,
+      Controls(
+        EDControl(SinglePage:
+          Caption = str('General'),
+          Name = str('SinglePage1'),
+          PageIndex = 1,
+          Controls(
+            EDControl(GroupBox:
+              Caption = str(''),
+              Height = 64,
+              Left = 8,
+              Name = str('GroupBox1'),
+              TabOrder = 1,
+              Top = 8,
+              Width = 370),
+            EDControl(Edit:
+              Height = 21,
+              Left = 140,
+              Name = str('AtomName'),
+              TabOrder = 2,
+              Top = 34,
+              Width = 225),
+            EDControl(StaticText:
+              BorderStyle = None,
+              Caption = str('Atom name:'),
+              Color = -16777208,
+              Left = 20,
+              Name = str('StaticText1'),
+              Top = 40,
+              Width = 60),
+            EDControl(GroupBox:
+              Caption = str('Triggers'),
+              Height = 64,
+              Left = 8,
+              Name = str('GroupBox12'),
+              TabOrder = 3,
+              Top = 88,
+              Width = 370),
+            EDControl(StaticText:
+              BorderStyle = None,
+              Caption = str('Trigger on entry:'),
+              Color = -16777208,
+              Left = 18,
+              Name = str('StaticText122'),
+              Top = 120,
+              Width = 81),
+            EDControl(SyntaxComboBox:
+              Height = 24,
+              Left = 140,
+              Name = str('TriggerOnEntry'),
+              TabOrder = 4,
+              Top = 114,
+              Width = 225))),
+        EDControl(SinglePage:
+          Caption = str('Visualization'),
+          Name = str('SinglePage2'),
+          PageIndex = 2,
+          Controls(
+            EDControl(GroupBox:
+              Caption = str('Settings'),
+              Height = 96,
+              Left = 8,
+              Name = str('GroupBox32'),
+              TabOrder = 1,
+              Top = 8,
+              Width = 370),
+            EDControl(Icon:
+              Height = 24,
+              Left = 140,
+              Name = str('Icon'),
+              Top = 34,
+              Width = 225),
+            EDControl(StaticText:
+              BorderStyle = None,
+              Caption = str('Icon:'),
+              Color = -16777208,
+              Left = 20,
+              Name = str('StaticText22'),
+              Top = 40,
+              Width = 28),
+            EDControl(ComboBox:
+              Height = 21,
+              Items = str('None'#13#10'Simple Box'#13#10'Advanced'#13#10'Advanced Resized'#13#10),
+              Left = 140,
+              Name = str('Icon3D'),
+              Style = DropDownList,
+              TabOrder = 2,
+              Top = 66,
+              Width = 225),
+            EDControl(StaticText:
+              BorderStyle = None,
+              Caption = str('3D Icon:'),
+              Color = -16777208,
+              Left = 20,
+              Name = str('Icon32'),
+              Top = 72,
+              Width = 45))))),
+    EDControl(Panel:
+      Align = Bottom,
+      Anchors = set(Left,Right,Bottom),
+      BevelOuter = None,
+      Caption = str(''),
+      Height = 40,
+      Left = 0,
+      Name = str('Panel1'),
+      TabOrder = 2,
+      Top = 193,
+      Width = 395,
+      Controls(
+        EDControl(Button:
+          Caption = str('&Help'),
+          Left = 8,
+          Name = str('btnHelp'),
+          TabOrder = 1,
+          Top = 8,
+          Events(
+            Click = str('Help(PDir([HELP\ED Help.hlp]), [Sink])'#13))),
+        EDControl(Button:
+          Caption = str('&Ok'),
+          Default = True,
+          Left = 144,
+          Name = str('btnOk'),
+          TabOrder = 2,
+          Top = 8,
+          Events(
+            Click = str('Do('#13' GuiControl([btnApply]),'#13' GuiRun([Click]),'#13' GuiDestroy,'#13' GuiUnregister([Sink])'#13')'#13))),
+        EDControl(Button:
+          Cancel = True,
+          Caption = str('&Cancel'),
+          Left = 230,
+          Name = str('btnCancel'),
+          TabOrder = 3,
+          Top = 8,
+          Events(
+            Click = str('Do('#13' GuiDestroy,'#13' GuiUnregister([Sink])'#13')'#13))),
+        EDControl(Button:
+          Caption = str('&Apply'),
+          Left = 312,
+          Name = str('btnApply'),
+          TabOrder = 4,
+          Top = 8,
+          Events(
+            Click = str('do('#13'  {Save TextField}'#13'  '#13'  Name(GuiAtom) := GuiControl([AtomName],GuiGet([Text])),'#13'  '#13'  {Save SyntaxComboBox} '#13'  '#13'  SetExprAtt([EntryTrigger],GuiControl([TriggerOnEntry],GuiGet([ResultCode])),GuiAtom),'#13'  '#13'  {Rest}'#13'  '#13'  Icon(GuiAtom) := GuiControl([Icon],GuiGet([Icon])),'#13'  '#13'  Att([Icon3D],GuiAtom) := GuiControl([Icon3D],GuiGet([ItemIndex]))'#13')'#13)))))),
+  Events(
+    Show = str('do('#13'  {Set Caption}'#13'  if('#13'   atomexists(m(GuiAtom)),'#13'   GuiControl([Sink],GuiSet([Caption],concat(name(m(GuiAtom)), [ - ], name(GuiAtom)))),'#13'   GuiControl([Sink],GuiSet([Caption],concat([Baseclass - ], name(GuiAtom))))'#13'  ),'#13'   '#13'  {Set ActivePage} '#13'   '#13'  GuiControl([MultiPage1]),GuiSet([ActivePage],1),'#13'  '#13'  {Set TextField}'#13'      '#13'  GuiControl([AtomName],GuiSet([Text],Name(GuiAtom))),'#13'      '#13'  {Set SyntaxCombobox}      '#13'      '#13'  GuiControl([TriggerOnEntry],GuiSet([CodeItems], concat(char(1),[objectstart],char(1),[code:],TextAtt([EntryTrigger],GuiAtom),char(1),[objectend], getTriggerEnterExit))),'#13'  GuiControl([TriggerOnEntry],GuiSet([ItemIndex], 1)),        '#13#13'  {Rest}'#13'  '#13'  GuiControl([Icon],GuiSet([Icon], Icon(GuiAtom))),'#13'  '#13'  GuiControl([Icon3D],GuiSet([ItemIndex], Att([Icon3D],GuiAtom))), '#13'  '#13'  Gui_PositionGuiAroundAtom(GuiControl([Sink])),'#13'      '#13'  GuiRun([Update])'#13')'#13)))
+

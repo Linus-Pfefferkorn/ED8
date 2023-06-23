@@ -1,0 +1,40 @@
+{{CONVEYORS}}
+Compares 'Accumulation Conveyors' and 'Non Accumulation Conveyors'.||pDir([Work\Examples\English\Conveyors\Accumulating vs Non Accumulating.mod])
+Shows the use of 'Conveyors' sensors.||pDir([Work\Examples\English\Conveyors\Conveyor_SpeedChangingSensors.mod])
+Demonstrates the interaction of several types of 'Conveyors'.||pDir([Work\Examples\English\Conveyors\Conveyors.mod])
+Demonstrates the use of a 'Turntable Unit' atom and conveyors.||pDir([Work\Examples\English\Conveyors\Turntable.mod])
+Demonstrates the use of a 'Corner Transfer Unit' atom and 'Conveyors'.||pDir([Work\Examples\English\Conveyors\Corner Transfer Unit1.mod])
+Demonstrates the use of a 'Corner Transfer Lifter' atom and 'Conveyors'.||pDir([Work\Examples\English\Conveyors\Corner Transfer Lifter.mod])
+{{OPERATIONS}}
+This 'Pack & Unpack' example shows the 'Assembler' packing two types of 'Containers'.||pDir([Work\Examples\English\Operations\Assembly1.mod])
+Downstream the 'assemblies' are sent through a 'Splitter' atom that splits them.||pDir([Work\Examples\English\Operations\Assembly2.mod])
+Two examples to show the full functionality of the 'Assembler with Inventory' atom.||pDir([Work\Examples\English\Operations\Assembly3.mod])
+This example shows the 'Carousel' Server receiving and placing products.||pDir([Work\Examples\English\Operations\Carousel and Stacker.mod])
+{{OPERATORS}}
+Demo model for the 'Team' and the 'Operator' atom.||pDir([Work\Examples\English\Operators\Operator1.mod])
+{{RESULTS}}
+In this demo model some examples for the use of the 'Status Monitor' atom are given.||pDir([Work\Examples\English\Results\StatusMonitor_LogisticsSuite.mod])
+In this demo model the waitingtime of the products in the queue will be written into a table and then visualized with the 'Graph' atom.||pDir([Work\Examples\English\Results\TableAndGraph.mod])
+{{STORAGE}}
+The product checks for a free storing position before entering the 'Ground Storage'. ||pDir([Work\Examples\English\Storage\Ground Storage - model (with check).mod])
+The product has labels on it with the row and the column of the storing position. The product atom is brought to that position, even if it is not free.||pDir([Work\Examples\English\Storage\Ground Storage - model (without check).mod])
+This is a simple model where a server 'pulls' products from a kanban bin.||pDir([Work\Examples\English\Storage\Kanban.mod])
+Demo model for the 'Reservoir' atom.||pDir([Work\Examples\English\Storage\Reservoir.mod])
+The goal of this example model is to place similar products in the same column of a warehouse.||pDir([Work\Examples\English\Storage\Warehouse.mod])
+In this demo model products are placed in a warehouse. After that, the warehouse sends its products to the 'Server' atom.||pDir([Work\Examples\English\Storage\Warehouse With Products.mod])
+{{TRANSPORT}}
+In this demo model the 4DScript commands 'AdvancedTransporter_PickAtom()' and 'AdvancedTransporter_PlaceAtom()' are introduced. With these commands the user gains more control over the 'Advanced Transporter'..||pDir([Work\Examples\English\Transport\AdvancedTransporter_PickAtom&PlaceAtom1.mod])
+When the run is started, the table will be filled with the values defined in the 'Initialize' atom. The 'Advanced Transporter' atoms get the position of the products to load out of the table.||pDir([Work\Examples\English\Transport\AdvancedTransporter_PickAtom&PlaceAtom2.mod])
+This model demonstrates the use of the elevator. The elevator is capable of picking up and dropping off at multiple locations.||pDir([Work\Examples\English\Transport\Elevator.mod])
+This is an example for battery-driven transporters moving across a network.||pDir([Work\Examples\English\Transport\Network.mod])
+Demo model for Portal Crane.||pDir([Work\Examples\English\Transport\Portal Crane.mod])
+Demo model for the RFID-Gate.||pDir([Work\Examples\English\Transport\RFID-Gate.mod])
+This model demonstrates the use of the 'Robot' atom. This particular model shows the robot picking up from two different sources and dropping off at three different servers.||pDir([Work\Examples\English\Transport\Robot.mod])
+Demo model for the 'Transporter' atom.||pDir([Work\Examples\English\Transport\Transporters.mod])
+Demo model for the 'Advanced Transporter', the 'Dispatcher', the 'Destinator', the 'Node Manipulator', the 'Network Node' and the 'Network Controller' atom.||pDir([Work\Examples\English\Transport\WarehouseWithAdvancedTransporters.mod])
+{{VARIABLES}}
+In this demo model the use of variables and references is demonstrated.||pDir([Work\Examples\English\Variables\Atom Reference.mod])
+{{VISUALIZATION}}
+Manipulating the 2D-View.||pDir([Work\Examples\English\Visualization\Change Display.mod])
+In this demo model two symbols are rotated.||pDir([Work\Examples\English\Visualization\Rotating 2D Bitmaps.mod])
+In this demo model the atoms 'Virtual Reality', 'VRBox' and 'VR Wall' are used. It will be discussed how to load user-defined visualizations.||pDir([Work\Examples\English\Visualization\Factory\Turntable_factory.mod])

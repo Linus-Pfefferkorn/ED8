@@ -1,0 +1,897 @@
+
+
+{Preregister functions}
+
+PreregisterFunction([Gui_PositionGuiAroundAtom], 1, 1);
+PreregisterFunction([Gui_Screenshot2DAtomtoClipboard], 2, 7);
+PreregisterFunction([Gui_Screenshot2DAtomtoClipboard_Reset], 0, 0);
+PreregisterFunction([Gui_ReplaceStatic], 1, 1);
+PreregisterFunction([Gui_PlaceControlsUnderGroupBox], 1, 1);
+PreregisterFunction([Gui_DetermineLocation], 1, 1);
+PreregisterFunction([Gui_CorrectionPerPage], 4, 4);
+PreregisterFunction([Gui_FindClosingBracket], 2, 2);
+PreregisterFunction([Gui_CorrectionPerGroupBox], 6, 6);
+
+
+{Atom: Gui}
+
+sets;
+BaseClass;
+CreateAtom(a, s, [], 1, false);
+Set(OnInit, [dim([atmMotherGUI], vbAtom, c)]);
+int023([Gui], 0, 524288);
+DefineFunction([Gui_PositionGuiAroundAtom], [Gui], 1, 1, [do( {Position the form} GuiControl(p(1), GuiSet([Top], MouseY)), GuiControl(p(1), GuiSet([Left], MouseX)),  { Adjust for possible out of screen positioning } if(GuiControl(p(1), GuiGet([Top])) > ScreenHeight - GuiControl(p(1), GuiGet([Height])), GuiControl(p(1), GuiSet([Top], ScreenHeight - 50 - GuiControl(p(1), GuiGet([Height]))))), if(GuiControl(p(1), GuiGet([Left])) > ScreenWidth - GuiControl(p(1), GuiGet([Width])), GuiControl(p(1), GuiSet([Left], ScreenWidth - 10 - GuiControl(p(1), GuiGet([Width]))))))], [p(1) as GuiFormResult: none. Positions the gui by edfault at mouse position. When this leads to a gui that lies (partly) outside the screen there's made an adjustment.], [Enter Syntax Example], 0, [Gui.atm]);
+DefineFunction([Gui_Screenshot2DAtomtoClipboard], [Gui], 2, 7, [Do(  var([atmC], vbAtom),   var([valShow], vbValue),  var([valxPix], vbValue),  var([valyPix], vbValue),  var([valxOffSet], vbValue),  var([valyOffSet], vbValue),  var([atmActiveForm], vbAtom),  var([valEngine], vbValue),  var([valScale], vbValue),  var([valAtomOffSet], vbValue, Att([ScreenShotOffSet], atmMotherGUI)), {**Offset to ensure 0, 0 black box atom is not shown**}  var([valCurrentActive], vbValue, Active2D),  atmC := p(1),  if(    Or(      AtomExists(atmC) = False,      GetSetting(sa2DDraw, atmC) = False     ),    return(-1)  ),          if(    p(2) <> True,    valShow := False,    valShow := True  ),  {**Set values**}  if(    Or(      ParamCount < 3,      p(3) <= 0    ),    valxPix := Att([ScreenshotWidth], atmMotherGUI),    valxPix := p(3)  ),    if(    Or(      ParamCount < 4,      p(4) <= 0    ),    valyPix := Att([ScreenshotHeight], atmMotherGUI),    valyPix := p(4)  ),    if(    ParamCount < 5,    valxOffSet := Att([ScreenshotOffsetX], atmMotherGUI),    valxOffSet := p(5)  ),    if(    ParamCount < 6,    valyOffSet := Att([ScreenshotOffsetY], atmMotherGUI),    valyOffSet := p(6)  ),    if(    Or(      ParamCount < 7,      p(7) < 0.01    ),    valScale := Att([ScreenshotScale], atmMotherGUI),    valScale := p(7)  ),    GuiRegister(pdir([Apps\modelView2D.GUI]), 1),  atmActiveForm := GuiCreate([modelView], Concat([Screenshot2D_], Name(atmC))),    GuiControl(    Name(atmActiveForm),    do(           GuiSet([Width], valxPix),      GuiSet([Height], valyPix),            GuiSet([Caption], Name(atmC)),            GuiSet([Top], 0.5 * (ScreenHeight - GuiGet([Height]))),      GuiSet([Left], 0.5 * (ScreenWidth - GuiGet([Width]))),      GuiSet([InstanceOptions], [DestroyOnHide])    )  ),    GuiControl([Engine2D],    do(      valEngine := GuiGet([EngineID]),      GuiSet([ShowGrid], False),      GuiSet([ShowStatusBar], False),      GuiSet([DisplayAtom], atmC),         GuiSet([ViewOnly], True),             { GuiEvent([Refresh],        Concat(          [do(             PushCoords,               TranslateCoords(], String(valAtomOffSet), [, ], String(valAtomOffSet), [),], cr,             [ ExecEvent(On2DDraw, Rank(2, Model)),             PopCoords           )]        )      )}     { GuiEvent([Refresh],        Concat(          [do(             PushCoords,               TranslateCoords(], String(valAtomOffSet), [, ], String(valAtomOffSet), [),], cr,             [ ExecEvent(On2DDraw, vtp(GuiGet([DisplayAtom]))),             PopCoords           )]        )      )}      GuiEvent([Refresh],        Concat(          [do(], cr,          [  PushCoords,], cr,            [  TranslateCoords(], String(valAtomOffSet), [, ], String(valAtomOffSet), [),], cr,          [  Repeat(], cr,          [    NoSelectedAtoms(], String(valCurrentActive), [),], cr,          [    if(], cr,          [       AtomExists(SelectedAtoms(Count, ], String(valCurrentActive), [)),], cr,          [       do(], cr,                [         PushCoords,], cr,              [         TranslateCoords(], cr,          [           -(xAbsLoc(vtp(GuiGet([DisplayAtom])), Model)) + xAbsLoc(SelectedAtoms(Count, ], String(valCurrentActive), [), Model),], cr,          [           -(yAbsLoc(vtp(GuiGet([DisplayAtom])), Model)) + yAbsLoc(SelectedAtoms(Count, ], String(valCurrentActive), [), Model)], cr,              [         ),], cr,           [         ExecEvent(On2DDraw, SelectedAtoms(Count, ], String(valCurrentActive), [)),], cr,           [         PopCoords], cr,           [       )], cr,          [     )], cr,          [   ),], cr,                                   [   PopCoords], cr,          [)]        )       )    )  ),    if(    valShow = True,        GuiControl(      Name(atmActiveForm),            Do(              GuiEvent([Destroy],            Concat(            [do(              ProcessMessages,              ScreenshotToClipboard(2d3d),              Att([ScreenshotWidth], atmMotherGUI) := GuiGet([Width]),              Att([ScreenshotHeight], atmMotherGUI) := GuiGet([Height]),              Att([ScreenshotOffsetX], atmMotherGUI) := Att([ScreenShotOffSet], atmMotherGUI) - Viewx(GuiControl([Engine2D], GuiGet([EngineID]))),              Att([ScreenshotOffsetY], atmMotherGUI) := Att([ScreenShotOffSet], atmMotherGUI) - Viewy(GuiControl([Engine2D], GuiGet([EngineID]))),              Att([ScreenshotScale], atmMotherGUI) := Scale,                            SetActive2D(], String(valCurrentActive), [)            )]              )        )          )    )  ),    Scale := valScale,  Viewx(valEngine) := valAtomOffSet - valxOffSet,  Viewy(valEngine) := valAtomOffSet - valyOffSet,            if(    valShow = False,    do(           GuiShow(atmActiveForm),            ProcessMessages,      ScreenshotToClipboard(2d3d),      GuiDestroy(atmActiveForm),      SetActive2D(valCurrentActive){,      AnimAtom := atmC }         ),    GuiShow(atmActiveForm, True)  ),    True)], [This functions takes a screenshot of an atom and copies it to the clipboard. If the user changes the view points of the new 2D preview window (if e2 is true) these will be automatically saved as new default settings.e1 = atome2 = show and edit screenshot; 1 = True, 0 otherwise. If True a screenshot will be taken as soon as the user closes the preview window which the user can first adjust.{e3} = xSize (pixels) of drawing. If omitted or <= 0, default setting is used{e4} = ySize (pixels) of drawing. If omitted or <= 0, default setting is used.{e5} = x offset (m) of drawing. default setting if omitted.{e6} = y offset (m) of drawing. default setting if omitted.{e7} = Zoom level. Default if omitted.], [Gui_Screenshot2DAtomtoClipboard(c, {false}, {800}, {600}, {0}, {0}, {15})], 0, [Gui.atm]);
+DefineFunction([Gui_Screenshot2DAtomtoClipboard_Reset], [Gui], 0, 0, [Do(  Att([ScreenshotWidth], atmMotherGUI) := 300,  Att([ScreenshotHeight], atmMotherGUI) := 300,  Att([ScreenshotOffsetX], atmMotherGUI) := 6,  Att([ScreenshotOffsetY], atmMotherGUI) := 7,  Att([ScreenshotScale], atmMotherGUI) := 15          )], [Reset the screenshot settings to a default value], [Gui_Screenshot2DAtomtoClipboard_Reset], 0, [Gui.atm]);
+DefineFunction([Gui_ReplaceStatic], [Various], 1, 1, [do(
+  var([strFileName], vbString, p(1)),
+  var([strCode], vbString),
+  var([valStaticFound], vbValue, False),
+  var([strLine], vbString),
+
+  FileOpen(strFileName),
+  FileReset,
+  While(
+    not(EOF),
+    do(
+      strLine := FileTextRead,
+      if(
+        valStaticFound = False,
+        do(
+          if(
+            StringPos([statictext:], Lowercase(strLine)) > 0, 
+            valStaticFound := True                                 {skip next line which is "BorderStyle"}
+          ),
+          strCode := Concat(strCode, strLine, CR, LF)
+        ),
+        valStaticFound := False
+      )
+    )
+  ),
+ 
+  strCode := StringReplace(strCode, [statictext:], [Label:], SR_IGNORE_CASE + SR_REPLACE_ALL),
+  
+  if(
+    StringPos([animatom], Lowercase(strCode)) > 0,
+    Trace(Concat([AnimAtom gevonden in: ], strFileName))
+  ),  
+  
+  strCode := Gui_PlaceControlsUnderGroupBox(strCode),
+  
+  FileClear,
+  FileReset,
+  FileTextWrite(strCode),
+  FileClose    
+)
+], [Replaces StaticText by Label in file e1 and traces if AnimAtom is found. Calls GUI_PlaceControlsUnderGroupBox.], [Enter Syntax Example], 0, [elroy deege]);
+DefineFunction([Gui_PlaceControlsUnderGroupBox], [Various], 1, 1, [do(
+  var([strCode], vbString, p(1)),
+  var([strFinalCode], vbString),
+  
+  var([valNrofGroupBoxes], vbValue),
+  var([valNrofControls], vbValue),
+  var([valNrofPages], vbValue),
+    
+  var([valPosPage], vbValue),
+  var([valPosEndofPage], vbValue),
+  var([valPos], vbValue),
+  var([valPosComma], vbValue),
+  var([valPosGroupBox], vbValue),
+  var([valPosEDControl], vbValue),
+  var([valPosNextEDControl], vbValue),
+  var([valPosEndOuterControl], vbValue),
+    
+  valNrofPages := SubstrCount(Lowercase(strCode), [edcontrol(singlepage:]),
+  if(
+    valNrofPages > 0,
+    do(
+      valPosPage := StringPos([edcontrol(singlepage:], Lowercase(strCode)),
+      strFinalCode := StringCopy(strCode, 1, valPosPage - 1),
+      Repeat(
+        valNrofPages,
+        do(          
+          valPos := StringPos([name =], Lowercase(strCode), valPosPage),
+          valPosComma := StringPos([,], strCode, valPos),   
+          if(
+            StringPos(StringCopy(strCode, valPos, valPosComma - valPos), strFinalCode) = 0,
+            do(             
+              valPos := valPosPage + 12, {exclude first bracket open}                          
+              valPosEndofPage := Gui_FindClosingBracket(valPos, strCode) - 1,  {position of closing bracket of "Controls(" of singlepage}
+                              
+              {**Copy code up to first Control of current page**}
+              valPos := StringPos([edcontrol], Lowercase(strCode), valPosPage + 1),
+              strFinalCode := Concat(strFinalCode, StringCopy(strCode, valPosPage, valPos - valPosPage)),
+              
+              strFinalCode := Gui_CorrectionPerPage(valPosPage, valPosEndofPage, strFinalCode, strCode),
+              
+              strFinalCode := Concat(strFinalCode, [,], CR, LF)              
+            )
+          ),
+          valPosPage := StringPos([edcontrol(singlepage:], Lowercase(strCode), valPosPage + 1) 
+        )               
+      )
+    ),     
+    {**No Page found, search for groupboxes**}
+    do(
+      valNrofControls := SubstrCount(Lowercase(strCode), [edcontrol(]),
+      valPosEDControl := StringPos([edcontrol(], Lowercase(strCode), 2),
+      valPosEndofPage := Gui_FindClosingBracket(valPosEDControl, strCode), {**PosEndofPage is closing bracket of 'Controls(' of EditForm**}
+      {**Copy code up to first control of EditForm**}
+      strFinalCode := StringCopy(strCode, 1, valPosEDControl - 1), 
+      valPosEndOuterControl := 0,
+      
+      Repeat(
+        valNrofControls - 1,
+        do(
+          valPosNextEDControl := StringPos([edcontrol(], Lowercase(strCode), valPosEDControl + 1),          
+          valPos := StringPos([name =], Lowercase(strCode), valPosEDControl),
+          valPosComma := StringPos([,], strCode, valPos),              
+          if(
+            StringPos(StringCopy(strCode, valPos, valPosComma - valPos), strFinalCode) = 0,      
+            if(
+              StringPos([Controls(], StringCopy(strCode, valPosEDControl, valPosNextEDControl - valPosEDControl)) > 0,
+              {**Control has controls of its own**}
+              do(                
+                strFinalCode := Concat(strFinalCode, StringCopy(strCode, valPosEDControl, valPosNextEDControl - valPosEDControl)),                 
+                valPosEndOuterControl := Gui_FindClosingBracket(valPosEDControl + 12, strCode),
+                if(
+                  StringPos([control(groupbox:], Lowercase(StringCopy(strCode, valPosEDControl, 20))) > 0,
+                  {**Control is a groupbox**}
+                  strFinalCode := Gui_CorrectionPerGroupBox(valPosEDControl, valPosEndOuterControl, 1, valPosEndofPage, strFinalCode, strCode),
+                  {**Control is NOT a groupbox**}
+                  do(
+                    valNrofGroupBoxes := SubstrCount(Lowercase(StringCopy(strCode, valPosEDControl, valPosEndOuterControl - valPosEDControl)), [edcontrol(groupbox:]),
+                    if(
+                      valNrofGroupBoxes = 0,
+                      strFinalCode := Concat(strFinalCode, StringCopy(strCode, valPosNextEDControl, valPosEndOuterControl - valPosNextEDControl + 1), [,], CR, LF), 
+                      {**GroupBox(es) found in code of Control**}
+                      do(
+                        strFinalCode := Gui_CorrectionPerPage(valPosEDControl, valPosEndOuterControl - 1, strFinalCode, strCode),
+                        strFinalCode := Concat(strFinalCode, [,], CR, LF)
+                      )              
+                    )
+                  )
+                )
+              ),
+              if(
+                StringPos([control(groupbox:], Lowercase(StringCopy(strCode, valPosEDControl, 20))) > 0,
+                do(                  
+                  valPosEndOuterControl := Gui_FindClosingBracket(valPosEDControl + 12, strCode),                  
+                  strFinalCode := 
+                  Concat(
+                    strFinalCode, 
+                    StringCopy(strCode, valPosEDControl, valPosEndOuterControl - valPosEDControl), 
+                    StringCopy(strCode, valPosEndOuterControl + 1, valPosNextEDControl - valPosEDControl), 
+                    [Controls(], 
+                    CR, 
+                    LF
+                  ),
+                  strFinalCode := Gui_CorrectionPerGroupBox(valPosEDControl, valPosNextEDControl, 1, valPosEndofPage, strFinalCode, strCode)
+                )                               
+              )
+            )
+          ),
+          valPosEDControl := valPosNextEDControl
+        )
+      ),
+      valPosEndofPage := valPosEndofPage - 2
+    )    
+  ),
+  {**Add code outside of any Page**}
+  valPosComma := 0,
+  Repeat(
+    SubstrCount(strFinalCode, [,]),
+    valPosComma := StringPos([,], strFinalCode, (valPosComma + 1))
+  ),
+  strFinalCode := Concat(StringCopy(strFinalCode, 1, valPosComma - 1), StringCopy(strCode, valPosEndofPage + 2, StringLength(strCode) - valPosEndofPage - 2)),
+  strFinalCode
+)
+
+
+
+
+
+
+], [Places all EDControls under their matching GroupBox in string e1.], [Enter Syntax Example], 0, [elroy deege]);
+DefineFunction([Gui_DetermineLocation], [Various], 1, 1, [do(  var([strCode], vbString, p(1)),  var([valPos], vbValue),  var([valPosComma], vbValue),  var([valHeight], vbValue),  var([valLeft], vbValue),    var([valTop], vbValue),    var([valWidth], vbValue),        valPos := StringPos([ Height =], strCode) + 1,  if(    valPos > 1,    do(      valPosComma := StringPos([,], strCode, valPos),                 valHeight := Value(StringCopy(strCode, valPos + 9, valPosComma - valPos - 9))    ),                    {**Default height is not reported in text file so return GroupBox height**}    valHeight := 105  ),                    valPos := StringPos([ Left =], strCode) + 1,  valPosComma := StringPos([,], strCode, valPos),             valLeft := Value(StringCopy(strCode, valPos + 7, valPosComma - valPos - 7)),                    valPos := StringPos([ Top =], strCode) + 1,  valPosComma := StringPos([,], strCode, valPos),             valTop := Value(StringCopy(strCode, valPos + 6, valPosComma - valPos - 6)),                    valPos := StringPos([ Width =], strCode) + 1,  if(    valPos > 1,    do(      valPosComma := StringPos([,], strCode, valPos),                 valWidth := Value(StringCopy(strCode, valPos + 8, valPosComma - valPos - 8))    ),    {**Default width is not reported in text file so return GroupBox width**}    valWidth := 185  ),    strCode := ParString(valHeight, valLeft, valTop, valWidth),  strCode)], [Determines Location and Size of a Gui Control. Returns height, left, top and width in ParString format.], [Enter Syntax Example], 0, [elroy deege]);
+DefineFunction([Gui_CorrectionPerPage], [Various], 4, 4, [do(
+  var([valPosPage], vbValue, p(1)),
+  var([valPosEndofPage], vbValue, p(2)),
+  var([strFinalCode], vbString, p(3)),
+  var([strCode], vbString, p(4)),
+
+  var([strCodePage], vbString),
+  var([strCodeGroupBox], vbString),
+  var([strNameControl], vbString),
+  
+  var([valPos], vbValue),
+  var([valPosComma], vbValue),
+  var([valPosBracket], vbValue),
+                                           
+  var([valPosGroupBox], vbValue),
+  var([valPosEndGroupBox], vbValue),
+  var([valPosEDControl], vbValue),
+  var([valPosNextEDControl], vbValue),
+  var([valPosSubPage], vbValue),         
+  var([valPosEndofSubPage], vbValue),            
+    
+  var([valCounterBox], vbValue),
+  var([valCounterSubPage], vbValue),
+   
+  var([valNrofControls], vbValue),
+  var([valNrofGroupBoxes], vbValue),
+  var([valNrofSubPages], vbValue),
+  
+  strCodePage := StringCopy(strCode, valPosPage, valPosEndofPage - valPosPage),
+  valNrofSubPages := SubstrCount(Lowercase(strCodePage), [edcontrol(singlepage:]), 
+  valNrofSubPages := valNrofSubPages - 1,   {exclude main page}  
+  valPosSubPage := valPosPage,
+  valCounterSubPage := 0,
+  
+  if(
+    valNrofSubPages > 0,     
+    Repeat(
+      valNrofSubPages,
+      do(
+        inc(valCounterSubPage),          
+        valPosSubPage := StringPos([edcontrol(singlepage:], Lowercase(strCode), valPosSubPage + 1),         
+        valPos := valPosSubPage + 12, {exclude first bracket open}                        
+        valPosEndofSubPage := Gui_FindClosingBracket(valPos, strCode) - 1,           
+        
+        if(
+          valCounterSubPage = 1,
+          do(
+            valPos := StringPos([edcontrol], Lowercase(strCode), valPosPage + 1),
+            strFinalCode := Concat(strFinalCode, StringCopy(strCode, valPos, valPosSubPage - valPos))
+          )
+        ),
+
+        {**Copy code up to first Control of current subpage**}
+        valPos := StringPos([edcontrol], Lowercase(strCode), valPosSubPage + 1),
+        strFinalCode := Concat(strFinalCode, StringCopy(strCode, valPosSubPage, valPos - valPosSubPage)),
+        
+        strFinalCode := Gui_CorrectionPerPage(valPosSubPage, valPosEndofSubPage, strFinalCode, strCode),
+        
+        if(
+          Count < valNrofSubPages,
+          strFinalCode := Concat(strFinalCode, [,], CR, LF),
+          strFinalCode := Concat(strFinalCode, [))))]) 
+        )
+      )            
+    ),
+    do( 
+      valNrofGroupBoxes := SubstrCount(Lowercase(strCodePage), [groupbox:]),
+      valCounterBox := 0,
+      valNrofControls := SubstrCount(Lowercase(strCodePage), [edcontrol]) - 1, {**Nr of Controls on Page; Excluding EDControl(Singlepage**}
+      valPosGroupBox := valPosPage,
+     
+      if(
+        valNrofGroupBoxes > 0,
+        Repeat( 
+          valNrofGroupBoxes,
+          do(
+            Inc(valCounterBox),
+            
+            valPosGroupBox := StringPos([edcontrol(groupbox:], Lowercase(strCode), valPosGroupBox + 1),
+            valPosEndGroupBox := StringPos([edcontrol], Lowercase(strCode), valPosGroupBox + 1),
+            strCodeGroupBox := StringCopy(strCode, valPosGroupBox, valPosEndGroupBox - valPosGroupBox),
+            valPos := StringPos([name =], Lowercase(strCode), valPosGroupBox),
+            valPosComma := StringPos([,], strCode, valPos),
+    
+            if(
+              StringPos(StringCopy(strCode, valPos, valPosComma - valPos), strFinalCode) = 0,
+              do(                       
+               
+                if( {**check of controls van de groupbox al onder groupbox staan. Zoja, bepaal einde van alle groupbox code**}
+                  StringPos([controls(], Lowercase(strCodeGroupBox)) = 0,                              
+                  do(                               
+                    valPosBracket := Gui_FindClosingBracket(12, strCodeGroupBox),
+                    {**Exclude closing bracket from code**}
+                    strFinalCode := 
+                    Concat(
+                      strFinalCode, 
+                      StringCopy(strCodeGroupBox, 1, valPosBracket - 1), 
+                      StringCopy(strCodeGroupBox, valPosBracket + 1, StringLength(strCodeGroupBox) - valPosBracket), 
+                      [Controls(], 
+                      CR, 
+                      LF
+                    )
+                  ),
+                  do(
+                    {**Add code of GroupBox up to first Control**}
+                    strFinalCode := Concat(strFinalCode, strCodeGroupBox),
+                    
+                    valPos := valPosGroupBox + 12, {exclude first bracket open}          
+                    {**Determine end of GroupBox**}                            
+                    valPosEndGroupBox := Gui_FindClosingBracket(valPos, strCode)
+                  )
+                ),
+                {********start Gui_CorrectionPerGroupBox********}
+                strFinalCode := Gui_CorrectionPerGroupBox(valPosGroupBox, valPosEndGroupBox, valPosPage, valPosEndofPage, strFinalCode, strCode)
+              )
+            )                                     
+          )
+        ),
+        {**No GroupBox found on Page**}
+        do(
+          valPos := StringPos([edcontrol(], Lowercase(strCode), valPosPage + 1),
+          strFinalCode := Concat(strFinalCode, StringCopy(strCode, valPos, valPosEndofPage - valPos), [,])
+        )
+      ),
+      {**Check if any standalone controls should be added to Page**}
+      valPosEDControl := StringPos([edcontrol], Lowercase(strCode), valPosPage + 1),
+      Repeat(
+        valNrofControls,
+        do(
+          valPosNextEDControl := StringPos([edcontrol], Lowercase(strCode), valPosEDControl + 1),
+          valPos := StringPos([name =], Lowercase(strCode), valPosEDControl),
+          valPosComma := StringPos([,], strCode, valPos),
+          strNameControl := StringCopy(strCode, valPos, valPosComma - valPos),
+          if(
+            StringPos(strNameControl, strFinalCode) = 0,
+            {**Add Control**}
+            if(
+              count = valNrofControls,
+              {**Last EDControl of page to be added, so exclude last two brackets**}            
+              strFinalCode := Concat(strFinalCode, StringCopy(strCode, valPosEDControl, valPosEndofPage - valPosEDControl), [,]),    
+              strFinalCode := Concat(strFinalCode, StringCopy(strCode, valPosEDControl, valPosNextEDControl - valPosEDControl))    
+            )
+          ),
+          valPosEDControl := valPosNextEDControl 
+        )
+      ),
+            
+      {**Search for last comma and delete it!! Add 2 closing brackets for SinglePage code**}        
+      valPosComma := 0,
+      Repeat(
+         SubstrCount(strFinalCode, [,]),
+         valPosComma := StringPos([,], strFinalCode, (valPosComma + 1))
+      ),
+      strFinalCode := Concat(StringCopy(strFinalCode, 1, valPosComma - 1), [))])      
+    )
+  ),
+  strFinalCode
+)
+], [Places controls of groupboxes in the groupbox, per page. 
+], [Enter Syntax Example], 0, [elroy deege]);
+DefineFunction([Gui_FindClosingBracket], [Various], 2, 2, [do(  var([valPos], vbValue, p(1)),  var([strCode], vbString, p(2)),    var([valNrofBracketsOpen], vbValue),  var([valNrofBracketsClose], vbValue),  var([valPosBracketClose], vbValue),  var([valPosBracketOpen], vbValue),   valNrofBracketsOpen := 1,  valNrofBracketsClose := 0,  {**Determine end of GroupBox**}          LoopUntil(    valNrofBracketsOpen = valNrofBracketsClose,    do(      valPosBracketOpen := StringPos([(], strCode, (valPos + 1)),      valPosBracketClose := StringPos([)], strCode, (valPos + 1)),      if(        valPosBracketOpen = 0,        {**No more Open Brackets found**}         valPosBracketOpen := valPosBracketClose + 1      ),       if(        valPosBracketClose = 0,        {**No more Closing Brackets found**}        valPosBracketClose := valPosBracketOpen + 1      ),      valPos := min(valPosBracketOpen, valPosBracketClose),       if(        valPosBracketOpen < valPosBracketClose,        Inc(valNrofBracketsOpen),        Inc(valNrofBracketsClose)      )           )  ),  valPosBracketClose)], [Returns position of closing bracket in string e2, starting search from e1.], [Enter Syntax Example], 0, [elroy deege]);
+DefineFunction([Gui_CorrectionPerGroupBox], [Various], 6, 6, [do(
+  var([valPosGroupBox], vbValue, p(1)),
+  var([valPosEndGroupBox], vbValue, p(2)),
+  var([valPosPage], vbValue, p(3)),
+  var([valPosEndofPage], vbValue, p(4)),
+  var([strFinalCode], vbString, p(5)),
+  var([strCode], vbString, p(6)),
+
+  var([strCodePage], vbString),
+  var([strCodeGroupBox], vbString),
+  var([strCodeGroupBoxInBox], vbString),
+  var([strCodeTemp], vbString),
+  var([strLocation], vbString), 
+  var([strCodeEDControl], vbString),  
+  
+  var([valPos], vbValue),
+  var([valPosComma], vbValue),
+  var([valPosBracket], vbValue),
+  var([valPosBracketOpen], vbValue),
+  var([valPosBracketClose], vbValue),
+  var([valPosLeft], vbValue),
+  var([valPosCommaLeft], vbValue),
+  var([valPosTop], vbValue),
+  var([valPosCommaTop], vbValue),
+                                              
+  var([valPosEDControl], vbValue),
+  var([valPosNextEDControl], vbValue),
+  var([valPosGroupBoxInBox], vbValue),
+  var([valPosEndGroupBoxInBox], vbValue),
+  var([valPosGroupBoxDummy], vbValue),
+  var([valPosEndGroupBoxDummy], vbValue),
+  var([valPosPanel], vbValue),
+  var([valPosEndPanel], vbValue),
+  var([valPosGroupBoxDummyInBox], vbValue),
+  var([valPosEndGroupBoxDummyInBox], vbValue),
+  var([valPosEDControlInBox], vbValue),
+  var([valPosNextEDControlInBox], vbValue),        
+  
+  var([valHeightBox], vbValue),
+  var([valLeftBox], vbValue),
+  var([valTopBox], vbValue),
+  var([valWidthBox], vbValue),
+  var([valLeft], vbValue),
+  var([valTop], vbValue),
+  var([valHeightBoxInBox], vbValue),
+  var([valLeftBoxInBox], vbValue),
+  var([valTopBoxInBox], vbValue),
+  var([valWidthBoxInBox], vbValue),
+  var([valLeftDiff], vbValue),
+  var([valTopDiff], vbValue),
+
+  var([valCounter], vbValue),
+  var([valControlCounter], vbValue),
+  var([valCounterBox], vbValue),
+  var([valCounterInBox], vbValue),
+  var([valControlCounterInBox], vbValue),
+  
+  var([valNrofControlsINGroupBoxInBox], vbValue),
+  var([valNrofControlsINGroupBox], vbValue),
+  var([valNrofControls], vbValue),
+
+  
+  strCodePage := StringCopy(strCode, valPosPage, valPosEndofPage - valPosPage),
+  valNrofControls := SubstrCount(Lowercase(strCodePage), [edcontrol]) - 1, {**Nr of Controls on Page; Excluding EDControl(Singlepage**}
+  strCodeGroupBox := StringCopy(strCode, valPosGroupBox, valPosEndGroupBox - valPosGroupBox + 1),
+ 
+  valPosNextEDControl := StringPos([edcontrol], Lowercase(strCode), valPosGroupBox + 1),
+  strLocation := Gui_DetermineLocation(StringCopy(strCode, valPosGroupBox, valPosNextEDControl - valPosGroupBox)),
+  valHeightBox := Value(StringPar(strLocation, 1)),
+  valLeftBox := Value(StringPar(strLocation, 2)),                
+  valTopBox := Value(StringPar(strLocation, 3)),                
+  valWidthBox := Value(StringPar(strLocation, 4)),                
+      
+  valPosEDControl := StringPos([edcontrol], Lowercase(strCode), valPosPage + 1),
+  valCounter := 0,
+  valControlCounter := 0,
+  valNrofControlsINGroupBox := SubstrCount(strCodeGroupBox, [EDControl]) - 1,
+  valPosEndGroupBoxDummy := 0,
+  valPosGroupBoxDummy := 0, 
+  valPosPanel := 0,
+  valPosEndPanel := 0,
+
+  Repeat(
+    valNrofControls,
+    do(                                  
+      Inc(valCounter),
+
+      valPosNextEDControl := StringPos([edcontrol], Lowercase(strCode), valPosEDControl + 1),
+      strCodeEDControl := StringCopy(strCode, valPosEDControl, valPosNextEDControl - valPosEDControl),
+      if(
+        and(
+          valPosEDControl > valPosGroupBox,
+          valPosEDControl < valPosEndGroupBox
+        ),                      
+        Inc(valControlCounter)
+      ),
+      
+      if(
+        and(
+          StringPos([groupbox], Lowercase(StringCopy(strCode, valPosEDControl, 20))) = 0,
+          StringPos([controls(], Lowercase(strCodeEDControl)) > 0                                                                                
+
+        ),
+        {**Control is not a groupbox, but does have controls of its own, like a panel**}
+        do(                        
+          valPos := valPosEDControl + 12, {exclude first bracket open}          
+          {**Determine end of Dummy GroupBox**}                                
+          valPosEndPanel := Gui_FindClosingBracket(valPos, strCode),
+          valPosPanel := valPosEDControl                            
+        )
+      ),
+
+      valPos := StringPos([name =], Lowercase(strCode), valPosEDControl),
+      valPosComma := StringPos([,], strCode, valPos),
+      if(
+        and(
+          valPosEDControl <> valPosGroupBox,
+          StringPos(StringCopy(strCode, valPos, valPosComma - valPos), strFinalCode) = 0,
+          Or(
+            valPosEDControl <= valPosPanel,
+            valPosEDControl > valPosEndPanel
+          )
+        ),
+        if(                        
+          and(
+            valPosEDControl > valPosGroupBox,
+            valPosEDControl < valPosEndGroupBox
+          ),
+          {**Control is already placed in GroupBox**}
+          if(
+            StringPos([groupbox], Lowercase(StringCopy(strCode, valPosEDControl, 20))) > 0,                          
+            do(
+              {**GroupBox IN Groupbox found; Start new loop for inner groupbox**}
+              valControlCounterInBox := 0,                            
+              valPosGroupBoxInBox := valPosEDControl,
+              valPosEndGroupBoxInBox := StringPos([edcontrol], Lowercase(strCode), valPosGroupBoxInBox + 1),
+              strCodeGroupBoxInBox := StringCopy(strCode, valPosGroupBoxInBox, valPosNextEDControl - valPosGroupBoxInBox),
+             
+              if( {**check if controls of groupboxInBox are already in groupboxInBox code. If so, determine end of groupboxInBox code**}
+
+                StringPos([controls(], Lowercase(strCodeGroupBoxInBox)) = 0,                              
+                do(                                
+                  valPosBracket := Gui_FindClosingBracket(12, strCodeGroupBoxInBox),
+                  {**Exclude closing bracket from code**}
+                  strFinalCode := 
+                  Concat(
+                    strFinalCode, 
+                    StringCopy(strCodeGroupBoxInBox, 1, valPosBracket - 1), 
+                    StringCopy(strCodeGroupBoxInBox, valPosBracket + 1, StringLength(strCodeGroupBoxInBox) - valPosBracket), 
+                    [Controls(], 
+                    CR, 
+                    LF
+                  )
+                ),
+                do(
+                  {**Add code of GroupBox up to first Control**}
+                  strFinalCode := Concat(strFinalCode, strCodeGroupBoxInBox),
+                                                  
+                  valPos := valPosGroupBoxInBox + 12, {exclude first bracket open}                                          
+                  valPosEndGroupBoxInBox := Gui_FindClosingBracket(valPos, strCode)  {position of closing bracket of "EDControl(GroupBox:"}             
+                )
+              ),
+              
+              strLocation := Gui_DetermineLocation(strCodeGroupBoxInBox),
+              valHeightBoxInBox := Value(StringPar(strLocation, 1)),
+              valLeftBoxInBox := Value(StringPar(strLocation, 2)),                
+              valTopBoxInBox := Value(StringPar(strLocation, 3)),                
+              valWidthBoxInBox := Value(StringPar(strLocation, 4)),  
+
+              valPosEDControlInBox := StringPos([edcontrol], Lowercase(strCode), valPosPage + 1),
+              valCounterInBox := 0,                            
+              valNrofControlsINGroupBoxInBox := SubstrCount(StringCopy(strCode, valPosGroupBoxInBox, valPosEndGroupBoxInBox - valPosGroupBoxInBox), [EDControl]) - 1,                            
+              valPosEndGroupBoxDummyInBox := 0,
+              valPosGroupBoxDummyInBox := 0, 
+  
+              Repeat(
+                valNrofControls,
+                do(                                
+                  Inc(valCounterInBox),
+                  valPosNextEDControlInBox := StringPos([edcontrol], Lowercase(strCode), valPosEDControlInBox + 1),
+                  
+                  if(
+                    and(
+                      valPosEDControlInBox > valPosGroupBoxInBox,
+                      valPosEDControlInBox < valPosEndGroupBoxInBox
+                    ),
+                    Inc(valControlCounterInBox)
+                  ),
+                  
+                  if(
+                    and(
+                      StringPos([groupbox], Lowercase(StringCopy(strCode, valPosEDControlInBox, 20))) = 0,
+                      StringPos([controls(], Lowercase(StringCopy(strCode, valPosEDControlInBox, valPosNextEDControlInBox - valPosEDControlInBox))) > 0                                                                                
+                    ),
+                    {**Control is not a groupbox, but does have controls of its own, like a panel**}
+                    do(                                    
+                      valPos := valPosEDControlInBox + 12, {exclude first bracket open}          
+                      {**Determine end of Dummy GroupBox**}                                            
+                      valPosEndPanel := Gui_FindClosingBracket(valPos, strCode),
+                      valPosPanel := valPosEDControlInBox                            
+                    )
+                  ),
+
+                  valPos := StringPos([name =], Lowercase(strCode), valPosEDControlInBox),
+                  valPosComma := StringPos([,], strCode, valPos),
+                  if(
+                    and(
+                      valPosEDControlInBox <> valPosGroupBoxInBox,
+                      StringPos(StringCopy(strCode, valPos, valPosComma - valPos), strFinalCode) = 0,
+                      Or(
+                        valPosEDControlInBox <= valPosPanel,
+                        valPosEDControlInBox > valPosEndPanel
+                      )
+                    ),
+                    {**Control is not in FinalCode yet**}
+                    if(
+                      and(
+                        valPosEDControlInBox > valPosGroupBoxInBox,
+                        valPosEDControlInBox < valPosEndGroupBoxInBox
+                      ),
+                      {******Control is placed in inner Groupbox******}                                    
+                      if(
+                        StringPos([controls(], Lowercase(StringCopy(strCode, valPosEDControlInBox, valPosNextEDControlInBox - valPosEDControlInBox))) = 0, 
+                        if(
+                          valControlCounterInBox = valNrofControlsINGroupBoxInBox,                                                                               
+                          strFinalCode := Concat(strFinalCode, StringCopy(strCode, valPosEDControlInBox, valPosEndGroupBoxInBox - 1 - valPosEDControlInBox), [,], CR, LF),                                                      
+                          strFinalCode := Concat(strFinalCode, StringCopy(strCode, valPosEDControlInBox, valPosNextEDControlInBox - valPosEDControlInBox))     
+                        ),
+                        {**Control is not a groupbox but does have other controls in it, like a panel**}
+                        strFinalCode := Concat(strFinalCode, StringCopy(strCode, valPosPanel, valPosEndPanel - valPosPanel), [,], CR, LF)                              
+                      ),
+                                                          
+                      {*****Control is not placed in inner Groupbox*****}
+                      do(
+                        if(
+                          and(
+                            StringPos([groupbox], Lowercase(StringCopy(strCode, valPosEDControlInBox, 20))) > 0,
+                            Or(
+                              valPosEDControlInBox < valPosGroupBoxDummyInBox,
+                              valPosEDControlInBox > valPosEndGroupBoxDummyInBox
+                            )
+                          ),
+                          do(
+                            valPos := valPosEDControlInBox + 12, {exclude first bracket open}          
+                            {**Determine end of Dummy GroupBox**}        
+                            valPosEndGroupBoxDummyInBox := Gui_FindClosingBracket(valPos, strCode),
+                            valPosGroupBoxDummyInBox := valPosEDControlInBox
+                          )
+                        ),                                      
+                                                                           
+                        {**Determine position of control**}                                                                                                                                  
+                        valPosLeft := StringPos([ Left =], strCode, valPosEDControlInBox) + 1,
+                        valPosCommaLeft := StringPos([,], strCode, valPosLeft),           
+                        valLeft := Value(StringCopy(strCode, valPosLeft + 7, valPosCommaLeft - valPosLeft - 7)),
+                                        
+                        valPosTop := StringPos([ Top =], strCode, valPosEDControlInBox) + 1,
+                        valPosCommaTop := StringPos([,], strCode, valPosTop),           
+                        valTop := Value(StringCopy(strCode, valPosTop + 6, valPosCommaTop - valPosTop - 6)),                                                                                                                                                                      
+                              
+                        if(
+                          Or(
+                            valPosEDControlInBox < valPosGroupBox,
+                            valPosEDControlInBox > valPosEndGroupBox
+                          ),
+                          {******Control is outside of outer GroupBox******}                                                                                                                
+                          if(
+                            Or(
+                              valPosEDControlInBox < valPosGroupBoxDummyInBox,
+                              valPosEDControlInBox > valPosEndGroupBoxDummyInBox
+                            ),                                                                                    
+                            if(
+                              and(
+                                valTop >= valTopBoxInBox + valTopBox,
+                                valTop <= valTopBoxInBox + valTopBox + valHeightBoxInBox,
+                                valLeft >= valLeftBoxInBox + valLeftBox,
+                                valLeft <= valLeftBoxInBox + valLeftBox + valWidthBoxInBox 
+                              ),                          
+                              do(                                                                                                                  
+                                {**Change location of control since its location is now measured from Groupbox**}
+                                if(
+                                  stringpos([)], StringCopy(strCode, valPosTop, (valPosCommaTop - valPosTop))) > 0,
+                                  strCodeTemp := 
+                                  Concat(
+                                    StringCopy(strCode, valPosEDControlInBox, valPosLeft + 7 - valPosEDControlInBox), 
+                                    string(valLeft - valLeftBoxInBox - valLeftBox), 
+                                    StringCopy(strCode, valPosCommaLeft, valPosTop + 6 - valPosCommaLeft), 
+                                    string(valTop - valTopBoxInBox - valTopBox), 
+                                    StringCopy(strCode, valPosCommaTop - 1, StringLength(strCode) - valPosCommaTop + 1)
+                                  ), 
+                                  strCodeTemp := 
+                                  Concat(
+                                    StringCopy(strCode, valPosEDControlInBox, valPosLeft + 7 - valPosEDControlInBox), 
+                                    string(valLeft - valLeftBoxInBox - valLeftBox), 
+                                    StringCopy(strCode, valPosCommaLeft, valPosTop + 6 - valPosCommaLeft), 
+                                    string(valTop - valTopBoxInBox - valTopBox), 
+                                    StringCopy(strCode, valPosCommaTop, StringLength(strCode) - valPosCommaTop)
+                                  )
+                                ),
+                                
+                                {**Add code of control to FinalCode**}
+                                valLeftDiff := StringLength(String(valLeft)) - StringLength(String(valLeft - valLeftBoxInBox - valLeftBox)), 
+                                valTopDiff := StringLength(String(valTop)) - StringLength(String(valTop - valTopBoxInBox - valTopBox)), 
+
+                                if(
+                                  StringPos([controls(], Lowercase(StringCopy(strCode, valPosEDControlInBox, valPosNextEDControlInBox - valPosEDControlInBox))) = 0,                         
+                                  if(
+                                    valCounterInBox = valNrofControls,                              
+                                    {**If last EDControl of page is to be added, then exclude last two brackets and add comma**}
+                                    strFinalCode := Concat(strFinalCode, StringCopy(strCodeTemp, 1, valPosEndofPage - valLeftDiff - valTopDiff - valPosEDControlInBox), [,]),                              
+                                    strFinalCode := Concat(strFinalCode, StringCopy(strCodeTemp, 1, valPosNextEDControlInBox - valLeftDiff - valTopDiff - valPosEDControlInBox))     
+                                  ),
+                                  {**Control is not a groupbox but does have other controls in it, like a panel**}
+                                  strFinalCode := Concat(strFinalCode, StringCopy(strCodeTemp, 1, valPosEndPanel - valLeftDiff - valTopDiff - valPosPanel + 1), [,], CR, LF)                              
+                                )   
+                              )                          
+                            )
+                          ),
+                          {******Control is in outer GroupBox but outside of inner Groupbox******}                                                                                                                 
+                                                                                       
+                          if(
+                            {**Check if control is not in another groupbox**}
+                            Or(
+                              valPosEDControlInBox < valPosGroupBoxDummyInBox,
+                              valPosEDControlInBox > valPosEndGroupBoxDummyInBox,
+                              valPosGroupBoxDummyInBox = valPosGroupBox 
+                            ),
+                            if(
+                              and(
+                                valTop >= valTopBoxInBox,
+                                valTop <= valTopBoxInBox + valHeightBoxInBox,
+                                valLeft >= valLeftBoxInBox,
+                                valLeft <= valLeftBoxInBox + valWidthBoxInBox 
+                              ),
+                              do(                                                                                                                  
+                                {**Change location of control since its location is now measured from inner Groupbox**}
+                                if(
+                                  stringpos([)], StringCopy(strCode, valPosTop, (valPosCommaTop - valPosTop))) > 0,
+                                  strCodeTemp := 
+                                  Concat(
+                                    StringCopy(strCode, valPosEDControlInBox, valPosLeft + 7 - valPosEDControlInBox), 
+                                    string(valLeft - valLeftBoxInBox), 
+                                    StringCopy(strCode, valPosCommaLeft, valPosTop + 6 - valPosCommaLeft), 
+                                    string(valTop - valTopBoxInBox), 
+                                    StringCopy(strCode, valPosCommaTop - 1, StringLength(strCode) - valPosCommaTop + 1)
+                                  ), 
+                                  strCodeTemp := 
+                                  Concat(
+                                    StringCopy(strCode, valPosEDControlInBox, valPosLeft + 7 - valPosEDControlInBox), 
+                                    string(valLeft - valLeftBoxInBox), 
+                                    StringCopy(strCode, valPosCommaLeft, valPosTop + 6 - valPosCommaLeft), 
+                                    string(valTop - valTopBoxInBox), 
+                                    StringCopy(strCode, valPosCommaTop, StringLength(strCode) - valPosCommaTop)
+                                  )
+                                ),
+                                
+                                {**Add code of control to FinalCode**}
+                                valLeftDiff := StringLength(String(valLeft)) - StringLength(String(valLeft - valLeftBoxInBox)), 
+                                valTopDiff := StringLength(String(valTop)) - StringLength(String(valTop - valTopBoxInBox)), 
+                                
+                                if(
+                                  StringPos([controls(], Lowercase(StringCopy(strCode, valPosEDControlInBox, valPosNextEDControlInBox - valPosEDControlInBox))) = 0,                         
+                                  if(
+                                    valCounterInBox = valNrofControls,                              
+                                    {**If last EDControl of page is to be added, then exclude last two brackets and add comma**}
+                                    strFinalCode := Concat(strFinalCode, StringCopy(strCodeTemp, 1, valPosEndofPage - 1 - valLeftDiff - valTopDiff - valPosEDControlInBox), [,]),                              
+                                    strFinalCode := Concat(strFinalCode, StringCopy(strCodeTemp, 1, valPosNextEDControlInBox - 1 - valLeftDiff - valTopDiff - valPosEDControlInBox))     
+                                  ),
+                                  {**Control is not a groupbox but does have other controls in it, like a panel**}
+                                  strFinalCode := Concat(strFinalCode, StringCopy(strCodeTemp, 1, valPosEndPanel - valLeftDiff - valTopDiff - valPosPanel + 1), [,], CR, LF)                              
+                                )   
+                              )
+                            )
+                          )
+                        )                           
+                      )
+                    )
+                  ),
+                  valPosEDControlInBox := valPosNextEDControlInBox  
+                )
+              ),                
+              {**Determine position of last closing bracket in FinalCode and delete it; add 2 closing brackets for inner Groupbox**}
+              valPosComma := 0,
+              Repeat(
+                 SubstrCount(strFinalCode, [,]),
+                 valPosComma := StringPos([,], strFinalCode, (valPosComma + 1))
+              ),
+              strFinalCode := Concat(StringCopy(strFinalCode, 1, valPosComma - 1), [)),], CR, LF)  
+            ),                          
+              {**Control is already placed in groupbox, but is not another groupbox**}                            
+            if(
+              StringPos([controls(], Lowercase(strCodeEDControl)) = 0,                              
+              if(
+                valControlCounter = valNrofControlsINGroupBox,                                                                               
+                strFinalCode := Concat(strFinalCode, StringCopy(strCode, valPosEDControl, valPosEndGroupBox - 1 - valPosEDControl), [,], CR, LF),                                                      
+                strFinalCode := Concat(strFinalCode, strCodeEDControl)     
+              ),
+              {**Control is not a groupbox but does have other controls in it, like a panel**}
+              strFinalCode := Concat(strFinalCode, StringCopy(strCode, valPosPanel, valPosEndPanel - valPosPanel), [,], CR, LF)                              
+            )                                                    
+          ),                  
+          do(
+            {**Control is not already placed in Groupbox**}
+            if(
+              and(
+                StringPos([groupbox], Lowercase(StringCopy(strCode, valPosEDControl, 20))) > 0,
+                Or(
+                  valPosEDControl < valPosGroupBoxDummy,
+                  valPosEDControl > valPosEndGroupBoxDummy
+                )
+              ),
+              do(
+                valPos := valPosEDControl + 12, {exclude first bracket open}          
+                {**Determine end of Dummy GroupBox**}                                      
+                valPosEndGroupBoxDummy := Gui_FindClosingBracket(valPos, strCode),
+                valPosGroupBoxDummy := valPosEDControl
+              )
+            ),                                                                
+            
+            if(
+              Or(
+                valPosEDControl < valPosGroupBoxDummy,
+                valPosEDControl > valPosEndGroupBoxDummy
+              ),
+              do(                                                                                         
+                {**Determine position of control**}                        
+                
+                valPosLeft := StringPos([ Left =], strCode, valPosEDControl) + 1,
+                valPosCommaLeft := StringPos([,], strCode, valPosLeft),           
+                valLeft := Value(StringCopy(strCode, valPosLeft + 7, valPosCommaLeft - valPosLeft - 7)),
+                                      
+                valPosTop := StringPos([ Top =], strCode, valPosEDControl) + 1,
+                valPosCommaTop := StringPos([,], strCode, valPosTop),           
+                valTop := Value(StringCopy(strCode, valPosTop + 6, valPosCommaTop - valPosTop - 6)),
+
+                {**Check if control belongs to GroupBox**}                        
+                if(
+                  and(
+                    valTop >= valTopBox,
+                    valTop <= valTopBox + valHeightBox,
+                    valLeft >= valLeftBox,
+                    valLeft <= valLeftBox + valWidthBox 
+                  ),                          
+                  do(                                                                                                                  
+                    {**Change location of control since its location is now measured from Groupbox**}
+                    if(
+                      stringpos([)], StringCopy(strCode, valPosTop, (valPosCommaTop - valPosTop))) > 0,
+                      strCodeTemp := 
+                      Concat(
+                        StringCopy(strCode, valPosEDControl, valPosLeft + 7 - valPosEDControl), 
+                        string(valLeft - valLeftBox), 
+                        StringCopy(strCode, valPosCommaLeft, valPosTop + 6 - valPosCommaLeft), 
+                        string(valTop - valTopBox), 
+                        StringCopy(strCode, valPosCommaTop - 1, StringLength(strCode) - valPosCommaTop + 1)
+                      ), 
+                      strCodeTemp := 
+                      Concat(
+                        StringCopy(strCode, valPosEDControl, valPosLeft + 7 - valPosEDControl), 
+                        string(valLeft - valLeftBox), 
+                        StringCopy(strCode, valPosCommaLeft, valPosTop + 6 - valPosCommaLeft), 
+                        string(valTop - valTopBox), 
+                        StringCopy(strCode, valPosCommaTop, StringLength(strCode) - valPosCommaTop)
+                      )
+                    ),
+                    
+                    {**Add code of control to FinalCode**}
+                    valLeftDiff := StringLength(String(valLeft)) - StringLength(String(valLeft - valLeftBox)), 
+                    valTopDiff := StringLength(String(valTop)) - StringLength(String(valTop - valTopBox)),
+                    
+                    if(
+                      StringPos([controls(], Lowercase(strCodeEDControl)) = 0,           
+                      if(
+                        valCounter = valNrofControls,                                                      
+                        {**If last EDControl of page is to be added, then exclude last two brackets and add comma**}
+                        strFinalCode := Concat(strFinalCode, StringCopy(strCodeTemp, 1, valPosEndofPage - valLeftDiff - valTopDiff - valPosEDControl), [,]),                              
+                        strFinalCode := Concat(strFinalCode, StringCopy(strCodeTemp, 1, valPosNextEDControl - valLeftDiff - valTopDiff - valPosEDControl))     
+                      ),
+                      {**Control is not a groupbox but does have other controls in it, like a panel**}
+                      strFinalCode := Concat(strFinalCode, StringCopy(strCodeTemp, 1, valPosEndPanel - valLeftDiff - valTopDiff - valPosPanel + 1), [,], CR, LF)                              
+                    )  
+                  )                          
+                ) 
+              )                    
+            )
+          )
+        )
+      ),
+      valPosEDControl := valPosNextEDControl
+    )
+  ),                
+  {**Determine position of last closing bracket in FinalCode and delete it; add 2 closing brackets for Groupbox**}
+  valPosComma := 0,
+  Repeat(
+     SubstrCount(strFinalCode, [,]),
+     valPosComma := StringPos([,], strFinalCode, (valPosComma + 1))
+  ),
+  strFinalCode := Concat(StringCopy(strFinalCode, 1, valPosComma - 1), [)),], CR, LF),                                     
+  strFinalCode
+)
+], [Enter helptext
+], [Enter Syntax Example], 0, [elroy deege]);
+Set(Icon(a), 
+	RegisterIcon(pDir([media\images\default.jpg]), [default.jpg]));
+SetMaterial(
+	RegisterMaterial([Default], 8421504, 8421504, 3289650, 0, 0.100000001490116, 0, false, false, 1, 0), 1, a);
+Set(Version(a), 7.3);
+SetTreeIcon(pDir([Media\Icons\Tools.ico]));
+Set(Info, [General
+------------
+Contains general Gui functions that er sued by Gui instances.
+
+
+Last Revision:
+---------------------
+February, 2008
+]);
+Set(DdbRec, [>t-nocreate:1.]);
+int001(21);
+SetSize(1, 1, 1);
+LockPosition(false);
+LockSize(false);
+DisableIconRotation(false);
+SetProductCode([]);
+CreateAttributes(6);
+SetAttributeName(r(1), [ScreenshotWidth]);
+SetAttributeName(r(2), [ScreenshotHeight]);
+SetAttributeName(r(3), [ScreenshotOffsetX]);
+SetAttributeName(r(4), [ScreenshotOffsetY]);
+SetAttributeName(r(5), [ScreenShotOffSet]);
+SetAttributeName(r(6), [ScreenshotScale]);
+SetAtt(r(1), 300);
+SetAtt(r(2), 300);
+SetAtt(r(3), 6);
+SetAtt(r(4), 7);
+SetAtt(r(5), 10000);
+SetAtt(r(6), 15);
+int024;
+Set(OnReset, [Gui_Screenshot2DAtomtoClipboard_Reset]);
+SetStatus(0);
+int018;
+int007;

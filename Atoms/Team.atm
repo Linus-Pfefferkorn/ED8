@@ -1,0 +1,248 @@
+
+
+{Preregister functions}
+
+PreregisterFunction([CallOperators], 2, 23);
+PreregisterFunction([FreeOperators], 2, 2);
+PreregisterFunction([t-sortoperatortasks], 2, 2);
+
+
+{Atom: Team}
+
+sets;
+BaseClass;
+CreateAtom(a, s, [], 1, false);
+int023([Team], 16711808, 4336);
+DefineFunction([CallOperators], [Various], 2, 23, [Do( If(  AtomExists(p(1)),  If(   p(2) > 0,   If(    p(2) > NrOC(p(1)),    If(     Not(Confirm(Concat(Name(i), [ selected too many operators at ], Name(c), [ and operators might never be released again. Continue simulation anyway?]))),     Stop    ),    Do(     sDdb([t-opnumber], p(2), c),     sDdb([t-messagemode], 1, p(1)),     CreateAtom(BaseClass, p(1), concat([Call by ], name(c))),     SetChannels(3, 0, Last(p(1))),     Connect(0, c, 1, Last(p(1))),     If(      AtomExists(First(c)),      Connect(0, First(c), 3, Last(p(1))),      Connect(0, c, 3, Last(p(1)))     ),     sDdb([t-calltime], Time, Last(p(1))),     sDdb([t-opnumber], p(2), Last(p(1))),     sDdb([t-opnumber2], p(2), Last(p(1))),          sDdb([t-priority], p(3), Last(p(1))),     sDdb([t-color], Color(c), Last(p(1))),     Set(Color(c),ColorRed),     Repeat(      20,      If(       StringLength(p(Count + 3)) > 0,       Do(        SetTable(nRows(Last(p(1))) + 1, 1, Last(p(1))),        SetCell(nRows(Last(p(1))),1,p(Count + 3))       )      )     ),     Repeat(      p(2) - nRows(Last(p(1))),      Do(       SetTable(nRows(Last(p(1))) + 1, 1, Last(p(1))),       SetCell(nRows(Last(p(1))), 1, [Anyone])      )     ),     SendMessageDirect(p(1), [], c)    )   )  ),  Do(   DisplayTracer,   Trace(Concat(Name(c), [: incorrect team reference in statement calloperators.]))  ) ))], [Calls e2 operators from team e1 to the current atom with priority e3. The current atom is set on hold and the operators are assigned to the first atom inside the current atom. If operator names e4 to e23 are not specified, then any operator can be assigned.], [CallOperators(in(2, c), 2, 1, [John], [James], [Jack])], 0, [Team.atm]);
+DefineFunction([FreeOperators], [Various], 2, 2, [Do( If(  AtomExists(p(1)),  If(   AtomExists(p(2)),   Do(    sDdb([t-messagemode], 2, p(1)),    SendMessageDirect(p(1),[],p(2))   ),   Do(    DisplayTracer,    Trace(Concat(Name(c), [: incorrect job reference in statement freeoperators.]))   )  ),  Do(   DisplayTracer,   Trace(Concat(Name(c), [: incorrect team reference in statement freeoperators.]))  ) ))], [Releases all operators of team e1 that have been assigned to atom e2 (e2 is typically 'i' if this statement is used at an exittrigger], [FreeOperators(in(2, c), i)], 0, [Team.atm]);
+DefineFunction([t-sortoperatortasks], [Transport], 2, 2, [Do(
+ {// Task that have already been assigned to operators must rank first to avoid deadlocks //}
+ sDdb([t-count], 0, c),
+ Repeat(
+  Content(c),
+  Do(
+   Setcs(Rank(Count, c)),
+   If(
+    Ddb([t-opnumber2], cs) <> Ddb([t-opnumber],cs),
+    Do(
+     sDdb([t-count], Ddb([t-count], c) + 1, c),
+     SetRank(Ddb([t-count], c), cs)
+    )
+   )
+  )
+ ),
+ 
+ {// The remaining tasks can now be sorted //}
+ Repeat(
+  -(Content(p(2)), 1),
+  Repeat(
+   -(Content(p(2)),1),
+   Do(
+    Setcs(Rank(Count, p(2))),
+    If(
+     And(
+      Ddb([t-opnumber2],cs) = Ddb([t-opnumber],cs),
+      p(1)
+     ),
+     SetRank(Count, Next(cs))
+    )
+   )
+  )
+ )
+)
+], [Sort tasks for operators], [Enter Syntax Example], 0, [Team.atm]);
+Set(Icon(a), 
+	RegisterIcon(IconsDir([bmp\atoms\queue.bmp]), [queue]));
+SetMaterial(
+	RegisterMaterial([Default], 8421504, 8421504, 3289650, 0, 0.100000001490116, 0, false, false, 1, 0), 1, a);
+Set(Version(a), 7.3);
+SetTreeIcon(pDir([Media\Icons\Team.ico]));
+Set(Info, [Last Revision:
+---------------------
+March, 2008
+]);
+Set(DdbRec, [>t999-dispatcher:1.]);
+int001(137);
+SetSize(6, 2, 0);
+LockPosition(false);
+LockSize(false);
+DisableIconRotation(false);
+SetProductCode([]);
+CreateAttributes(16);
+SetAttributeName(r(1), [dispatchto]);
+SetAttributeName(r(2), [joboffset]);
+SetAttributeName(r(3), [sortby]);
+SetAttributeName(r(4), [exittrigger]);
+SetAttributeName(r(5), [opseparate]);
+SetAttributeName(r(6), [opdistance]);
+SetAttributeName(r(7), [jobxoffset]);
+SetAttributeName(r(8), [jobyoffset]);
+SetAttributeName(r(9), [jobzoffset]);
+SetAttributeName(r(10), [curoc]);
+SetAttributeName(r(11), [prevoc]);
+SetAttributeName(r(12), [notused]);
+SetAttributeName(r(13), [notused]);
+SetAttributeName(r(14), [editmode]);
+SetAttributeName(r(15), [operator]);
+SetAttributeName(r(16), [occurrent]);
+SetExprAtt(r(1), [indexmatch(nroc(c),icopen(1,out(count,c)),true)]);
+SetExprAtt(r(3), [t-sortoperatortasks(>(ddb([t-priority],next(cs)),ddb([t-priority],cs)),c)]);
+SetAtt(r(5), 1);
+SetAtt(r(6), 1);
+SetExprAtt(r(7), [{.~1|1. Fixed offset --> always apply an offset of ~0~ meter.  .}0]);
+SetAtt(r(12), 1);
+SetAtt(r(14), 1);
+int024;
+int020(r(2), false, true);
+Set(OnEvent, [case(
+ eventcode,
+ {* 1: Set calling atom on hold *}
+ Do(
+  Status( i) := 30,      {* Waiting for Operator *}
+  DelayEvents( 1000000000000, i)
+ ),
+ {* 2: Look for an operator *}
+ Do(
+  occurrent := 0,
+  operator := 0,
+  LoopUntil(
+   occurrent > 0,
+   Do(
+    If(
+     Count = 1,
+     SetCs( First( c)),
+     SetCs( Next( cs))
+    ),
+    LoopUntil(
+     occurrent > 0,
+     If(
+      OcReady( Count, c),
+      Do(
+       occurrent := Count,
+       operator := IndexMatch( nRows( cs), Name( Out( occurrent, c)), Cell( Count, 1, cs)),
+       {* If no free operator is found *}
+       If(
+        operator = 0,
+        operator := IndexMatch( nRows( cs), [Anyone], Cell( Count, 1, cs))
+       ),
+       If(
+        operator > 0,
+        Do(
+         occurrent := Count,
+         Cell( operator, 1, cs) := [Assigned],
+         SendMessage( Count, ptv( cs), c)
+        ),
+        {* If no free operator is found *} 
+        occurrent := 0
+       )
+      )
+     ),
+     NrOc( c)
+    )
+   ),
+   Content( c)
+  )
+ ),
+ {* 3: Free operators that can be freed *}
+ Do(
+  Repeat(
+   NrOc( c),
+   If(
+    Label( [t-freeoperator], Out( Count, c)),
+    Do(
+     SetCs( Out( Count, c)),
+     Status( cs) := 1,     {* Idle *}
+     SetLabel( [t-freeoperator], 0, cs),
+     CreateEvent( 0, cs, 5)
+    )
+   )
+  ),
+  CreateEvent( 0, c, 2, -1)
+ )
+)
+]);
+Set(OnExited, [If( Content( c) = 0, CloseAllOc( c))]);
+Set(OnCreation, [SetLabel( [t-team], 1, c)]);
+Set(OnReset, [Do(
+ ForAtomLayerUnder(
+  c,
+  Do(
+   SetCs,
+   Color( In( 1, cs)) := Label( [t-color], cs),
+   DestroyAtom( cs)
+  )
+ ),
+
+ SetTable( 0, 0, c),
+ Repeat(
+  NrOc( c),
+  If(
+   And(
+    AtomExists( Out( Count, c)),
+    Label( [t-operator], Out( Count, c))
+   ),
+   Do(
+    SetTable( nRows( c) + 1, 1, c),
+    Cell( nRows( c), 1, c) := ptv( Out( Count, c))
+   )
+  )
+ ),
+
+ SetChannels( 0, Max( nRows( c), 1), c),
+ Repeat(
+  nRows( c),
+  Connect( Count, c, 1, vtp( Cell( Count, 1, c)))
+ ),
+ SetTable( 0, 0, c)
+)
+
+]);
+Set(OnUser, [Do(
+  { Delete any current instances of this form.} 
+  GuiDestroy([Team]),
+
+  { Register the GUI-form for this atom.}
+  GuiRegister(PDir([\Atoms\Team.gui]), 1),
+
+  { Show the GUI-form.}
+   GuiCreate([Team], [Team], 0, c, 0, 1)
+)
+]);
+Set(On2DDraw, [Draw2DIcon(3, Name(c), String(Content(c)))]);
+Set(OnMessage, [Case(
+ Label( [t-messagemode], c),
+ {* Case 1: Call an operator *}
+ Do(
+  sortby,
+  CreateEvent( 0, c, 1, 1000000, i),
+  Createevent( 0, c, 2, -1000000)
+ ),
+ {* Case 2: Get operator ready for being freed *}
+ Do(
+  Repeat(
+   NrOc( c),
+   If(
+    AtomExists( Out( Count, c)),
+    Do(
+     SetCs( Out( Count, c)),
+     If(
+      And(
+       AtomExists( In( 3, cs)),
+       AtomId( In( 3, cs)) = AtomId( i)
+      ),
+      Do(
+       SetLabel( [t-freeoperator], 1, cs),
+       Connect( 0, cs, 2, cs),
+       Connect( 0, cs, 3, cs)
+      )
+     )
+    )
+   )
+  ),
+  CreateEvent( 0, c, 3)
+ )
+)
+]);
+SetStatus(0);
+int018;
+int007;

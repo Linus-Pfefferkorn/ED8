@@ -1,0 +1,73 @@
+
+
+{Atom: Fast Queue FIFO}
+
+sets;
+BaseClass;
+CreateAtom(a, s, [], 1, false);
+int023([Fast Queue FIFO], 4886135, 248);
+Set(Icon(a), 
+	RegisterIcon(IconsDir([bmp\atoms\queue.bmp]), [queue]));
+SetMaterial(
+	RegisterMaterial([Default], 8421504, 8421504, 3289650, 0, 0.100000001490116, 0, false, false, 1, 0), 1, a);
+Set(Version(a), 7.3);
+SetTreeIcon(pDir([Media\Icons\FastQueueFifo.ico]));
+Set(Info, [First in first out queue.
+
+General
+------------
+Atoms that enter are sent out immediately if the output is open. If 
+not, the atoms are stored in the queue, until output is open. Uses 
+FIFO queue discipline. The maximum queue capacity can be set, if 
+the queue is full, input is closed. The user can define a trigger on 
+entry and a trigger on exit.
+
+Channels:
+--------------
+N inputchannels, N outputchannels
+
+Statuses:
+--------------
+  13 - Empty
+  15 - Not Empty
+  14 - Full
+
+Rightclick:
+  Edit queue capacity, select output, trigger on entry, trigger on exit
+
+Last Revision:
+---------------------
+March, 2008
+]);
+SetChannels(1, 1);
+SetChannelRanges(1, 255, 1, 255);
+int001(122);
+SetSize(5, 2, 0);
+LockPosition(false);
+LockSize(false);
+DisableIconRotation(false);
+SetProductCode([]);
+CreateAttributes(4);
+SetAttributeName(r(1), [sendto]);
+SetAttributeName(r(2), [capacity]);
+SetAttributeName(r(3), [entrytrigger]);
+SetAttributeName(r(4), [exittrigger]);
+SetExprAtt(r(1), [1]);
+SetAtt(r(2), 10);
+int024;
+Set(OnEvent, [case(eventcode,
+ openalloc(c),
+ openallic(c)
+)
+]);
+Set(OnEntered, [do( if(>=(content(c),att(2,c)),do(closeallic(c),setstatus(14,c)),setstatus(15,c)), att(3,c), createevent(0,c,1))]);
+Set(OnExited, [do( closealloc(c), if(=(content(c),0),  setstatus(13,c),  do(setstatus(15,c),createevent(0,c,1)) ), att(4,c), if(<(content(c),att(2,c)),createevent(0,c,2)))]);
+Set(OnCreation, [autoconnect]);
+Set(OnReset, [do( setstatus(13,c), closealloc(c))]);
+Set(OnUser, [Do(  { Delete any current instances of this form.}   GuiDestroy([FastQueue]),  { Register the GUI-form for this atom.}  GuiRegister(PDir([\Atoms\FastQueue.gui]), 1),  { Show the GUI-form.}   GuiCreate([FastQueue], [FastQueue], 0, c, 0, 1))]);
+Set(OnOcReady, [if( >(content(c),0), moverequest(first(c),att(1,c)))]);
+Set(On2DDraw, [do( standarddisplay(name,string(content),icon), repeat(  min(xsize(c),content(c)),  do(if(=(count,1),first(c),next(cs)),setcs,dibmp(-(xsize(c),*(count,/(-(xsize(c),2),min(att(2,c),xsize(c))))),1,icon,1,5,1,1)) ))]);
+Set(On3DDraw, [repeat( min(xsize(c),content(c)), do(  setcs(if(count,first(c),next(cs))),  setloc(-(xsize(c),count),0,0,cs) ))]);
+SetStatus(0);
+int018;
+int007;

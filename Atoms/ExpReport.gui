@@ -1,0 +1,103 @@
+EDControl(EditForm:
+  Caption = str('Results Table'),
+  Height = 506,
+  Name = str('frmReport'),
+  Position = DesktopCenter,
+  ShowHint = True,
+  Top = 288,
+  Visible = False,
+  Width = 395,
+  Controls(
+    EDControl(Panel:
+      Align = Bottom,
+      Anchors = set(Left,Right,Bottom),
+      BevelOuter = None,
+      Caption = str(''),
+      Height = 80,
+      Left = 0,
+      Name = str('pnButtons'),
+      TabOrder = 1,
+      Top = 390,
+      Width = 395,
+      Controls(
+        EDControl(Button:
+          Anchors = set(Left,Bottom),
+          Caption = str('&Help'),
+          Left = 8,
+          Name = str('btnHelp'),
+          TabOrder = 1,
+          Top = 8,
+          Events(
+            Click = str('exec(pdir([Help\Experimentation.PDF]))'#13))),
+        EDControl(Button:
+          Anchors = set(Right,Bottom),
+          Caption = str('P&rint'),
+          Enabled = False,
+          Left = 144,
+          Name = str('btnPrint'),
+          TabOrder = 2,
+          Top = 8,
+          Visible = False,
+          Events(
+            Click = str('ReportPrintReport'#13))),
+        EDControl(Button:
+          Anchors = set(Right,Bottom),
+          Caption = str('Save as .csv'),
+          Hint = str('Will save the report to a comma separated values file'),
+          Left = 230,
+          Name = str('btnSaveToText'),
+          TabOrder = 3,
+          Top = 7,
+          Events(
+            Click = str('do('#13' '#13'set(t,makefilename(getfilesave(workdir([Report.csv]),[CSV (Comma delimited) (*.csv)|*.csv]),[.csv])),'#13'   if('#13'    and('#13'     not(comparetext(t,[])),'#13'     or('#13'      not(fileexists(t)),'#13'      do('#13'       set(v,confirmync([Overwrite file])),'#13'       =(v,1)'#13'      )'#13'     )'#13'    ),'#13'    GuiControl([tbReport],GUISaveTableToFileExcel(t))'#13'   ) '#13')'#13#13))),
+        EDControl(Button:
+          Anchors = set(Right,Bottom),
+          Caption = str('&Preview'),
+          Default = True,
+          Left = 312,
+          Name = str('btnPreview'),
+          TabOrder = 4,
+          Top = 7,
+          Events(
+            Click = str('ReportPreviewReport'#13))),
+        EDControl(Button:
+          Anchors = set(Left,Bottom),
+          Cancel = True,
+          Caption = str('&Close'),
+          Left = 8,
+          Name = str('btnClose'),
+          TabOrder = 5,
+          Top = 45,
+          Events(
+            Click = str('GuiDestroy'#13))))),
+EDControl(Panel:
+      Align = Client,
+      Anchors = set(Left,Top,Right,Bottom),
+      Caption = str('Panel1'),
+      Height = 390,
+      Left = 0,
+      Name = str('Panel1'),
+      TabOrder = 2,
+      Top = 0,
+      Width = 395,
+      Controls(
+        EDControl(Table:
+          Anchors = set(Left,Top,Right,Bottom),
+          ColCount = 1,
+          FixedCols = 0,
+          FixedRows = 0,
+          Height = 420,
+          Left = 1,
+          Name = str('tbReport'),
+          Options = set(VertLine,HorzLine,RangeSelect,RowSizing,ColSizing),
+          RowCount = 1,
+          SelectionColEnd = 0,
+          SelectionColStart = 0,
+          SelectionRowEnd = 0,
+          SelectionRowStart = 0,
+          TabOrder = 1,
+          Top = 3,
+          Width = 392)))),
+  Events(
+    Destroy = str('Label([OutputDir],refExperimentSupport) := 0'#13)))
+

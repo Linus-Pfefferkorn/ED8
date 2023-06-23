@@ -1,0 +1,259 @@
+
+
+{Preregister functions}
+
+PreregisterFunction([MovieDirector_SetHeaders], 1, 1);
+
+
+{Atom: Movie Director}
+
+sets;
+BaseClass;
+CreateAtom(a, s, [], 1, false);
+Set(OnInit, [do( dim([rotation], vbValue, 0), dim([traveltime2], vbValue, 0), dim([PosCounter], vbValue, 0), dim([recorder], vbAtom),  { variables for the table } dim([AVI_COLUMN_SCALE], vbValue, 1), dim([AVI_COLUMN_VIEWX], vbValue, 2), dim([AVI_COLUMN_VIEWY], vbValue, 3), dim([AVI_COLUMN_VIEWZ], vbValue, 4), dim([AVI_COLUMN_YAW], vbValue, 5), dim([AVI_COLUMN_PITCH], vbValue, 6), dim([AVI_COLUMN_SPEED], vbValue, 7), dim([AVI_COLUMN_SPEED_GRADES], vbValue, 8), dim([AVI_COLUMN_STAYTIME], vbValue, 9), dim([AVI_NUMBEROFCOLUMNS], vbValue, 9))]);
+int023([Movie Director], 0, 1250);
+DefineFunction([MovieDirector_SetHeaders], [Various], 1, 1, [do( var([atmTable], vbAtom, p(1)),  SetTable(if(nRows(atmTable) > 0, nRows(atmTable), 1), AVI_NUMBEROFCOLUMNS, atmTable), SetCell(0, 0, [Pos], atmTable), SetCell(0, AVI_COLUMN_SCALE, [Scale], atmTable), SetCell(0, AVI_COLUMN_VIEWX, [View X], atmTable), SetCell(0, AVI_COLUMN_VIeWY, [View Y], atmTable), SetCell(0, AVI_COLUMN_VIEWZ, [View Z], atmTable), SetCell(0, AVI_COLUMN_YAW, [Yaw], atmTable), SetCell(0, AVI_COLUMN_PITCH, [Pitch], atmTable), SetCell(0, AVI_COLUMN_SPEED, concat([Speed ], sbo, [m/s], sbc), atmTable), SetCell(0, AVI_COLUMN_SPEED_GRADES, concat([Speed ], sbo, [degr/s], sbc), atmTable), SetCell(0, AVI_COLUMN_STAYTIME, [Staytime [s]], atmTable))], [Set the headers for the table.], [MovieDirector_SetHeaders(c)], 0, [Movie Director.atm]);
+Set(Icon(a), 
+	RegisterIcon(pDir([media\images\default.jpg]), [default.jpg]));
+SetMaterial(
+	RegisterMaterial([Default], 8421504, 8421504, 3289650, 0, 0.100000001490116, 0, false, false, 1, 0), 1, a);
+Set(Version(a), 0);
+SetTreeIcon(pDir([Media\Icons\AVI Creator.ico]));
+int001(215);
+SetSize(7, 2, 1);
+LockPosition(false);
+LockSize(false);
+DisableIconRotation(false);
+SetProductCode([]);
+CreateAttributes(17);
+SetAttributeName(r(1), [avifilename]);
+SetAttributeName(r(2), [refreshrate]);
+SetAttributeName(r(3), [frames]);
+SetAttributeName(r(4), [starttime]);
+SetAttributeName(r(5), [endtime]);
+SetAttributeName(r(6), [openflag]);
+SetAttributeName(r(7), [interval]);
+SetAttributeName(r(8), [create]);
+SetAttributeName(r(9), [speed]);
+SetAttributeName(r(10), [degr]);
+SetAttributeName(r(11), [showfly]);
+SetAttributeName(r(12), [useendtime]);
+SetAttributeName(r(13), [repeatTable]);
+SetAttributeName(r(14), [Scale]);
+SetAttributeName(r(15), [DefSpeed]);
+SetAttributeName(r(16), [TurnSpeed]);
+SetAttributeName(r(17), [DefStay]);
+SetTextAtt(r(1), [workdir([avi1.avi])]);
+SetAtt(r(2), 35);
+SetAtt(r(3), 35);
+SetExprAtt(r(4), [mins(3.5)]);
+SetExprAtt(r(5), [mins(10)]);
+SetAtt(r(7), 1);
+SetExprAtt(r(9), [0.3]);
+SetExprAtt(r(10), [3]);
+int024;
+Set(OnEvent, [do(
+ 
+ var([valSpeed], vbValue),
+ var([valSpeedGrades], vbValue),
+ 
+ case(
+  EventCode,
+  { Case 1. Start movie }
+  do(
+   Run,
+   openflag := 1,
+   c.usedAnimEngine := ActiveAnimEngine,
+   AviCreateStart(avifilename, att([frames], c), c.usedAnimEngine),
+   CreateEvent(0, c, 2)
+  ),
+  
+  { Case 2. Capture frames }
+  do(
+   UpdateAnimator(c.usedAnimEngine),
+   AviCreateFrame(c.usedAnimEngine),
+   if(
+    Time < if(and(useendtime, showfly), Time + 1, endtime),
+    CreateEvent(interval, c, 2),
+    if(
+     not(useendtime),
+     CreateEvent(0, c, 3)
+    )
+   )
+  ),
+  
+  { Case 3. End of Movie }
+  do(
+   DestroyEventsOfAtom(c, 2),
+   if(
+    openflag,
+    Do(
+     AviCreateStop(c.usedAnimEngine),
+     Msg([Stopped recording AVI.], 1),
+     Stop
+    ),
+    Msg([Flight completed], 1)
+   ),
+   openflag := 0
+  ),
+ 
+  { Case 4. Start movement }
+  do(   
+   if(
+    nRows(c) > 0,
+    do(
+     SetCameraType(CT_FREEHAND),
+     
+     valSpeed := cell(PosCounter, AVI_COLUMN_SPEED, c, 1),
+     valSpeedGrades := Cell(PosCounter, AVI_COLUMN_SPEED_GRADES, c, 1),
+     
+     { We have to prevent valSpeed and valSpeedGrades from beeing 0, because they are used as a denominator. }
+     if(
+      valSpeed = 0,
+      valSpeed := 0.1
+     ),
+     
+     if(
+      valSpeedGrades = 0,
+      valSpeedGrades := 0.1
+     ),
+     
+     FlyTo(
+      Cell(PosCounter, AVI_COLUMN_VIEWX, c), 
+      Cell(PosCounter, AVI_COLUMN_VIEWY, c), 
+      Cell(PosCounter, AVI_COLUMN_VIEWZ, c),
+     
+      AngleXY+
+      do(
+       rotation := mod(360 + Cell(PosCounter, AVI_COLUMN_YAW, c, 1) - AngleXY, 360),
+       if(
+        rotation > 180, rotation - 360, rotation)
+      ),
+     
+      AngleZ+
+      do(
+       rotation := Mod(360 + Cell(PosCounter, AVI_COLUMN_PITCH, c, 1) - AngleZ, 360),
+       if(rotation > 180, rotation - 360, rotation)
+      ),
+     
+      traveltime2 :=  
+      max(
+       max(
+        /(
+         ViewerDist(Cell(PosCounter, AVI_COLUMN_VIEWX, c, 1) - xLoc(c), 
+         Cell(PosCounter, AVI_COLUMN_VIEWY, c, 1) - yLoc(c), 
+         Cell(PosCounter, AVI_COLUMN_VIEWZ, c, 1) - zLoc(c)),
+         valSpeed
+        ),
+     
+      do(
+       rotation := mod(360 + Cell(PosCounter, AVI_COLUMN_YAW, c, 1) - AngleXY, 360),
+       /( 
+        if(
+         rotation > 180,
+         360 - rotation,
+         rotation
+        ),
+        valSpeedGrades
+       )
+      )
+     ),
+   
+     do(
+      rotation := mod(360 + Cell(PosCounter, AVI_COLUMN_PITCH, c, 1) - AngleZ, 360),
+      /(
+       if(
+        rotation > 180,
+        rotation - 360,
+        rotation
+       ),
+       valSpeedGrades
+      )
+     )
+    ),
+   
+    0, 
+    0, 
+    TU_SIMSECONDS
+   ),
+  
+   traveltime2 := traveltime2 + cell(PosCounter, AVI_COLUMN_STAYTIME, c),
+ 
+   inc(PosCounter),
+   
+   if(
+    PosCounter <= nRows(c),
+    CreateEvent(traveltime2, c, 4),
+    if(
+     useendtime,
+     CreateEvent(traveltime2, c, 3),
+     if(
+      repeatTable,
+      do(
+       PosCounter := 1,
+       CreateEvent(traveltime2, c, 4)
+      )
+     )
+    )
+   )
+  ),
+  FlyTo(ViewX, ViewY, ViewZ, AngleXY, AngleZ)
+  )
+  )
+ )
+)
+
+]);
+Set(OnCreation, [do( cs := c, LoopUntil(  up(cs) = Main,  cs := up(cs) ),  if(  cs = model, { not to be executed if situated in library }  if(   AtomExists(recorder),   do(    msg([Model can only contain one recorder at the time], 3),
+	OnDestruction(c) := [ ],    DestroyAtom(c)   ),      { Set headers of table }   do(    recorder := c,    MovieDirector_SetHeaders(recorder)   )  ) ))]);
+Set(OnDestruction, [Do( if(  active3d > 0,  Do(   SetActive3D(active3d),   DestroyEventsOfAtom(recorder, 4),   FlyTo(ViewX, ViewY, ViewZ, AngleXY, AngleZ)  ) ), if(  openflag,  AviCreateStop(c.usedAnimEngine) ), if(  MenuExists([Recorder]),  DeleteMenu([Recorder]) ), HideButton(99, 1), HideSpeedBar(99), recorder := 0)]);
+Set(OnReset, [do(
+  recorder := c,
+ 
+  { 1: If the user presses reset while a movie is created, then stop recording. }
+  if(
+   openflag,
+  do(
+   AviCreateStop(c.usedAnimEngine),
+   openflag := 0
+    )
+   ),
+   
+  { 2: Stop current movement }
+  SetActive3D(active3d),
+  DestroyEventsOfAtom(recorder, 4),
+   
+  { 3: Initialize movie creation }
+  if(
+    create,
+    CreateEvent(starttime, c, 1)
+   ),
+   
+  { 4: Prepare movement if 'Use Flight positions' is set }
+  if(
+    showfly,
+    if(                     
+      nRows(c) <= 0,              { If table is empty, give out a warning }
+      msg([Remember to set camera positions!], 1),
+      do(                         { otherwise prepare and start movement }
+         PosCounter := 1,         { fly to start position stored in the first table entry }
+
+         ViewX := Cell(1, AVI_COLUMN_VIEWX, recorder),
+         ViewY := Cell(1, AVI_COLUMN_VIEWY, recorder),
+         ViewZ := Cell(1, AVI_COLUMN_VIEWZ, recorder),
+         AngleXY := Cell(1, AVI_COLUMN_YAW, recorder),
+         AngleZ := Cell(1, AVI_COLUMN_PITCH, recorder),
+
+         FlyTo(ViewX, ViewY, ViewZ, AngleXY, AngleZ),
+
+         CreateEvent(starttime, c, 4)     { Trigger Event 4 for movements }
+        )
+     ) 
+    )
+)
+]);
+Set(OnUser, [Do( { Delete any current instances of this form.}  GuiDestroy([frmMovieDirector]),  { Register the GUI-form for this atom.} GuiRegister(PDir([\Atoms\MovieDirector.gui]), 1),  { Show the GUI-form.} GuiCreate([frmMovieDirector], [frmMovieDirector], 0, c, 0, 1))]);
+Set(On2DDraw, [draw2dicon(3, [Movie Director])]);
+SetStatus(0);
+int018;
+int007;

@@ -1,0 +1,133 @@
+
+
+{Atom: Speedometer}
+
+sets;
+BaseClass;
+CreateAtom(a, s, [], 1, false);
+Set(OnInit, [Do( GuiRegister(PDir([\Atoms\SpeedoMeter.gui]), 1) {dim([refdisplayforklift],vbAtom)})]);
+int023([Speedometer], 0, 1064);
+Set(Icon(a), 
+	RegisterIcon(pDir([media\images\default.jpg]), [default.jpg]));
+SetMaterial(
+	RegisterMaterial([Default], 8421504, 8421504, 3289650, 0, 0.100000001490116, 0, false, false, 1, 0), 1, a);
+Set(Version(a), 7.3);
+SetTreeIcon(pDir([Media\Icons\Tools.ico]));
+Set(Info, [Last Revision:
+---------------------
+March, 2008
+]);
+Set(DdbRec, [>y1start:0.5.>t-nocreate:1.]);
+SetChannels(1, 0);
+SetChannelRanges(1, 100, 0, 0);
+int001(82);
+int013(1, 0, true, true, 0, 0, [To input], []);
+SetSize(50, 11, 1);
+LockPosition(true);
+LockSize(true);
+DisableIconRotation(false);
+SetProductCode([]);
+CreateAttributes(17);
+SetAttributeName(r(1), [monheight]);
+SetAttributeName(r(2), [monwidth]);
+SetAttributeName(r(3), [temp1]);
+SetAttributeName(r(4), [Refreshrate]);
+SetAttributeName(r(5), [Rotation]);
+SetAttributeName(r(6), [BatteryDisplay]);
+SetAttributeName(r(7), [col_tachoshape]);
+SetAttributeName(r(8), [col_tachocircle_in]);
+SetAttributeName(r(9), [col_tachocircle_line]);
+SetAttributeName(r(10), [col_scaling]);
+SetAttributeName(r(11), [col_needle]);
+SetAttributeName(r(12), [col_chart_bar]);
+SetAttributeName(r(13), [col_chart_barline]);
+SetAttributeName(r(14), [col_chart_shape]);
+SetAttributeName(r(15), [Speedunit]);
+SetAttributeName(r(16), [Speedfactor]);
+SetAttributeName(r(17), [SpeedoNumber]);
+SetExprAtt(r(1), [10]);
+SetExprAtt(r(2), [0.5]);
+SetExprAtt(r(3), [2]);
+SetExprAtt(r(4), [0.2]);
+SetExprAtt(r(6), [2]);
+SetExprAtt(r(7), [ColorSilver]);
+SetExprAtt(r(8), [ColorWhite]);
+SetExprAtt(r(9), [ColorBlack]);
+SetExprAtt(r(10), [ColorBlack]);
+SetExprAtt(r(11), [ColorRed]);
+SetExprAtt(r(12), [ColorBrown]);
+SetExprAtt(r(13), [ColorBlue]);
+SetExprAtt(r(14), [ColorBlack]);
+SetAtt(r(15), 1);
+SetExprAtt(r(16), [1.609344]);
+int024;
+SetTable(30, 8);
+int015(0, 64, [ 
+1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+20
+21
+22
+23
+24
+25
+26
+27
+28
+29
+30
+]);
+int015(1, 64, [`Time`
+]);
+int015(2, 64, [`Current Speed`
+]);
+int015(3, 64, [`X-location`
+]);
+int015(4, 64, [`Calc. X-loc`
+]);
+int015(5, 64, [`Y-location`
+]);
+int015(6, 64, [`Calc. Y-loc`
+]);
+int015(7, 64, [`Calc. XY-loc`
+]);
+int015(8, 64, [`Angular Speed`
+]);
+Set(OnEvent, [case(     EventCode,  {Event 1} do(   {/ Refresh table values (oldest gets dismissed _ free space for new one in first row}   repeat(    29,    do(      setcell(-(31,count),1,cell(-(30,count),1,c),c),      setcell(-(31,count),2,cell(-(30,count),2,c),c),      setcell(-(31,count),3,cell(-(30,count),3,c),c),      setcell(-(31,count),4,cell(-(30,count),4,c),c),      setcell(-(31,count),5,cell(-(30,count),5,c),c),      setcell(-(31,count),6,cell(-(30,count),6,c),c),      setcell(-(31,count),7,cell(-(30,count),7,c),c),      setcell(-(31,count),8,cell(-(30,count),8,c),c)          )    ),          {/ Set table value _ current entry always in first row!}    {// Time}   setcell(1,1,Time,c),                          {// X-location}       SetCell(1,3,Round(xLoc(in(1,c)) ,2),c),   if(     Cell(2,1,c)=0,     SetCell(1,4,0,c),     SetCell(1,4,Round(Cell(1,3,c)-Cell(2,3,c), 2),c)     ),                  {// Y-location}   SetCell(1,5,Round(yLoc(in(1,c)) ,2),c),   if(     Cell(2,1,c)=0,     SetCell(1,6,0,c),     SetCell(1,6,Round(Cell(1,5,c)-Cell(2,5,c), 2),c)     ),                  {// XY-location}   SetCell(1,7,Round(Sqrt(Sqr(Cell(1,4,c)) + Sqr(Cell(1,6,c))), 2),c),         {// Current Speed}   SetCell(1,2,Round(Cell(1,7,c)/Refreshrate, 1),c),        {// Angular Speed}   SetCell(1,8, Cell(1,2,c)*3.6*9), {"3.6" for km/h and "9" factor for degrees}   SetAtt([Rotation],Cell(1,8,c)),           {/ Refresh current location and speed variables - prepare setting of new speed value}   CreateEvent(Refreshrate,c,1)      ),  {Event 2} do(   0   )     ) ]);
+Set(OnDestruction, [GuiDestroy([SpeedoMeter])]);
+Set(OnReset, [do(  {Destroy all values in table}  EmptyTable(c,30,8),    {Labels}  c.starttracking:=0,    {Attributes}  Rotation:=0    )]);
+Set(OnUser, [do(
+ { Delete any current instances of this form.} 
+ {GuiDestroy([SpeedoMeter]),}
+
+ { Register the GUI-form for this atom.}
+ {GuiRegister(PDir([\Atoms\SpeedoMeter.gui]), 1),}
+
+ { Show the GUI-form.}
+ {GuiCreate([SpeedoMeter], [SpeedoMeter], 0, c, 0, 1)}
+ 
+ GuiCreate([SpeedoMeter],concat(name(in(1,c)), [ Status]),1,c,0,1)
+)
+]);
+Set(On2DDraw, [if( and(   AtomExists(in(1,c)),   discale>7   ), do(    {1. Battery indicator}   {housing & current percentages}  DrawRectangle(39.5,-10, 42,   -9, ColorLightGray,ColorLightGray),  DrawRectangle(39.5,  0, 42,    2, ColorLightGray,ColorLightGray),  DrawRectangle(39.5, -9, 40,    1, ColorLightGray,ColorLightGray),  DrawRectangle(41.5, -9, 42,    1, ColorLightGray,ColorLightGray),  DrawRectangle(40, -9.5, 41.5,0.5, ColorWhite,ColorWhite),  diText(39.6,0.7,concat(string(round(att([Batt_CurPercentage],in(1,c)))),[%]),ColorBlack,ColorTransparent,0.7, [Arial] ),    if(    BatteryDisplay=1,    {/ 1a : battery display - mode1}    do(                     if(        round(att([Batt_CurPercentage],in(1,c)))>30,        diShape(40, 0.5, 1.5, -0.1*round(att([Batt_CurPercentage],in(1,c))),0,ColorBlack, ColorGreen),        diShape(40, 0.5, 1.5, -0.1*round(att([Batt_CurPercentage],in(1,c))),0,ColorBlack, ColorRed)        )      ),    {/ 1b : battery display - mode2}    do(      c.stepcounter:= round(att([batt_curpercentage],in(1,c))/5),      c.y1start:=0.5,      c.y2start:=0,      Repeat(       c.stepcounter,       do(                     DrawRectangle(          40, c.y1start, 41.5, c.y2start,           Case(Count,ColorRed,ColorRed,ColorRed ,ColorOrange,2856447 ,3519479,                     381429,3074523,  3010248,3010248,522392,6618514,                     ColorLime,ColorLime,ColorLime,ColorLime,                     ColorLime,ColorLime,ColorLime,ColorLime,ColorLime),          ColorBlack),         Inc(c.y1start,-0.5),         Inc(c.y2start,-0.5)         )       )      )    ),  {2. Speed bar chart}  dishape(20,-6,15,10,0,att(14,c), att(14,c)),   {draw the bars}  repeat(   30,   dishape(    +(20,*(-(count,1),monwidth)) , monheight-6 , monwidth,    -(max(0,min(monheight,*(cell(count,2,c),temp1)))), 0 , att(13,c) , att(12,c)    )   ),  diLine(20,monheight-6-(att([speed],in(1,c))*temp1),15,0,ColorRed),   {3. Speedometer}   {speed circle}  dishape(-8,-8,{xsize,ysize}16,16,0,ColorBlue, att(7,c)),  DrawCircle(0,0,5,att(8,c),att(9,c),2,0,360),     DrawLine(4.5, 0, 5.5, 0,  ColorNavy, 4),  RotateCoords(45,0,0,1),  DrawLine(4.3, 0, 5.7, 0,  ColorNavy, 8),  RotateCoords(90,0,0,1),  DrawLine(4.3, 0, 5.7, 0,  ColorNavy, 8),  RotateCoords(90,0,0,1),  DrawLine(4.3, 0, 5.7, 0,  ColorNavy, 8),  RotateCoords(90,0,0,1),  DrawLine(4.3, 0, 5.7, 0,  ColorNavy, 8),     RotateCoords(45,0,0,1),  DrawLine(-4.5, 0, -5.5, 0,  ColorNavy, 4),  DrawLine( 0,-4.5, 0, -5.5,  ColorNavy, 4),     diText(-0.75, -7, [15], att(10,c), att(7,c), 1.0, [Arial]),  RotateCoords(45,0,0,1),  diText(-0.75, -7, [20], att(10,c), att(7,c), 1.0, [Arial]),  RotateCoords(45,0,0,1),  diText(-0.75, -7, [25], att(10,c), att(7,c), 1.0, [Arial]),  RotateCoords(45,0,0,1),  diText(-0.75, -7, [30], att(10,c), att(7,c), 1.0, [Arial]),  RotateCoords(90,0,0,1),  diText(-0.25, -7, [0], att(10,c), att(7,c), 1.0, [Arial]),  RotateCoords(45,0,0,1),  diText(-0.25, -7, [5], att(10,c), att(7,c), 1.0, [Arial]),  RotateCoords(45,0,0,1),  diText(-0.75, -7, [10], att(10,c), att(7,c), 1.0, [Arial]),  RotateCoords(45,0,0,1),  diText(-0.75, -7, [15], att(10,c), att(7,c), 1.0, [Arial]),  if(   speedunit=1,   {scale unit is "km/h"}   do(     diText(-1.5,2.5,[km/h], ColorBlack, att(8,c), 1.0, [Arial]),     diText(-0.5,0.8,String(att([rotation],c)/9,3,0), ColorBlack, ColorWhite, 1.0, [Arial])     ),   {scale unit is "mph"}   do(     diText(-1.5,2.5,[mph], ColorBlack, att(8,c), 1.0, [Arial]),     diText(-0.5,0.8,String(att([rotation],c)/(9*Speedfactor),3,0), ColorBlack, ColorWhite, 1.0, [Arial])     )   ),  DrawLine(-1.5,0.8, 1.5,0.8, ColorNavy, 1),  DrawLine(-1.5,2.4, 1.5,2.4, ColorNavy, 1),  DrawLine(-1.5,0.8,-1.5,2.4, ColorNavy, 1),  DrawLine( 1.5,0.8, 1.5,2.4, ColorNavy, 1),      {Speed needle}    if(    Speedunit=1,     {speed in km/h}    RotateCoords(att([rotation],c),0,0,1),    {speed in mph}    RotateCoords(att([rotation],c)/Speedfactor,0,0,1)    ),  DrawLine(0, 0, -3.8, 3.8,  att(11,c), 6)      ) )          ]);
+Set(OnMessage, [do(  {Start event for tracking speed values of connected Advanced Transporter}  if(    c.starttracking=0,    do(      c.starttracking:=1,      CreateEvent(0,c,1)      )    )  )]);
+SetStatus(0);
+int018;
+int007;

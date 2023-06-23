@@ -1,0 +1,169 @@
+EDControl(EditForm:
+  BorderIcons = set(SystemMenu),
+  BorderStyle = Single,
+  Caption = str('History'),
+  Height = 528,
+  Name = str('History'),
+  Position = ScreenCenter,
+  ShowHint = True,
+  Top = 225,
+  Visible = False,
+  Width = 395,
+  Controls(
+    EDControl(MultiPage:
+      ActivePage = 1,
+      Align = Client,
+      Anchors = set(Left,Top,Right,Bottom),
+      Height = 452,
+      Left = 0,
+      Name = str('MultiPage1'),
+      TabOrder = 1,
+      Top = 0,
+      Width = 395,
+      Controls(
+        EDControl(SinglePage:
+          Caption = str('General'),
+          Name = str('SinglePage1'),
+          PageIndex = 1,
+          Controls(
+            EDControl(GroupBox:
+              Caption = str('Settings'),
+              Height = 176,
+              Left = 8,
+              Name = str('GroupBox1'),
+              TabOrder = 1,
+              Top = 0,
+              Width = 370,
+            Controls(
+EDControl(Label:
+              Caption = str('General history:'),
+              Color = -16777208,
+              Left = 12,
+              Name = str('StaticText1'),
+              Top = 40,
+              Width = 77),
+            EDControl(CheckBox:
+              Caption = str(''),
+              Hint = str('Must be switched on in order to write a history file.'),
+              Left = 112,
+              Name = str('cbGeneralHistory'),
+              TabOrder = 2,
+              Top = 36,
+              Width = 17),
+            EDControl(Button:
+              Caption = str('&Select all atoms'),
+              Hint = str('Click to switch on all atoms contained in model.'),
+              Left = 12,
+              Name = str('btnSelectAll'),
+              TabOrder = 3,
+              Top = 72,
+              Width = 150,
+              Events(
+                Click = str('do('#13' if('#13'  confirm('#13'   concat('#13'    [Are you sure to switch on the history of ALL atoms ?],'#13'    cr,'#13'    [This can make a very large history file !!]'#13'   )'#13'  ),'#13'  foratomtreeunder('#13'   model,'#13'   do('#13'    a,'#13'    set(atomhistory, True)'#13'   )'#13'  )'#13' ),'#13' '#13' { Update the list with affected atoms. }'#13' History_ListAllAtomsWithHistoryTurnedOn(Guicontrol([lbOverview]))'#13')'#13))),
+            EDControl(Button:
+              Caption = str('S&elect specific atom'),
+              Hint = str('Switch on one atom.'),
+              Left = 12,
+              Name = str('btnSelectSpecificAtom'),
+              TabOrder = 4,
+              Top = 104,
+              Width = 150,
+              Events(
+                Click = str('do('#13' If('#13'  SelectAtom('#13'   model, '#13'   model, '#13'   [Selected atom will be switched on]'#13'  ), '#13'  Set('#13'   AtomHistory, '#13'   1'#13'  )'#13' ),'#13' '#13' { Update the list with affected atoms. }'#13' History_ListAllAtomsWithHistoryTurnedOn(Guicontrol([lbOverview]))'#13')'#13))),
+            EDControl(Button:
+              Caption = str('Se&lect atoms on layer'),
+              Hint = str('Click to switch on a level of atoms at once.'),
+              Left = 12,
+              Name = str('btnSelectAtomsOnLayer'),
+              TabOrder = 5,
+              Top = 136,
+              Width = 150,
+              Events(
+                Click = str('do('#13'  If('#13'  SelectAtom('#13'   model, '#13'   model, '#13'   [Atoms at first level in selected atom will be switched on]'#13'  ), '#13'  ForAtomLayerUnder('#13'   a, '#13'   Set('#13'    AtomHistory, '#13'    True'#13'   )'#13'  )'#13' ),'#13' '#13' { Update the list with affected atoms. }'#13' History_ListAllAtomsWithHistoryTurnedOn(Guicontrol([lbOverview]))'#13')'#13))),
+            EDControl(Button:
+              Caption = str('&Deselect all atoms'),
+              Hint = str('Click to switch off the individual atom history of all atoms.'),
+              Left = 188,
+              Name = str('btnDeSelectAll'),
+              TabOrder = 6,
+              Top = 72,
+              Width = 150,
+              Events(
+                Click = str('do('#13' ForAtomTreeUnder(model, Set(AtomHistory, False)),'#13' '#13' { Update the list with affected atoms. }'#13' History_ListAllAtomsWithHistoryTurnedOn(Guicontrol([lbOverview]))'#13')'#13#13))),
+            EDControl(Button:
+              Caption = str('Deselect speci&fic atom'),
+              Hint = str('Switch off one atom.'),
+              Left = 188,
+              Name = str('btnDeSelectSpecificAtom'),
+              TabOrder = 7,
+              Top = 104,
+              Width = 150,
+              Events(
+                Click = str('do('#13' if('#13'  selectatom('#13'   model,'#13'   model,'#13'   [Selected atom will be switched off]'#13'  ),'#13'  set('#13'   atomhistory,'#13'   False'#13'  )'#13' ),'#13' '#13' { Update the list with affected atoms. }'#13' History_ListAllAtomsWithHistoryTurnedOn(Guicontrol([lbOverview]))'#13')'#13))),
+            EDControl(Button:
+              Caption = str('Deselec&t atoms on layer'),
+              Hint = str('Switch off one atom.'),
+              Left = 188,
+              Name = str('btnDeSelectAtomsOnLayer'),
+              TabOrder = 8,
+              Top = 136,
+              Width = 150,
+              Events(
+                Click = str('do('#13'  If('#13'  SelectAtom('#13'   model, '#13'   model, '#13'   [Atoms at first level in selected atom will be switched off]'#13'  ), '#13'  ForAtomLayerUnder('#13'   a, '#13'   Set('#13'    AtomHistory, '#13'    False'#13'   )'#13'  )'#13' ),'#13' '#13' { Update the list with affected atoms. }'#13' History_ListAllAtomsWithHistoryTurnedOn(Guicontrol([lbOverview]))'#13')'#13))))),
+EDControl(GroupBox:
+              Caption = str('Selected Atoms'),
+              Height = 225,
+              Left = 8,
+              Name = str('GroupBox2'),
+              TabOrder = 9,
+              Top = 192,
+              Width = 369,
+            Controls(
+EDControl(ListBox:
+              Height = 185,
+              Left = 16,
+              Name = str('lbOverview'),
+              TabOrder = 10,
+              Top = 24,
+              Width = 337))))))),
+    EDControl(Panel:
+      Align = Bottom,
+      Anchors = set(Left,Right,Bottom),
+      BevelOuter = None,
+      Caption = str(''),
+      Height = 40,
+      Left = 0,
+      Name = str('Panel1'),
+      TabOrder = 2,
+      Top = 452,
+      Width = 395,
+      Controls(
+        EDControl(Button:
+          Caption = str('&Apply'),
+          Left = 312,
+          Name = str('btnApply'),
+          TabOrder = 1,
+          Top = 8,
+          Events(
+            Click = str('do('#13' if('#13'  GuiControl([cbGeneralHistory], Guiget([Checked])) = True,'#13'  Set(GeneralHistory, True),'#13'  Set(GeneralHistory, False)'#13' )'#13')'#13))),
+        EDControl(Button:
+          Cancel = True,
+          Caption = str('&Cancel'),
+          Left = 230,
+          Name = str('btnCancel'),
+          TabOrder = 2,
+          Top = 8,
+          Events(
+            Click = str('Do('#13' GuiDestroy,'#13' GuiUnregister([Source])'#13')'#13))),
+        EDControl(Button:
+          Caption = str('&Ok'),
+          Default = True,
+          Left = 144,
+          Name = str('btnOk'),
+          TabOrder = 3,
+          Top = 8,
+          Events(
+            Click = str('Do('#13' GuiControl([btnApply]),'#13' GuiRun([Click]),'#13' GuiDestroy,'#13' GuiUnregister([Source])'#13')'#13)))))),
+  Events(
+    Show = str('do('#13' {Set ActivePage}'#13'    '#13' GuiControl([MultiPage1]),GuiSet([ActivePage],1),'#13' '#13' if('#13'  GeneralHistory = True,'#13'  GuiControl([cbGeneralHistory], GuiSet([Checked], True)),'#13'  GuiControl([cbGeneralHistory], GuiSet([Checked], False))'#13' ),'#13' '#13' { Update the list with affected atoms. }'#13' History_ListAllAtomsWithHistoryTurnedOn(Guicontrol([lbOverview])),'#13' '#13' GuiRun([Update])'#13')'#13)))
+

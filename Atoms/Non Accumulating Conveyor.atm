@@ -1,0 +1,123 @@
+
+
+{Atom: Non Accumulating Conveyor}
+
+sets;
+BaseClass;
+CreateAtom(a, s, [], 1, false);
+int023([Non Accumulating Conveyor], 13809478, 1234);
+Set(Icon(a), 
+	RegisterIcon(IconsDir([bmp\atoms\conveyor.bmp]), [conveyor]));
+SetMaterial(
+	RegisterMaterial([Default], 8421504, 8421504, 3289650, 0, 0.100000001490116, 0, false, false, 1, 0), 1, a);
+Set(Version(a), 8);
+SetTreeIcon(pDir([Media\Icons\NonAccumulatingConveyor.ico]));
+Set(Info, [Non Accumulating conveyor.
+
+General
+------------
+Non Accumulating Conveyor with product spacing and capacity limitation
+If an atom enters, the conveyor closes the inputchannels. When the atom 
+that entered is conveyed by its length and or spacing, the input opens 
+again provided the capacity that has been entered is not exeeded. 
+The atom is conveyed up to the end of the conveyor as long as the front 
+most atom is not blocked.
+
+REMARK:
+--------------
+If a lot of atoms (> 20) can be on this conveyor at the same time, use the 
+Fast Non Accumulating Conveyor!!!
+
+If changes in lenghts or speeds have been made than first press reset!
+
+Z loc can be also changed in Gui.
+
+
+Statuses:
+-------------
+  13 - Empty
+  26 - Conveying
+    5 - Blocked
+
+Last revision:
+-------------------
+November, 5, 2008
+
+]);
+SetChannels(1, 1);
+SetChannelRanges(1, 255, 1, 255);
+int001(221);
+SetSize(10, 1, 1);
+LockPosition(false);
+LockSize(false);
+DisableIconRotation(false);
+SetProductCode([]);
+CreateAttributes(23);
+SetAttributeName(r(1), [Speed]);
+SetAttributeName(r(2), [Moving]);
+SetAttributeName(r(3), [SendTo]);
+SetAttributeName(r(4), [SpacingRule]);
+SetAttributeName(r(5), [Spacing]);
+SetAttributeName(r(6), [Temp]);
+SetAttributeName(r(7), [EntryTrigger]);
+SetAttributeName(r(8), [Capacity]);
+SetAttributeName(r(9), [ExitTrigger]);
+SetAttributeName(r(10), [Use_Physical]);
+SetAttributeName(r(11), [Input_Length]);
+SetAttributeName(r(12), [Elevation]);
+SetAttributeName(r(13), [HorLength]);
+SetAttributeName(r(14), [Angle]);
+SetAttributeName(r(15), [Length]);
+SetAttributeName(r(16), [Leg_Supports]);
+SetAttributeName(r(17), [CalcLength]);
+SetAttributeName(r(18), [3D_Angle]);
+SetAttributeName(r(19), [HorSpeed]);
+SetAttributeName(r(20), [VertSpeed]);
+SetAttributeName(r(21), [LegDist]);
+SetAttributeName(r(22), [Tmp]);
+SetAttributeName(r(23), [IsConveyor]);
+SetAtt(r(1), 1);
+SetExprAtt(r(3), [1]);
+SetAtt(r(4), 1);
+SetAtt(r(8), 10000);
+SetAtt(r(10), 1);
+SetAtt(r(11), 10);
+SetExprAtt(r(13), [If(Use_Physical, xSize(c), Input_Length)]);
+SetExprAtt(r(14), [ArcTan(Elevation / HorLength)]);
+SetExprAtt(r(15), [If(Elevation <> 0, HorLength / Cos(Angle), HorLength)]);
+SetAtt(r(16), 3);
+SetAtt(r(17), 10);
+SetAtt(r(21), 5);
+SetAtt(r(23), 8);
+int024;
+Set(OnEvent, [Case( EventCode, { 1: Products are stopped } Do(  CloseAllIc(c),  ForAtomLayerUnder(c, StopAtom(a)),  Moving := 0,  Status(c) := 5,  OpenAllOc(c) ), { 2: Product is moving } If(Content(c) = 0,      OpenAllIc(c),      If(And(Moving, Content(c) < Capacity),      If(        -(xLoc(Last(c)) + xSize(Last(c)),        *( xSize(c) / CalcLength, ProductSpacing(SpacingRule, xSize(last(c)), Spacing))) > -0.00001,        OpenAllIc(c)       )  ) ))]);
+Set(OnEntered, [Do( CloseAllIc(c), SetLoc(-(xSize(i)), ((ySize(c) - ySize(i)) / 2), zSize(c), i), EntryTrigger, If(Content(c) = 1,    Do(    Status(c) := 26,    CreateEvent((CalcLength / Speed), c, 1, 99999),    Moving := 1    )   ), If(Moving, { If moving, create an event to stop the product at the end of the conveyor }    Do(      SetSpeed(HorSpeed, 0, VertSpeed, i),      CreateEvent(/(ProductSpacing(SpacingRule, xSize(i), Spacing), Speed), c, 2)    )   ))]);
+Set(OnExited, [Do( CloseAllOc(c), If(Content(c) > 0,    Do(      Status(c) := 26,      ForAtomLayerUnder(c,        Do(Setcs,           SetSpeed(HorSpeed, 0, VertSpeed, cs)        )    ),    Moving := 1,    CreateEvent(Max(0, /(-(xSize(c), +(xLoc(First(c)), xSize(First(c)))), HorSpeed)), c, 1),   {att6 will contain the compensated location of the back of the last product, including spacings}   Temp := -((xLoc(Last(c)) + xSize(Last(c))),                  *((xSize(c) / CalcLength), (ProductSpacing(SpacingRule, xSize(Last(c)), Spacing)))),    CreateEvent(Max(0, /(-(Temp), HorSpeed)), c, 2)  ),  Do(   Status(c) := 13,   CreateEvent(0, c, 2)  ) ), ExitTrigger)]);
+Set(OnCreation, [do( AutoConnect, {Legs} If(   LegDist > 0,    Leg_Supports :=Trunc(xSize(c) / LegDist) + 1,       Leg_Supports := 0))]);
+Set(OnReset, [Do(
+ If(Use_Physical, Input_Length := xSize(c)),
+ CloseAllOc(c),
+ Status(c) := 13,
+ Moving := 0,
+ CalcLength := Length,
+ {3D angle}
+ 3D_Angle := ArcTan(Elevation / xSize(c)),
+ Tmp := Sqrt(Sqr(xSize(c)) + Sqr(Elevation)) / Sqrt(Sqr(Input_Length) + Sqr(Elevation)),
+ {HorSpeed}
+ HorSpeed := Speed * (Cos(3D_Angle) * Tmp),
+ {VertSpeed}
+ VertSpeed := Speed * (Sin(3D_Angle) *Tmp),
+ {Legs}
+ If(LegDist > 0,
+ 
+   Leg_Supports :=Trunc(xSize(c) / LegDist) + 1,
+    
+   Leg_Supports := 0)
+)
+]);
+Set(OnUser, [Do(  { Delete any current instances of this form.}   GuiDestroy([Non Accumulating Conveyor]),  { Register the GUI-form for this atom.}  GuiRegister(PDir([\Atoms\Non Accumulating Conveyor.gui]), 1),  { Show the GUI-form.}   GuiCreate([Non Accumulating Conveyor], [Non Accumulating Conveyor], 0, c, 0, 1) )]);
+Set(OnOcReady, [If(Content(c) > 0,  MoveRequest(First(c), SendTo))]);
+Set(On3DDraw, [If( BoxVisible(0, 0, 0, xSize(c), ySize(c), zSize(c)), If( Elevation = 0,  Do(   If(ySize(c) > 0.5, {side supports}    Do(     di3DBox(0, -0.16, zSize(c) - 0.1, xSize(c), 0.16, 0.1, Color(c), 0),     di3DBox(0, ySize(c), zSize(c) - 0.1, xSize(c), 0.16, 0.1, Color(c), 0)    ),        Do(     di3DBox(0, -0.03, zSize(c) - 0.1, xSize(c), 0.01, 0.1, Color(c), 0),     di3DBox(0, ySize(c), zSize(c) - 0.1, xSize(c), 0.01, 0.1, Color, 0)    )   ),      If(LegDist > 0, {leg supports}    Do(         Repeat(Leg_Supports,      Do(       di3DBox(xSize(c) - (*(Count - 1, LegDist)), -0.05, 0, 0.05, 0.05, zSize(c)- 0.05, 14473664, 0),       di3DBox(xSize(c) - (*(Count - 1, LegDist)), ySize(c), 0, 0.05, 0.05, zSize(c)- 0.05, 14473664, 0),       If(zSize(c) > 0.3,        di3DBox(xSize(c) - (*(Count - 1, LegDist)), 0, -(zSize(c), 0.3)- 0.05, 0.03, ySize(c), 0.03, Color(c), 0)       )      )     )    )   ),      Do(    di3DBox(0, 0.05, zSize(c)-0.1, xSize(c), ySize(c)-0.1, 0.1, ColorBlack, 0)   )  ),    Do(   Box(0, -0.06, zSize(c) - 0.1, /(xSize(c), Cos(Angle)), 0.06, 0.1, 0, Angle, 0, Color),   Box(0, ySize(c), zSize(c) - 0.1, /(xSize(c), Cos(Angle)), 0.06, 0.1, 0, Angle, 0, Color),   Box(0, 0.1, zSize(c)- 0.05, /(xSize(c), Cos(Angle)), ySize(c) - 0.2, 0.05, 0, Angle, 0, ColorBlack),      If(LegDist  > 0, {leg supports}    Do(     Repeat(Leg_Supports,       Do(              di3DBox(xSize(c)- 0.05 - (*(Count - 1, LegDist)), -0.05, 0, 0.05, 0.05, (zSize(c) + Elevation)- (Count - 1) * LegDist * tan(Angle)- 0.05, 14473664, 0),       di3DBox(xSize(c)- 0.05 - (*(Count - 1, LegDist)), ySize(c), 0, 0.05, 0.05, (zSize(c) + Elevation) - (Count - 1) * LegDist * tan(Angle)- 0.05, 14473664, 0),       di3DBox(xSize(c)- 0.05 - (*(Count - 1, LegDist)), 0, -((zSize(c) + Elevation) - (Count - 1) * LegDist * tan(Angle), 0.3)- 0.05, 0.03, ySize, 0.03, Color, 0)      )     )    )   )  ) ))]);
+SetStatus(0);
+int018;
+int007;

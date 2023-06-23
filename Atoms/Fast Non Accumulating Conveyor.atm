@@ -1,0 +1,102 @@
+
+
+{Atom: Fast Non Accumulating Conveyor}
+
+sets;
+BaseClass;
+CreateAtom(a, s, [], 1, false);
+int023([Fast Non Accumulating Conveyor], 10012804, 1266);
+Set(Icon(a), 
+	RegisterIcon(pDir([Media\Images\Atoms\conveyor.bmp]), [conveyor]));
+SetMaterial(
+	RegisterMaterial([Default], 8421504, 8421504, 3289650, 0, 0.100000001490116, 0, false, false, 1, 0), 1, a);
+Set(Version(a), 7.3);
+SetTreeIcon(pDir([Media\Icons\FastNonConveyor.ico]));
+Set(Info, [Fast Non Accumulating Conveyor
+
+General
+------------
+Can be used in case a lot of product can be on the conveyor at 
+one time. It is considerably faster then the Non Accumulating Conveyor.
+If the display contents is off it is even faster.
+
+If an atom enters, the conveyor closes the inputchannels. When 
+the atom that entered is conveyed by the pre-entered product 
+length, the input opens again. The atom is conveyed up to the end 
+of the conveyor as long as the front most atom is not blocked.  If 
+an atom reaches the end of the conveyor it is moved out. The 
+speed in m/s can be specified. When the atom that entered is 
+conveyed far enough,  the input opens again. 
+
+Statuses:
+--------------
+  13 - Empty
+  26 - Conveying
+   5 - Blocked
+
+Last revision:
+--------------------
+February, 2008
+]);
+SetChannels(1, 1);
+SetChannelRanges(1, 255, 1, 255);
+int001(34);
+SetSize(10, 1, 1);
+LockPosition(false);
+LockSize(false);
+DisableIconRotation(false);
+SetProductCode([]);
+CreateAttributes(14);
+SetAttributeName(r(1), [length]);
+SetAttributeName(r(2), [capacity]);
+SetAttributeName(r(3), [speed]);
+SetAttributeName(r(4), [calculate]);
+SetAttributeName(r(5), [totblocked]);
+SetAttributeName(r(6), [entrytrigger]);
+SetAttributeName(r(7), [exittrigger]);
+SetAttributeName(r(8), [blocked]);
+SetAttributeName(r(9), [sendto]);
+SetAttributeName(r(10), [disp cont]);
+SetAttributeName(r(11), [curcap]);
+SetAttributeName(r(12), [tmp]);
+SetAttributeName(r(13), [inputopen]);
+SetAttributeName(r(14), [Use_Physical]);
+SetExprAtt(r(1), [10]);
+SetAtt(r(2), 10000);
+SetExprAtt(r(3), [1]);
+SetExprAtt(r(4), [ do(  setatt(12,+(att(5,c),if(>(att(8,c),0),-(time,att(8,0)),0)),c),  foratomlayerunder(c,   do(    setcs,    setloc(        -(*(xsize(c),/(*(att(3,c),-(-(time,entrytime(cs)),-(att(12,c),ddb([t-blck],cs)))),att(1,c))),xsize(cs)),    /(-(ysize(c),ysize(cs)),2),zsize(c),cs)    )  ) )]);
+SetExprAtt(r(9), [1]);
+SetAtt(r(10), 1);
+SetAtt(r(14), 1);
+int024;
+Set(OnEvent, [case(eventcode, { 1 : open the input again } if(and(att(8,c)=0,att(11,c)>0),do(setatt(13,1,c),openallic(c))), { 2 : send on the product } do(  closeallic(c),  setatt(8,time,c),  setstatus(5,c),  openalloc(c) ))]);
+Set(OnEntered, [do(
+ closeallic(c),
+ setstatus(26,c),
+ setatt(13,0,c),
+ sddb([t-blck],att(5,c),i),
+ if(=(content(c),1),
+   createevent(/(att(1,c),att(3,c)),c,2)
+ ),
+ { Check if this product can be entirely on conveyor }
+ if(
+  <(/(xsize(i),att(3,c)),
+   max(-(/(att(1,c),att(3,c)),-(-(time,entrytime(first(c))),-(att(5,c),ddb([t-blck],first(c))))),0)
+  ),
+  createevent(/(xsize(i),att(3,c)),c,1)
+ ),
+ setatt(11,-(att(11,c),1),c),
+ att(6,c)
+)
+]);
+Set(OnExited, [do( closealloc(c), inc(att(11,c)), setatt(5,+(att(5,c),-(time,att(8,c))),c), { still to move: total moving time - ( (time-entrytime) - (totblocked nu - totblocked enter) ) } if(>(content(c),0),  do(   createevent(max(-(/(att(1,c),att(3,c)),-(-(time,entrytime(first(c))),-(att(5,c),ddb([t-blck],first(c))))),0),c,2),   { check if input is open, if not create an event in x time }   if(att(13,c),    createevent(0,c,1),    createevent(max(-(/(xsize(last(c)),att(3,c)),-(-(time,entrytime(last(c))),-(att(5,c),ddb([t-blck],last(c))))),0),c,1)   ),   setstatus(26,c)  ),  do(   setatt(5,0,c),   createevent(0,c,1),   setstatus(13,c)  ) ), sddb([t-blck],0,i), setatt(8,0,c), att(7,c))]);
+Set(OnCreation, [do( autoconnect, setstatus(1,c))]);
+Set(OnReset, [do( closealloc(c), setstatus(13,c), setatt(5,0,c), setatt(8,0,c), setatt(11,att(2,c),c), setatt(13,0,c), setsetting(sashowcontents,att(10,c),c))]);
+Set(OnUser, [Do(  { Delete any current instances of this form.}   GuiDestroy([Fast Non Accumulating Conveyor]),  { Register the GUI-form for this atom.}  GuiRegister(PDir([\Atoms\Fast Non Accumulating Conveyor.gui]), 1),  { Show the GUI-form.}   Guicreate([Fast Non Accumulating Conveyor], [Fast Non Accumulating Conveyor], 0, c, 0, 1) )]);
+Set(OnOcReady, [if(>(content(c),0),moverequest(first(c),att(9,c)))]);
+Set(OnIcReady, [if(>(att(8,c),0),do(setatt(13,0,c),closeallic(c)))]);
+Set(On2DDraw, [do( if(att(10),  att(4,c),  if(>(discale,11),   ditext(0.4,0,concat([Content : ],string(content(c))),colorblack,color(c),0.5,[arial])  ) ))]);
+Set(On3DDraw, [if(boxvisible(0,0,0,xsize,ysize,zsize), do(  if(att(10),att(4,c)),  draw3dicon(2) ))]);
+SetStatus(0);
+int018;
+int007;

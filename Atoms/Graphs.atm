@@ -1,0 +1,100 @@
+
+
+{Atom: Graphs}
+
+sets;
+BaseClass;
+createAtom(a, s, [], 1, false);
+int023([Graphs], 0, 0);
+Set(Icon(a), 
+	RegisterIcon(pDir([media\images\default.jpg]), [default.jpg]));
+SetMaterial(
+	RegisterMaterial([Default], 8421504, 8421504, 3289650, 0, 0.100000001490116, 0, false, false, 1, 0), 1, a);
+Set(Version(a), 7.3);
+SetTreeIcon(pDir([Media\Icons\Tools.ico]));
+Set(Info, [creates graph functionality.
+
+General
+------------
+If the history is switched on, this menu option allows the user to create 
+queue graphs, status diagrams and waittime histograms of the atoms in the 
+model.
+
+By selecting the menu option or speed button, a wizard pops up in which the 
+user can specify and show the graph.
+
+The atom is not intended to be dragged into a model.
+
+Last Revision:
+---------------------
+February, 2008
+]);
+Set(DdbRec, [>t-nocreate:1.]);
+int001(14);
+SetSize(1, 1, 1);
+LockPosition(false);
+LockSize(false);
+DisableIconRotation(false);
+SetProductCode([]);
+createAttributes(3);
+SetAttributeName(r(1), [graphtype]);
+SetAttributeName(r(2), [analysestart]);
+SetAttributeName(r(3), [analyseduration]);
+SetAtt(r(1), 1);
+SetExprAtt(r(2), [0]);
+SetExprAtt(r(3), [time {current time}]);
+int024;
+Set(OnDestruction, [if(
+ not(atomexists(m(c))),
+ DeleteMenu([&Graphs])
+)
+]);
+Set(OnUser, [do(
+ if(
+  not(atomexists(animatom)),
+  setcs(selectatom(model,model,[Select atom])),
+  setcs(animatom)
+ ),
+ if(<>(ptv(cs),ptv(model)),
+  if(
+   not(generalhistory),
+   msg([General history is not on! Use the run control or the 'Simulate | History' menu to switch it on. Note that you also have to switch on the individual atom history of those atoms you want to analyse. You must rerun the simulation to produce graphs.],1),
+    if(not(atomhistory(cs)),
+    msg([Atom history is not on! Use the 'Simulate | History' menu to switch it on. You must rerun the simulation to produce graphs.],1),
+    do(
+     c,
+     edit(
+      wizardpage([Graph],[Select a graph type. If desired you can change the time interval for analysis. Click finish to show the graph],[]),
+      seteditstyle(name(cs),100,100,30,200,200,10),
+      c,
+      ef([Graphtype]),
+      ef([analysestart]),
+      ef([analyseduration]),
+      wizardfinish(
+       [
+        do(
+         sets,
+         sddb([start],att(2,s),main),
+         sddb([stop],+(att(2,s),att(3,s)),main),
+         set(v,ptv(s)),
+         case(
+          att(1,s),
+          do(cs,sets,ted2000fnc([queue graph])),
+          do(cs,sets,ted2000fnc([queue histogram])),
+          do(cs,sets,ted2000fnc([status pie chart])),
+          do(cs,sets,ted2000fnc([status bar graph])),
+          do(cs,sets,ted2000fnc([waittime histogram]))
+        )
+       )
+      ]
+     )
+    )
+   )
+   )
+  )
+ )
+)
+]);
+SetStatus(0);
+int018;
+int007;

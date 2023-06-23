@@ -1,0 +1,110 @@
+
+
+{Atom: Variable}
+
+sets;
+BaseClass;
+createAtom(a, s, [], 1, false);
+int023([Variable], 16711680, 1120);
+Set(Icon(a), 
+	RegisterIcon(pDir([media\images\default.jpg]), [default.jpg]));
+SetMaterial(
+	RegisterMaterial([Default], 8421504, 8421504, 3289650, 0, 0.100000001490116, 0, false, false, 1, 0), 1, a);
+Set(Version(a), 7.3);
+SetTreeIcon(pDir([Media\Icons\Variable.ico]));
+Set(Info, [Optimization Variable
+
+General
+------------
+You may have as many of these descision variables defined in 
+your optimization as you would like. These are the
+variables that are automatically changed according to the search 
+algorithms conducted in OptQuest during an optimization
+run.  You defined the descision variable, the minimum allowed 
+value, the maximum allowed value, and an initial value for
+the variable when the optimization begins.  If the step size is an 
+integer, then the changes will be discrete, otherwise continuous.
+
+Last Revision:
+---------------------
+February, 2008
+]);
+SetChannels(1, 0);
+SetChannelRanges(1, 1, 0, 0);
+int001(51);
+SetSize(8, 2, 1);
+LockPosition(false);
+LockSize(false);
+DisableIconRotation(false);
+SetProductCode([]);
+createAttributes(7);
+SetAttributeName(r(1), [atom]);
+SetAttributeName(r(2), [varupdatexp]);
+SetAttributeName(r(3), [lowerlimit]);
+SetAttributeName(r(4), [upperlimit]);
+SetAttributeName(r(5), [step]);
+SetAttributeName(r(6), [name_var]);
+SetAttributeName(r(7), [varvalue]);
+SetTextAtt(r(1), [Connect with atom]);
+SetExprAtt(r(2), [setatt([capacity],att([varvalue],c),in(1,c))]);
+SetAtt(r(4), 100);
+SetAtt(r(5), 0.1);
+SetTextAtt(r(6), [Variable1]);
+SetAtt(r(7), 10);
+int024;
+Set(OnCreation, [if(
+ not(ddb([T186],up)),
+ do(
+  baseclass,setcs,
+  foratomtreeunder(
+   model,
+   if(ddb([T186]),setcs)
+  ),
+  if(
+   not(atomexists(cs)),
+   do(
+    createatom(atombyname([Optimizer],library),model,[Optimizer]),
+    setcs
+   )
+  ),
+  set(viewx,xabsloc(cs,dispatom)),
+  set(viewy,+(*(2,+(1,content(cs))),yabsloc(cs,dispatom))),
+  moveatom(c,cs),
+  settimerevent(
+   concat(
+    [setloc(1,],
+    string(*(2,content(up(c)))),
+    [,0,vtp(],
+    string(ptv(c)),
+    [))]
+   )
+  ),
+  setsize(xsize(cs),+(2.8,*(content(cs),2)),0,cs),
+  set(name(c),concat([Variable],string(countmatch(content(cs),stringcopy(name(rank(count,cs)),1,8),[Variable])))),
+  settextatt([name_var],concat([Variable],string(countmatch(content(cs),stringcopy(name(rank(count,cs)),1,8),[Variable]))),c),
+  baseclass,setcs 
+ ),
+ do(
+  set(name(c),concat([Variable],string(countmatch(content(up(c)),stringcopy(name(rank(count,up(c))),1,8),[Variable])))),
+  settextatt([name_var],concat([Variable],string(countmatch(content(up(c)),stringcopy(name(rank(count,up(c))),1,8),[Variable]))),c)
+ )
+)
+]);
+Set(OnUser, [Do(
+ { Delete any current instances of this form.} 
+ GuiDestroy([Variable]),
+
+ { Register the GUI-form for this atom.}
+ GuiRegister(PDir([\Atoms\Variable.gui]), 1),
+
+ { Show the GUI-form.}
+ Guicreate([Variable], [Variable], 0, c, 0, 1)
+)
+]);
+Set(On2DDraw, [draw2dicon(3,name,[])
+]);
+Set(OnMessage, [att([varupdatexp],c)
+]);
+SetStatus(0);
+int018;
+int007;

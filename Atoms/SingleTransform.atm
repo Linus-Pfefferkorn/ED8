@@ -1,0 +1,129 @@
+
+
+{Atom: SingleTransform}
+
+sets;
+BaseClass;
+createAtom(a, s, [], 1, false);
+int023([SingleTransform], 3184303, 1256);
+Set(Icon(a), 
+	RegisterIcon(pDir([media\images\default.jpg]), [default.jpg]));
+SetMaterial(
+	RegisterMaterial([Default], 8421504, 8421504, 3289650, 0, 0.100000001490116, 0, false, false, 1, 0), 1, a);
+Set(Version(a), 7.3);
+SetTreeIcon(pDir([Media\Icons\SingleTransform.ico]));
+Set(Info, [SingleTransform
+
+General
+------------
+Transforms parameters of the involved atom, such as name, labels, 
+color, icon and size.
+
+First specify which parameters you want to change and choose a rule 
+to select the involved atoms for change. Then enter the new parameter 
+values.
+
+If you wish to set new parameter values depending on the type of the 
+involved atom, then use the MultiTransform.
+
+Last Revision:
+---------------------
+February, 2008
+]);
+SetChannels(1, 1);
+SetChannelRanges(1, 255, 1, 1);
+int001(89);
+SetSize(5, 2, 0.1);
+LockPosition(false);
+LockSize(false);
+DisableIconRotation(false);
+SetProductCode([]);
+createAttributes(17);
+SetAttributeName(r(1), [Filter rule]);
+SetAttributeName(r(2), [Change name]);
+SetAttributeName(r(3), [Change icon]);
+SetAttributeName(r(4), [Change color]);
+SetAttributeName(r(5), [cycle counter]);
+SetAttributeName(r(6), [Change X size]);
+SetAttributeName(r(7), [Change Y size]);
+SetAttributeName(r(8), [Change]);
+SetAttributeName(r(9), [Change Z size]);
+SetAttributeName(r(10), [Change DDB]);
+SetAttributeName(r(11), [new name]);
+SetAttributeName(r(12), [new icon]);
+SetAttributeName(r(13), [new color]);
+SetAttributeName(r(14), [new X size]);
+SetAttributeName(r(15), [new Y size]);
+SetAttributeName(r(16), [new Z size]);
+SetAttributeName(r(17), [new DDB]);
+SetExprAtt(r(1), [{.true|2. transform all atoms .}true]);
+SetAtt(r(5), 1);
+SetExprAtt(r(12), [icon]);
+SetExprAtt(r(13), [color]);
+SetExprAtt(r(17), [{.sddb([~1],~2,i)|2.label value: set the label ~LabelName~ equal to ~1~. .}sddb([LabelName],1,i)]);
+int024;
+Set(OnEvent, [case(eventcode,
+ openoc(1,c),
+ openallic(c)
+)
+]);
+Set(OnEntered, [do(
+ closeallic(c),
+ setatt(5,+(att(5,c),1),c),
+ if(
+  att(1,c),
+  do(
+   if(att(2,c),set(name(i),textatt(11,c))),
+   if(att(3,c),set(icon(i),att(12,c))),
+   if(att(4,c),set(color(i),att(13,c))),
+   if(att(6,c),setsize(att(14,c),ysize(i),zsize(i),i)),
+   if(att(7,c),setsize(xsize(i),att(15,c),zsize(i),i)),
+   if(att(9,c),setsize(xsize(i),ysize(i),att(16,c),i)),
+   if(att(10,c),att(17,c))
+  )
+ ),
+ createevent(0,c,1)
+)
+]);
+Set(OnExited, [do(
+ closealloc(c),
+ createevent(0,c,2)
+)
+]);
+Set(OnCreation, [autoconnect
+]);
+Set(OnReset, [do(
+ setatt(5,0,c),
+ closealloc(c)
+)
+]);
+Set(OnUser, [Do(
+ { Delete any current instances of this form.} 
+ GuiDestroy([SingleTransform]),
+
+ { Register the GUI-form for this atom.}
+ GuiRegister(PDir([\Atoms\SingleTransform.gui]), 1),
+
+ { Show the GUI-form.}
+ Guicreate([SingleTransform], [SingleTransform], 0, c, 0, 1)
+)
+]);
+Set(OnOcReady, [if(
+ =(content(c),0),
+ createevent(0,c,2),
+ moverequest(first(c),1)
+)
+]);
+Set(OnIcReady, [if(
+ not(icopen(ocicno(1,c),out(1,c))),
+ do(
+  openoc(1,c),
+  closeallic(c)
+ )
+)
+]);
+Set(On2DDraw, [standarddisplay(name(c))
+]);
+SetStatus(0);
+int018;
+int007;

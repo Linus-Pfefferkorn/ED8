@@ -1,0 +1,108 @@
+EDControl(EditForm:
+  BorderIcons = set(SystemMenu),
+  BorderStyle = Single,
+  Caption = str('Variable Data Recorder'),
+  Height = 195,
+  Name = str('frmDataRecorderEditVariable'),
+  Position = ScreenCenter,
+  ShowHint = True,
+  Top = 342,
+  Visible = True,
+  Width = 406,
+  Controls(
+    EDControl(Panel:
+      Align = Client,
+      Anchors = set(Left,Top,Right,Bottom),
+      Caption = str(''),
+      Height = 155,
+      Left = 0,
+      Name = str('Panel1'),
+      TabOrder = 1,
+      Top = 0,
+      Width = 406,
+      Controls(
+        EDControl(GroupBox:
+          Caption = str('Settings'),
+          Height = 96,
+          Left = 8,
+          Name = str('GroupBox1'),
+          TabOrder = 1,
+          Top = 8,
+          Width = 380,
+          Controls(
+            EDControl(Label:
+              Caption = str('Name:'),
+              Color = -16777208,
+              Height = 13,
+              Left = 12,
+              Name = str('StaticText1'),
+              Top = 32,
+              Width = 31),
+            EDControl(Edit:
+              Height = 21,
+              Left = 132,
+              Name = str('ebVariableName'),
+              TabOrder = 1,
+              Top = 26,
+              Width = 225),
+            EDControl(Label:
+              Caption = str('Expression:'),
+              Color = -16777208,
+              Height = 13,
+              Left = 12,
+              Name = str('StaticText12'),
+              Top = 64,
+              Width = 54))),
+        EDControl(Label:
+          BackgroundColor = -16777211,
+          Caption = str(''),
+          Color = -16777208,
+          Height = 13,
+          Left = 0,
+          Name = str('Label1'),
+          Top = 0,
+          Width = 3),
+        EDControl(SmartEdit:
+          Left = 140,
+          Lines = str(''),
+          Name = str('seVariableExpression'),
+          String = str('{.~1|.}~1'),
+          TabOrder = 2,
+          Top = 66,
+          Width = 225))),
+    EDControl(Panel:
+      Align = Bottom,
+      Anchors = set(Left,Right,Bottom),
+      BevelOuter = None,
+      Caption = str(''),
+      Height = 40,
+      Left = 0,
+      Name = str('Panel2'),
+      TabOrder = 2,
+      Top = 155,
+      Width = 406,
+      Controls(
+        EDControl(Button:
+          Anchors = set(Right,Bottom),
+          Caption = str('&OK'),
+          Default = True,
+          Left = 241,
+          Name = str('btnOK'),
+          TabOrder = 1,
+          Top = 8,
+          Events(
+            Click = str('do( '#13' var([numberofvariables], vbValue),'#13' var([activerow], vbValue, 0),'#13' var([variablename], vbString, 0),'#13' var([variablexpression], vbString),'#13' var([indexer], vbValue, 0),'#13' var([rowindex], vbValue, 0),'#13#13' numberofvariables := Value(GuiSelect([DataRecorder], [lblNumberOfVariables], GuiGet([Caption]))),'#13' activerow:= GuiSelect([DataRecorder], [tblVariables], GuiGet([ActiveRow])),'#13' variablename := GuiControl([ebVariableName], GuiGet([Text])),'#13' variablexpression := GuiControl([seVariableExpression], GuiGet([String])),'#13#13' { First do some error datarange checking }'#13#13' { Is the name entered for the variable correct? }'#13' if('#13'  stringlength(variablename) = 0,'#13'  do('#13'   msg([The name of the variable is incorrect.], 1),'#13'   return(-1)'#13'  )'#13' ),'#13#13' { Check out if we have to add or edit a variable, a label on the compoistioncontainer form stores this inforamtion. }'#13' if( '#13'  Value(GuiSelect([DataRecorder], [lblAddOrEdit], GuiGet([Caption]))) <> 3,'#13'         '#13'  { ADD / INSERT mode }'#13'  do( '#13'   { create an extra row in the table of variables when there''s more than 0 variables present already,'#13'     that''s because we keep the first row visible although there may not be a variable in it. So when there'#13'     are 0 variables present we shouldn''t insert a new row because this one then can use the first row.}'#13'   if('#13'    numberofvariables > 0,'#13'    '#13'    { Chek out if the user wants to add or insert a varaiable. Adding is at the end of the list and inserting is before the '#13'      currently sleected item.}'#13'    if('#13'     Value(GuiSelect([DataRecorder], [lblAddOrEdit], GuiGet([Caption]))) = 1,'#13#13'     { ADD }'#13'     do('#13'      rowindex := numberofvariables + 1,'#13'      GuiSelect([DataRecorder], [tblVariables], GuiTableInsertRow(rowindex - 1))'#13'     ),'#13'     '#13'     { INSERT }'#13'     do('#13'      rowindex := GuiSelect([DataRecorder], [tblVariables], GuiGet([ActiveRow])),'#13'      GuiSelect([DataRecorder], [tblVariables], GuiTableInsertRow(rowindex))'#13'     )'#13'    ),'#13'    '#13'    rowindex := 1'#13'   ),'#13'   '#13'   inc(numberofvariables),'#13'   '#13'   { Copy arrival time code to the new row in the table on the ArrivalList form }'#13'   GuiSelect([DataRecorder], [tblVariables], GuiSet([Cells], rowindex, 1, String(variablename))),'#13'   GuiSelect([DataRecorder], [tblVariables], GuiSet([Cells], rowindex, 2, variablexpression)),'#13'   '#13'   { Increase the invisible label on the Gui form of the composition container. }'#13'   GuiSelect([DataRecorder], [lblNumberOfVariables], GuiSet([Caption], String(numberofvariables))),'#13'   '#13'   { Finally adjust the numbering of the table rows...}'#13'   For('#13'    indexer := 1, indexer <= numberofvariables, inc(indexer),'#13'    GuiSelect([DataRecorder], [tblVariables], GuiSet([Cells], indexer, 0, String(indexer)))'#13'   )'#13'  ),'#13'  '#13'  { EDIT mode }'#13'  do( '#13'   { Copy arrival time code to the new row in the table on the ArrivalList form }'#13'   GuiSelect([DataRecorder], [tblVariables], GuiSet([Cells], GuiGet([ActiveRow]), 1, String(variablename))),'#13'   GuiSelect([DataRecorder], [tblVariables], GuiSet([Cells], GuiGet([ActiveRow]), 2, variablexpression))'#13'  )'#13' ),  '#13' GuiDestroy  '#13')'#13))),
+        EDControl(Button:
+          Anchors = set(Right,Bottom),
+          Cancel = True,
+          Caption = str('&Cancel'),
+          Left = 323,
+          ModalResult = Cancel,
+          Name = str('btnCancel'),
+          TabOrder = 2,
+          Top = 8,
+          Events(
+            Click = str('GuiDestroy'#13)))))),
+  Events(
+    Show = str('do('#13' { Load the available predefined settings for the expression smart edit box }'#13' FillPredefinedLogicList([seVariableExpression], [getProductStatistics]),'#13#13' { Intialize the form depending on Add or Edit mode. }  '#13' if(    '#13'  Value(GuiSelect([DataRecorder], [lblAddOrEdit], GuiGet([Caption]))) <> 3,'#13'   '#13'  { ADD / INSERT mode - just put default values in the edit boxes...}'#13'  do( '#13'   GuiControl([ebVariableName],  GuiSet([Text], [VariableName])),'#13'   GuiControl([seVariableExpression], GuiSet([String], [{.string(label([~1],i))|1. Value or string of ~Labelname~.}string(label([~1],i))]))'#13'  ),'#13'  '#13'  { EDIT mode - just put default values in the edit boxes...}'#13'  do('#13'   GuiControl([ebVariableName],  GuiSet([Text], GuiSelect([DataRecorder], [tblVariables], Guiget([Cells], GuiGet([ActiveRow]), 1)))),'#13'   GuiControl([seVariableExpression],  GuiSet([String], GuiSelect([DataRecorder], [tblVariables], Guiget([Cells], GuiGet([ActiveRow]), 2))))'#13'  )'#13' )'#13')'#13' '#13#13#13#13#13)))
+

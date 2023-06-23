@@ -1,0 +1,67 @@
+
+
+{Atom: VR Plane}
+
+sets;
+BaseClass;
+createAtom(a, s, [], 1, false);
+int023([VR Plane], 16777215, 3312);
+Set(Icon(a), 
+	RegisterIcon(pDir([Media\Textures\Floor\c-stuc3.jpg]), [c-stuc3.jpg]));
+SetMaterial(
+	RegisterMaterial([White], 16777215, 16777215, 16777215, 16777215, 1, 0, false, false, 1, 0), 1, a);
+Set(Version(a), 7.3);
+SetTreeIcon(pDir([Media\Icons\VRPlane.ico]));
+int001(97);
+SetSize(5, 2, 0);
+LockPosition(false);
+LockSize(false);
+DisableIconRotation(false);
+SetProductCode([]);
+createAttributes(7);
+SetAttributeName(r(1), [xoffset]);
+SetAttributeName(r(2), [yoffset]);
+SetAttributeName(r(3), [zoffset]);
+SetAttributeName(r(4), [planexsize]);
+SetAttributeName(r(5), [planeysize]);
+SetAttributeName(r(6), [iconxrepeat]);
+SetAttributeName(r(7), [iconyrepeat]);
+SetAtt(r(3), -0.2);
+SetAtt(r(4), 100);
+SetAtt(r(5), 100);
+SetAtt(r(6), 100);
+SetAtt(r(7), 100);
+int024;
+Set(OnUser, [Do(
+  { Delete any current instances of this form.} 
+  GuiDestroy([VR Plane]),
+
+  { Register the GUI-form for this atom.}
+  GuiRegister(PDir([\Atoms\VR Plane.gui]), 1),
+
+  { Show the GUI-form.}
+   Guicreate([VR Plane], [VR Plane], 0, c, 0, 1)
+)
+]);
+Set(On2DDraw, [do(
+ dishape(0,0,xsize,ysize,0.25,colorblack,colorwhite),
+ dishape(0,0,xsize,1,0.25,colorblack,7485496),
+ dionscale(13,
+  do(
+   ditext(0.2,0.1,name(c),colorwhite,7485496,0.5,[Arial],-(xsize,0.3),0.8),
+   ditext(0.2,1.1,concat([size: ],string(att(4,c)),[x],string(att(5,c))),0,colorwhite,0.5,[Arial],-(xsize,0.3),0.8)
+  )
+ )
+)
+]);
+Set(On3DDraw, [do(
+ SetMaterialTexture(IconToTexture(Icon)),
+ ScaleTextureCoords(att(6, c), att(7, c)),
+ TranslateCoords(att(1, c), att(2, c), att(3, c)),
+ SetMaterialColor(Color, EMISSIVE_COLOR),
+ DrawPlane(0, 0, 0, att(4, c), 0, 0, 0, att(5, c), 0)
+)
+]);
+SetStatus(0);
+int018;
+int007;

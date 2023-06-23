@@ -1,0 +1,350 @@
+
+
+{Preregister functions}
+
+PreregisterFunction([MoveAtom3D_RotateAtomAroundCenter], 2, 2);
+PreregisterFunction([MoveAtom3D_Forwards], 0, 0);
+PreregisterFunction([MoveAtom3D_Backwards], 0, 0);
+PreregisterFunction([MoveAtom3D_Left], 0, 0);
+PreregisterFunction([MoveAtom3D_Right], 0, 0);
+PreregisterFunction([MoveAtom3D_Up], 0, 0);
+PreregisterFunction([MoveAtom3D_Down], 0, 0);
+PreregisterFunction([MoveAtom3D_Rotate_Clockwise], 0, 0);
+PreregisterFunction([MoveAtom3D_Rotate_AntiClockwise], 0, 0);
+PreregisterFunction([MoveAtom3D_Slow], 0, 0);
+PreregisterFunction([MoveAtom3D_Fast], 0, 0);
+PreregisterFunction([MoveAtom3D_ControlsSelected], 0, 0);
+PreregisterFunction([MoveAtom3D_UpdateRotation], 0, 0);
+PreregisterFunction([MoveAtom3D_UpdatePosition], 0, 0);
+PreregisterFunction([MoveAtom3D_DrawCoords], 0, 0);
+PreregisterFunction([MoveAtom3D_PositionStraight], 8, 8);
+
+
+{Atom: MoveAtom3D}
+
+sets;
+BaseClass;
+CreateAtom(a, s, [], 1, false);
+Set(OnInit, [Dim([refMoveAtom], vbAtom, c)
+]);
+int023([MoveAtom3D], 0, 0);
+DefineFunction([MoveAtom3D_RotateAtomAroundCenter], [3D_Modeling], 2, 2, [do(
+  var([atmC], vbAtom, p(1)),
+  var([valDegrees], vbValue, p(2)),
+  Var([strPos], vbString),
+  Var([x1], vbValue),
+  Var([y1], vbValue),
+  Var([z1], vbValue),
+  Var([x2], vbValue),
+  Var([y2], vbValue),
+  Var([z2], vbValue),
+  
+  valDegrees := mod(valDegrees + RotationAs(atmC), 360),
+  x1 := round(xMid(atmC) - 0.5 * xSize(atmC) * cos(valDegrees), 3),
+  y1 := round(yMid(atmC) - 0.5 * xSize(atmC) * sin(valDegrees), 3),
+  z1 := zLoc(atmC),    
+  x2 := x1 + xSize(atmC) * cos(valDegrees),
+  y2 := y1 + xSize(atmC) * sin(valDegrees),
+  z2 := z1 + att([Elevation], atmC),
+
+  MoveAtom3D_PositionStraight(
+    atmC,
+    x1,
+    y1,
+    z1,
+    x2,
+    y2,
+    z2,
+    ySize(atmC)
+  )
+)
+], [Rotates and re-positions atom e1, e2 degrees arounds it's center
+], [MoveAtom3D_RotateAtomAroundCenter(c, 180)], 0, [MoveAtom.atm]);
+DefineFunction([MoveAtom3D_Forwards], [3D_Modeling], 0, 0, [if(
+  animatom>0,
+  do(
+    yLoc(animatom):= yLoc(animatom) - 1*att([StepSize], refmoveAtom),
+    MoveAtom3D_ControlsSelected
+  ),
+  msg([Please select an object that needs to be manipulated.])
+) 
+], [Enter helptext
+], [Enter Syntax Example], 0, [MoveAtom.atm]);
+DefineFunction([MoveAtom3D_Backwards], [3D_Modeling], 0, 0, [if(
+  animatom>0,
+  Do(
+    yLoc(animatom):= yLoc(animatom) + 1*att([StepSize], refmoveAtom),
+    MoveAtom3D_ControlsSelected
+  ),
+  msg([Please select an object that needs to be manipulated.])
+) 
+], [Enter helptext
+], [Enter Syntax Example], 0, [MoveAtom.atm]);
+DefineFunction([MoveAtom3D_Left], [3D_Modeling], 0, 0, [if(
+  animatom>0,
+  Do(
+    xLoc(animatom):= xLoc(animatom) - 1*att([StepSize], refmoveAtom),
+    MoveAtom3D_ControlsSelected
+  ),
+  msg([Please select an object that needs to be manipulated.])
+) 
+], [Enter helptext
+], [Enter Syntax Example], 0, [MoveAtom.atm]);
+DefineFunction([MoveAtom3D_Right], [3D_Modeling], 0, 0, [if(
+  animatom>0,
+  Do(
+    xLoc(animatom):= xLoc(animatom) + 1*att([StepSize], refmoveAtom),
+    MoveAtom3D_ControlsSelected
+  ),
+  msg([Please select an object that needs to be manipulated.])
+) 
+], [Enter helptext
+], [Enter Syntax Example], 0, [MoveAtom.atm]);
+DefineFunction([MoveAtom3D_Up], [3D_Modeling], 0, 0, [if(
+  animatom>0,
+  Do(
+    zLoc(animatom):= zLoc(animatom) + 1*att([StepSize], refmoveAtom),
+    MoveAtom3D_ControlsSelected
+  ),
+  msg([Please select an object that needs to be manipulated.])
+) 
+], [Enter helptext
+], [Enter Syntax Example], 0, [MoveAtom.atm]);
+DefineFunction([MoveAtom3D_Down], [3D_Modeling], 0, 0, [if(
+  animatom>0,
+  Do(
+    zLoc(animatom):= zLoc(animatom) - 1*att([StepSize], refmoveAtom),
+    MoveAtom3D_ControlsSelected
+  ),
+  msg([Please select an object that needs to be manipulated.])
+) 
+], [Enter helptext
+], [Enter Syntax Example], 0, [MoveAtom.atm]);
+DefineFunction([MoveAtom3D_Rotate_Clockwise], [3D_Modeling], 0, 0, [if(
+  animatom>0,
+  Do(
+    MoveAtom3D_RotateAtomAroundCenter(animatom, 10 * att([StepSize], refmoveAtom)),
+    MoveAtom3D_ControlsSelected
+  ),
+  msg([Please select an object that needs to be manipulated.])
+) 
+], [Enter helptext
+], [Enter Syntax Example], 0, [MoveAtom.atm]);
+DefineFunction([MoveAtom3D_Rotate_AntiClockwise], [3D_Modeling], 0, 0, [if(
+  animatom>0,
+  Do(
+    MoveAtom3D_RotateAtomAroundCenter(animatom, -10 * att([StepSize], refmoveAtom)),
+    MoveAtom3D_ControlsSelected
+  ),
+  msg([Please select an object that needs to be manipulated.])
+) 
+], [Enter helptext
+], [Enter Syntax Example], 0, [MoveAtom.atm]);
+DefineFunction([MoveAtom3D_Slow], [3D_Modeling], 0, 0, [Do(
+  att([StepSize], refMoveAtom):=0.1,
+  
+  Repeat(
+    GuiInstances,
+    Do(
+      GuiInstance(GUIInstances(Count)),
+      If(
+        StringPos([delView3D], GUIInstance)>0,
+        Do(
+          GUIcontrol([btnTurtle], GUIset([Image], PDir([Media\Buttons\ButtonSpeedTurtle_On.jpg]))),
+          GUIcontrol([btnHare], GUIset([Image], PDir([Media\Buttons\ButtonSpeedHare_Off.jpg])))
+        )
+      )
+    )
+  )
+)
+], [Enter helptext
+], [Enter Syntax Example], 0, [MoveAtom.atm]);
+DefineFunction([MoveAtom3D_Fast], [3D_Modeling], 0, 0, [Do(
+  att([StepSize], refMoveAtom):= 1,
+    
+  Repeat(
+    GuiInstances,
+    Do(
+      GuiInstance(GUIInstances(Count)),
+      If(
+        StringPos([delView3D], GUIInstance)>0,
+        Do(
+          GUIcontrol([btnTurtle], GUIset([Image], PDir([Media\Buttons\ButtonSpeedTurtle_Off.jpg]))),
+          GUIcontrol([btnHare], GUIset([Image], PDir([Media\Buttons\ButtonSpeedHare_On.jpg])))
+        )
+      )
+    )
+  )
+)
+], [Enter helptext
+], [Enter Syntax Example], 0, [MoveAtom.atm]);
+DefineFunction([MoveAtom3D_ControlsSelected], [3D_Modeling], 0, 0, [If(
+  Animatom>0, 
+  Do(
+     GuiControl([lblNameSelAtom], GUISet([Caption],  If(StringLength(name(animatom))>20, StringCopy(Name(animatom),0,20), Name(animatom)))),
+     GuiControl([editXpos], GUISet([Text],  string(xLoc(animatom)))),
+     GuiControl([editYpos], GUISet([Text],  string(yLoc(animatom)))),     
+     GuiControl([editZpos], GUISet([Text],  string(zLoc(animatom)))),
+     GuiControl([editRotation], GUISet([Text],  string(RotationAs(animatom))))     
+   ),
+  Do( 
+    GuiControl([lblNameSelAtom], GUISet([Caption],  [No Object Selected])),
+    GuiControl([editXpos], GUISet([Text],  [-])),
+    GuiControl([editYpos], GUISet([Text],  [-])),
+    GuiControl([editZpos], GUISet([Text],  [-])),
+    GuiControl([editRotation], GUISet([Text],  [-]))
+  )
+)
+], [Enter helptext
+], [Enter Syntax Example], 0, [MoveAtom.atm]);
+DefineFunction([MoveAtom3D_UpdateRotation], [3D_Modeling], 0, 0, [If(
+  isnumeric(GuiControl([editRotation], Guiget([Text]))),
+  Do(
+    RotationAs (animatom):=  value(GuiControl([editRotation], Guiget([Text]))),
+    MoveAtom3D_ControlsSelected
+  ),
+  Do(
+    msg([A non valid entry is entered. Please check the input]),
+    value(GuiControl([editRotation], GuiSet([Text], RotationAs (animatom)))),
+    MoveAtom3D_ControlsSelected
+  )    
+)
+], [Enter helptext
+], [Enter Syntax Example], 0, [MoveAtom.atm]);
+DefineFunction([MoveAtom3D_UpdatePosition], [3D_Modeling], 0, 0, [If(
+  And(
+    isnumeric(GuiControl([editXpos], Guiget([Text]))),
+    isnumeric(GuiControl([editYpos], Guiget([Text]))),
+    isnumeric(GuiControl([editZpos], Guiget([Text])))
+  ),
+  Do(        
+     xLoc(animatom):=  value(GuiControl([editXpos], Guiget([Text]))),
+     yLoc(animatom):=  value(GuiControl([editYpos], Guiget([Text]))),
+     zLoc(animatom):=  value(GuiControl([editZpos], Guiget([Text]))),
+     MoveAtom3D_ControlsSelected     
+   ),
+   Do(
+     msg([A non valid entry is entered. Please check the input]),
+     value(GuiControl([editXpos], GuiSet([Text], xLoc(animatom)))),
+     value(GuiControl([editYpos], GuiSet([Text], yLoc(animatom)))),
+     value(GuiControl([editZpos], GuiSet([Text], zLoc(animatom)))),
+     MoveAtom3D_ControlsSelected 
+   )     
+)
+], [Enter helptext
+], [Enter Syntax Example], 0, [MoveAtom.atm]);
+DefineFunction([MoveAtom3D_DrawCoords], [3D_Modeling], 0, 0, [Do(
+
+  If(
+    SelectionCross3D=1,
+    Do(
+      GUIcontrol([btnShowCoords], GUIset([Image], PDir([Media\Buttons\ButtonCoordSys_Off.jpg]))),
+      SelectionCross3D:=0
+    ),
+    Do(
+      GUIcontrol([btnShowCoords], GUIset([Image], PDir([Media\Buttons\ButtonCoordSys_On.jpg]))),
+      SelectionCross3D:=1
+    )
+  ),
+  Repeat(
+    GuiInstances,
+    Do(
+      GuiInstance(GUIInstances(Count)),
+      If(
+        StringPos([delView3D], GUIInstance)>0,
+        If(
+          SelectionCross3D=1,
+          GUIcontrol([btnShowCoords], GUIset([Image], PDir([Media\Buttons\ButtonCoordSys_On.jpg]))),
+          GUIcontrol([btnShowCoords], GUIset([Image], PDir([Media\Buttons\ButtonCoordSys_Off.jpg])))
+        )
+      )
+    )
+  )
+)
+
+], [Enter helptext
+], [Enter Syntax Example], 0, [MoveAtom.atm]);
+DefineFunction([MoveAtom3D_PositionStraight], [3D_Modeling], 8, 8, [do(
+ Var([atmC], vbAtom, p(1)), 
+ Var([x1], vbValue, p(2)),
+ Var([y1], vbValue, p(3)),
+ Var([z1], vbValue, p(4)),
+ Var([x2], vbValue, p(5)),
+ Var([y2], vbValue, p(6)),
+ Var([z2], vbValue, p(7)),
+ Var([valwidth], vbValue, p(8)),
+
+ Var([valAngleDeg], vbValue),
+ Var([valLength], vbValue),
+ if(
+   valWidth = 0,
+   valWidth := 1
+ ),
+ 
+ valLength := sqrt(sqr(x2 - x1) + sqr(y2 - y1) + sqr(z2 - z1)),
+ valLength := round(valLength, 3),
+  
+ Att([InputLength], atmC) := valLength,
+ Att([Length], atmC) := valLength,
+ 
+ valAngleDeg := atan2(y2 - y1, x2 - x1) - 90,
+ valAngleDeg := round(-1 * valAngleDeg, 3),
+ 
+ if(
+   valAngleDeg < 0,
+   valAngleDeg := 360 + valAngleDeg
+ ),
+ 
+ xloc(atmC) := round(x1 + 0.5 * valWidth * sin(valAngleDeg), 3),
+ yloc(atmC) := round(y1 - 0.5 * valWidth * cos(valAngleDeg), 3),
+ 
+
+ Att([Height], atmC) := z1,
+ Att([Elevation], atmC) := round(z2 - z1, 3),
+ zloc(atmC) := z1,
+ 
+ xsize(atmC) := round(sqrt( sqr(x2 - x1 ) + sqr( y1 - y2 )), 3),
+ ysize(atmC) := valWidth,
+ 
+ RotationAs(atmC) := valAngleDeg 
+)
+], [e1 = atom
+e2 = x1 / e3 = y1 / e4 = z1
+e5 = x2 / e6 = y2 / e7 = z2
+e8 = width
+
+], [Enter Syntax Example], 0, [MoveAtom.atm]);
+Set(Icon(a), 
+	RegisterIcon(pDir([media\images\default.jpg]), [default.jpg]));
+SetMaterial(
+	RegisterMaterial([Default], 8421504, 8421504, 3289650, 0, 0.100000001490116, 0, false, false, 1, 0), 1, a);
+Set(Version(a), 8);
+SetTreeIcon(pDir([Media\Icons\Tools.ico]));
+Set(Info, [Attribute StepSize
+ 0 = Turtle (slow)
+ 1 = Hare (fast)
+
+
+Attribute Status
+ 1 = Move object
+ 2 = Rotate object
+ 3 = Move camera
+ 4 = Rotate camera
+]);
+Set(DdbRec, [>3dcontrolsvisible:1.>t-nocreate:1.]);
+int001(22);
+SetSize(1, 1, 1);
+LockPosition(false);
+LockSize(false);
+DisableIconRotation(false);
+SetProductCode([]);
+CreateAttributes(3);
+SetAttributeName(r(1), [StepSize]);
+SetAttributeName(r(2), [Camera]);
+SetAttributeName(r(3), [AreCoordsShown]);
+SetAtt(r(1), 1);
+SetAtt(r(3), 1);
+int024;
+SetStatus(0);
+int018;
+int007;

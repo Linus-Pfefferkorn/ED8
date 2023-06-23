@@ -1,0 +1,108 @@
+
+
+{Atom: Elevator}
+
+sets;
+BaseClass;
+CreateAtom(a, s, [], 1, false);
+int023([Elevator], 767720, 1144);
+Set(Icon(a), 
+	RegisterIcon(pDir([media\images\default.jpg]), [default.jpg]));
+SetMaterial(
+	RegisterMaterial([Default], 8421504, 8421504, 3289650, 0, 0.100000001490116, 0, false, false, 1, 0), 1, a);
+Set(Version(a), 8);
+SetTreeIcon(pDir([Media\Icons\Elevator.ico]));
+Set(Info, [Elevator
+
+General
+------------
+The Elevator atom is essentially a transporter capable of only moving 
+in the z-direction. 
+
+It has input logic to enable the elevator to "choose" where to pick up 
+from next. There is also a SendTo edit field to specify routing.
+
+Statuses:
+-------------
+    1 - Idle
+    5 - Blocked
+    6 - Travel Full
+    7 - Travel Empty
+   16 - Load
+   17 - Unload
+
+Last Revision:
+---------------------
+November, 2008
+]);
+SetChannels(1, 1);
+SetChannelRanges(1, 255, 1, 255);
+int001(1087);
+SetSize(3, 2, 0.2);
+SetTranslation(0, 0, -0.2);
+Set(RotationAs, 90);
+LockPosition(false);
+LockSize(false);
+DisableIconRotation(false);
+SetProductCode([]);
+CreateAttributes(18);
+SetAttributeName(r(1), [curoc]);
+SetAttributeName(r(2), [curic]);
+SetAttributeName(r(3), [acceleration]);
+SetAttributeName(r(4), [deceleration]);
+SetAttributeName(r(5), [curzdest]);
+SetAttributeName(r(6), [isondest]);
+SetAttributeName(r(7), [speed]);
+SetAttributeName(r(8), [instrategy]);
+SetAttributeName(r(9), [3dicon]);
+SetAttributeName(r(10), [entrytrigger]);
+SetAttributeName(r(11), [exittrigger]);
+SetAttributeName(r(12), [sendto]);
+SetAttributeName(r(13), [loadtime]);
+SetAttributeName(r(14), [unloadtime]);
+SetAttributeName(r(15), [batchqty]);
+SetAttributeName(r(16), [curbatch]);
+SetAttributeName(r(17), [elevheight]);
+SetAttributeName(r(18), [outdoor]);
+SetAtt(r(1), 1);
+SetAtt(r(3), 0.1);
+SetAtt(r(4), 0.1);
+SetExprAtt(r(7), [1]);
+SetExprAtt(r(8), [{.openallic(c)|Any inputchannel .}openallic(c)]);
+SetAtt(r(9), 2);
+SetExprAtt(r(12), [1]);
+SetExprAtt(r(15), [1]);
+SetAtt(r(17), 5);
+int024;
+Set(OnEvent, [case( eventcode, do( {1: at pick-up location before loading time }  stopatom(c),  setatt(6,1,c),  openic(att(2,c),c),  setstatus(22,c),  setatt(18,1) ), do( {2: at drop-off location, start unloading  }  setstatus(17,c),  stopatom(c),  setatt(6,1,c),  createevent(att(14,c),c,4),  setatt(18,1) ), do(  {3: direct after loading start traveling }   setstatus(6,c),  openalloc(c), {determine the destination}  setatt(1,att(12,c),c),  closealloc(c),  createevent(0,c,7),  setatt(18,0) ), do( {4: dropping off }  setstatus(5,c),  openoc(att(1,c),c) ), {5: input strategy determines which input channel(s) to open } att(8,c), {6 travel to pickup} createevent(  travelto(c,0,xloc(c),yloc(c),zloc(in(att(2,c),c))+zsize(in(att(2,c),c)),att(7,c),0,att(3,c),att(4,c)),  c,case(traveleventcode,6,1) ), {7 travel to putaway} createevent(  travelto(c,0,xloc(c),yloc(c),zloc(out(att(1,c),c))+zsize(out(att(1,c),c)),att(7,c),0,att(3,c),att(4,c)),  c,case(traveleventcode,7,2) ), {8 openoc if not last part out} openoc(att(1,c),c), {9 open input channel if not full} openic(att(2,c),c), {10 setloc} do(  StopAtom(i),  RotationAs(i):= i.RotationAs,  if(   And(content(c) = 1, att([batchqty], c) = 1),   setloc(/(-(xsize(c),xsize(i)),2),/(-(ysize(c),ysize(i)),2),0,i),   setloc(xSize(c)- Label([CLength], c),/(-(ysize(c), ysize(i)),2), 0, i)  ) ))]);
+Set(OnEntered, [do( Label([CLength], c) :=  Label([CLength], c) + xSize(i),  if(  { First entry after completely evacuation }  Content(c),  { Recalculation of current capacity }  setatt(16,round(att(15,c)),c) ),  i.RotationAs := RotationAs(i), RotationAs(i):= c.RotationAs, SetLoc(  c.xAbsLoc,  c.yAbsLoc,  c.zAbsLoc,  i ),  if(  Att(13,c) > 0,  case(   WhichIsTrue(    {x+}    xLoc(i) >= xSize(c),    {y+}    YLoc(i) >= ySize(c),    {x-}    xLoc(i) <= 0,    {y-}    YLoc(i) <= 0   ),   SetSpeed(0 - (if(1, xLoc(i) - xSize(c) - xSize(i)) + xSize(c)/2 + xSize(i)/2) / Att(13,c), 0, 0, i),   SetSpeed(0, 0 - (if(1, yLoc(i) - ySize(c) - ySize(i)) + ySize(c)/2 + ySize(i)/2) / Att(13,c), 0, i),   SetSpeed((if(1, Abs(xLoc(i)) - xSize(i)) + xSize(c)/2 + xSize(i)/2) / Att(13,c), 0, 0, i),   SetSpeed(0, (if(1, Abs(yLoc(i)) - ySize(i)) + ySize(c)/2 + ySize(i)/2) / Att(13,c), 0, i)  ) ),  if(  >=(content(c),att(16,c)),  do(   setstatus(16,c),   setatt(6,0,c),   closeallic(c),   closealloc(c),   createevent(att(13,c),c,3),   createevent(att(13,c),c,10, -1, i)  ),  do(   closeallic(c),   setstatus(16,c),   setatt(6,0,c),   createevent(att(13,c),c,5),   createevent(att(13,c),c,10, -1, i)  ) ),  att(10,c))]);
+Set(OnExited, [if(=(content(c),0), do(  setstatus(1,c),  setatt(6,0,c),  closealloc(c),  att(11,c),  Label([CLength], c) := 0,  if(   abs(RotationAs(c)-RotationAs(Out(oc(c),c))) = 180,   do(    RotationAs(i) := 180,    SetTranslation(-(xSize(i)), -(ySize(i)), 0, i),    ForAtomLayerUnder(     i,      SetTranslation((xSize(i)),-(ySize(i)), 0, a)    )   )   ),      createevent(0,c,5) ), do(  closealloc(c),  setatt(1,att(12,c),c),  if(   abs(RotationAs(c)-RotationAs(Out(oc(c),c))) = 180,   do(    RotationAs(i) := 180,    SetTranslation(-(xSize(i)),-(ySize(i)), 0, i),    ForAtomLayerUnder(     i,      SetTranslation(-(xSize(i)),-(ySize(i)), 0, a)    )   )   ),  createevent(att(14,c),c,7) ))]);
+Set(OnCreation, [autoconnect]);
+Set(OnReset, [do( closealloc(c), setstatus(1,c), stopatom, setatt(6,0,c), openallic(c), setatt(18,1), Label([CLength], c) := 0)]);
+Set(OnUser, [Do(  { Delete any current instances of this form.}   GuiDestroy([Elevator]),  { Register the GUI-form for this atom.}  GuiRegister(PDir([\Atoms\Elevator.gui]), 1),  { Show the GUI-form.}   GuiCreate([Elevator], [Elevator], 0, c, 0, 1))]);
+Set(OnOcReady, [if( { is on destination to drop-off } att(6, c), { drop-off } MoveRequest(  First(c),  { current oc }  Att(1, c) ))]);
+Set(OnIcReady, [if(
+ not(att(6,c)),
+ do(
+  setstatus(7,c),
+  setatt(2,ic(c),c),
+  closeallic(c),
+  createevent(0,c,6)
+ ),
+ if(
+  AtomExists(First(in(ic(c), c))),
+  do(
+   c.xAbsLoc := xAbsLoc(First(in(ic(c), c)), Model) - xAbsLoc(c, Model),
+   c.yAbsLoc := yAbsLoc(First(in(ic(c), c)), Model) - yAbsLoc(c, Model),
+   c.zAbsLoc := zAbsLoc(First(in(ic(c), c)), Model) - zAbsLoc(c, Model),
+   c.RotationAs := RotationAs(In(ic(c), c))
+  )
+ )
+)
+ 
+]);
+Set(On2DDraw, [standarddisplay(name,string(content))]);
+Set(On3DDraw, [ do(  di3dbox(0,0,-(0,zloc(c)),0.2,0.2,att(17,c)+1,colorgray),  di3dbox(0,ysize,-(0,zloc(c)),0.2,0.2,att(17,c)+1,colorgray),  di3dbox(xsize,0,-(0,zloc(c)),0.2,0.2,att(17,c)+1,colorgray),  di3dbox(xsize,ysize,-(0,zloc(c)),0.2,0.2,att(17,c)+1,colorgray), if(=(att(9,c),2),  do(  repeat(+(/(2,.3),1),   di3dbox(-.2,-.2,*(-(count,.9),.3),+(xsize(c),.4),.01,.01,colorblack)),  repeat(+(/(xsize(c),.3),1),   di3dbox(*(-(count,.9),.3),-.2,0,.01,.01,2,colorblack)),  repeat(+(/(2,.3),1),   di3dbox(-.2,+(ysize(c),.2),*(-(count,.9),.3),+(xsize(c),.4),.01,.01,colorblack)),  repeat(+(/(xsize(c),.3),1),   di3dbox(*(-(count,.9),.3),+(ysize(c),.2),0,.01,.01,2,colorblack)),    if(=(att(18,c),0),   do(    repeat(+(/(2,.3),1),     di3dbox(-.2,-.2,*(-(count,.9),.3),.01,+(ysize(c),.4),.01,colordarkgray)    ),    repeat(+(/(ysize(c),.3),1),     di3dbox(-.2,*(-(count,.9),.3),0,.01,.01,2,colordarkgray)    ),    repeat(+(/(2,.3),1),     di3dbox(+(xsize(c),.2),-.2,*(-(count,.9),.3),.01,+(ysize(c),.4),.01,colordarkgray)    ),    repeat(+(/(ysize(c),.3),1),     di3dbox(+(xsize(c),.2),*(-(count,.9),.3),0,.01,.01,2,colordarkgray)    )   )  ),  repeat(+(/(xsize(c),.3),1),   di3dbox(*(-(count,.9),.3),-.2,2,.01,+(ysize(c),.4),.01,colorblack)),  repeat(+(/(ysize(c),.3),1),   di3dbox(-.2,*(-(count,.9),.3),2,+(xsize(c),.4),.01,.01,colorblack))   )   ) )]);
+SetStatus(0);
+int018;
+int007;

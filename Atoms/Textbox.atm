@@ -1,0 +1,69 @@
+
+
+{Atom: Textbox}
+
+sets;
+BaseClass;
+CreateAtom(a, s, [], 1, false);
+Set(OnInit, [do( registereditfield([t-attmemo],[Text],[textatt(curfield)],[settextatt(curfield,[&])],fieldmemo,[enter the text you with to view]), registereditfield([t-fontsize],[Font size],[textatt([fontsize])],[setexpratt([fontsize],&)],fieldlistboxedit(4,[.5/.7/1/2]),[pick or enter the font size]), registereditfield([t-font],[Font],[textatt([font])],[setexpratt([font],&)],fieldlistboxedit(4,[[Arial]/[Times New Roman]/[Courier New]/[Technic]]),[pick or enter the font]))]);
+int023([Textbox], 15, 32);
+Set(Icon(a), 
+	RegisterIcon(pDir([icons\bmp\atoms\tedatom.bmp]), [ed]));
+SetMaterial(
+	RegisterMaterial([Default], 8421504, 8421504, 3289650, 0, 0.100000001490116, 0, false, false, 1, 0), 1, a);
+Set(Version(a), 7);
+SetTreeIcon(pDir([Media\Icons\Textbox.ico]));
+Set(Info, [Textbox
+
+General
+------------
+Displays a text box.
+
+You can write text, select a text color, a background color, font 
+size, font, and display scale.
+
+Used to add discriptive text in 2D view only.
+
+Last Revision:
+---------------------
+September 29, 2003
+]);
+SetChannels(1, 0);
+SetChannelRanges(1, 1, 0, 0);
+int001(154);
+SetLoc(0, 0, 1);
+SetSize(2.8, 1.4, 0);
+LockPosition(false);
+LockSize(false);
+DisableIconRotation(false);
+SetProductCode([]);
+CreateAttributes(13);
+SetAttributeName(r(1), [text]);
+SetAttributeName(r(2), [textcolor]);
+SetAttributeName(r(3), [backgroundcolor]);
+SetAttributeName(r(4), [fontsize]);
+SetAttributeName(r(5), [font]);
+SetAttributeName(r(6), [fontscale]);
+SetAttributeName(r(7), [italic]);
+SetAttributeName(r(8), [pitch]);
+SetAttributeName(r(9), [xpitch]);
+SetAttributeName(r(10), [zpitch]);
+SetAttributeName(r(11), [3DEnabled]);
+SetAttributeName(r(12), [3dFontSize]);
+SetAttributeName(r(13), [2DEnabled]);
+SetTextAtt(r(1), [Text]);
+SetExprAtt(r(2), [1]);
+SetExprAtt(r(3), [colorwhite]);
+SetExprAtt(r(4), [1]);
+SetExprAtt(r(5), [[Arial]]);
+SetAtt(r(6), 5);
+SetAtt(r(9), -45);
+SetAtt(r(12), 2);
+SetAtt(r(13), 1);
+int024;
+Set(OnUser, [Do(  { Delete any current instances of this form.}   GuiDestroy([TextBox]),  { Register the GUI-form for this atom.}  GuiRegister(PDir([\Atoms\TextBox.gui]), 1),  { Show the GUI-form.}   GuiCreate([TextBox], [TextBox], 0, c, 0, 1)   )]);
+Set(On2DDraw, [if(>(discale,att(6,c)),  ditext(0,0,att(1,c),att(2,c),att(3,c),att(4,c),att(5,c)))]);
+Set(On3DDraw, [do( if(  AtomExists(in(1, c)),  do(   Do(      PushTextureCoords,      TranslateCoords(     xLoc(in(1, c)) - xLoc(c),     yLoc(in(1, c)) - yLoc(c)     ),        PopTextureCoords,        xPitch := 0,    zPitch := 0,    zLoc(c) := zSize(in(1, c)) + 0.1   )  ) ), if(  and(   XPitch <> 0,   ZPitch <> 0  ),  RotateCoords(XPitch, 0, 1, 0),  RotateCoords(XPitch, 1, 0, 0) ),  DrawText(  0,                    { x-coord. of the text }  0,                    { y-coord. of the text }  xSize + 50,           { width of the bounding box }  ySize + 50,           { height of the bounding box }  Text,                 { text to display }  TextColor,            { font color }  3DFontSize,           { font size }  Font,                 { font name }  0,                    { use bold text }  Italic,               { set the italic angle }  ZPitch,               { set the rotation of the text }  VA_TOP + HA_LEFT,     { placement of the text within the containing atom }  if(                   { backgroundcolor }   BackgroundColor = 16777215,   ColorTransparent,   BackgroundColor  ),        1,                    { height scale }  1              ))]);
+SetStatus(0);
+int018;
+int007;

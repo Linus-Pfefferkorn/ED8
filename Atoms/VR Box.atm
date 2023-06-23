@@ -1,0 +1,70 @@
+
+
+{Atom: VR Box}
+
+sets;
+BaseClass;
+createAtom(a, s, [], 1, false);
+int023([VR Box], 16777215, 1264);
+Set(Icon(a), 
+	RegisterIcon(TexturesDir([\Wood\camo_plates.jpg]), [camo_plates.jpg], 1, 0, 0, 255, 255, false, 0));
+SetMaterial(
+	RegisterMaterial([Default], 8421504, 8421504, 3289650, 0, 0.100000001490116, 0, false, false, 1, 0), 1, a);
+Set(Version(a), 7.3);
+SetTreeIcon(pDir([Media\Icons\VRBox.ico]));
+int001(94);
+SetSize(5, 2, 0);
+LockPosition(false);
+LockSize(false);
+DisableIconRotation(false);
+SetProductCode([]);
+createAttributes(9);
+SetAttributeName(r(1), [xoffset]);
+SetAttributeName(r(2), [yoffset]);
+SetAttributeName(r(3), [zoffset]);
+SetAttributeName(r(4), [boxxsize]);
+SetAttributeName(r(5), [boxysize]);
+SetAttributeName(r(6), [boxzsize]);
+SetAttributeName(r(7), [iconxrepeat]);
+SetAttributeName(r(8), [iconyrepeat]);
+SetAttributeName(r(9), [iconzrepeat]);
+SetAtt(r(4), 1);
+SetAtt(r(5), 1);
+SetAtt(r(6), 1);
+SetAtt(r(7), 1);
+SetAtt(r(8), 1);
+SetAtt(r(9), 1);
+int024;
+Set(OnUser, [Do(
+  { Delete any current instances of this form.} 
+  GuiDestroy([VR Box]),
+
+  { Register the GUI-form for this atom.}
+  GuiRegister(PDir([\Atoms\VR Box.gui]), 1),
+
+  { Show the GUI-form.}
+   Guicreate([VR Box], [VR Box], 0, c, 0, 1)
+)
+]);
+Set(On2DDraw, [do(
+ dishape(0,0,xsize,ysize,0.25,colorblack,colorwhite),
+ dishape(0,0,xsize,1,0.25,colorblack,7485496),
+ dionscale(13,
+  do(
+   ditext(0.2,0.1,name(c),colorwhite,7485496,0.5,[Arial],-(xsize,0.3),0.8),
+   ditext(0.2,1.1,concat([size: ],string(att(4,c)),[x],string(att(5,c)),[x],string(att(6,c))),0,colorwhite,0.5,[Arial],-(xsize,0.3),0.8)
+  )
+ )
+)
+]);
+Set(On3DDraw, [do(
+ SetMaterialColor(Color),
+ SetMaterialTexture(IconToTexture(Icon)),
+ TextureAxes(att(7,c),0,0,0,0,att(8,c),att(9,c),0,0),
+ SetMaterialColor(Color, EMISSIVE_COLOR),
+ DrawCube(att(1, c)+att(4, c)*0.5, att(2, c)+att(5, c)*0.5, att(3, c)+att(6, c)*0.5, att(4, c), att(5, c), att(6, c))
+)
+]);
+SetStatus(0);
+int018;
+int007;

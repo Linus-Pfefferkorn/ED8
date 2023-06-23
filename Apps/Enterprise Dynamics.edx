@@ -1,0 +1,47 @@
+{{GERMAN MODELS}}
+Open a German example model.||pDir([Apps\Deutschsprachige Modelle])
+{{ACTIVEX}}
+Simpel usage of the ExcelActiveX Atom.||pDir([Work\Examples\English\ActiveX Samples\Excel\ExcelActiveX.mod])
+Demonstrates ActiveX connection with OLE.||pDir([Work\Examples\English\ActiveX Samples\Excel\OLE Excel.mod])
+Shows writing to two excelsheets simulatanously.||pDir([Work\Examples\English\ActiveX Samples\Excel\WriteExcel.mod])
+{{AVAILABILITY}}
+Shows the Availability Control with several functions.||pDir([Work\Examples\English\Availability\Availability.mod])
+A supermarket with counters that are open according a time schedule.||pDir([Work\Examples\English\Availability\Supermarket.mod])
+{{BASIC MODELING}}
+Use nodes to set the speed of products.||pDir([Work\Examples\English\Basic Modeling\Nodes.mod])
+Use the Assembler and Unpack atoms to model basic packing and unpacking.||pDir([Work\Examples\English\Basic Modeling\Packing.mod])
+Displays the use and difference of MultiService and Server atom.||pDir([Work\Examples\English\Basic Modeling\Servers.mod])
+{{DATABASE}}
+Connect to a pre-defined ODBC Database.||pDir([Work\Examples\English\Databases\Database.mod])
+Conencts to two pre-defiend databases and pumps data from one into the ther using 4DScript.||pDir([Work\Examples\English\Databases\datapump.mod])
+Another simple database model using data I/O||pDir([Work\Examples\English\Databases\My First Database.mod])
+{{DEBUGGER}}
+Shows the implementation usign the debugger. Also read the pdf.||pDir([Work\Examples\English\Debugger\Debugger.mod])
+{{EXPERIMENTATION}}
+A postoffice model with a pre-defined experiment.||pDir([Work\Examples\English\Experimentation Wizard\Postoffice.mod])
+{{FILES}}
+This model shows how to read in data from a file.||pDir([Work\Examples\English\Files\Reading Data.mod])
+This model shows how to write data to a file.||pDir([Work\Examples\English\Files\Writing Data.mod])
+{{FLOW CONTROL}}
+In this demo model the use of several atoms displays how to control the flow in a model.||pDir([Work\Examples\English\Flow Control\Condition1.mod])
+A specific role for the Lock atom is displayed.||pDir([Work\Examples\English\Flow Control\Lock.mod])
+{{GUI}}
+Display the working of the GUI builder||pDir([Work\Examples\English\GUI\GUI Examples.mod])
+A simple custom GUI model.||pDir([Work\Examples\English\GUI\GUIstart.mod])
+{{RESULTS}}
+Display the working of the GUI builder||pDir([Work\Examples\English\Results\CircleDiagram In Combination With Server Atom.mod])
+A simple custom GUI model.||pDir([Work\Examples\English\Results\CircleDiagram In Conceptual Situation.mod])
+A simple custom GUI model.||pDir([Work\Examples\English\Results\Data Recorder.mod])
+A simple custom GUI model.||pDir([Work\Examples\English\Results\Ganttexamp1.mod])
+A simple custom GUI model.||pDir([Work\Examples\English\Results\Ganttexamp2.mod])
+A simple custom GUI model.||pDir([Work\Examples\English\Results\Histogram Acting As Waiting Time and Service Time Distribution.mod])
+A simple custom GUI model.||pDir([Work\Examples\English\Results\Histogram Acting Like Queue And Waiting Time Distribution.mod])
+A simple custom GUI model.||pDir([Work\Examples\English\Results\Histogram In Combination With Server Atom.mod])
+A simple custom GUI model.||pDir([Work\Examples\English\Results\Histogram In Conceptual Situation.mod])
+A simple custom GUI model.||pDir([Work\Examples\English\Results\Monitor.mod])
+A simple custom GUI model.||pDir([Work\Examples\English\Results\Scatterplot of Waiting Time versus Throughput Time.mod])
+A simple custom GUI model.||pDir([Work\Examples\English\Results\Scatterplot of Waiting Times.mod])
+A simple custom GUI model.||pDir([Work\Examples\English\Results\StatusHistogram_Standard.mod])
+A simple custom GUI model.||pDir([Work\Examples\English\Results\StatusIndicator_Standard.mod])
+A simple custom GUI model.||pDir([Work\Examples\English\Results\StatusMonitor_Standard.mod])
+A simple custom GUI model.||pDir([Work\Examples\English\Results\StatusMonitorStackedBar_Standard.mod])

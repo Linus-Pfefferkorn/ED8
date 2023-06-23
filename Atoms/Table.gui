@@ -1,0 +1,185 @@
+EDControl(EditForm:
+  BorderIcons = set(SystemMenu),
+  BorderStyle = Single,
+  Caption = str('Table'),
+  Height = 382,
+  Name = str('Table'),
+  Position = Default,
+  ShowHint = True,
+  Top = 334,
+  Visible = False,
+  Width = 395,
+  Controls(
+    EDControl(MultiPage:
+      ActivePage = 1,
+      Align = Client,
+      Anchors = set(Left,Top,Right,Bottom),
+      Height = 342,
+      Left = 0,
+      Name = str('MultiPage1'),
+      TabOrder = 1,
+      Top = 0,
+      Width = 395,
+      Controls(
+        EDControl(SinglePage:
+          Caption = str('General'),
+          Name = str('SinglePage1'),
+          PageIndex = 1,
+          Controls(
+            EDControl(GroupBox:
+              Caption = str(''),
+              Height = 64,
+              Left = 8,
+              Name = str('GroupBox1'),
+              TabOrder = 1,
+              Top = 8,
+              Width = 370,
+              Controls(
+                EDControl(Edit:
+                  Height = 21,
+                  Left = 132,
+                  Name = str('AtomName'),
+                  TabOrder = 1,
+                  Top = 26,
+                  Width = 225,
+                  Events(
+                    Change = str('if('#13' GuiControl([cbUseAtomName], GuiGet([Checked])),'#13' GuiControl([AliasName], GuiSet([Text], GuiControl([AtomName], GuiGet([Text]))))'#13')'#13))),
+                EDControl(Label:
+                  Caption = str('Atom name:'),
+                  Color = -16777208,
+                  Height = 13,
+                  Left = 12,
+                  Name = str('StaticText1'),
+                  Top = 32,
+                  Width = 56))),
+            EDControl(GroupBox:
+              Caption = str('Alias settings'),
+              Height = 128,
+              Left = 8,
+              Name = str('GroupBox2'),
+              TabOrder = 2,
+              Top = 88,
+              Width = 370,
+              Controls(
+                EDControl(CheckBox:
+                  Caption = str(''),
+                  Hint = str('If checked three functions are created to easily Read (AliasName), Write (SetAliasName) and Reference (RefAliasName) to the table. '),
+                  Left = 132,
+                  Name = str('createAlias'),
+                  TabOrder = 1,
+                  Top = 92),
+                EDControl(Label:
+                  Caption = str('create alias:'),
+                  Color = -16777208,
+                  Height = 13,
+                  Left = 12,
+                  Name = str('StaticText3222'),
+                  Top = 96,
+                  Width = 57),
+                EDControl(Label:
+                  Caption = str('Alias name:'),
+                  Color = -16777208,
+                  Height = 13,
+                  Left = 12,
+                  Name = str('StaticText12'),
+                  Top = 64,
+                  Width = 54),
+                EDControl(Edit:
+                  Enabled = False,
+                  Height = 21,
+                  Left = 132,
+                  Name = str('AliasName'),
+                  TabOrder = 2,
+                  Top = 58,
+                  Width = 225),
+                EDControl(Label:
+                  Caption = str('Use atom name:'),
+                  Color = -16777208,
+                  Height = 13,
+                  Left = 12,
+                  Name = str('StaticText122'),
+                  Top = 32,
+                  Width = 77),
+                EDControl(CheckBox:
+                  Caption = str(''),
+                  Checked = True,
+                  Hint = str('If checked the Atom Name will be used as alias name.'),
+                  Left = 132,
+                  Name = str('cbUseAtomName'),
+                  TabOrder = 3,
+                  Top = 28,
+                  Events(
+                    Change = str('Do('#13' GuiControl([AliasName], GuiSet([Enabled], Not(GuiControl([cbUseAtomName], GuiGet([Checked]))))),'#13' '#13' if('#13'  GuiControl([cbUseAtomName], GuiGet([Checked])),'#13'  GuiControl([AliasName], GuiSet([Text], GuiControl([AtomName], GuiGet([Text]))))'#13' )'#13')'#13))))),
+            EDControl(GroupBox:
+              Caption = str('Miscellaneous'),
+              Height = 64,
+              Left = 8,
+              Name = str('GroupBox22'),
+              TabOrder = 3,
+              Top = 240,
+              Width = 370,
+              Controls(
+                EDControl(Button:
+                  Caption = str('&Edit Table'),
+                  Left = 12,
+                  Name = str('btnEditTable'),
+                  TabOrder = 1,
+                  Top = 24,
+                  Events(
+                    Click = str('EditTable(GuiAtom)'#13))),
+                EDControl(CheckBox:
+                  Caption = str('Clear table on reset'),
+                  Left = 132,
+                  Name = str('cbClearOnReset'),
+                  TabOrder = 2,
+                  Top = 28,
+                  Width = 121))))))),
+    EDControl(Panel:
+      Align = Bottom,
+      Anchors = set(Left,Right,Bottom),
+      BevelOuter = None,
+      Caption = str(''),
+      Height = 40,
+      Left = 0,
+      Name = str('Panel1'),
+      TabOrder = 2,
+      Top = 342,
+      Width = 395,
+      Controls(
+        EDControl(Button:
+          Caption = str('&Apply'),
+          Left = 312,
+          Name = str('btnApply'),
+          TabOrder = 4,
+          Top = 8,
+          Events(
+            Click = str('do('#13' { Skip alias function deletion/creation to avoid memory fragmentation }'#13' var('#13'  [valUpdateAliases], '#13'  vbValue,'#13'  Or('#13'   { alias name has changed }'#13'   Not('#13'    CompareText('#13'     GuiControl([AliasName], GuiGet([Text])),'#13'     Table_GetAliasName(GuiAtom)'#13'    )'#13'   ),'#13'   { create alias flag has changed }'#13'   Table_GetCreateAlias(GuiAtom) <> GuiControl([createAlias], GuiGet([Checked]))'#13'  )'#13' ), '#13#13' if(valUpdateAliases, Table_MaybeDeleteAliases(GuiAtom)),'#13#13' {Save TextField}'#13' Name(GuiAtom) := GuiControl([AtomName], GuiGet([Text])),'#13' '#13' Table_SetAliasName(GuiAtom, GuiControl([AliasName], GuiGet([Text]))),'#13' '#13' '#13' {Save CheckBox}'#13' Table_SetCreateAlias(GuiAtom, GuiControl([createAlias],GuiGet([Checked]))),'#13' Att([UseAtomName], GuiAtom) := GuiControl([cbUseAtomName],GuiGet([Checked])),'#13' Att([ClearOnReset], GuiAtom) := GuiControl([cbClearOnReset], GuiGet([Checked])),'#13#13#13' if(valUpdateAliases, Table_MaybeCreateAliases(GuiAtom))'#13')'#13))),
+        EDControl(Button:
+          Cancel = True,
+          Caption = str('&Cancel'),
+          Left = 230,
+          Name = str('btnCancel'),
+          TabOrder = 3,
+          Top = 8,
+          Events(
+            Click = str('Do('#13' GuiDestroy,'#13' GuiUnregister([Table])'#13')'#13))),
+        EDControl(Button:
+          Caption = str('&Ok'),
+          Default = True,
+          Left = 144,
+          Name = str('btnOk'),
+          TabOrder = 2,
+          Top = 8,
+          Events(
+            Click = str('Do('#13' GuiControl([btnApply]),'#13' GuiRun([Click]),'#13' GuiDestroy'#13')'#13))),
+        EDControl(Button:
+          Caption = str('&Help'),
+          Left = 8,
+          Name = str('btnHelp'),
+          TabOrder = 1,
+          Top = 8,
+          Events(
+            Click = str('Help(PDir([HELP\ED Help.hlp]), [Table])'#13)))))),
+  Events(
+    Show = str('do('#13#13'  {Set Caption}'#13'  if('#13'   AtomExists(m(GuiAtom)),'#13'   GuiControl([Table], GuiSet([Caption], Concat(Name(m(GuiAtom)), [ - ], Name(GuiAtom)))),'#13'   GuiControl([Table], GuiSet([Caption], Concat([Baseclass - ], Name(GuiAtom))))'#13'  ), '#13'  '#13'  {if Atom is old style ED8.0 or older then upgrade the table atom}'#13'  if(Table_NeedsUpgradeED81(GuiAtom), Table_UpgradeAtom(GuiAtom)),'#13'  '#13'  {check the aliases if Atom is a copy of another atom}'#13'  Table_RepairAliasOnPaste(GuiAtom),  '#13#13'  {Set ActivePage}'#13'  GuiControl([MultiPage1]), GuiSet([ActivePage], 1),'#13'      '#13'  {Set TextField}'#13'  GuiControl([AtomName], GuiSet([Text], Name(GuiAtom))),'#13'  GuiControl('#13'   [AliasName], '#13'   GuiSet([Text], if(Table_GetUseAtomName(GuiAtom) > 0, Name(GuiAtom), Table_GetAliasName(GuiAtom)))'#13'  ),'#13#13'  {Set CheckBox}'#13'  GuiControl([createAlias], GuiSet([Checked], Table_GetCreateAlias(GuiAtom))),'#13'  GuiControl([cbUseAtomName], GuiSet([Checked], Att([UseAtomName], Guiatom))),'#13'  GuiControl([cbClearOnReset], GuiSet([Checked], Att([ClearOnReset], Guiatom))),'#13#13'  Gui_PositionGuiAroundAtom(GuiControl([Table])),'#13'  '#13'  GuiRun([Update])'#13')'#13)))
+

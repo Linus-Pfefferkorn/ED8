@@ -1,0 +1,461 @@
+EDControl(EditForm:
+  BorderIcons = set(SystemMenu),
+  BorderStyle = Single,
+  Caption = str('Excel'),
+  Height = 743,
+  Name = str('Excel'),
+  Position = Default,
+  ShowHint = True,
+  Top = 66,
+  Visible = False,
+  Width = 395,
+  Controls(
+    EDControl(MultiPage:
+      ActivePage = 2,
+      Align = Client,
+      Anchors = set(Left,Top,Right,Bottom),
+      Height = 667,
+      Left = 0,
+      Name = str('MultiPage1'),
+      TabOrder = 1,
+      Top = 0,
+      Width = 395,
+      Controls(
+        EDControl(SinglePage:
+          Caption = str('General'),
+          Name = str('SinglePage1'),
+          PageIndex = 1,
+          Controls(
+            EDControl(GroupBox:
+              Caption = str(''),
+              Height = 64,
+              Left = 8,
+              Name = str('GroupBox22'),
+              TabOrder = 1,
+              Top = 8,
+              Width = 369,
+            Controls(
+EDControl(Edit:
+              Height = 21,
+              Left = 132,
+              Name = str('ebAtomName'),
+              TabOrder = 2,
+              Top = 26,
+              Width = 225),
+            EDControl(Label:
+              Caption = str('Atom name:'),
+              Color = -16777208,
+              Left = 12,
+              Name = str('StaticText132'),
+              Top = 32,
+              Width = 60))),
+EDControl(GroupBox:
+              Caption = str('Settings'),
+              Height = 160,
+              Left = 8,
+              Name = str('GroupBox1'),
+              TabOrder = 3,
+              Top = 88,
+              Width = 370,
+            Controls(
+EDControl(Edit:
+              Height = 21,
+              Left = 132,
+              Name = str('Edit_File'),
+              TabOrder = 4,
+              Top = 26,
+              Width = 225),
+            EDControl(Button:
+              Caption = str('&Browse...'),
+              Left = 280,
+              Name = str('Select_Btn'),
+              TabOrder = 5,
+              Top = 52,
+              Events(
+                Click = str('do('#13' if(ddeready,excelclose),'#13' sddb([T000-MustloadExcel],1,model),'#13' settextatt([FileName],getfileopen([*.xls],[Excel files (*.xls)|*.xls|All files (*.*)|*.*]),guiatom),'#13' if('#13'  >(stringlength(textatt([FileName],guiatom)),0),'#13'  do('#13'   guicontrol([Edit_File]),'#13'   guiset([Text],textatt([FileName],guiatom))'#13'  ),'#13'  msg([No valid file name has been selected. Try again!])'#13' )'#13')'#13))),
+            EDControl(Label:
+              Caption = str('Filename:'),
+              Color = -16777208,
+              Left = 12,
+              Name = str('StaticText1'),
+              Top = 32,
+              Width = 49),
+            EDControl(Label:
+              Caption = str('Sheetname:'),
+              Color = -16777208,
+              Left = 12,
+              Name = str('StaticText122'),
+              Top = 96,
+              Width = 61),
+            EDControl(Label:
+              Caption = str('Excel visible at startup:'),
+              Color = -16777208,
+              Left = 12,
+              Name = str('StaticText123'),
+              Top = 128,
+              Width = 112),
+            EDControl(Edit:
+              Height = 21,
+              Left = 132,
+              Name = str('Edit_Sheet'),
+              TabOrder = 6,
+              Top = 90,
+              Width = 225),
+            EDControl(CheckBox:
+              Caption = str(''),
+              Left = 132,
+              Name = str('cbVisible'),
+              TabOrder = 7,
+              Top = 124,
+              Events(
+                Change = str('SetAtt([Visible],GuiGet([Checked]),GuiAtom)'#13))))),
+EDControl(GroupBox:
+              Caption = str('Miscellaneous'),
+              Height = 64,
+              Left = 8,
+              Name = str('GroupBox222'),
+              TabOrder = 8,
+              Top = 264,
+              Width = 369,
+            Controls(
+EDControl(Button:
+              Caption = str('C&onnect'),
+              Hint = str('Pushing this button will automatically apply the changes'),
+              Left = 12,
+              Name = str('Button1'),
+              TabOrder = 9,
+              Top = 24,
+              Events(
+                Click = str('do('#13' { First apply the changes }'#13' GuiControl([btnApply]),'#13' GuiRun([Click]), '#13' ExcelConnect(GuiAtom),'#13' If(DDEReady,'#13'  msg([Connected succesfully], 1)'#13' )'#13')'#13))),
+            EDControl(Button:
+              Caption = str('&Disconnect'),
+              Hint = str('Pushing this button will automatically apply the changes'),
+              Left = 100,
+              Name = str('Button13'),
+              TabOrder = 10,
+              Top = 24,
+              Events(
+                Click = str('if('#13' confirm([Are you sure you want to dicsonnect from Excel?]) = true,'#13' excelclose'#13')'#13))))))),
+EDControl(SinglePage:
+          Caption = str('Excel Sheets'),
+          Name = str('SinglePage2'),
+          PageIndex = 2,
+          Controls(
+            EDControl(GroupBox:
+              Caption = str('Settings'),
+              Height = 64,
+              Left = 8,
+              Name = str('gbSettings'),
+              TabOrder = 1,
+              Top = 8,
+              Width = 369,
+            Controls(
+EDControl(Edit:
+              Enabled = False,
+              Height = 21,
+              Left = 132,
+              Name = str('ebNumberOfSheets'),
+              TabOrder = 2,
+              Top = 26,
+              Width = 100),
+            EDControl(Button:
+              Caption = str('+'),
+              Left = 240,
+              Name = str('Plus_btn'),
+              TabOrder = 3,
+              Top = 24,
+              Width = 25,
+              Events(
+                Click = str('do('#13' var([numberofsheets], vbValue, 0),'#13' var([currentlyeditedsheet], vbValue, 0),'#13' var([indexer], vbValue, 0),'#13' '#13' numberofsheets := Value(GuiControl([ebNumberOfSheets], GuiGet([Text]))),'#13' currentlyeditedsheet := Value(GuiControl([stCurrentlyEditedSheet], GuiGet([Caption]))),'#13'  '#13' inc(numberofsheets),'#13' '#13' GuiControl([ebNumberOfSheets], GuiSet([Text], String(numberofsheets))),'#13#13' GuiControl([cbSheetNumber]),'#13' '#13' GuiList([Items], [Clear]),'#13' '#13' { Fill list where you can select a sheet number to edit with the right number of sheets }'#13' for('#13'  indexer := 1, indexer <= numberofsheets, inc(indexer),'#13'  do('#13'   GuiList([Items], [Add], String(indexer))'#13'  )'#13' ),'#13' '#13' GuiControl([cbSheetNumber], GuiSet([ItemIndex], currentlyeditedsheet)),'#13' '#13' settable(numberofsheets, 11, guiatom),'#13#13' {excel atom build up}'#13' createatom('#13'  atombyname([Table], Library),'#13'  guiatom,'#13'  concat('#13'   [Excel_table_],'#13'   string(numberofsheets)'#13'  )'#13' ),'#13#13' setrank(numberofsheets, first(guiatom)),'#13#13' setcell(0, 1, [Atom Name], guiatom),'#13' setcell(0, 2, [Sheet Name], guiatom),'#13' setcell(0, 3, [# Rows Table], guiatom),'#13' setcell(0, 4, [# Cols Table], guiatom),'#13' setcell(0, 5, [Start Row Excel], guiatom),'#13' setcell(0, 6, [Start Col Excel], guiatom),'#13' setcell(0, 7, [# Rows from/to Excel], guiatom),'#13' setcell(0, 8, [# Cols from/to Excel], guiatom),'#13' setcell(0, 9, [Time to Read/Write], guiatom),'#13' setcell(0, 10, [Read(1))/Write(2)], guiatom),'#13' setcell(0, 11, [OnReset(1)/OnTime(2)], guiatom),'#13#13' setcell(numberofsheets,1,name(last(guiatom)),guiatom),                    '#13' setcell(numberofsheets,2,concat([Sheet],string(content(guiatom))),guiatom), '#13' setcell(numberofsheets,3,5,guiatom),                                        '#13' setcell(numberofsheets,4,5,guiatom),                                        '#13' setcell(numberofsheets,5,1,guiatom),                                        '#13' setcell(numberofsheets,6,1,guiatom),                                        '#13' setcell(numberofsheets,7,5,guiatom),                                        '#13' setcell(numberofsheets,8,5,guiatom),                                        '#13' setcell(numberofsheets,9,[hr(1)],guiatom),                                  '#13' setcell(numberofsheets,10,1,guiatom),                                       '#13' setcell(numberofsheets,11,1,guiatom),'#13' '#13' Att([NoTables], GuiAtom) := Value(GuiControl([ebNumberOfSheets], GuiGet([Text])))'#13')'#13))),
+            EDControl(Button:
+              Caption = str('-'),
+              Left = 272,
+              Name = str('Min_btn'),
+              TabOrder = 4,
+              Top = 24,
+              Width = 25,
+              Events(
+                Click = str('do('#13' var([numberofsheets], vbValue, 0),'#13' var([indexer], vbValue, 0),'#13' var([currentlyeditedsheet], vbValue, 0),'#13' '#13' numberofsheets := Value(GuiControl([ebNumberOfSheets], GuiGet([Text]))),'#13' currentlyeditedsheet := Value(GuiControl([stCurrentlyEditedSheet], GuiGet([Caption]))),'#13#13' if('#13'  numberofsheets = 0,'#13'  do('#13'   msg([It''s not possible to have less than 0 sheets], 1),'#13'   return(-1)'#13'  )'#13' ),'#13' '#13' dec(numberofsheets),'#13' '#13' GuiControl([ebNumberOfSheets], GuiSet([Text], String(numberofsheets))),'#13#13' GuiControl([cbSheetNumber]),'#13' '#13' GuiList([Items], [Clear]),'#13' '#13' for('#13'  indexer := 1, indexer <= numberofsheets, inc(indexer),'#13'  do('#13'   GuiList([Items], [Add], String(indexer))'#13'  )'#13' ),'#13' '#13' GuiControl([cbSheetNumber], GuiSet([ItemIndex], min(currentlyeditedsheet, numberofsheets))),'#13' GuiControl([cbSheetNumber]),'#13' GuiRun([Change]),'#13' '#13' settable(numberofsheets,11,guiatom),'#13' destroyatom(last(guiatom)),'#13' '#13' Att([NoTables], GuiAtom) := Value(GuiControl([ebNumberOfSheets], GuiGet([Text])))'#13')'#13))),
+            EDControl(Label:
+              Caption = str('Number of sheets:'),
+              Color = -16777208,
+              Left = 12,
+              Name = str('StaticText2'),
+              Top = 32,
+              Width = 90))),
+EDControl(GroupBox:
+              Caption = str('Sheet Properties'),
+              Height = 352,
+              Left = 8,
+              Name = str('gbSheetProperties'),
+              TabOrder = 5,
+              Top = 88,
+              Width = 370,
+            Controls(
+EDControl(Label:
+              Caption = str('Edit sheet number:'),
+              Color = -16777208,
+              Left = 12,
+              Name = str('StaticText22'),
+              Top = 32,
+              Width = 92),
+            EDControl(ComboBox:
+              Height = 21,
+              Left = 132,
+              Name = str('cbSheetNumber'),
+              Style = DropDownList,
+              TabOrder = 6,
+              Top = 26,
+              Width = 100,
+              Events(
+                Change = str('do('#13' var([activesheet], vbValue, 0),'#13' '#13' activesheet := Value(GuiControl([cbSheetNumber], GuiGet([text]))),'#13' '#13' { Check if the user applied the changes already. }'#13' if('#13'  Value(GuiControl([stChangesMade], GuiGet([Caption]))) = true,'#13'  if('#13'   confirm([The changes made for the edited sheet haven''t been saved yet. Save the changes?]) = true,'#13'   do('#13'    GuiControl([btnApplySheetSettings]),'#13'    GuiRun([Click])'#13'   )'#13'  )'#13' ),'#13#13' {fill all edit fields from the table}'#13' guicontrol([Edit_P_1],guiset([Text],cell(activesheet ,1,guiatom,2))),'#13' guicontrol([Edit_P_2],guiset([Text],cell(activesheet ,2,guiatom,2))),'#13' guicontrol([Edit_P_3],guiset([Text],cell(activesheet ,3,guiatom,2))),'#13' guicontrol([Edit_P_4],guiset([Text],cell(activesheet ,4,guiatom,2))),'#13' guicontrol([Edit_P_5],guiset([Text],cell(activesheet ,5,guiatom,2))),'#13' guicontrol([Edit_P_6],guiset([Text],cell(activesheet ,6,guiatom,2))),'#13' guicontrol([Edit_P_7],guiset([Text],cell(activesheet ,7,guiatom,2))),'#13' guicontrol([Edit_P_8],guiset([Text],cell(activesheet ,8,guiatom,2))),'#13' guicontrol([Edit_P_9],guiset([Code],cell(activesheet ,9,guiatom,2))),'#13' guicontrol([RadioGroup_P_1],guiset([ItemIndex],cell(activesheet ,10,guiatom))),'#13' guicontrol([RadioGroup_P_2],guiset([ItemIndex],cell(activesheet ,11,guiatom))),'#13' '#13' GuiControl([Radiogroup_P_2]),'#13' GuiRun([Change]),'#13' '#13' GuiControl([stChangesMade], GuiSet([Caption], [0])),'#13' '#13' GuiControl([stCurrentlyEditedSheet], GuiSet([Caption], String(activesheet)))'#13')'#13))),
+            EDControl(Button:
+              Caption = str('&View According Table'),
+              Left = 238,
+              Name = str('Button12'),
+              TabOrder = 7,
+              Top = 24,
+              Width = 120,
+              Events(
+                Click = str('edittable(rank(Value(GuiControl([cbSheetNumber], Guiget([Text]))), guiatom))'#13))),
+            EDControl(Panel:
+              BevelOuter = Lowered,
+              Caption = str(''),
+              Height = 2,
+              Left = 8,
+              Name = str('Panel3'),
+              TabOrder = 8,
+              Top = 72,
+              Width = 350),
+            EDControl(Label:
+              Caption = str('Table name:'),
+              Color = -16777208,
+              Left = 12,
+              Name = str('StaticText222'),
+              Top = 96,
+              Width = 63),
+            EDControl(Label:
+              Caption = str('Sheet name:'),
+              Color = -16777208,
+              Left = 12,
+              Name = str('StaticText2222'),
+              Top = 128,
+              Width = 64),
+            EDControl(Label:
+              Caption = str('Number of rows:'),
+              Color = -16777208,
+              Left = 12,
+              Name = str('StaticText22222'),
+              Top = 160,
+              Width = 81),
+            EDControl(Label:
+              Caption = str('Number of columns:'),
+              Color = -16777208,
+              Left = 12,
+              Name = str('StaticText222222'),
+              Top = 192,
+              Width = 98),
+            EDControl(Label:
+              Caption = str('Excel starting row:'),
+              Color = -16777208,
+              Left = 12,
+              Name = str('StaticText2222222'),
+              Top = 224,
+              Width = 90),
+            EDControl(Label:
+              Caption = str('Excel starting column'),
+              Color = -16777208,
+              Left = 12,
+              Name = str('StaticText2222223'),
+              Top = 256,
+              Width = 104),
+            EDControl(Label:
+              Caption = str('# Rows read / write:'),
+              Color = -16777208,
+              Left = 12,
+              Name = str('StaticText22222222'),
+              Top = 288,
+              Width = 101),
+            EDControl(Label:
+              Caption = str('# Columns read / write:'),
+              Color = -16777208,
+              Left = 12,
+              Name = str('StaticText222222222'),
+              Top = 320,
+              Width = 114),
+            EDControl(Edit:
+              Height = 21,
+              Left = 132,
+              Name = str('Edit_P_1'),
+              TabOrder = 9,
+              Top = 90,
+              Width = 225,
+              Events(
+                Change = str('GuiControl([stChangesMade], GuiSet([Caption], [1]))'#13))),
+            EDControl(Edit:
+              Height = 21,
+              Left = 132,
+              Name = str('Edit_P_2'),
+              TabOrder = 10,
+              Top = 122,
+              Width = 225,
+              Events(
+                Change = str('GuiControl([stChangesMade], GuiSet([Caption], [1]))'#13))),
+            EDControl(Edit:
+              Height = 21,
+              Left = 132,
+              Name = str('Edit_P_3'),
+              TabOrder = 11,
+              Top = 154,
+              Width = 100,
+              Events(
+                Change = str('GuiControl([stChangesMade], GuiSet([Caption], [1]))'#13))),
+            EDControl(Edit:
+              Height = 21,
+              Left = 132,
+              Name = str('Edit_P_4'),
+              TabOrder = 12,
+              Top = 186,
+              Width = 100,
+              Events(
+                Change = str('GuiControl([stChangesMade], GuiSet([Caption], [1]))'#13))),
+            EDControl(Edit:
+              Height = 21,
+              Left = 132,
+              Name = str('Edit_P_5'),
+              TabOrder = 13,
+              Top = 218,
+              Width = 100,
+              Events(
+                Change = str('GuiControl([stChangesMade], GuiSet([Caption], [1]))'#13))),
+            EDControl(Edit:
+              Height = 21,
+              Left = 132,
+              Name = str('Edit_P_6'),
+              TabOrder = 14,
+              Top = 250,
+              Width = 100,
+              Events(
+                Change = str('GuiControl([stChangesMade], GuiSet([Caption], [1]))'#13))),
+            EDControl(Edit:
+              Height = 21,
+              Left = 132,
+              Name = str('Edit_P_7'),
+              TabOrder = 15,
+              Top = 282,
+              Width = 100,
+              Events(
+                Change = str('GuiControl([stChangesMade], GuiSet([Caption], [1]))'#13))),
+            EDControl(Edit:
+              Height = 21,
+              Left = 132,
+              Name = str('Edit_P_8'),
+              TabOrder = 16,
+              Top = 314,
+              Width = 100,
+              Events(
+                Change = str('GuiControl([stChangesMade], GuiSet([Caption], [1]))'#13))),
+            EDControl(Label:
+              Caption = str('0'),
+              Color = -16777208,
+              Left = 12,
+              Name = str('stChangesMade'),
+              Top = 52,
+              Visible = False,
+              Width = 10),
+            EDControl(Label:
+              Caption = str('0'),
+              Color = -16777208,
+              Left = 28,
+              Name = str('stCurrentlyEditedSheet'),
+              Top = 52,
+              Visible = False,
+              Width = 10))),
+EDControl(RadioGroup:
+              Caption = str('Read or Write'),
+              Height = 80,
+              ItemIndex = 1,
+              Items = str('Read from Excel'#13#10'Write to Excel'#13#10),
+              Left = 8,
+              Name = str('Radiogroup_P_1'),
+              TabOrder = 17,
+              Top = 456,
+              Width = 370,
+              Events(
+                Change = str('GuiControl([stChangesMade], GuiSet([Caption], [1]))'#13))),
+            EDControl(RadioGroup:
+              Caption = str('Read / Write Moment'),
+              Height = 80,
+              ItemIndex = 1,
+              Items = str('Read/Write on reset'#13#10'Read/Write on specified time'#13#10),
+              Left = 8,
+              Name = str('Radiogroup_P_2'),
+              TabOrder = 18,
+              Top = 552,
+              Width = 370,
+              Events(
+                Change = str('do('#13' if('#13'  guiget([ItemIndex])=1,'#13'  do('#13'   guicontrol([Edit_P_9],guiset([Visible],[False]))'#13'  ),'#13'  do('#13'   guicontrol([Edit_P_9],guiset([Visible],[True]))'#13'  )'#13' ),'#13' '#13' GuiControl([stChangesMade], GuiSet([Caption], [1]))'#13#13')'#13))),
+            EDControl(ScriptEdit:
+              Left = 184,
+              Name = str('Edit_P_9'),
+              TabOrder = 19,
+              Top = 600,
+              Width = 184),
+            EDControl(Button:
+              Caption = str('A&pply Sheet Settings'),
+              Left = 226,
+              Name = str('btnApplySheetSettings'),
+              TabOrder = 20,
+              Top = 640,
+              Width = 150,
+              Events(
+                Click = str('do('#13' var([activesheet], vbValue, 0),'#13' '#13' { there''s is a special case: when the user was asked to save the changes he made for a particular sheet by invoking the combobox control cbSheetNumber.'#13'   Then the sheetnumber value of the combobox already is changed when we end up here, so that''s why we use a special label for this that still contains'#13'   the previous value in the combobox.}'#13#13' activesheet := Value(GuiControl([stCurrentlyEditedSheet], Guiget([Caption]))),'#13' '#13' { Apply changes to the table fo the Excel atom on the right row, activesheet number }'#13' '#13' cell(activesheet ,1, guiatom) := GuiControl([Edit_P_1], GuiGet([Text])),'#13' cell(activesheet ,2, guiatom) := GuiControl([Edit_P_2], GuiGet([Text])),'#13' cell(activesheet ,3, guiatom) := Value(GuiControl([Edit_P_3], GuiGet([Text]))),'#13' cell(activesheet ,4, guiatom) := Value(GuiControl([Edit_P_4], GuiGet([Text]))),'#13' cell(activesheet ,5, guiatom) := Value(GuiControl([Edit_P_5], GuiGet([Text]))),'#13' cell(activesheet ,6, guiatom) := Value(GuiControl([Edit_P_6], GuiGet([Text]))),'#13' cell(activesheet ,7, guiatom) := Value(GuiControl([Edit_P_7], GuiGet([Text]))),'#13' cell(activesheet ,8, guiatom) := Value(GuiControl([Edit_P_8], GuiGet([Text]))),'#13' cell(activesheet ,9, guiatom) := GuiControl([Edit_P_9], GuiGet([Code])),'#13' cell(activesheet ,10, guiatom) := GuiControl([RadioGroup_P_1], GuiGet([ItemIndex])),'#13' cell(activesheet ,11, guiatom) := GuiControl([RadioGroup_P_2], GuiGet([ItemIndex])),'#13#13' GuiControl([stChangesMade], GuiSet([Caption], [0])),'#13' '#13' { Change the table dimension according to the user input }'#13' nrows(rank(activesheet, Guiatom)) := Value(GuiControl([Edit_P_3], GuiGet([Text]))),'#13' ncols(rank(activesheet, Guiatom)) := Value(GuiControl([Edit_P_4], GuiGet([Text]))),'#13' '#13' name(rank(activesheet, GuIAtom)) := GuiControl([Edit_P_1], GuiGet([Text])),'#13' SetTextAtt([TableName], GuiControl([Edit_P_1], GuiGet([Text])), rank(activesheet, GuiAtom))'#13')'#13))))))),
+    EDControl(Panel:
+      Align = Bottom,
+      Anchors = set(Left,Right,Bottom),
+      BevelOuter = None,
+      Caption = str(''),
+      Height = 40,
+      Left = 0,
+      Name = str('Panel1'),
+      TabOrder = 2,
+      Top = 667,
+      Width = 395,
+      Controls(
+        EDControl(Button:
+          Caption = str('&Help'),
+          Left = 8,
+          Name = str('btnHelp'),
+          TabOrder = 1,
+          Top = 8,
+          Events(
+            Click = str('Help(PDir([HELP\ED Help.hlp]), [Excel])'#13))),
+        EDControl(Button:
+          Caption = str('&Ok'),
+          Default = True,
+          Left = 144,
+          Name = str('btnOk'),
+          TabOrder = 2,
+          Top = 8,
+          Events(
+            Click = str('do('#13' { Check if the user applied the changes already. }'#13' if('#13'  Value(GuiControl([stChangesMade], GuiGet([Caption]))) = true,'#13'  if('#13'   confirm([The changes made for the edited sheet haven''t been saved yet. Save the changes?]) = true,'#13'   do('#13'    GuiControl([btnApplySheetSettings]),'#13'    GuiRun([Click])'#13'   )'#13'  )'#13' ),'#13#13' GuiControl([btnApply]),'#13' GuiRun([Click]),'#13' GuiDestroy'#13')'#13))),
+        EDControl(Button:
+          Cancel = True,
+          Caption = str('&Cancel'),
+          Left = 230,
+          Name = str('btnCancel'),
+          TabOrder = 3,
+          Top = 8,
+          Events(
+            Click = str('GuiDestroy '#13))),
+        EDControl(Button:
+          Caption = str('&Apply'),
+          Left = 312,
+          Name = str('btnApply'),
+          TabOrder = 4,
+          Top = 8,
+          Events(
+            Click = str('do('#13' {enter the File + Sheet name in the attributes}'#13' name(GuiAtom) := GuiControl([ebAtomName], Guiget([text])),'#13#13' TextAtt([FileName], GuiAtom) := guicontrol([Edit_File],guiget([Text])),'#13' TextAtt([SheetName], GuiAtom) := guicontrol([Edit_Sheet],guiget([Text])),'#13' att([Visible],guiatom) := GuiControl([cbVisible], Guiget([Checked]))'#13')'#13)))))),
+  Events(
+    Show = str('do('#13' var([indexer], vbValue, 0), '#13#13' if('#13'  atomexists(m(GuiAtom)),'#13'  GuiControl([Excel],GuiSet([Caption],concat(name(m(GuiAtom)), [ - ], name(GuiAtom)))),'#13'  GuiControl([Excel],GuiSet([Caption],concat([Baseclass - ], name(GuiAtom))))'#13' ),'#13' '#13' {Set ActivePage}'#13'    '#13' GuiControl([MultiPage1]),GuiSet([ActivePage],1),'#13#13' GuiControl([ebAtomName], GuiSet([Text], name(GuiAtom))),'#13#13' guicontrol([Edit_File],guiset([Text],textatt([FileName],guiatom))),'#13' guicontrol([Edit_Sheet],guiset([Text],textatt([SheetName],guiatom))),'#13' guicontrol([ebNumberOfSheets],guiset([Text],string(att([NoTables],guiatom)))),'#13' guicontrol([cbVisible],guiset([Checked],att([Visible],guiatom))),'#13#13' GuiControl([cbSheetNumber]),'#13' '#13' GuiList([Items], [Clear]),'#13'  '#13' { Fill list where you can select a sheet number to edit with the right number of sheets }'#13' for('#13'  indexer := 1, indexer <= att([NoTables],guiatom), inc(indexer),'#13'  do('#13'   GuiList([Items], [Add], String(indexer))'#13'  )'#13' ),'#13' '#13' GuiList([Items], Guiset([ItemIndex], 1)),'#13' '#13' GuiControl([cbSheetNumber]),'#13' GuiRun([Change]),'#13' '#13' GuiControl([stChangesMade], GuiSet([Caption], [0])),'#13' '#13' Gui_PositionGuiAroundAtom(GuiControl([Excel])),'#13' '#13' Gui([Update])'#13')'#13)))
+

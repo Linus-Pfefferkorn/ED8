@@ -1,0 +1,299 @@
+
+
+{Atom: MultiService}
+
+sets;
+BaseClass;
+createAtom(a, s, [], 1, false);
+int023([MultiService], 0, 232);
+Set(Icon(a), 
+	RegisterIcon(pDir([Media\Images\Atoms\server.bmp]), [server]));
+SetMaterial(
+	RegisterMaterial([Default], 8421504, 8421504, 3289650, 0, 0.100000001490116, 0, false, false, 1, 0), 1, a);
+Set(Version(a), 7.3);
+SetTreeIcon(pDir([Media\Icons\MultiServer.ico]));
+Set(Info, [Service N atoms simultaneously.
+
+General
+------------
+Services atoms that enter for a certain time, then sends them 
+out. The maximum number of atoms that can be served at the 
+same time can be specified. Each atom serviced can have its 
+own service time and can enter and leave independantly from 
+the others served. 
+
+Channels:
+---------------
+N inputchannels, M outputchannels
+
+Statuses:
+--------------
+   1 - Idle
+   2 - Busy
+   5 - Blocked
+  25 - Busy and Blocked
+
+Rightclick: 
+  edit cycletime, capacity, send to, input strategy, entry  trigger, exit trigger
+
+Last revision:
+-------------------
+February, 2008
+]);
+SetChannels(1, 1);
+SetChannelRanges(1, 255, 1, 255);
+int001(60);
+SetSize(8, 5, 1);
+LockPosition(false);
+LockSize(false);
+DisableIconRotation(false);
+SetProductCode([]);
+createAttributes(11);
+SetAttributeName(r(1), [capacity]);
+SetAttributeName(r(2), [cycletime]);
+SetAttributeName(r(3), [curcycle]);
+SetAttributeName(r(4), [nblocked]);
+SetAttributeName(r(5), [sendto]);
+SetAttributeName(r(6), [instrategy]);
+SetAttributeName(r(7), [entrytrigger]);
+SetAttributeName(r(8), [exittrigger]);
+SetAttributeName(r(9), [counter]);
+SetAttributeName(r(10), [2ddisplay]);
+SetAttributeName(r(11), [Levelcolor]);
+SetAtt(r(1), 10);
+SetExprAtt(r(2), [negexp(90)]);
+SetExprAtt(r(5), [1]);
+SetExprAtt(r(6), [{.openallic(c)|Any inputchannel .}openallic(c)]);
+SetExprAtt(r(10), [{.1|1. Products move from left to right .}1]);
+int024;
+Set(OnEvent, [case(
+ eventcode,
+ do(
+  inc(nBlocked),
+  SetRank(nBlocked, i),
+  if(
+   Nblocked = Content(c),
+   status(c) := 5,
+   status(c) := 25
+  ),
+  OpenAllOC(c)
+ ),
+ 
+ do(
+  if(
+   Content(c) < capacity,
+   instrategy
+  )
+ ),
+ 
+ do(
+  OpenAllOC(c)
+ )
+)
+]);
+Set(OnEntered, [do(
+  CloseAllIC(c),
+  if(
+    nblocked = 0, 
+    Status(c) := 2,
+    Status(c) := 25
+  ),
+  
+  var([CurCycleTime], vbValue, cycleTime),
+  createEvent(CurCycleTime, c, 1, 0, i),
+  
+  {**Label used for 2dDraw**}
+  label([t-cycle], i) := CurCycleTime,
+  
+  if(
+    Content(c) < capacity,
+    createEvent(0, c, 2)
+  ),  
+  
+  entrytrigger
+)
+]);
+Set(OnExited, [do(
+  CloseAllOC(c),
+  dec(nBlocked),
+  if(
+    Content(c) > 0,
+    if(
+      content(c) > nBlocked,
+      if(
+        nBlocked = 0,
+        Status(c) := 2,
+        Status(c) := 25
+      ),
+      Status(c) := 5
+    ),
+    Status(c) := 1
+  ),
+  
+  if(
+    Nblocked > 0,
+    
+    {**Other products are still blocked, open output channels again**}
+    createEvent(0, c, 3)
+  ),  
+  
+  if(
+    Content(c) = Capacity - 1,
+    
+    {**Multiserver was blocked, allow new products**}
+    createevent(0, c, 2)
+  ),  
+  
+  {**Reset Label used for 2dDraw**}
+  label([t-cycle], i) := 0,
+  
+  ExitTrigger
+)
+]);
+Set(OnCreation, [AutoConnect
+]);
+Set(OnReset, [do(
+  nBlocked := 0,
+  status(c) := 1,
+  CloseAllOC(c)
+)
+]);
+Set(OnUser, [Do(
+  { Delete any current instances of this form.} 
+  GuiDestroy([MultiService]),
+
+  { Register the GUI-form for this atom.}
+  GuiRegister(PDir([\Atoms\MultiService.gui]), 1),
+
+  { Show the GUI-form.}
+   Guicreate([MultiService], [MultiService], 0, c, 0, 1)
+ )
+]);
+Set(OnOcReady, [do(
+  var([valExited], vbValue, 0),
+  var([valCounter], vbValue, 0),
+  var([valMax], vbValue, nBlocked),
+  var([valExitChannel], vbValue),
+   
+  if(
+    and(nBlocked >= 1, Content(c) > 0),
+    do(  
+    
+      {**Check if any of the blocked products can move on; stop as soon as one is found**}
+      While(
+        and(valCounter < nBlocked, valExited = 0),
+        do(
+          inc(valCounter),            
+          valExitChannel := SendTo,
+          if(
+            OCReady(valExitChannel, c),
+            do(             
+              valExited := 1
+            ),  
+            do(
+              if(
+                valCounter <= valMax,
+                SetRank(valMax, first(c)) 
+              )                            
+            )
+          )
+        )
+      ),
+      
+      if(
+        valExited = 1,
+        
+        {**One product that is blocked can exit**}
+        do(
+          if(
+            valCounter < valMax,
+            
+            {**Restore rank of other products**}  
+            if(
+              valCounter <= valMax - valCounter,
+              Repeat(
+                valCounter - 1,
+                SetRank(2, Rank(valMax, c))              
+              ),                           
+              Repeat(
+                valMax - valCounter,
+                SetRank(valMax, Rank(2, c))              
+              )                      
+            )
+          ),
+        
+          MoveRequest(First(c), valExitChannel)
+        )
+      )
+    )
+  )
+)
+]);
+Set(On2DDraw, [do(
+ standarddisplay(name(c),concat([Serving ],string(content(c)))),
+ setsetting(sashowcontents,case(att(10,c),0,1,1,0,0,1),c),
+ if(
+  content(c)>0,
+  case(
+   att(10,c),
+
+   {// Case 1: Standard Display//}
+   [],
+
+   {// Case 2: Products move from left to right //}
+   foratomlayerunder(
+    c,
+    do(
+     setcs,
+     setloc(*(-(xsize(c),xsize(cs)),/(min(ddb([t-cycle],cs),-(time,entrytime(cs))),+(ddb([t-cycle],cs),0.001))),2,zsize(c),cs)
+    )
+   ),
+
+   {// Case 3: Products move from right to left}
+   foratomlayerunder(
+    c,
+    do(
+     setcs,
+     sddb([t-xsize],-(xsize(c),xsize(cs)),c),
+     setloc(-(ddb([t-xsize],c),*(ddb([t-xsize],c),/(min(ddb([t-cycle],cs),-(time,entrytime(cs))),+(ddb([t-cycle],cs),0.001)))),2,zsize(c),cs)
+    )
+   ),
+
+   {// Case 4: Level Vertical //}
+   dishape(0,ysize(c)-(*(-(ysize(c),2),/(content(c),att(1,c)))),xsize(c),abs(*(-(ysize(c),2),/(content(c),att(1,c)))),0.25,colorblack,att([Levelcolor],c)),
+
+   {// Case 5: Level Horizontal //}
+   dishape(0,2,max(0,*(xsize(c),/(content(c),att(1,c)))),max(0,-(ysize(c),2)),0.25,colorblack,att([Levelcolor],c)),
+
+   {// Case 6: Line Up Content //}
+   do(
+    setatt(9,0,c),
+    repeat(
+     min(xsize(c),+(trunc(/(content(c),max(-(ysize(c),2),1))),1)),
+     do(
+      repeat(
+       min(trunc(-(ysize(c),2)),-(content(c),*(-(ysize(c),2),att(9,c)))),
+       do(
+        if(
+         and(
+          =(count,1),
+          =(att(9,c),0)
+         ),
+         first(c),
+         next(cs)
+        ),
+        setcs,
+        setloc(att(9,c),+(*(count,/(ysize(c),min(att(1,c),ysize(c)))),1),cs)
+       )
+      ),
+      inc(att(9,c))
+     )
+    )
+   )
+  )
+ )
+)
+]);
+SetStatus(0);
+int018;
+int007;

@@ -1,0 +1,145 @@
+
+
+{Preregister functions}
+
+PreregisterFunction([ACc_RotationSpeed], 1, 1);
+PreregisterFunction([ACc_SetDestinationAndSpeed], 2, 2);
+PreregisterFunction([ACc_3DDraw], 1, 1);
+PreregisterFunction([ACc_3DDraw_Old], 1, 1);
+
+
+{Atom: Advanced Accumulating Conveyor Curved}
+
+sets;
+BaseClass;
+CreateAtom(a, s, [], 1, false);
+Set(OnInit, [do(  {**Load Functions Atom if required**}  if(not(AtomExists(AtomByName([General Conveyor Functions]),Library)),  int035([General Conveyor Functions], pDir([Atoms\General Conveyor Functions.atm]))    ))]);
+int023([Advanced Accumulating Conveyor Curved], 11249415, 1266);
+DefineFunction([ACc_RotationSpeed], [Conveyors], 1, 1, [do(  var([atmC], vbAtom, p(1)),  var([valTime], vbValue),    valTime := att([Length], atmC) / att([Speed], atmC),  att([Angle], atmC) / valTime)], [Returns the rotationspeed of conveyor e1], [NACc_RotationSpeed(c)], 0, [Advanced Non Accumulating Conveyor Curved.atm]);
+DefineFunction([ACc_SetDestinationAndSpeed], [Conveyors], 2, 2, [do(  var([atmI], vbAtom, p(1)),  var([atmC], vbAtom, p(2)),  var([valDistance], vbValue, 0),   if(     getrank(atmI) = 1,        {**Atom is first atom on conveyor**}    do(                 {**Possible conveying distance**}      Status := 26,      valDistance := Conveyors_GetDistanceDestination(atmI, atmC),            if(         valDistance <= 1e-7,                {**Atom can not be conveyed further*}        do(          if(             att([AtomToEnd], atmC),            do(              CreateEvent(0, atmC, CONVEYORS_REACHED_DESTINATION_EVENT, 0, atmI),              RotationSpeedAc(atmI) := Att([RotationSpeed], atmC),              setspeed(0,0,att([VerticalSpeed], atmC),atmI)            ),               {**Stop the conveyor**}                      AC_StopAtom(atmI, atmC)                                                                             )        ),                {**Distance > 0, Convey atom**}        do(                                                                          RotationSpeedAc(atmI) := Att([RotationSpeed], atmC),          setspeed(0,0,att([VerticalSpeed], atmC),atmI),                                                             {**Event when atom reaches end, Distance / Speed**}                                    CreateEvent(valDistance / att([Speed], atmC), atmC, CONVEYORS_REACHED_DESTINATION_EVENT, 0, atmI)                                         )       )                ),      {**Other atoms**}    do(       if(         not(Conveyors_AtomIsRunning(prev(atmI))),                {**Previous atom stopped**}        do(            {**Create stop atom event**}          valDistance := AC_GetDistanceUntilPrevAtom(atmI, atmC),          if(            valDistance > 0,            do(              CreateEvent(valDistance / att([Speed], atmC), atmC, AC_STOP_ATOM_EVENT, 0, atmI),              RotationSpeedAc(atmI) := Att([RotationSpeed], atmC),              setspeed(0,0,att([VerticalSpeed], atmC),atmI)            ),            AC_StopAtom(atmI, atmC)          )        ),                {**Previous atom not stopped**}        do(          RotationSpeedAc(atmI) := Att([RotationSpeed], atmC),          setspeed(0,0,att([VerticalSpeed], atmC),atmI)        )      )    )                     )       )  ], [Creates ReachedDestination Event (for first atom on conveyor only) and sets speed of all the atoms e1 = reference to Atom to be conveyede2 = reference to Accumulating ConveyorUsed in: -Conveyors_RescheduleReachedDestination, -Conveyors_ConveyAtoms], [ACc_SetDestinationAndSpeed(i, c)], 0, [Advanced Accumulating Conveyor Straight.atm]);
+DefineFunction([ACc_3DDraw], [Conveyors], 1, 1, [If(  att([Radius], p(1)) + 0.5*ySize(p(1)) > ySize(p(1)),  Do(    var([atmC], vbAtom),        atmC:= p(1),        var([valNrOfParts], vbValue),    var([valAngle], vbValue, att([angle], atmC)),    var([valElevation], vbValue, att([Elevation], atmC)),    var([valRadius], vbValue, att([Radius], atmC)),    var([valRotation], vbValue),      var([valNrOfLegs], vbValue),    var([valLegExtend], vbValue, att([LegExtend], atmC)),    var([valLegSpacing], vbValue, att([LegSpacing], atmC)),    var([valDrawLegs], vbValue, att([DrawLegs], atmC)),    var([valAngleStep], vbValue, 30),    var([val3DIconCode], vbValue, att([val3DIconCode], atmC)),    var([valSensorAngle], vbValue),          var([valEndAngle], vbValue, att([EndAngle], atmC)),    var([valStartAngle], vbValue, att([StartAngle], atmC)),    var([valHeight], vbValue, zLoc(atmC)),    var([valCurSize], vbValue, 0),    var([valLegSize], vbValue, 0),    var([valLength], vbValue, att([Length], atmC)),        { For backwards compatibility: this attribute was added in ED 8 }    if(     valLegSpacing = 0,     valLegSpacing := 1    ),            If(      valRadius>2,      valNrOfParts:=Round(2*pi*(valRadius-1+0.5*ySize(atmC)) * abs((valAngle)/360)/0.131+1,0),      valNrOfParts:=Round(2*pi*(valRadius +0.5*ySize(atmC))* (abs(valAngle)/360)/0.261+1,0)    ),        Repeat(      valNrOfParts,      Do(        PushCoords,        RotateCoords((valAngle/valNrOfParts)*(Count+if(valAngle<0, -1, 0)) - 90 +att([StartAngle], atmC) + if(valAngle<0, -180,0), 0, 0, 1, 0,0,0),          DrawModel3DMesh(          model3d(1,atmC),          Do(            SetmaterialShininess(0.8),            SetMaterialOverride(True),            5  {Mesh rollers}          ),          valRadius-0.5 * ySize(atmC),           0,          (valElevation/valNrOfParts) * Count + zSize(atmC),           ySize(atmC),          1,          1        ),        PopCoords      )          {The small additions (0.001) are to prevent interferention when polygons are placed at the same height!}    ),          Repeat(      valNrOfParts,      Do(        PushCoords,        RotateCoords((valAngle/valNrOfParts)*(Count+if(valAngle<0, -1, 0)) - 90  + att([StartAngle], atmC)+ if(valAngle<0, -180,0), 0, 0, 1, 0,0,0),        SetMaterialColor(Color(atmC), DIFFUSE_AND_AMBIENT_COLOR),        SetMaterialTwoSided(True),        SetMaterialOverride(True),        DrawModel3DMesh(          model3d(1,atmC),          if(or(and(valAngle<0, valElevation<0), and(valAngle>0, valElevation>0)),4,6), {Mesh borders}          valRadius-0.5*ySize(atmC),           0,          (valElevation/valNrOfParts)*Count+zSize(atmC)+0.001,           1,           1,          If(            valElevation<>0,            abs((valElevation/valNrOfParts)/0.04)*if(valElevation>0, -1,-1),            -(0.001)          )        ),        DrawModel3DMesh(          model3d(1,atmC),          if(or(and(valAngle<0, valElevation<0), and(valAngle>0, valElevation>0)),1,8), {Mesh borders}          valRadius+0.5*ySize(atmC),           0,          (valElevation/valNrOfParts)*Count+zSize(atmC)+0.001,           1,           1,          If(            valElevation<>0,            abs((valElevation/valNrOfParts)/0.04)*if(valElevation>0, -1,-1),            -(0.001)          )        ),              PopCoords      )          {The small additions (0.001) are to prevent interferention when polygons are placed at the same height!}    ),        {Drawing the legs of the conveyors}        If(      valDrawLegs = 1,      Do(        valAngleStep:= arctan(valLegSpacing/(valRadius - 0.5*ySize(atmC))),                      valNrOfLegs:= Round(Max(2, ceil((min(abs(valAngle), 360)/valAngleStep))),0),        If(          valAngle<0,          Do({Its a left turn curve}            Repeat(              valNrOfLegs,              Do(                PushCoords,                RotateCoords(                 If(                   valNrOfLegs > 13,                   if(                     valElevation>0,                     att([StartAngle], atmC) + valAngle + valAngleStep * (count-1)+90,                     att([StartAngle], atmC) + valAngleStep * (count-1)+90                                      ),                   valAngleStep * (count-1)+valAngle+90+att([startangle], atmC)                 ),0,0,1),                                SetMaterialColor(Color(atmC), DIFFUSE_AND_AMBIENT_COLOR),                SetMaterialTwoSided(True),                SetMaterialOverride(True),                                DrawModel3DMesh(                  Model3D(1,atmC),                  2,                  valRadius - ySize(atmC) * 0.5,                  0,                  if(                    valElevation>0,                    -(valLegExtend),                    valElevation - valLegExtend                  ),                  1,                  1,                  if(                    valElevation>0,                    valElevation + valLegExtend - abs(valElevation / valAngle)*valAngleStep * (Count-1),                    abs(valElevation) + valLegExtend - abs((valElevation / valAngle)*valAngleStep) * (valNrOfLegs - Count)                  )                ),                DrawModel3DMesh(                  Model3D(1,atmC),                  9,                  valRadius + ySize(atmC) * 0.5,                  0,                  if(                    valElevation>0,                    -(valLegExtend),                    valElevation - valLegExtend                  ),                  1,                  1,                  if(                    valElevation>0,                    valElevation + valLegExtend - abs(valElevation / valAngle)*valAngleStep * (Count-1),                    abs(valElevation) + valLegExtend - abs((valElevation / valAngle)*valAngleStep) * (valNrOfLegs - Count)                   )                ),                              popCoords              )            )          ),          Do({Its a right turn curve}            Repeat(              valNrOfLegs,              Do(                PushCoords,                RotateCoords(                 If(                   valNrOfLegs > 13,                   if(                     valElevation>0,                     att([StartAngle], atmC) + valAngle - valAngleStep * (count-1)-90,                     att([StartAngle], atmC) - valAngleStep * (count-1)-90                   ),                   -(valAngleStep) * (count-1)+valAngle-90+att([startangle], atmC)                 ),0,0,1),                                SetMaterialColor(Color(atmC), DIFFUSE_AND_AMBIENT_COLOR),                SetMaterialTwoSided(True),                SetMaterialOverride(True),                                DrawModel3DMesh(                  Model3D(1,atmC),                  2,                  valRadius - ySize(atmC)*0.5,                  0,                  if(                    valElevation > 0,                    -(valLegExtend),                    valElevation - valLegExtend                  ),                  1,                  1,                  if(                    valElevation>0,                    valElevation + valLegExtend - abs(valElevation / valAngle)*valAngleStep * (Count - 1),                    abs(valElevation) + valLegExtend - abs((valElevation / valAngle)*valAngleStep) * (valNrOfLegs - Count)                  )                ),                                DrawModel3DMesh(                  Model3D(1,atmC),                  9,                  valRadius + ySize(atmC)*0.5,                  0,                  if(                    valElevation>0,                    -(valLegExtend),                    valElevation - valLegExtend                  ),                  1,                  1,                  if(                    valElevation>0,                    valElevation + valLegExtend - abs(valElevation / valAngle)*valAngleStep * (Count-1),                    abs(valElevation) + valLegExtend - abs((valElevation / valAngle)*valAngleStep) * (valNrOfLegs - Count)                  )                ),                              popCoords              )            )          )        )      )    ),            Repeat(      att([NrSensors], atmC),      do(                 var([valSensorAngle], vbValue),        var([valLengthConveyor], vbValue, Sqrt(sqr(valElevation) + sqr(valRadius * 2 * pi * (valAngle /360)))),        var([valSensorHeight], vbValue),          var([valSensorHeight], vbValue),        var([valSensorSizeX], vbValue),        var([valSensorSizeZ], vbValue),                valSensorSizeX := .02,        valSensorSizeZ := .05,        valSensorHeight := .2,            var([valPosX], vbValue, 0),          valPosX := cell(Count, 1, atmC),         If(          valPosX < valLengthConveyor,          {conveyor spirals upwards}          Do(            valSensorAngle := mod((valPosX / valLengthConveyor) * valAngle, 360) + valStartAngle,            valSensorHeight := (valPosX / valLengthConveyor) * valElevation          )        ),                  PushCoords,        RotateCoords(valSensorAngle + if(valAngle<0, -180,0), 0, 0, 1),        TranslateCoords(0,0,valSensorHeight+0.5),        di3DBox(0, -(valRadius) - 0.5, 0, valSensorSizeX, ysize(atmC), valSensorSizeZ, ColorRed, valRotation),        PopCoords      )    )  ))], [Draws accumulating curved conveyor e1 in 3D], [ACc_3DDraw(c)], 0, [Advanced Accumulating Conveyor Curved.atm]);
+DefineFunction([ACc_3DDraw_Old], [Conveyors], 1, 1, [Do(  var([atmC], vbAtom, p(1)),  var([valAngleStep], vbValue, 10),  var([valLegSpacing], vbValue, 0.5),  var([valCurAngle], vbValue, 0),  var([valRadius], vbValue, att([Radius], atmC) + 0.5 * ySize(atmC)),  var([valAngle], vbValue, att([Angle], atmC)),  var([valElevation], vbValue, att([Elevation], atmC)),  var([valEndAngle], vbValue, att([EndAngle], atmC)),  var([valStartAngle], vbValue, att([StartAngle], atmC)),  var([valHeight], vbValue, zLoc(atmC)),  var([val3DIconCode], vbValue, att([3DIconCode], atmC)),  var([valIconLength], vbValue, 0),  var([valCurSize], vbValue, 0),  var([valLegSize], vbValue, 0),  var([valLength], vbValue, att([Length], atmC)),  var([valPosX], vbValue, 0),  var([valRotation], vbValue, 0),  var([valSensorHeight], vbValue),  var([valSensorSizeX], vbValue),  var([valSensorSizeZ], vbValue),  var([valDrawLegs], vbValue, att([DrawLegs], atmC)),  var([valLegExtend], vbValue, att([LegExtend], atmC)),  var([valSegment], vbValue),    valSensorSizeX := .02,  valSensorSizeZ := .05,  valSensorHeight := .2,      valIconLength := valRadius * valAngleStep * pi / 180,    if(    valAngle < 0,        {**Left Curved**}    valCurAngle := min(valStartAngle, valEndAngle) + 180,          {**Right Curved**}    valCurAngle := min(valStartAngle, valEndAngle)    ),      if(    valAngle < 0,        {**Left Curved**}    valStartAngle := valStartAngle + 180   ),  repeat(    abs(valAngle) / valAngleStep,    do(         if(        valAngle < 0,         do(          valCurSize := valElevation + (count - 1) * valElevation * valAngleStep / valAngle,          valLegSize := -(valElevation + (abs(valAngle) / ValAngleStep - count + 1) * valElevation * valAngleStep / valAngle)        ),        do(          valCurSize := (count - 1) * valElevation * valAngleStep / valAngle,          valLegSize := -(abs(valAngle) / ValAngleStep - count + 1) * valElevation * valAngleStep / valAngle        )      ),          if(        valDrawLegs,        if(          mod((Count - 1), valLegSpacing * abs(valAngle) / valAngleStep / valLength) < 1,          if(            valElevation >= 0,            do(                    di3DBox(0, -(valRadius), valLegExtend * -1, 0.05, 0.05, valCurSize + valLegExtend, 14473664, valCurAngle, 0),                di3DBox(0, ySize(atmC) - valRadius, valLegExtend  * -1, 0.05, 0.05, valCurSize + valLegExtend, 14473664, valCurAngle, 0)            ),            do(              di3DBox(0, -(valRadius), valElevation + valLegExtend * -1, 0.05, 0.05,  valLegSize + valLegExtend , 14473664, valCurAngle, 0),                di3DBox(0, ySize(atmC) - valRadius, valElevation + valLegExtend * -1, 0.05, 0.05, valLegSize + valLegExtend , 14473664, valCurAngle, 0)            )          )          )      ),                  {**cross beams**}          repeat(        3,        di3DBox(0, 0.15 - valRadius, valCurSize - 0.1, 0.05, ySize(atmC) - 0.3, 0.03, ColorBlack, valCurAngle + valAngleStep * (count - 1) * 0.33333, 0)      ),        di3DBox(0, ySize(atmC) - 0.06 - valRadius, valCurSize - 0.2, valIconLength, 0.03, 0.3, Color, valCurAngle, valAngleStep / 2),      di3DBox(0, 0.06 - valRadius, valCurSize - 0.2, valIconLength, 0.03, 0.3, Color, valCurAngle, valAngleStep / 2),      valCurAngle := valCurAngle + valAngleStep                                   )  ),    {**Show sensors**}  Repeat(    att([NrSensors], atmC),    do(               valPosX := cell(Count, 1, atmC) * Cos(Conveyors_Angle(atmC)),       valRotation := valPosX * valAngle / valLength + valStartAngle,               if(        valAngle < 0,             do(          valSegment := ceil(abs(valAngle) / valAngleStep) - ceil((cell(Count, 1, atmC) + 0.000000000001) / (valLength / valAngleStep)),          valCurSize := valElevation + valSegment * valElevation * valAngleStep / valAngle        ),        do(           valSegment := ceil((cell(Count, 1, atmC) + 0.000000000001) / (valLength / valAngleStep)),          valCurSize := (valSegment - 1) * valElevation * valAngleStep / valAngle         )      ),           di3DBox(0, -(valRadius), valCurSize + valSensorHeight, valSensorSizeX, ysize(atmC), valSensorSizeZ, ColorRed, valRotation)     )  ))], [Draws the conveyor out of ED 3D objects. e(1) is a pointer to the curved conveyor that needs to be drawn.], [ACc_3DDraw_Old(c)], 0, [Advanced Accumulating Conveyor Curved.atm]);
+Set(Icon(a), 
+	RegisterIcon(IconsDir([bmp\atoms\conveyor.bmp]), [conveyor]));
+AddModel3D(
+	RegisterModel3D(Model3DDir([Industrial\Conveyors\SpiralPart1.wrl]), [SpiralPart1.wrl], 0, 0, 0, 1, 1, -1, -90, 90, 0), a);
+SetMaterial(
+	RegisterMaterial([Default], 8421504, 8421504, 3289650, 0, 0.100000001490116, 0, false, false, 1, 0), 1, a);
+Set(Version(a), 7.3);
+SetTreeIcon(pDir([Media\Icons\AdvancedAccumulatingConveyorCurved.ico]));
+Set(Info, [isConveyor:
+1 - Straight NAC
+2 - Curved NAC
+3 - Straight AC
+4 - Curved AC
+
+Direction:
+
+positive angle = right curved
+negative angle = left curved
+
+att speed is from center of conveyor
+
+Last revision:
+-------------------
+September, 2008
+]);
+Set(DdbRec, [>test:1.]);
+SetChannels(1, 1);
+SetChannelRanges(1, 255, 1, 255);
+int001(59);
+SetLoc(0, 0, 1);
+SetSize(1, 1, 0);
+LockPosition(false);
+LockSize(false);
+DisableIconRotation(false);
+SetProductCode([]);
+CreateAttributes(35);
+SetAttributeName(r(1), [AtomToEnd]);
+SetAttributeName(r(2), [BeginPos]);
+SetAttributeName(r(3), [Capacity]);
+SetAttributeName(r(4), [DelayTime]);
+SetAttributeName(r(5), [EffectOnPredecessor]);
+SetAttributeName(r(6), [Elevation]);
+SetAttributeName(r(7), [EntryTrigger]);
+SetAttributeName(r(8), [ExitTrigger]);
+SetAttributeName(r(9), [Gap]);
+SetAttributeName(r(10), [GapWindow]);
+SetAttributeName(r(11), [KeepSpacing]);
+SetAttributeName(r(12), [Angle]);
+SetAttributeName(r(13), [EndAngle]);
+SetAttributeName(r(14), [IsConveyor]);
+SetAttributeName(r(15), [Length]);
+SetAttributeName(r(16), [Radius]);
+SetAttributeName(r(17), [nrSensors]);
+SetAttributeName(r(18), [SpacingRule]);
+SetAttributeName(r(19), [Speed]);
+SetAttributeName(r(20), [StartStopPredecessor]);
+SetAttributeName(r(21), [TempAtomToEnd]);
+SetAttributeName(r(22), [UsePhysicalLength]);
+SetAttributeName(r(23), [UseSensors]);
+SetAttributeName(r(24), [VerticalSpeed]);
+SetAttributeName(r(25), [SendTo]);
+SetAttributeName(r(26), [InStrategy]);
+SetAttributeName(r(27), [ResetTrigger]);
+SetAttributeName(r(28), [LastEntered]);
+SetAttributeName(r(29), [SmallerThanBag]);
+SetAttributeName(r(30), [LastIC]);
+SetAttributeName(r(31), [DrawLegs]);
+SetAttributeName(r(32), [LegExtend]);
+SetAttributeName(r(33), [RotationSpeed]);
+SetAttributeName(r(34), [StartAngle]);
+SetAttributeName(r(35), [LegSpacing]);
+SetAtt(r(3), 1000);
+SetAtt(r(9), 1);
+SetAtt(r(12), 90);
+SetAtt(r(14), 4);
+SetAtt(r(15), 5);
+SetAtt(r(16), 4.5);
+SetAtt(r(18), 1);
+SetAtt(r(19), 1);
+SetAtt(r(22), 1);
+SetAtt(r(25), 1);
+SetExprAtt(r(26), [{.openallic(c)|Any inputchannel .}openallic(c)]);
+SetAtt(r(31), 1);
+SetExprAtt(r(32), [zLoc(c)]);
+SetExprAtt(r(35), [1]);
+int024;
+Set(OnEvent, [case(  mod(EventCode, CONVEYORS_MAX_NR_OF_EVENTS),  {**Maximum number of events, used to find the sensor number at the CONVEYORS_SENSOR_RELEASE_EVENT**}  {**1: CONVEYORS_ALLOW_NEXT_EVENT**}  {** always use with higher priority than Reached Destination Event 100 now used**}  do(    Conveyors_AllowNextEvent(c, i)  ),    {**2: CONVEYORS_REACHED_DESTINATION_EVENT**}  do(    Conveyors_ReachedDestination(i, c)  ),    {**3: CONVEYORS_START_CONVEYOR_EVENT**}  do(    AC_StartConveyor(c)  ),    {**4: ACc_STOP_ATOM_EVENT**}  do(    AC_StopAtom(i, c)  ),    {**5: CONVEYORS_SENSOR_EVENT**}  {**Sensor Event, atom i is passing sensor**}  do(    Conveyors_SensorEvent(i, c)  ),    {**6:CONVEYORS_SENSOR_RELEASE_EVENT**}  {**Sensor Free Event, the end of an atom is passing sensor i**}  do(    Conveyors_SensorFree_Event(c, i, (EventCode - CONVEYORS_SENSOR_RELEASE_EVENT) / CONVEYORS_MAX_NR_OF_EVENTS)  ))]);
+Set(OnEntered, [do(  var([valDistance], vbValue),     {**Close all input channels**}  CloseAllIC(c),  if(    and(      ic(c) > 0,      Conveyors_IsConveyor(in(ic(c), c))    ),        EffectOnPredecessor := in(ic(c), c),    EffectOnPredecessor := 0  ),    LastEntered := i,  LastIC := ic(c),    if(    xSize(i) > Length,    SmallerThanBag := 1,    SmallerThanBag := 0  ),    {**Check if any events (allow next or sensor free) on previous conveyors has to be scheduled**}  Conveyors_AtomTableCheck(i, c, BeginPos),     {**Schedule event for moment when atom is on conveyor completely and next atom is allowed**}  {**Until this event the coneyor will have effect on its predecessor conveyor**}  valDistance := Max(0, Conveyors_GetSpacing(c, xSize(i), SpacingRule) - BeginPos),  if(    valDistance <= Length - BeginPos,        {**Create event**}    do(      CreateEvent(valDistance / Speed, c, CONVEYORS_ALLOW_NEXT_EVENT, 100, i),      Conveyors_AtomTableAddEvent(i, valDistance, c, CONVEYORS_ALLOW_NEXT_EVENT, 100, 1)    ),             {**Add event line to atom table**}    Conveyors_AtomTableAddEvent(i, valDistance, c, CONVEYORS_ALLOW_NEXT_EVENT, 100, 0)  ),     {**Set front of atom at the beginning of the conveyor**}  Conveyors_SetAtomLocation_Curved(i, BeginPos, c),     {**Convey the atom**}  Conveyors_ConveyAtom(i, c),       {**EntryTrigger**}  EntryTrigger )]);
+Set(OnExited, [do(   {**close all output channels**}  CloseAllOC(c),    {**Delete sensor label**}    if(    useSensors,    do(      i.Conveyors_LastSensor := 0,      i.Conveyors_NextSensor := 0    )  ),  if(      Conveyors_IsRunning(c),     {**Conveyor is running**}    do(       if(         Content(c) > 0,                {**Atom on conveyor: Create ReachedDestination Event for the new first Atom**}        NACc_SetDestinationAndSpeed(first(c), c),                            {**No Atom on conveyor: Change Status to Empty**}        Status := 13       )     ),    CreateEvent(0, c, CONVEYORS_START_CONVEYOR_EVENT)     ),     if(      and(Content(c) = Capacity - 1, LastEntered = 0),        {**the conveyor was full and no other atom is still entering: Open input again**}    CreateEvent(0, c, CONVEYORS_ALLOW_NEXT_EVENT, 100)  ),      Conveyors_AtomTableUpdate(i, c),    {**Reset rotationspeed and rotation**}  RotationSpeedAc(i) := 0,  RotationAc(i) := 0,  zSpeed(i) := 0,    {**Execute ExitTrigger**}  ExitTrigger )]);
+Set(OnCreation, [do(  AutoConnect,  Length := Conveyors_3DAnimLength_Curved(c))]);
+Set(OnReset, [do(
+ 
+  {**Compute Length and Speed**}
+  Length := Conveyors_3DAnimLength_Curved(c),
+  RotationSpeed := ACc_RotationSpeed(c),
+  VerticalSpeed := sin(Conveyors_Angle(c)) * Speed,
+  
+  EndAngle := StartAngle + Angle,
+  
+  {**Close channels**}       
+  CloseAllOc(c),     
+  
+  {**Initialize attributes**}      
+  IsConveyor := 4,
+  EffectOnPredecessor := 0,  
+  LastEntered := 0,
+  SmallerThanBag := 0,
+  UsePhysicalLength := 1,
+  
+  {**Change Status to Empty**}
+  Status(c) := 13,
+  
+  Conveyors_SensorUnBlockAll(c),
+  
+  ResetTrigger
+)
+]);
+Set(OnUser, [Do(  { Delete any current instances of this form.}   GuiDestroy([frmAC_Curved]),  { Register the GUI-form for this atom.}  GuiRegister(PDir([Atoms\frmAC_Curved.gui]), 1),  { Show the GUI-form.}  GuiCreate([frmAC_Curved], name(c), 0, c, 0, 1))]);
+Set(OnOcReady, [do(   if(    not(Conveyors_IsBlocked(c)),         if( {**Atom on conveyor**}       Content(c) > 0,      if(        AtomToEnd,             {**Conveyor running and product is at end of running**}        {**Them an immediate exit is possible**}            MoveRequest(first(c), sendTo)                                     )    ),    {**Conveyor stopped, triggered if next is not a conveyor**}     {**Start conveyor after start time if event handler is triggered by next destination**}        do(      CloseAllOC(c),              CreateEvent(DelayTime, c, CONVEYORS_START_CONVEYOR_EVENT)    )  ) )]);
+Set(On2DDraw, [do(  {**Draw arcs**}  Conveyors_2DDraw_Curved(c),    {**Show Sensors**}  Conveyors_ShowSensors2D_Curved(c))]);
+Set(On3DDraw, [If(  Model3DExists(1),  ACc_3DDraw(c),  ACc_3DDraw_Old(c))  ]);
+SetStatus(0);
+int018;
+int007;

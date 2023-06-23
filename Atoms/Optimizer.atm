@@ -1,0 +1,139 @@
+
+
+{Atom: Optimizer}
+
+sets;
+BaseClass;
+createAtom(a, s, [], 1, false);
+int023([Optimizer], 720907, 1184);
+Set(Icon(a), 
+	RegisterIcon(pDir([media\images\default.jpg]), [default.jpg]));
+SetMaterial(
+	RegisterMaterial([Default], 8421504, 8421504, 3289650, 0, 0.100000001490116, 0, false, false, 1, 0), 1, a);
+Set(Version(a), 7.3);
+SetTreeIcon(pDir([Media\Icons\Optimizer.ico]));
+Set(Info, [Optimization via OptQuest for Enterprise Dynamics
+
+General
+------------
+This optimizer atom contains the Objective, Requirement, and 
+Variable atoms.  
+
+Edit this atom to define the run length of a single simulation run.
+
+An optimization is set up by defining an objective which will be 
+minimized or maximized by OptQuest, and then at least one 
+decision variable. It is also possible to define one or more 
+requirements, which must be met for a solution to be considered 
+feasible by OptQuest.
+
+The optimization starts with Enterprise Dynamics running a 
+simulation of the model with initial values for the decision variables.
+At the end of the run, Enterprise Dynamics passes the results of 
+the objective and requirements through a database link to
+OptQuest.
+
+OptQuest uses a combination of several search 
+algorithms to define the next "try" for the decision variables, and 
+then passes the decision variable values through a database link 
+back to Enterprise Dynamics.  Enterprise Dynamics runs the model 
+again with the new values for the decision variables, and so on.
+
+To conduct an optimization, you must first drag an Optimizer atom 
+into your layout.  Then drag an Objective atom into your layout.  
+You will also need to have at least one Variable atom in your 
+layout.  To edit any of these atoms, you must double-click on the 
+Optimizer atom and select "Edit".  
+
+After editing the editing fields for each of the atoms contained in 
+the Optimizer atom, you can double-click on the Optimizer and 
+select the "Optimize" option.  Wait a moment, and the OptQuest 
+software will automatically start up.  When the OptQuest software 
+opens, select File | new, or if you have a previous session saved, 
+File | Open.  You will be asked to accept each of the variables you 
+defined in Enterprise Dynamics.  Start the optimization and watch 
+the Objective variable be either maximized or minimized.
+
+Last Revision:
+---------------------
+February, 2008
+]);
+Set(DdbRec, [>t-alloworganize:1.>t086:1.]);
+int001(50);
+SetSize(10, 4, 1);
+LockPosition(false);
+LockSize(false);
+DisableIconRotation(false);
+SetProductCode([]);
+createAttributes(1);
+SetAttributeName(r(1), [runtime]);
+SetExprAtt(r(1), [hr(2)]);
+int024;
+Set(OnEvent, [do( {Update the tedout database with the results of the objective and requirement variables}
+ dbconnect(pdir([OptQuest]),[tedout.dbf],[]),
+ sendmessagedirect(atombyname([Objective],c),[Record the result of objective to tedout.dbf by sending a message]),
+ repeat(
+  content(c),
+  if(
+   comparetext([Requirement],stringcopy(name(rank(count,c)),1,11)),
+   sendmessagedirect(rank(count,c),[Record the result of requirement to tedout.dbf by sending a message])
+  )
+ ),
+ dbsql([UPDATE tedout SET atom = atom, name=name, result = result, maxminreq = maxminreq, lowerval = lowerval, upperval = upperval],1),
+ dbclose,
+ settimerevent(
+  signal(2,signal(1,[taylorstop]),true)
+ )
+)
+]);
+Set(OnCreation, [do(
+ sddb([T186],1,c),
+ if(
+  not(fileexists(pdir([OptQuest\OptQuest.exe]))),
+  execfile(pdir([OptQuest\OptQuest.fnc]))
+ )
+)
+]);
+Set(OnReset, [if(
+ fileexists(pdir([OptQuest\OptQuest.exe])),
+ do( {Read "testval" from tedin and update the descision variables in the model.
+     Then create an event for the end of the simulation}
+  dbconnect(pdir([OptQuest]),[tedin.dbf],[]),
+  repeat(
+   content(c),
+   if(
+    comparetext([Variable],stringcopy(name(rank(count,c)),1,8)),
+    do(
+     dbsql(concat([SELECT testval FROM tedin WHERE name="],att([name_var],rank(count,c)),["])),
+     if(
+      dbrecords>0,
+      do(
+       setatt([varvalue],db(1,1),rank(count,c)), 
+       sendmessagedirect(rank(count,c),[Execute varupdatexp attribute])
+      )
+     )
+    )   
+   )
+  ),
+  dbsql([SELECT * FROM tedin]),
+  createevent(-(db(1,3),.001),c),
+  dbclose
+ )
+)
+]);
+Set(OnUser, [Do(
+ { Delete any current instances of this form.} 
+ GuiDestroy([Optimizer]),
+
+ { Register the GUI-form for this atom.}
+ GuiRegister(PDir([\Atoms\Optimizer.gui]), 1),
+
+ { Show the GUI-form.}
+ Guicreate([Optimizer], [Optimizer], 0, c, 0, 1)
+)
+]);
+Set(On2DDraw, [draw2dicon(3,[Optimizer],[])
+]);
+SetStatus(0);
+int018;
+int007;

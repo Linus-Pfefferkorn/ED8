@@ -1,0 +1,187 @@
+
+
+{Atom: Assembler with Inventory}
+
+sets;
+BaseClass;
+CreateAtom(a, s, [], 1, false);
+int023([Assembler with Inventory], 8421440, 1264);
+Set(Icon(a), 
+	RegisterIcon(pDir([media\images\default.jpg]), [default.jpg]));
+AddModel3D(
+	RegisterModel3D(Model3DDir([\assembler.wrl]), [assembler.wrl], 0, 0, 0, 1, 1, -1, -90, 0, 0), a);
+SetMaterial(
+	RegisterMaterial([Default], 8421504, 8421504, 3289650, 0, 0.100000001490116, 0, false, false, 1, 0), 1, a);
+Set(Version(a), 7.3);
+SetTreeIcon(pDir([Media\Icons\AssemblerWithInventory.ico]));
+Set(Info, [Assembler with Inventory
+
+General
+------------
+This atom is useful for modeling an assembly station where there 
+are multiple product types being assembled, each having a large 
+number of sub-components.
+
+Each product type may have its own bill-of-material requirements for sub-
+component quantities.
+
+The inventory level of each sub-component part is tracked in the table of this 
+atom.
+
+The user may specify the following inputs to the inventory table for each 
+sub-component:
+- Name of sub-component (not used by the atom behavior logic)
+- Initial inventory
+- Reorder Point
+- Replenishment Quantity
+- Lead Time (only used if the box captioned "Send out actual orders"  is 
+  NOT checked in the edit window. May use 4DScript - (i.e. NegExp(3600))
+- Prod1 Assembly Quantities (enter the number of parts needed to make 
+  the assembly for product type 1 - it's ok to enter a 0)
+- Prod2 ...
+
+Products entering through input channel 1 represent the different 
+product types to be assembled.  The product may possibly represent 
+an electronic order, or it may represent an actual part (like a car 
+chassis, a shell, a tote, or some other main assembly component which 
+needs assembly).  Whatever the product represents that comes in 
+through input channel 1, it must have had a label previously assigned 
+to it with a integer value defining whether it is prod1, prod2, etc.
+
+The value of the label will be used to define which column in the 
+table to lookup the assembly quantities (A value of 1 will use the 
+values in column 2, etc..).
+
+For instance, everytime a product enters through channel 1 having 
+a label value of 1, the quantities of sub-component parts listed in 
+column 2 will be subtracted from the active inventory  automatically. 
+If the the active inventory reaches the reorder point, then a 
+"replenishment order" is created.
+
+If the box  "Send out actual orders" is checked then an actual product 
+is sent out through output channel 2.  The product represents the 
+"replenishement order" and will have the following two labels 
+assigned to it:  [t_sub]  and  [t_qty].  These two labels will be used by 
+this atom when the order returns (representing the replenishment batch) 
+to update the active inventory column.
+
+If the box  "Send out actual orders" is NOT checked then no products 
+will be sent out of channel 2.  Instead the active inventory will simply 
+be bumped up by the replenishment quantity after the specified lead 
+time for the particular sub-component.
+
+There are a number of table columns which give historical information. 
+They are:
+- NO. STOCKOUTS -number of times a sub-component was 
+  entirely depleted,
+- NO. REORDERS - number of times a sub-component had to 
+  be reordered, 
+- MIN. INVENTORY- the absolute minimum inventory level for 
+  a sub-component during the run.
+
+Channels:
+---------------
+2 input channels, 2 output channels.
+
+Statuses:
+--------------
+   1 - Idle
+   2 - Busy
+   5 - Blocked
+   4 - Waiting (for replenishment after stockout)
+
+Right click:
+  Name, Icon, Cycletime, # of Product Types, # of Sub-component 
+  Types, Trigger on entry, Trigger on exit, "Send out actual orders", Product Label 
+  Name.
+
+Double-Click:
+  Inventory Table.  The number of rows will be equal to the number 
+  of Sub-Components specified by the user. The number of columns 
+  will be equal to 10 plus the number of Product Types specified by the 
+  user.
+
+Last Revision:
+---------------------
+March, 2008
+
+
+]);
+SetChannels(2, 2);
+SetChannelRanges(2, 2, 2, 2);
+int001(81);
+int013(1, 0, false, false, 0, 0, [Product flows out here], [Product flows out here]);
+int013(2, 0, false, false, 5, 5, [Replenishment orders sent out through this channel], [Replenishment orders sent out through this channel]);
+SetSize(7, 2, 1);
+LockPosition(false);
+LockSize(false);
+DisableIconRotation(false);
+SetProductCode([]);
+CreateAttributes(11);
+SetAttributeName(r(1), [cycletime]);
+SetAttributeName(r(2), [entrytrigger]);
+SetAttributeName(r(3), [exittrigger]);
+SetAttributeName(r(4), [# sub-components]);
+SetAttributeName(r(5), [stockoutflag]);
+SetAttributeName(r(6), [row #]);
+SetAttributeName(r(7), [# of prod types]);
+SetAttributeName(r(8), [actualprodsflag]);
+SetAttributeName(r(9), [label name]);
+SetAttributeName(r(10), [column nr]);
+SetAttributeName(r(11), [3DIcon]);
+SetExprAtt(r(1), [negexp(10)]);
+SetAtt(r(4), 1);
+SetAtt(r(7), 1);
+SetTextAtt(r(9), [LabelName]);
+SetAtt(r(10), 1);
+SetAtt(r(11), 2);
+int024;
+SetTable(1, 10);
+int015(0, 0, [ 
+`Sub-Com1`
+]);
+int015(1, 0, [`Name`
+]);
+int015(2, 0, [`Initial Inv.`
+]);
+int015(3, 0, [`Reorder Point`
+]);
+int015(4, 0, [`Replenish Qty`
+]);
+int015(5, 0, [`Lead Time`
+]);
+int015(6, 0, [`Active Inv.`
+]);
+int015(7, 0, [`Order Pending`
+]);
+int015(8, 0, [`No. Stockouts`
+]);
+int015(9, 0, [`No. Reorders`
+]);
+int015(10, 0, [`Min Inventory`
+]);
+Set(OnEvent, [if( =(eventcode,1), if(att(5,c)=0,  do(   setstatus(5,c),   openoc(1,c)  ) ), if(  =(eventcode,2),  openic(1,c),  do(   if(<(cell(-(eventcode,2),+(att(7,c),6),c),0),    do(     inc(att(5,c),-1),     if(and(content(c)>0,att(5,c)=0),openoc(1,c))    )   ),   setcell(-(eventcode,2),+(att(7,c),7),0,c),   setcell(    -(eventcode,2),    +(att(7,c),6),    +(cell(-(eventcode,2),+(att(7,c),6),c),cell(-(eventcode,2),+(att(7,c),4),c)),    c   )  ) ))]);
+Set(OnEntered, [if( ic(c),{PRODUCT ENTERS INPUT CHANNEL 1} do(  closeic(1,c),  setatt(10,+(1,ddb(textatt(9,c),i)),c),  if(and(=(att(10,c),1),att(7,c)>1),msg([An invalid product label has been specified])),  setstatus(2,c),  setloc(-(xsize(c),xsize(i)),-(ysize(c),ysize(i)),zsize(c),i),  if(att(8,c),    repeat(nrows(c),    {SEND OUT 'ACTUAL ORDER'}    do(          setcell(count,+(att(7,c),6),-(cell(count,+(att(7,c),6),c),cell(count,att(10,c),c)),c),     if(      <(cell(count,+(att(7,c),6),c),cell(count,+(att(7,c),10),c)),      setcell(count,+(att(7,c),10),cell(count,+(att(7,c),6),c),c)  {RESET MINIMUM VALUE}     ),     if(      and(       <=(cell(count,+(att(7,c),6),c),cell(count,+(att(7,c),3),c)),  {Hit Reorder Point?}       =(cell(count,+(att(7,c),7),c),0)                              {No Orders Sent?}      ),      do( {AT OR BELOW REORDER LEVEL AND NO ORDERS HAVE BEEN SENT OUT YET}       setcell(count,+(att(7,c),9),+(1,cell(count,+(att(7,c),9),c)),c),              createatomcopy(i,c,concat([Sub],string(count))),       setcs,       sddb([t_sub],count,cs),       sddb([t_qty],cell(count,+(att(7,c),4),c),cs),       setcell(count,+(att(7,c),7),1,c),       moveatom(cs,out(2,c))      )     ),     if(<(cell(count,+(att(7,c),6),c),0),      do(  {INVENTORY DROPPED BELOW ZERO}       inc(att(5,c)),       setcell(count,+(att(7,c),8),+(1,cell(count,+(att(7,c),8),c)),c)      )     )    )   ),   repeat(nrows(c),   {USE LEAD TIME}    do(          setcell(count,+(att(7,c),6),-(cell(count,+(att(7,c),6),c),cell(count,att(10,c),c)),c),     if(      <(cell(count,+(att(7,c),6),c),cell(count,+(att(7,c),10),c)),      setcell(count,+(att(7,c),10),cell(count,+(att(7,c),6),c),c)  {RESET MINIMUM VALUE}     ),     if(      and(       <=(cell(count,+(att(7,c),6),c),cell(count,+(att(7,c),3),c)),  {Hit Reorder Point?}       =(cell(count,+(att(7,c),7),c),0)                              {No Orders Sent?}      ),      do( {AT OR BELOW REORDER LEVEL AND NO ORDERS HAVE BEEN SENT OUT YET}       setcell(count,+(att(7,c),9),+(1,cell(count,+(att(7,c),9),c)),c),         createevent(execstring(cell(count,+(att(7,c),5),c,2)),c,+(2,count)),       setcell(count,+(att(7,c),7),1,c)      )     ),     if(<(cell(count,+(att(7,c),6),c),0),      do(  {INVENTORY DROPPED BELOW ZERO}       inc(att(5,c)),       setcell(count,+(att(7,c),8),+(1,cell(count,+(att(7,c),8),c)),c)      )     )    )   )  ),  if(att(5,c)=0,   createevent(att(1,c),c,1),   setstatus(4,c)  ),  att(2,c) ),  do(   {PRODUCT THAT ENTERED WAS A REPLENISHMENT ORDER}  if(<(cell(ddb([t_sub],i),+(att(7,c),6),c),0),   do(    inc(att(5,c),-1),    if(and(content(c)>1,att(5,c)=0),openoc(1,c))   )  ),  setcell(ddb([t_sub],i),+(att(7,c),6),+(ddb([t_qty],i),cell(ddb([t_sub],i),+(att(7,c),6),c)),c),  setcell(ddb([t_sub],i),+(att(7,c),7),0,c),  destroyatom(i) ))]);
+Set(OnExited, [if( =(oc(c),1), do(  setstatus(1,c),  closeoc(1,c),  createevent(0,c,2),  att(3,c) ))]);
+Set(OnCreation, [autoconnect]);
+Set(OnReset, [do( setstatus(1,c), closeoc(1,c), setatt(5,0,c), repeat(att(4,c),  do(   setcell(count,+(att(7,c),6),cell(count,+(att(7,c),2),c),c),   setcell(count,+(att(7,c),7),0,c),   setcell(count,+(att(7,c),8),0,c),   setcell(count,+(att(7,c),9),0,c),   setcell(count,+(att(7,c),10),cell(count,+(att(7,c),2),c),c)  ) ))]);
+Set(OnUser, [Do(
+  { Delete any current instances of this form.} 
+  GuiDestroy([AssemblerWithInventory]),
+
+  { Register the GUI-form for this atom.}
+  GuiRegister(PDir([\Atoms\AssemblerWithInventory.gui]), 1),
+
+  { Show the GUI-form.}
+   GuiCreate([AssemblerWithInventory], [AssemblerWithInventory], 0, c, 0, 1)
+)
+]);
+Set(OnOcReady, [if(>(content(c),0),
+ moverequest(first(c),1)
+)
+]);
+Set(On2DDraw, [standarddisplay(name(c))]);
+Set(On3DDraw, [Case( 3DIcon,  {** Simple Box **}  Do(    DrawCube(xSize / 2, ySize / 2, 0.5, xSize, ySize, 1)  ), { Assembler 1 } DrawModel3D(Model3D(1, c), 0, 0, 0, 1, 1, 1))]);
+SetStatus(0);
+int018;
+int007;

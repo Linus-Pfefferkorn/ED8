@@ -1,0 +1,207 @@
+EDControl(EditForm:
+  BorderIcons = set(SystemMenu),
+  BorderStyle = Single,
+  Caption = str('Requirement'),
+  Height = 444,
+  Name = str('Requirement'),
+  ShowHint = True,
+  Top = 278,
+  Visible = False,
+  Width = 395,
+  Controls(
+    EDControl(MultiPage:
+      ActivePage = 1,
+      Align = Client,
+      Anchors = set(Left,Top,Right,Bottom),
+      Height = 368,
+      Left = 0,
+      Name = str('MultiPage1'),
+      TabOrder = 1,
+      Top = 0,
+      Width = 395,
+      Controls(
+        EDControl(SinglePage:
+          Caption = str('General'),
+          Name = str('SinglePage1'),
+          PageIndex = 1,
+          Controls(
+            EDControl(GroupBox:
+              Caption = str(''),
+              Height = 64,
+              Left = 8,
+              Name = str('GroupBox2'),
+              TabOrder = 1,
+              Top = 8,
+              Width = 370,
+            Controls(
+EDControl(Label:
+              Caption = str('Atom name:'),
+              Color = -16777208,
+              Left = 12,
+              Name = str('StaticText13'),
+              Top = 32,
+              Width = 60),
+            EDControl(Edit:
+              Height = 21,
+              Left = 132,
+              Name = str('AtomName'),
+              TabOrder = 2,
+              Top = 29,
+              Width = 225))),
+EDControl(GroupBox:
+              Caption = str('Settings'),
+              Height = 160,
+              Left = 8,
+              Name = str('GroupBox1'),
+              TabOrder = 3,
+              Top = 88,
+              Width = 370,
+            Controls(
+EDControl(Label:
+              Caption = str('Requirement name:'),
+              Color = -16777208,
+              Left = 12,
+              Name = str('StaticText1'),
+              Top = 32,
+              Width = 96),
+            EDControl(Edit:
+              Height = 21,
+              Left = 132,
+              Name = str('RequirementName'),
+              TabOrder = 4,
+              Top = 26,
+              Width = 225),
+            EDControl(Label:
+              Caption = str('Expression:'),
+              Color = -16777208,
+              Left = 12,
+              Name = str('StaticText12'),
+              Top = 64,
+              Width = 58),
+            EDControl(SyntaxComboBox:
+              Height = 24,
+              Left = 132,
+              Name = str('RequirementExpression'),
+              TabOrder = 5,
+              Text = str('SyntaxComboBox1'),
+              Top = 58,
+              Width = 225),
+            EDControl(Label:
+              Caption = str('Lower limit:'),
+              Color = -16777208,
+              Left = 12,
+              Name = str('StaticText1222'),
+              Top = 96,
+              Width = 56),
+            EDControl(Edit:
+              Height = 21,
+              Left = 132,
+              Name = str('LowerLimit'),
+              TabOrder = 6,
+              Top = 90,
+              Width = 100),
+            EDControl(Label:
+              Caption = str('Upper limit:'),
+              Color = -16777208,
+              Left = 12,
+              Name = str('StaticText12222'),
+              Top = 128,
+              Width = 56),
+            EDControl(Edit:
+              Height = 21,
+              Left = 132,
+              Name = str('UpperLimit'),
+              TabOrder = 7,
+              Top = 122,
+              Width = 100))),
+EDControl(GroupBox:
+              Caption = str('Connection'),
+              Height = 96,
+              Left = 8,
+              Name = str('GroupBox12'),
+              TabOrder = 8,
+              Top = 264,
+              Width = 370,
+            Controls(
+EDControl(Label:
+              Caption = str('Atom name:'),
+              Color = -16777208,
+              Left = 12,
+              Name = str('StaticText14'),
+              Top = 32,
+              Width = 60),
+            EDControl(Edit:
+              Enabled = False,
+              Height = 21,
+              Left = 132,
+              Name = str('ConnectedAtomName'),
+              TabOrder = 9,
+              Top = 26,
+              Width = 225),
+            EDControl(Button:
+              Caption = str('&Disconnect'),
+              Left = 144,
+              Name = str('Button2'),
+              TabOrder = 10,
+              Top = 56,
+              Width = 100,
+              Events(
+                Click = str('do('#13' Connect(0, 0, 1, GuiAtom),'#13' GuiControl([ConnectedAtomName], GuiSet([Text], [Unconnected]))'#13')'#13))),
+            EDControl(Button:
+              Caption = str('&Connect to Atom'),
+              Left = 256,
+              Name = str('Button1'),
+              TabOrder = 11,
+              Top = 56,
+              Width = 100,
+              Events(
+                Click = str('do('#13' var([atmTemp], vbAtom, 0),'#13' '#13' SelectAtom('#13'  model, '#13'  if('#13'   atomexists(in(1, GuiAtom)),'#13'   in(1, GuiAtom),'#13'   model'#13'  ), '#13'  [Select atom]'#13' ),'#13' '#13' atmTemp := a,'#13' '#13' if('#13'  atomexists(atmTemp) = false,'#13'  do('#13'   msg([The selected atom does not exist.], 2),'#13'   GuiControl([ConnectedAtomName], GuiSet([Text], [Unconnected])),'#13'   return(-1)'#13'  )'#13' ),'#13' '#13' GuiControl([ConnectedAtomName], GuiSet([Text], name(atmTemp))),'#13' '#13' Connect(0, atmTemp, 1, GuiAtom)'#13')'#13))))))))),
+    EDControl(Panel:
+      Align = Bottom,
+      Anchors = set(Left,Right,Bottom),
+      BevelOuter = None,
+      Caption = str(''),
+      Height = 40,
+      Left = 0,
+      Name = str('Panel1'),
+      TabOrder = 2,
+      Top = 368,
+      Width = 395,
+      Controls(
+        EDControl(Button:
+          Caption = str('&Help'),
+          Left = 8,
+          Name = str('btnHelp'),
+          TabOrder = 1,
+          Top = 8,
+          Events(
+            Click = str('Help(PDir([HELP\ED Help.hlp]), [Requirement])'#13))),
+        EDControl(Button:
+          Caption = str('&Ok'),
+          Default = True,
+          Left = 144,
+          Name = str('btnOk'),
+          TabOrder = 2,
+          Top = 8,
+          Events(
+            Click = str('Do('#13' GuiControl([btnApply]),'#13' GuiRun([Click]),'#13' GuiDestroy'#13')'#13))),
+        EDControl(Button:
+          Cancel = True,
+          Caption = str('&Cancel'),
+          Left = 230,
+          Name = str('btnCancel'),
+          TabOrder = 3,
+          Top = 8,
+          Events(
+            Click = str('GuiDestroy '#13))),
+        EDControl(Button:
+          Caption = str('&Apply'),
+          Left = 312,
+          Name = str('btnApply'),
+          TabOrder = 4,
+          Top = 8,
+          Events(
+            Click = str('do('#13' '#13'  {Save TextField}'#13'  name(GuiAtom) := GuiControl([AtomName], GuiGet([Text])),'#13'  '#13'  TextAtt([name_req],GuiAtom) := GuiControl([RequirementName],GuiGet([Text])),'#13'  '#13'  Att([lowerlimit],GuiAtom) := Value(GuiControl([LowerLimit],GuiGet([Text]))),'#13'  '#13'  Att([upperlimit],GuiAtom) := Value(GuiControl([UpperLimit],GuiGet([Text]))),'#13'  '#13'  {Save SyntaxComboBox}'#13'  '#13'  SetExprAtt([requirement],GuiControl([RequirementExpression],GuiGet([ResultCode])),GuiAtom)'#13')'#13)))))),
+  Events(
+    Show = str('do('#13' {Set Caption}'#13' if('#13'  atomexists(m(GuiAtom)),'#13'  GuiControl([Requirement],GuiSet([Caption],concat(name(m(GuiAtom)), [ - ], name(GuiAtom)))),'#13'  GuiControl([Requirement],GuiSet([Caption],concat([Baseclass - ], name(GuiAtom))))'#13' ),'#13#13' {Set ActivePage}'#13' GuiControl([MultiPage1]),GuiSet([ActivePage],1),'#13'     '#13' {Set TextField}'#13' GuiControl([AtomName], GuiSet([Text], name(GuiAtom))),'#13' '#13' GuiControl([RequirementName],GuiSet([Text],textatt([name_req],guiatom))),'#13' '#13' GuiControl([LowerLimit],GuiSet([Text],textatt([lowerlimit],guiatom))),'#13' '#13' GuiControl([UpperLimit],GuiSet([Text],textatt([upperlimit],guiatom))),'#13'  '#13' {Set SyntaxCombobox}   '#13' GuiControl([RequirementExpression],GuiSet([CodeItems], concat(char(1),[objectstart],char(1),[code:],TextAtt([requirement],guiatom),char(1),[objectend], getRequirement))),'#13' GuiControl([RequirementExpression],GuiSet([ItemIndex], 1)),         '#13#13#13' { check if an Atom is connected to the Requirement atom, if so display it''s name. }'#13' if('#13'  atomexists(in(1, GuiAtom)) = true,'#13'  GuiControl([ConnectedAtomName], GuiSet([Text], name(in(1, GuiAtom)))),'#13'  GuiControl([ConnectedAtomName], GuiSet([Text], [Unconnected]))'#13' ),'#13' '#13' Gui_PositionGuiAroundAtom(GuiControl([requirement])), '#13'    '#13' GuiRun([Update])'#13')'#13)))
+

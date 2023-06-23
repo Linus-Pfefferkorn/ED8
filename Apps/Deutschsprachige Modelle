@@ -1,0 +1,31 @@
+Do(
+ var([DMod], vbString, Pdir([Work\Examples\Deutsch\])),
+ KernelFnc([before close dialog]),
+ if(
+  <>(v,2),
+  do(
+   var([strFile], vbString),
+   set(t,makefilename(getfileopen(concat(DMod,([*.mod])),[model files (*.mod)|*.mod|All files (*.*)|*.*]),[.mod])),
+   strFile := t,
+   if(
+    not(fileexists(t)),
+    if(
+     >(stringlength(t),0),
+     msg([File does not exist],2)
+    ),
+    { else }
+    do(
+     KernelFnc([destroy and recreate model atom]),
+     KernelFnc([display model tree]),
+     if(
+      v <> 2,
+	  Do(
+	    KernelFnc([load model])
+	  )
+     )
+    )
+   )
+  )
+ ),
+ updatemodelname(t) 
+);

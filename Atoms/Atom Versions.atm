@@ -1,0 +1,756 @@
+
+
+{Preregister functions}
+
+PreregisterFunction([AtomVersion], 1, 1);
+
+
+{Atom: Atom Versions}
+
+sets;
+BaseClass;
+CreateAtom(a, s, [], 1, false);
+int023([Atom Versions], 0, 0);
+DefineFunction([AtomVersion], [Atom Reference], 1, 1, [{ This function was used in previous versions of Enterprise Dynamics
+to obtain the name of the latest version of an atom }
+If(
+ AtomExists(AtomByName([Atom Versions], Library)),
+ Do(
+  SetCell(0, 2, p(1)),
+  Cell(IndexMatch(nRows, p(1), Cell(Count, 1), 2), 2)
+ ),
+ p(1)
+)
+], [Returns the name of the latest version of atom name e1.], [createAtom(AtomByName(AtomVersion([T107-b-Source]), Library))], 0, [Atom Versions.atm]);
+Set(Icon(a), 
+	RegisterIcon(pDir([media\images\default.jpg]), [default.jpg]));
+SetMaterial(
+	RegisterMaterial([Default], 8421504, 8421504, 3289650, 0, 0.100000001490116, 0, false, false, 1, 0), 1, a);
+Set(Version(a), 7.3);
+SetTreeIcon(pDir([Media\Icons\Tools.ico]));
+Set(Info, [Atom Version
+
+General
+------------
+This atom was used in previous version of Enterprise Dynamics to act as
+a version control. This has been replaced in Enterprise Dynamics 6.0, but
+the atom is still set to the last state before the change. This is done for
+backward compatibility reasons.
+
+Last Revision:
+---------------------
+February, 2008
+]);
+Set(DdbRec, [>t-nocreate:1.>t-group:System.]);
+int001(16);
+SetSize(1, 1, 1);
+LockPosition(false);
+LockSize(false);
+DisableIconRotation(false);
+SetProductCode([]);
+CreateAttributes(1);
+SetAttributeName(r(1), [counter]);
+int024;
+SetTable(231, 2);
+int015(0, 0, [ 
+1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+20
+21
+22
+23
+24
+25
+26
+27
+28
+29
+30
+31
+32
+33
+34
+35
+36
+37
+38
+39
+40
+41
+42
+43
+44
+45
+46
+47
+48
+49
+50
+51
+52
+53
+54
+55
+56
+57
+58
+59
+60
+61
+62
+63
+64
+65
+66
+67
+68
+69
+70
+71
+72
+73
+74
+75
+76
+77
+78
+79
+80
+81
+82
+83
+84
+85
+86
+87
+88
+89
+90
+91
+92
+93
+94
+95
+96
+97
+98
+99
+100
+101
+102
+103
+104
+105
+106
+107
+108
+109
+110
+111
+112
+113
+114
+115
+116
+117
+118
+119
+120
+121
+122
+123
+124
+125
+126
+127
+128
+129
+130
+131
+132
+133
+134
+135
+136
+137
+138
+139
+140
+141
+142
+143
+144
+145
+146
+147
+148
+149
+150
+151
+152
+153
+154
+155
+156
+157
+158
+159
+160
+161
+162
+163
+164
+165
+166
+167
+168
+169
+170
+171
+172
+173
+174
+175
+176
+177
+178
+179
+180
+181
+182
+183
+184
+185
+186
+187
+188
+189
+190
+191
+192
+193
+194
+195
+196
+197
+198
+199
+200
+201
+202
+203
+204
+205
+206
+207
+208
+209
+210
+211
+212
+213
+214
+215
+216
+217
+218
+219
+220
+221
+222
+223
+224
+225
+226
+227
+228
+229
+230
+231
+]);
+int015(1, 0, [`Atom`
+`T001-Generator`
+`T002-Destructor`
+`T003-Service`
+`T004-Queue Fifo`
+`T005-Selectoutput`
+`T006-Pack`
+`T007-Unpack`
+`T008-Assembly`
+`T009-Splitter`
+`T010-Transform`
+`T011-User Events`
+`T012-Queue Lifo`
+`T013-Queue Sort`
+`T014-Lock`
+`T015-Unlock`
+`T016-MultiService`
+`T017-Assignments`
+`T018-Timetable`
+`T019-Breakdown`
+`T020-LockOnBlock`
+`T021-ConveyA`
+`T022-ConveyNA`
+`T023-Batcher`
+`T024-Monitor`
+`T025-Composition`
+`T026-Setup Server`
+`T027-General`
+`T028-Availability Control`
+`T029-Statuslist`
+`T030-Pallet`
+`T031-ArrivalList`
+`T032-ConveyAD`
+`T033-Graph`
+`T034-Setup Table`
+`T035-Shuttle`
+`T036-3DIcons`
+`T037-Camera`
+`T038-Light`
+`T039-Dynamic Database`
+`T040-History Manager`
+`T041-Animation Recorder`
+`T042-SpeedControl`
+`T043-APushButton`
+`T044-ShowDateTime`
+`T045-Background`
+`T046-ConveyorACurved`
+`T047-Box`
+`T048-Default Atom`
+`T049-Warehouse`
+`T050-Product`
+`T051-Source`
+`T052-Queue`
+`T053-Server`
+`T054-Sink`
+`T055-Products Group`
+`T056-Document`
+`T057-Container Group`
+`T058-Empirical Distribution`
+`T059-Container`
+`T060-Group`
+`T061-Product With Print`
+`T062-Container With Print`
+`T063-Developer Functions`
+`T064-Elevator`
+`T065-Transport`
+`T066-Database`
+`T067-Mtbf Mttr Availability`
+`T068-Time Schedule Availability`
+`T069-Switch Availability`
+`T070-Queue Time Chart`
+`T071-Status Time Chart`
+`T072-Schedule Time Chart`
+`T073-Basic Icon Library`
+`T074-Manufacturing Icon Library`
+`T075-Material Handling Icon Library`
+`T076-Goods Icon Library`
+`T077-Various Icon Library`
+`T078-Export Table`
+`T079-Graphs`
+`T080-Autofit`
+`T081-Function Editor`
+`T082-Excel`
+`T083-Operator`
+`T084-Team`
+`T085-Work Location`
+`T086-Experiment`
+`T087-PFM`
+`T088-Atom Organizer`
+`T089-Download Updates`
+`T090-Monitor`
+`T091-SingleTransform`
+`T092-MultiTransform`
+`T093-Conveyor`
+`T094-Call`
+`T095-Free`
+`T096-Message Transmitter`
+`T097-History`
+`T098-Table`
+`T099-Word`
+`T100-Non Accumulating Conveyor`
+`T101-Accumulating Conveyor`
+`T102-Curved Accumulating Conveyor`
+`T103-Composition Container`
+`T104-Atom Manipulator`
+`T105-Queue`
+`T106-Transport`
+`T107-Source`
+`T108-Warehouse`
+`T109-Accumulating Conveyor Plus`
+`T110-Non Accumulating Conveyor Plus`
+`T111-ExcelTableRead`
+`T112-ExcelTableWrite`
+`T113-Initialize`
+`T114-Fast Non Accumulating Conveyor`
+`T115-Server with Operators`
+`T116-Node`
+`Free`
+`Free`
+`T119-Atom Versions`
+`T120-Transporter`
+`T121-Dispatcher`
+`T122-Destinator`
+`T123-Node Manipulator`
+`T124-Network Node`
+`T125-Picklist`
+`T126-Network Controller`
+`T127-Team`
+`T128-Operator`
+`T129-Call Operators`
+`T130-Free Operators`
+`T131-Data Recorder`
+`T132-Assembler`
+`T133-Assembler with Inventory`
+`T134-Kanban Bin`
+`T135-Robot`
+`T136-Portal Crane`
+`T137-Ramped NA Conveyor`
+`T138-Condition Control`
+`T139-Notify Router`
+`T140-Bitmap`
+`T141-Text Box`
+`T142-Server`
+`T143-Socket Listen`
+`T144-Socket Send`
+`T145-Cost`
+`T146-Total Cost`
+`T147-Report`
+`T148-Atom Labels`
+`T149-model Documentation`
+`T150-Rotating Table`
+`T151-Reservoir`
+`T152-Fast Accumulating Conveyor`
+`T153-Fast Server`
+`T154-History viewer`
+`T155-VR Sphere`
+`T156-VR Plane`
+`T157-VR Box`
+`T158-VR Wall`
+`T159-VR Cylinder`
+`T160-VR Flexbox`
+`T161-Fast Queue Fifo`
+`T162-Left Curved Accumulating Conveyor`
+`T163-Left Curved Non Accumulating Conveyor`
+`T164-Right Curved Non Accumulating Conveyor`
+`T165-Speed Changing Accumulating Conveyor`
+`T166-Buffer Conveyor`
+`T167-Stacker`
+`T168-Carousel Server`
+`T169-AVI Creator`
+`T170-Container Simple`
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+`T186-Optimizer`
+`T187-Objective`
+`T188-Requirement`
+`T189-Variable`
+ 
+ 
+`T192-TurnTableUnit`
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+`A001-Atom Attributes.atm`
+`A002-Baggage.atm`
+`A003-Baggage Generator.atm`
+`A004-Baggage Generator FS.atm`
+`A005-Baggage Source.atm`
+`A006-Carousel.atm`
+`A007-Check-in Block.atm`
+`A008-Curved Non Accumulating Conveyor.atm`
+`A009-Manual Encoding Station.atm`
+`A010-Fast Non Accumulating Conveyor.atm`
+`A011-Switch.atm`
+`A012-Lateral Sink.atm`
+`A013-Line Sorter.atm`
+`A014-Merge Normal.atm`
+`A015-Originating Point.atm`
+`A016-Automatic Encoding Station.atm`
+`A017-Screening Machine.atm`
+`A018-Sorter Curve.atm`
+`A019-Sorter Discharge.atm`
+`A020-Sorter Induction.atm`
+`A021-Sorter Scan.atm`
+`A022-High Aggregation Storage.atm`
+`A023-Transfer Unloading Quay.atm`
+`A024-Tray Sorter.atm`
+`A025-Tub Station.atm`
+`A026-Vertical Sorter.atm`
+`A027-Lead Times.atm`
+`A028-Accumulating Conveyor.atm`
+`A029-Curved Accumulating Conveyor.atm`
+`A030-Buffering Belt Conveyor.atm`
+`A031-Sink.atm`
+]);
+int015(2, 0, [`Version`
+`T001-Generator`
+`T002-Destructor`
+`T003-Service`
+`T004-Queue Fifo`
+`T005-Selectoutput`
+`T006-b-Pack`
+`T007-d-Unpack`
+`T008-b-Assembly`
+`T009-b-Splitter`
+`T010-Transform`
+`T011-a-User Events`
+`T012-Queue Lifo`
+`T013-Queue Sort`
+`T014-c-Lock`
+`T015-a-Unlock`
+`T016-e-MultiService`
+`T017-Assignments`
+`T018-a-Timetable`
+`T019-Breakdown`
+`T020-LockOnBlock`
+`T021-ConveyA`
+`T022-ConveyNA`
+`T023-Batcher`
+`T024-Monitor`
+`T025-Composition`
+`T026-Setup Server`
+`T027-b-General`
+`T028-f-Availability Control`
+`T029-a-Statuslist`
+`T030-Pallet`
+`T031-d-ArrivalList`
+`T032-ConveyAD`
+`T033-Graph`
+`T034-Setup Table`
+`T035-Shuttle`
+`T036-3DIcons`
+`T037-a-Camera`
+`T038-Light`
+`T039-Dynamic Database`
+`T040-History Manager`
+`T041-a-Animation Recorder`
+`T042-SpeedControl`
+`T043-APushButton`
+`T044-ShowDateTime`
+`T045-b-Background`
+`T046-ConveyorACurved`
+`T047-Box`
+`T048-Default Atom`
+`T049-Warehouse`
+`T050-a-Product`
+`T051-Source`
+`T052-a-Queue`
+`T053-Server`
+`T054-a-Sink`
+`T055-Products Group`
+`T056-Document`
+`T057-Container Group`
+`T058-b-Empirical Distribution`
+`T059-b-Container`
+`T060-Group`
+`T061-Product With Print`
+`T062-Container With Print`
+`T063-Developer Functions`
+`T064-a-Elevator`
+`T065-Transport`
+`T066-a-Database`
+`T067-b-Mtbf Mttr Availability`
+`T068-a-Time Schedule Availability`
+`T069-b-Switch Availability`
+`T070-Queue Time Chart`
+`T071-Status Time Chart`
+`T072-Schedule Time Chart`
+`T073-Basic Icon Library`
+`T074-Manufacturing Icon Library`
+`T075-Material Handling Icon Library`
+`T076-Goods Icon Library`
+`T077-Various Icon Library`
+`T078-a-Export Table`
+`T079-a-Graphs`
+`T080-Autofit`
+`T081-b-Function Editor`
+`T082-c-Excel`
+`T083-a-Operator`
+`T084-a-Team`
+`T085-b-Work Location`
+`T086-a-Experiment`
+`T087-a-PFM`
+`T088-a-Atom Organizer`
+`T089-Download Updates`
+`T090-b-Monitor`
+`T091-b-SingleTransform`
+`T092-a-MultiTransform`
+`T093-Conveyor`
+`T094-a-Call`
+`T095-a-Free`
+`T096-Message Transmitter`
+`T097-a-History`
+`T098-Table`
+`T099-b-Word`
+`T100-c-Non Accumulating Conveyor`
+`T101-d-Accumulating Conveyor`
+`T102-c-Curved Accumulating Conveyor`
+`T103-a-Composition Container`
+`T104-d-Atom Manipulator`
+`T105-b-Queue`
+`T106-b-Transport`
+`T107-e-Source`
+`T108-b-Warehouse`
+`T109-a-Accumulating Conveyor Plus`
+`T110-a-Non Accumulating Conveyor Plus`
+`T111-ExcelTableRead`
+`T112-ExcelTableWrite`
+`T113-b-Initialize`
+`T114-a-Fast Non Accumulating Conveyor`
+`T115-a-Server with Operators`
+`T116-a-Node`
+`Free`
+`Free`
+`T119-Atom Versions`
+`T120-a-Transporter Advanced`
+`T121-Dispatcher`
+`T122-Destinator`
+`T123-Node Manipulator`
+`T124-Network Node`
+`T125-Picklist`
+`T126-a-Network Controller`
+`T127-a-Team`
+`T128-a-Operator`
+`T129-Call Operators`
+`T130-Free Operators`
+`T131-a-Data Recorder`
+`T132-a-Assembler`
+`T133-Assembler with Inventory`
+`T134-Kanban Bin`
+`T135-Robot`
+`T136-b-Portal Crane`
+`T137-Ramped NA Conveyor`
+`T138-a-Condition Control`
+`T139-Notify Router`
+`T140-Bitmap`
+`T141-Text Box`
+`T142-b-Server`
+`T143-Socket Listen`
+`T144-Socket Send`
+`T145-Cost`
+`T146-Total Cost`
+`T147-a-Report`
+`T148-a-Atom Labels`
+`T149-model Documentation`
+`T150-Rotating Table`
+`T151-Reservoir`
+`T152-Fast Accumulating Conveyor`
+`T153-Fast Server`
+`T154-History viewer`
+`T155-VR Sphere`
+`T156-VR Plane`
+`T157-VR Box`
+`T158-VR Wall`
+`T159-VR Cylinder`
+`T160-VR Flexbox`
+`T161-Fast Queue Fifo`
+`T162-Left Curved Accumulating Conveyor`
+`T163-Left Curved Non Accumulating Conveyor`
+`T164-Right Curved Non Accumulating Conveyor`
+`T165-Speed Changing Accumulating Conveyor`
+`T166-Buffer Conveyor`
+`T167-a-Stacker`
+`T168-Carousel Server`
+`T169-AVI Creator`
+`T170-Container Simple`
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+`T186-a-Optimizer`
+`T187-a-Objective`
+`T188-a-Requirement`
+`T189-a-Variable`
+ 
+ 
+`T192-TurnTableUnit`
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+`A001-Atom Attributes.atm`
+`A002-Baggage.atm`
+`A003-Baggage Generator.atm`
+`A004-Baggage Generator FS.atm`
+`A005-Baggage Source.atm`
+`A006-Carousel.atm`
+`A007-Check-in Block.atm`
+`A008-Curved Non Accumulating Conveyor.atm`
+`A009-Manual Encoding Station.atm`
+`A010-Fast Non Accumulating Conveyor.atm`
+`A011-Switch.atm`
+`A012-Lateral Sink.atm`
+`A013-Line Sorter.atm`
+`A014-Merge Normal.atm`
+`A015-Originating Point.atm`
+`A016-Automatic Encoding Station.atm`
+`A017-Screening Machine.atm`
+`A018-Sorter Curve.atm`
+`A019-Sorter Discharge.atm`
+`A020-Sorter Induction.atm`
+`A021-Sorter Scan.atm`
+`A022-High Aggregation Storage.atm`
+`A023-Transfer Unloading Quay.atm`
+`A024-Tray Sorter.atm`
+`A025-Tub Station.atm`
+`A026-Vertical Sorter.atm`
+`A027-Lead Times.atm`
+`A028-Accumulating Conveyor.atm`
+`A029-Curved Accumulating Conveyor.atm`
+`A030-Buffering Belt Conveyor.atm`
+`A031-Sink.atm`
+]);
+SetStatus(0);
+int018;
+int007;

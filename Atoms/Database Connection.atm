@@ -1,0 +1,82 @@
+
+
+{Preregister functions}
+
+PreregisterFunction([ExtractOnlyName], 1, 1);
+
+
+{Atom: Database Connection}
+
+sets;
+BaseClass;
+createAtom(a, s, [], 1, false);
+int023([Database Connection], 3184303, 1248);
+DefineFunction([ExtractOnlyName], [Files], 1, 1, [Do(
+ sDdb([cp1], + (StringLength( p(1) ), 1), model),
+ Repeat(
+  StringLength( p(1) ),
+  If(CompareText(StringCopy( p(1), Count, 1), [.]),
+   sDdb([cp1], Count, model)
+  )
+ ),
+ StringCopy( p(1), 1, -( Ddb([cp1], model), 1))
+)
+], [This function returns the characters of e1 before the "." If no "." is found, the complete string is returned], [ExtractOnlyName([Name.exe])], 0, [Database Connection.atm]);
+Set(Icon(a), 
+	RegisterIcon(pDir([media\images\default.jpg]), [default.jpg]));
+SetMaterial(
+	RegisterMaterial([Default], 8421504, 8421504, 3289650, 0, 0.100000001490116, 0, false, false, 1, 0), 1, a);
+Set(Version(a), 7.3);
+SetTreeIcon(pDir([Media\Icons\Database2k.ico]));
+Set(Info, [Connect with  database
+
+General
+------------
+Provides a userinterface to connect with a database. The user can 
+select a database, display the contents and execute SQL queries.
+
+The result of the query can be looked at immidiately. 
+
+The contents of the current selection can be accessed with 4DScript.
+
+Rightclick & Doubleclick:
+Popupmenu to select, display and query database
+
+Last revision:
+-------------------
+February, 2008
+]);
+Set(DdbRec, [>v1:workdir([\Examples\parts.dbf]).>t-alloworganize:1.]);
+int001(38);
+SetSize(10, 2, 1);
+LockPosition(false);
+LockSize(false);
+DisableIconRotation(false);
+SetProductCode([]);
+createAttributes(7);
+SetAttributeName(r(1), [database]);
+SetAttributeName(r(2), [tablename]);
+SetAttributeName(r(3), [query]);
+SetAttributeName(r(4), [dbtype]);
+SetAttributeName(r(5), [aliasname]);
+SetAttributeName(r(6), [update]);
+SetAttributeName(r(7), [join]);
+SetAtt(r(4), 3);
+SetTextAtt(r(5), [none]);
+int024;
+Set(OnUser, [Do(
+  { Delete any current instances of this form.} 
+  GuiDestroy([DatabaseConnection]),
+
+  { Register the GUI-form for this atom.}
+  GuiRegister(PDir([\Atoms\DatabaseConnection.gui]), 1),
+
+  { Show the GUI-form.}
+   Guicreate([DatabaseConnection], [DatabaseConnection], 0, c, 0, 1)
+  )
+]);
+Set(On2DDraw, [Draw2DIcon(3, [Database Connection], Concat(TextAtt(1, c), [-], TextAtt(2, c)))
+]);
+SetStatus(0);
+int018;
+int007;

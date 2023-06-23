@@ -1,0 +1,438 @@
+
+
+{Preregister functions}
+
+PreregisterFunction([CompositionContainer_SaveComposition], 1, 1);
+PreregisterFunction([CompositionContainer_InsertVariable], 3, 3);
+PreregisterFunction([CompositionContainer_DefineInViewPoints2D], 1, 1);
+PreregisterFunction([CompositionContainer_DefineInViewPoints3D], 1, 1);
+PreregisterFunction([CompositionContainer_InViewField2D], 2, 4);
+PreregisterFunction([CompositionContainer_GetyCenter2D], 1, 1);
+PreregisterFunction([CompositionContainer_SetyCenter2D], 2, 2);
+PreregisterFunction([CompositionContainer_GetyRadius2D], 1, 1);
+PreregisterFunction([CompositionContainer_SetyRadius2D], 2, 2);
+PreregisterFunction([CompositionContainer_GetyCenter3D], 1, 1);
+PreregisterFunction([CompositionContainer_SetyCenter3D], 2, 2);
+PreregisterFunction([CompositionContainer_GetRadius3D], 1, 1);
+PreregisterFunction([CompositionContainer_SetRadius3D], 2, 2);
+PreregisterFunction([CompositionContainer_GetCheckContentInView], 1, 1);
+PreregisterFunction([CompositionContainer_SetCheckContentInView], 2, 2);
+PreregisterFunction([CompositionContainer_SetzCenter3D], 2, 2);
+PreregisterFunction([CompositionContainer_GetzCenter3D], 1, 1);
+PreregisterFunction([CompositionContainer_SetxCenter3D], 2, 2);
+PreregisterFunction([CompositionContainer_GetxCenter3D], 1, 1);
+PreregisterFunction([CompositionContainer_SetxRadius2D], 2, 2);
+PreregisterFunction([CompositionContainer_GetxRadius2D], 1, 1);
+PreregisterFunction([CompositionContainer_SetxCenter2D], 2, 2);
+PreregisterFunction([CompositionContainer_GetxCenter2D], 1, 1);
+
+
+{Atom: Composition Container}
+
+sets;
+BaseClass;
+CreateAtom(a, s, [], 1, false);
+int023([Composition Container], 8421504, 25650);
+DefineFunction([CompositionContainer_SaveComposition], [CompositionContainer], 1, 1, [if( license, do(    reset,  setlabel([atmname],makefilename(getfilesave(workdir(concat(name(p(1)),[.atm]))),[.atm]),p(1)),  setlabel([cmpname],concat(stringcopy(label([atmname],p(1)),1,-(stringlength(label([atmname],p(1))),4)),[.cmp]),p(1)),  if(   >(stringlength(extractname(label([atmname],p(1)))),4),   do(    set(     oncreation(p(1)),     concat(      [       do(        if(         not(comparetext(name(c),[])),         if(fileexists(],sbo,label([cmpname],p(1)),sbc,[),          execfile(],sbo,label([cmpname],p(1)),sbc,[),          msg(concat([Cannot locate:],lf,cr,],sbo,label([cmpname],p(1)),sbc,[,lf,cr,[Make sure the *.CMP file is in the directory as stated above]))         )        ),        set(oncreation(c),concat(sbo,[nothing],sbc))       )      ]     )    ),    waitcursor,    fileopen(label([atmname],p(1))),    fileclear,    set(v,atomid),    foratomtreeunder(p(1),if(=(v,atomid),saveatom),1),    savefinish,    fileclose,    fileopen(label([cmpname],p(1))),    fileclear,    foratomtreeunder(p(1),saveatom,0),    foratomtreeunder(p(1),saveatomconnect,false),    savefinish,    fileclose,    set(oncreation(p(1)),[]),    normalcursor   )  ) ), msg([No license to save]))], [p(1) as CompositionContainerResult: none. Saves the complete composition of atoms.], [Enter Syntax Example], 0, [Composition Container.atm]);
+DefineFunction([CompositionContainer_InsertVariable], [CompositionContainer], 3, 3, [do( { First increase the number of variables for the container. } Att([nrvariables], p(1)) := Att([nrvariables], p(1)) + 1,  { Give the table a dimension equal to the number of variables. } nrows(p(1)) := Att([nrvariables], p(1)),  { Fill in the variable properties. }  { The name of the variable. } cell(1, 1, p(1)) := p(2),  { And the variable's expression } cell(1, 1, p(1)) := p(3))], [p(1) as CompositionContainerp(2) as Stringp(3) as StringResult: none. Inserts a variable and it's expression into the table of the composition container.], [Enter Syntax Example], 0, [Composition Container.atm]);
+DefineFunction([CompositionContainer_DefineInViewPoints2D], [CompositionContainer], 1, 1, [Do(
+  var([atmContainer], vbAtom, p(1)),
+  var([atmC], vbAtom),
+  
+  var([minXloc], vbValue, 1e15),
+  var([minYloc], vbValue, 1e15),
+  var([maxXloc], vbValue, -(1e15)),
+  var([maxYloc], vbValue, -(1e15)),
+
+  var([curXloc], vbValue),
+  var([curYloc], vbValue),
+  var([valCounter], vbValue),
+  var([valRotation], vbValue),
+  var([valRadius], vbValue),  
+  var([valRotationUp], vbValue, 0),
+  var([atmUp], vbAtom, Main),
+  var([valHideContent], vbValue),
+
+  ForAtomTreeUnder(
+    atmContainer,
+    Do(
+      atmC := a,      
+      
+      {**Update rotation of all up**}      
+      if(
+        up(atmC) <> atmUp,
+        do(
+          atmUp := up(atmC),
+          PushAtomPointer(atmUp),
+          valHideContent := And(Not(GetSetting(saContents, atmUp)), Att([displaycontents], atmUp) = 0), 
+          
+          valRotationUp := 0,          
+          LoopUntil(
+            atmUp = atmContainer,
+            do(
+              valRotationUp := valRotationUp + RotationAs(atmUp),
+              atmUp := up(atmUp),
+              if(
+                valHideContent = False,
+                valHideContent := And(Not(GetSetting(saContents, atmUp)), Att([displaycontents], atmUp) = 0)
+              ) 
+            ),
+            10000
+          ),
+          atmUp := PopAtomPointer
+        )
+      ),
+
+      if(
+        And(
+          valHideContent = False,
+          Mod(LayerOptions(GetLayer(atmC)), 2) = LO_VISIBLE,  
+          Or(  {**Exclude composition containers if content is checked**}
+            M(atmC) <> M(atmContainer),
+            CompositionContainer_GetCheckContentInView(atmC) = 0 {**Never check content in view**}
+          ),
+          or(
+            GetSetting(sa2DDraw, atmC),
+            GetSetting(sa2DOutline, atmC),
+            GetSetting(saFillOutline, atmC),
+            GetSetting(saIcon, atmC)
+          )
+        ),
+        do(    
+           
+          if(
+            Or(
+              GetSetting(saRotate2d, atmC) = True,
+              GetSetting(sa2DDraw, atmC) = False
+            ),
+            valRotation := RotationAs(atmC),
+            valRotation := 0
+          ),
+          
+          {**Check all 4 corners of atom**}          
+          {**Translation is added because it is used when the atoms are drawin in 2D or 3D**}
+          Repeat(
+            4,
+            do(
+              Case(Count,
+                do(
+                  curXloc := xAbsLoc(atmC, atmContainer) + xTrans(atmC),  
+                  curYloc := yAbsLoc(atmC, atmContainer) + yTrans(atmC)
+                ),
+                do(
+                  curXloc  := curXloc + xSize(atmC) * cos(valRotation + valRotationUp),
+                  curYloc := curYloc + xSize(atmC) * sin(valRotation + valRotationUp)
+                ),
+                do(
+                  curXloc  := curXloc - ySize(atmC) * sin(valRotation + valRotationUp), 
+                  curYloc := curYloc + ySize(atmC) * cos(valRotation + valRotationUp)
+                ),
+                do(
+                  curXloc  := curXloc - xSize(atmC) * cos(valRotation + valRotationUp),
+                  curYloc := curYloc - xSize(atmC) * sin(valRotation + valRotationUp)
+                )
+              ),
+              
+              Case(
+                WhichIsTrue(
+                  curXloc < minXloc, 
+                  curXloc > maxXloc
+                ),
+                minXloc := curXloc,
+                maxXloc := curXloc
+              ),
+                
+              Case(
+                WhichIsTrue(
+                  curYloc < minYloc, 
+                  curYloc > maxYloc
+                ),
+                minYloc := curYloc,
+                maxYloc := curYloc
+              )
+            )
+          )    
+        )
+      )
+    )
+  ),
+  
+  if(
+    Content(atmContainer) > 0,
+    do(  
+      var([valPointX], vbValue),
+      var([valPointY], vbValue),  
+      var([valPointXCenter], vbValue),
+      var([valPointYCenter], vbValue), 
+      var([valPointX1], vbValue),
+      var([valPointY1], vbValue),
+      var([valPointX2], vbValue),
+      var([valPointY2], vbValue),
+      var([valRadiusX], vbValue),
+      var([valRadiusY], vbValue),
+    
+      valPointX := xAbsLoc(atmContainer, Model),
+      valPointY := yAbsLoc(atmContainer, Model), 
+      valRotation := RotationAs(atmContainer), 
+      
+      {**Get center point**}
+      valPointXCenter := valPointX + (minXLoc + maxXLoc) * 0.5 * cos(valRotation) - (maxYLoc + minYLoc) * 0.5 * sin(valRotation),             
+      valPointYCenter := valPointY + (minXLoc + maxXLoc) * 0.5 * sin(valRotation) + (maxYLoc + minYLoc) * 0.5 * cos(valRotation), 
+      
+      {**Determine max x radius**}
+      valPointX1 := valPointX + minXLoc * cos(valRotation) - minYLoc * sin(valRotation),       
+      valPointX2 := valPointX + maxXLoc * cos(valRotation) - minYLoc * sin(valRotation),    
+      valRadiusX := Max(abs(valPointX1 - valPointXCenter), abs(valPointX2 - valPointXCenter)),
+      
+      {**Determine max y radius**}
+      valPointY1 := valPointY + minXLoc * sin(valRotation) + minYLoc * cos(valRotation),
+      valPointY2 := valPointY + minXLoc * sin(valRotation) + maxYLoc * cos(valRotation),
+      valRadiusY := Max(abs(valPointY1 - valPointYCenter), abs(valPointY2 - valPointYCenter)),  
+      
+      CompositionContainer_SetxCenter2D(atmContainer, valPointXCenter),
+      CompositionContainer_SetyCenter2D(atmContainer, valPointYCenter),
+      CompositionContainer_SetxRadius2D(atmContainer, valRadiusX),
+      CompositionContainer_SetyRadius2D(atmContainer, valRadiusY)
+    ),
+    do(  
+      CompositionContainer_SetxCenter2D(atmContainer, 0),
+      CompositionContainer_SetyCenter2D(atmContainer, 0),
+      CompositionContainer_SetxRadius2D(atmContainer, 0),
+      CompositionContainer_SetyRadius2D(atmContainer, 0)
+    )
+  )
+)
+], [Defines the extreme points (x, y, z) of the atoms within container e1
+], [CompositionContainer_DefineOuterpoints(c)], 0, [CompositionContainer.atm]);
+DefineFunction([CompositionContainer_DefineInViewPoints3D], [CompositionContainer], 1, 1, [Do(
+  var([atmContainer], vbAtom, p(1)),
+  var([atmC], vbAtom),
+  
+  var([minXloc], vbValue, 1e15),
+  var([minYloc], vbValue, 1e15),
+  var([minZloc], vbValue, 1e15),
+
+  var([maxXloc], vbValue, -(1e15)),
+  var([maxYloc], vbValue, -(1e15)),
+  var([maxZloc], vbValue, -(1e15)),
+  
+  var([curXloc], vbValue),
+  var([curYloc], vbValue),
+  var([curZloc], vbValue),
+  
+  var([valCounter], vbValue),
+  var([valRotation], vbValue),
+  var([valRadius], vbValue),  
+  var([valRotationUp], vbValue, 0),
+  var([atmUp], vbAtom, Main),
+  var([valHideContent], vbValue),
+
+  ForAtomTreeUnder(
+    atmContainer,
+    Do(
+      atmC := a,      
+      
+      {**Update rotation of all up**}      
+      if(
+        up(atmC) <> atmUp,
+        do(
+          atmUp := up(atmC),
+          PushAtomPointer(atmUp),
+          valHideContent := And(GetSetting(saHide3DContents, atmUp), Att([displaycontents], atmUp) = 0),
+          valRotationUp := 0,          
+          LoopUntil(
+            atmUp = atmContainer,
+            do(
+              valRotationUp := valRotationUp + RotationAs(atmUp),
+              atmUp := up(atmUp),
+              if(
+                valHideContent = False,
+                valHideContent := And(GetSetting(saHide3DContents, atmUp), Att([displaycontents], atmUp) = 0)
+              ) 
+            ),
+            10000
+          ),
+          atmUp := PopAtomPointer
+        )
+      ),
+      
+      if(
+        And(
+          valHideContent = False,
+          Mod(LayerOptions(GetLayer(atmC)), 2) = LO_VISIBLE,  
+          Or(  {**Exclude composition containers if content is checked**}
+            M(atmC) <> M(atmContainer),
+            CompositionContainer_GetCheckContentInView(atmC) = 0 {**Never check content in view**}
+          ),
+          or(
+            GetSetting(sa3DDraw, atmC),
+            GetSetting(sa3DOutline, atmC),
+            GetSetting(sa3DModel, atmC)
+          )
+        ),
+        do(       
+          valRotation := RotationAs(atmC),
+          
+          {**Check all 4 corners of atom**}          
+          {**Translation is added because it is used when the atoms are drawin in 2D or 3D**}
+          Repeat(
+            4,
+            do(
+              Case(Count,
+                do(
+                  curXloc := xAbsLoc(atmC, atmContainer) + xTrans(atmC),  
+                  curYloc := yAbsLoc(atmC, atmContainer) + yTrans(atmC)
+                ),
+                do(
+                  curXloc := curXloc + xSize(atmC) * cos(valRotation + valRotationUp),
+                  curYloc := curYloc + xSize(atmC) * sin(valRotation + valRotationUp)
+                ),
+                do(
+                  curXloc := curXloc - ySize(atmC) * sin(valRotation + valRotationUp), 
+                  curYloc := curYloc + ySize(atmC) * cos(valRotation + valRotationUp)
+                ),
+                do(
+                  curXloc := curXloc - xSize(atmC) * cos(valRotation + valRotationUp),
+                  curYloc := curYloc - xSize(atmC) * sin(valRotation + valRotationUp)
+                )
+              ),
+              
+              Case(
+                WhichIsTrue(
+                  curXloc < minXloc, 
+                  curXloc > maxXloc
+                ),
+                minXloc := curXloc,
+                maxXloc := curXloc
+              ),
+                
+              Case(
+                WhichIsTrue(
+                  curYloc < minYloc, 
+                  curYloc > maxYloc
+                ),
+                minYloc := curYloc,
+                maxYloc := curYloc
+              )
+            )
+          ),
+          
+          {**Check Z loc**}    
+          Repeat(
+            2,
+            do(
+              Case(
+                Count,
+                curZloc := zAbsLoc(atmC, atmContainer) + zTrans(atmC),
+                curZLoc := curZLoc + zSize(atmC)
+              ),
+            
+              Case(
+                WhichIsTrue(
+                  curZloc < minZloc, 
+                  curZloc > maxZloc
+                ),
+                minZloc := curZloc,
+                maxZloc := curZloc
+              )
+            )                    
+          )
+        )
+      )
+    )
+  ),
+  
+  if(
+    Content(atmContainer) > 0,
+    do(   
+      
+      {**Get center point**}
+      curXloc := (minXLoc + maxXLoc) * 0.5,             
+      curYloc := (minYLoc + maxYLoc) * 0.5, 
+      curZloc := (minZLoc + maxZLoc) * 0.5, 
+      
+      {**Determine max radius**}   
+      valRadius := sqrt(sqr(0.5 * (maxXLoc - minXloc)) + sqr(0.5 * (maxYLoc - minYloc)) + sqr(0.5 * (maxZLoc - minZloc))),
+
+      
+      CompositionContainer_SetxCenter3D(atmContainer, curXloc),
+      CompositionContainer_SetyCenter3D(atmContainer, curYloc),
+      CompositionContainer_SetzCenter3D(atmContainer, curZloc),
+      CompositionContainer_SetRadius3D(atmContainer, valRadius)
+    ),
+    do(  
+      CompositionContainer_SetxCenter3D(atmContainer, 0),
+      CompositionContainer_SetyCenter3D(atmContainer, 0),
+      CompositionContainer_SetzCenter3D(atmContainer, 0),
+      CompositionContainer_SetRadius3D(atmContainer, 0)
+    )
+  )
+)
+], [Defines the extreme points (x, y, z) of the atoms within container e1
+], [CompositionContainer_DefineOuterpoints(c)], 0, [CompositionContainer.atm]);
+DefineFunction([CompositionContainer_InViewField2D], [CompositionContainer], 2, 4, [do(  var([valPointX], vbValue, p(1)),  var([valPointY], vbValue, p(2)),  var([valRadiusX], vbValue),  var([valRadiusY], vbValue),  var([x1], vbValue),  var([y1], vbValue),  var([x2], vbValue),  var([y2], vbValue),    var([valFlag], vbValue, False),    {**Check if point is within viewfield**}  valRadiusX := Max(0, p(3)),  valRadiusY := Max(0, p(4)),    x1 := ViewX - valRadiusX,  y1 := ViewY - valRadiusY,  x2 := ViewX + ViewWidth + valRadiusX ,  y2 := ViewY + viewHeight + valRadiusY,       if(    And(      valPointX >= x1,      valPointX <= x2,      valPointY >= y1,      valPointY <= y2    ),    valFlag := True  ),    valFlag)], [e1 = xloce2 = yloce3 (optional) = xRadius. Only used if > 0e4 (optional) = yRadius. Only used if > 0], [CompositionContainer_InViewField2D(0, 0, {}, {})], 0, [CompositionContainer.atm]);
+DefineFunction([CompositionContainer_GetyCenter2D], [Atom Parameters], 1, 1, [Att(6, p(1))], [Returns the value of attribute yCenter2D (# 6) of Composition Container e1], [CompositionContainer_GetyCenter2D(c)], 0, [Composition Container.atm]);
+DefineFunction([CompositionContainer_SetyCenter2D], [Atom Parameters], 2, 2, [Att(6, p(1)) := p(2)], [Sets the value of attribute yCenter2D (# 6) of Composition Container e1 to e2], [CompositionContainer_SetyCenter2D(c, 1)], 0, [Composition Container.atm]);
+DefineFunction([CompositionContainer_GetyRadius2D], [Atom Parameters], 1, 1, [Att(8, p(1))], [Returns the value of attribute yRadius2D (# 8) of Composition Container e1], [CompositionContainer_GetyRadius2D(c)], 0, [Composition Container.atm]);
+DefineFunction([CompositionContainer_SetyRadius2D], [Atom Parameters], 2, 2, [Att(8, p(1)) := p(2)], [Sets the value of attribute yRadius2D (# 8) of Composition Container e1 to e2], [CompositionContainer_SetyRadius2D(c, 1)], 0, [Composition Container.atm]);
+DefineFunction([CompositionContainer_GetyCenter3D], [Atom Parameters], 1, 1, [Att(10, p(1))], [Returns the value of attribute yCenter3D (# 10) of Composition Container e1], [CompositionContainer_GetyCenter3D(c)], 0, [Composition Container.atm]);
+DefineFunction([CompositionContainer_SetyCenter3D], [Atom Parameters], 2, 2, [Att(10, p(1)) := p(2)], [Sets the value of attribute yCenter3D (# 10) of Composition Container e1 to e2], [CompositionContainer_SetyCenter3D(c, 1)], 0, [Composition Container.atm]);
+DefineFunction([CompositionContainer_GetRadius3D], [Atom Parameters], 1, 1, [Att(12, p(1))], [Returns the value of attribute Radius3D (# 12) of Composition Container e1], [CompositionContainer_GetRadius3D(c)], 0, [Composition Container.atm]);
+DefineFunction([CompositionContainer_SetRadius3D], [Atom Parameters], 2, 2, [Att(12, p(1)) := p(2)], [Sets the value of attribute Radius3D (# 12) of Composition Container e1 to e2], [CompositionContainer_SetRadius3D(c, 1)], 0, [Composition Container.atm]);
+DefineFunction([CompositionContainer_GetCheckContentInView], [Atom Parameters], 1, 1, [Att(4, p(1))], [Returns the value of attribute CheckContentInView (# 4) of Composition Container e1], [CompositionContainer_GetCheckContentInView(c)], 0, [Composition Container.atm]);
+DefineFunction([CompositionContainer_SetCheckContentInView], [Atom Parameters], 2, 2, [Att(4, p(1)) := p(2)], [Sets the value of attribute CheckContentInView (# 4) of Composition Container e1 to e2], [CompositionContainer_SetCheckContentInView(c, 1)], 0, [Composition Container.atm]);
+DefineFunction([CompositionContainer_SetzCenter3D], [Atom Parameters], 2, 2, [Att(11, p(1)) := p(2)], [Sets the value of attribute zCenter3D (# 11) of Composition Container e1 to e2], [CompositionContainer_SetzCenter3D(c, 1)], 0, [Composition Container.atm]);
+DefineFunction([CompositionContainer_GetzCenter3D], [Atom Parameters], 1, 1, [Att(11, p(1))], [Returns the value of attribute zCenter3D (# 11) of Composition Container e1], [CompositionContainer_GetzCenter3D(c)], 0, [Composition Container.atm]);
+DefineFunction([CompositionContainer_SetxCenter3D], [Atom Parameters], 2, 2, [Att(9, p(1)) := p(2)], [Sets the value of attribute xCenter3D (# 9) of Composition Container e1 to e2], [CompositionContainer_SetxCenter3D(c, 1)], 0, [Composition Container.atm]);
+DefineFunction([CompositionContainer_GetxCenter3D], [Atom Parameters], 1, 1, [Att(9, p(1))], [Returns the value of attribute xCenter3D (# 9) of Composition Container e1], [CompositionContainer_GetxCenter3D(c)], 0, [Composition Container.atm]);
+DefineFunction([CompositionContainer_SetxRadius2D], [Atom Parameters], 2, 2, [Att(7, p(1)) := p(2)], [Sets the value of attribute xRadius2D (# 7) of Composition Container e1 to e2], [CompositionContainer_SetxRadius2D(c, 1)], 0, [Composition Container.atm]);
+DefineFunction([CompositionContainer_GetxRadius2D], [Atom Parameters], 1, 1, [Att(7, p(1))], [Returns the value of attribute xRadius2D (# 7) of Composition Container e1], [CompositionContainer_GetxRadius2D(c)], 0, [Composition Container.atm]);
+DefineFunction([CompositionContainer_SetxCenter2D], [Atom Parameters], 2, 2, [Att(5, p(1)) := p(2)], [Sets the value of attribute xCenter2D (# 5) of Composition Container e1 to e2], [CompositionContainer_SetxCenter2D(c, 1)], 0, [Composition Container.atm]);
+DefineFunction([CompositionContainer_GetxCenter2D], [Atom Parameters], 1, 1, [Att(5, p(1))], [Returns the value of attribute xCenter2D (# 5) of Composition Container e1], [CompositionContainer_GetxCenter2D(c)], 0, [Composition Container.atm]);
+Set(Icon(a), 
+	RegisterIcon(pDir([media\images\default.jpg]), [default.jpg]));
+SetMaterial(
+	RegisterMaterial([Default], 8421504, 8421504, 3289650, 0, 0.100000001490116, 0, false, false, 1, 0), 1, a);
+Set(Version(a), 7.3);
+SetTreeIcon(pDir([Media\Icons\CompositionContainer.ico]));
+Set(Info, [Composition ContainerGeneral------------This atom is used to create (sub-)models at multiple hierarchical layers.By double-clicking the composition a new window opens in which one can continue modeling. The name of the composition is displayed at position 0, 0 in this subview.By right-clicking one can edit the composition atom's parameters (mainly specify whether to display the contents of the composition or set a drawing scale above which the contents are displayed). One can also define variables to be dynamically displayed on the surface of the composition atom. Further the parameters of the atom's in the composition (submodel) can be edited by selecting an atom from a treeview. Another option when right-clicking the atom is to save it as a composition. You're asked to enter a name, after which two files are created: the '.atm' file and a '.cmp' file. You can put the '.atm' file in your library if you want to create copies of the submodel by just dragging one atom in your model. This atom uses the '.cmp' file. It is also possible to directly merge the '.cmp' file into your model" in this case only the composition contents are merged, not the composition container itself.Doubleclick:  Open submodel view.Rightclick:   Edit atom parameters, edit submodel atom parameters, edit display   variables, save as compositionLast Revision:---------------------February, 2008]);
+SetChannels(1, 0);
+SetChannelRanges(1, 255, 0, 0);
+int001(31);
+SetSize(10, 4, 10);
+LockPosition(false);
+LockSize(false);
+DisableIconRotation(false);
+SetProductCode([]);
+CreateAttributes(12);
+SetAttributeName(r(1), [openatscale]);
+SetAttributeName(r(2), [displaycontents]);
+SetAttributeName(r(3), [nrvariables]);
+SetAttributeName(r(4), [CheckContentInView]);
+SetAttributeName(r(5), [xCenter2D]);
+SetAttributeName(r(6), [yCenter2D]);
+SetAttributeName(r(7), [xRadius2D]);
+SetAttributeName(r(8), [yRadius2D]);
+SetAttributeName(r(9), [xCenter3D]);
+SetAttributeName(r(10), [yCenter3D]);
+SetAttributeName(r(11), [zCenter3D]);
+SetAttributeName(r(12), [Radius3D]);
+SetAtt(r(1), 17);
+SetAtt(r(2), 1);
+SetAtt(r(4), 2);
+int024;
+SetTable(1, 2);
+int015(0, 0, [ 
+1
+]);
+int015(1, 0, [`VariableName`
+]);
+int015(2, 0, [`Expression`
+]);
+Set(OnReset, [do(  if(    CheckContentInView <> 0,    SetSetting(saDisable2DClip, True, c),    SetSetting(saDisable2DClip, False, c)  ),  CompositionContainer_DefineInViewPoints2D(c),  CompositionContainer_DefineInViewPoints3D(c))]);
+Set(OnUser, [if( doubleclick, do(  createmodellayout(c),  set(viewx,/(xsize(c),2)),  set(viewy,/(ysize(c),2)) ), Do(  { Delete any current instances of this form.}   GuiDestroy([CompositionContainer]),  { Register the GUI-form for this atom.}  GuiRegister(PDir([\Atoms\CompositionContainer.gui]), 1),   { Show the GUI-form.}  Guicreate([CompositionContainer], String(c), 0, c, 0, 1) ))]);
+Set(On2DDraw, [if(  displaycontents,  if(    or(     discale < openatscale,     And(       Case(         CheckContentInView + 1,         False,     {**0: Never check**}         True,      {**1: always check**}         IsRunning  {**2: Check on running**}       ),       CompositionContainer_InViewField2D(xCenter2D, yCenter2D, xRadius2D, yRadius2D) = False     )    ),     do(      setsetting(sashowcontents,0,c),      standarddisplay(name),      dionscale(13,       do(         ditext(0.2,0.1,name(c),colorwhite,color,0.5,[Arial],-(xsize,0.3),0.8),         repeat(nrvariables,           if(             ysize(c) >= count + 1,             drawtext(              0.2,              count,              xsize(c),              1,              concat(               cell(count, 1, c),               [ ],               String(execstring(cell(count, 2, c)))              ),              colorblack,              0.5             )           )         )       )      )    ),    setsetting(sashowcontents,1,c)   ),   do(     setsetting(sashowcontents,0,c),     dishape(0,0,xsize,ysize,0.25,colorblack,colorwhite),     dishape(0,0,xsize,1,0.25,colorblack,color),     dionscale(13,      do(        ditext(0.2,0.1,name(c),colorwhite,color,0.5,[Arial],-(xsize,0.3),0.8),        repeat(nrvariables,          if(           ysize(c) >= count + 1,           drawtext(            0.2,            count,            xsize(c),            1,            concat(             String(cell(count, 1, c)),             [ ],             String(execstring(cell(count, 2, c)))            ),            colorblack,            0.5           )          )        )      )    )  ))]);
+Set(On3DDraw, [Do(  if(    DisplayContents = 1,    If(      And(        Case(          CheckContentInView + 1,          False,            {**0: Never check**}          True,             {**1: always check**}          IsRunning         {**2: Check on running**}        ),                          {**Relative so use translation**}        InViewField(xCenter3D - xTrans(c), yCenter3D - yTrans(c), zCenter3D - zTrans(c), Radius3D) = False      ),      SetSetting(saHide3DContents, 1, c),      SetSetting(saHide3DContents, 0, c)          ),    SetSetting(saHide3DContents, 1, c)  ))]);
+SetStatus(0);
+int018;
+int007;

@@ -1,0 +1,79 @@
+
+
+{Atom: Carousel Server}
+
+sets;
+BaseClass;
+CreateAtom(a, s, [], 1, false);
+int023([Carousel Server], 155353, 1074);
+Set(Icon(a), 
+	RegisterIcon(IconsDir([bmp\atoms\server.bmp]), [server]));
+SetMaterial(
+	RegisterMaterial([Default], 8421504, 8421504, 3289650, 0, 0.100000001490116, 0, false, false, 1, 0), 1, a);
+Set(Version(a), 7.3);
+SetTreeIcon(pDir([Media\Icons\Carousel Server.ico]));
+Set(Info, [Last Revision:
+---------------------
+March, 2008
+]);
+SetChannels(1, 1);
+SetChannelRanges(1, 255, 1, 255);
+int001(102);
+SetSize(1, 1, 1);
+LockPosition(false);
+LockSize(false);
+DisableIconRotation(false);
+SetProductCode([]);
+CreateAttributes(18);
+SetAttributeName(r(1), [capacity]);
+SetAttributeName(r(2), [cycletime]);
+SetAttributeName(r(3), [tempcycle]);
+SetAttributeName(r(4), [nblocked]);
+SetAttributeName(r(5), [sendto]);
+SetAttributeName(r(6), [instrategy]);
+SetAttributeName(r(7), [entrytrigger]);
+SetAttributeName(r(8), [exittrigger]);
+SetAttributeName(r(9), [counter]);
+SetAttributeName(r(10), [multi-service]);
+SetAttributeName(r(11), [radius]);
+SetAttributeName(r(12), [Transfer time]);
+SetAttributeName(r(13), [Begin]);
+SetAttributeName(r(14), [End]);
+SetAttributeName(r(15), [carrier in front]);
+SetAttributeName(r(16), [clockwise]);
+SetAttributeName(r(17), [carrier in front end]);
+SetAttributeName(r(18), [start mill]);
+SetExprAtt(r(1), [12]);
+SetExprAtt(r(2), [30]);
+SetExprAtt(r(5), [1]);
+SetExprAtt(r(6), [{.openallic(c)|Any inputchannel .}openallic(c)]);
+SetAtt(r(10), 3);
+SetExprAtt(r(11), [3]);
+SetExprAtt(r(12), [10]);
+SetAtt(r(13), 1);
+SetAtt(r(14), 3);
+SetAtt(r(16), 1);
+SetAtt(r(18), 10);
+int024;
+Set(OnEvent, [case(eventcode,  {1: opening mill} do(  stopatom(c),  rotationspeedas(c):=0,  {Control whether there is a product on the machine in front of the output}  if(   cell(Att([carrier in front end]),2,c)=1,   do(    if(<(att([nblocked],c),att([capacity],c)),setstatus(25,c),setstatus(5,c)),    openalloc(c)   ),   {Create an event after the cycletime to open the output channels}   createevent(att([cycletime],c),c,2)  ) ), {2: end of cycle time} do(  if(   sum(    NrIC(c),    if(     AtomExists(in(Count, c)),      And(      content(in(Count, c))>= 1,      ocopen(icocno(Count, c),in(Count, c))     ),     0    )   ) >= 1,   Do(    if(     cell(Att([carrier in front],c),2,c)=0,     Do(      {Check if the place on the machine in front of the inputchannel is empty}      {If so, place a product on it by opening the input channels}      InStrategy,      {Note in the table that this position on the machine is taken by a product}      cell(Att([carrier in front],c),2,c):=1     ),     {Create an event to turn the wheel}     createevent(0,c,3)    )   ),   createevent(0,c,3)  ) ), {3: turn the wheel}   do(    if(      {The machine turns clockwise}     att([clockwise],c) = 0,     Do(      {Number the places on the machine in the right order}      if(       att([carrier in front],c)=1,       setatt([carrier in front],att([capacity],c),c),       inc(att([carrier in front],c),-1)      ),       if(       att([carrier in front end],c)=1,       setatt([carrier in front end],att([capacity],c),c),       inc(att([carrier in front end],c),-1)      )     ),     Do(      {The machine turns counter clockwise}      if(       att([carrier in front],c)=att(1,c),       setatt([carrier in front],1,c),       inc(att([carrier in front],c),1)      ),      if(       att([carrier in front end],c)=att(1,c),       setatt([carrier in front end],1,c),       inc(att([carrier in front end],c),1)      )     )    ),    {Turn the machine around its own axis, so that the nextr position comes in front}    if(     att([clockwise],c),     rotationspeedas(c):=/(360,*(att([Transfer time],c),att([capacity],c))),     rotationspeedas(c):=-(/(360,*(att([Transfer time],c),att([capacity],c))))    ),    {Create an event that stops the machine from turning after the transfer time}    createevent(att([Transfer time],c),c,1)   ), {4: The first start of the mill *} Do(  instrategy ))]);
+Set(OnEntered, [do( {If blocked, the status is changed} if(  att([nblocked],c) > 0,  setstatus(25,c),  setstatus(2,c) ), {Close all inputchannels} closeallic(c), {When the content greater than or equal to than the capacity is, the status is changed} if(  content(c) >= att([capacity],c),  setstatus(19,c) ), {Note in the table that this position is taken} setcell(  Att([carrier in front],c),  2,   1,  c ),   {Define the position of the product that enters the machine} c.1 := sqr(Att([radius],c) + 0.5*ysize(i)), c.2 := sqr(0.5*xsize(i)), c.z := sqrt( c.1 + c.2), c.3 := 0.5* xsize(i), c.4 := Att([radius],c) + 0.5*ysize(i), c.hoek := arctan( c.3 / c.4),  {Define the location of the atom} setloc(  c.z * cos(90 + c.hoek + rotationas(c) - *((Att([Begin],c)-1) , 360/Att([capacity],c))),  -(c.z) * sin(90 + c.hoek + rotationas(c) - *((Att([Begin],c)-1) , 360/Att([capacity],c))),  1,  i ), {Rotate the product so that it lies nice on the machine} rotationas(i) := -(rotationas(c)) + *((Att([Begin],c) - 1), (360 / Att([capacity],c))),  {Execute the entry trigger} att([entrytrigger],c), {Create an event to make the machine turn again} createevent(0,c,3))]);
+Set(OnExited, [do( {Close all outputchannels} closealloc(c), {When the machine is empty, the status is changed} if(  content(c) = 0,  setstatus(1,c),  setstatus(2,c) ), {Note in the table that this position on the machine is free again} setcell(  Att([carrier in front end], c),  2,  0,  c ), {Execute the exit trigger} att([exittrigger],c), rotationas(i) := 0, {Create an event to open the inputchannels after the cycletime} createevent(att([cycletime],c),c,2))]);
+Set(OnCreation, [autoconnect]);
+Set(OnReset, [do( setatt([nblocked],0,c), setstatus(1,c), closealloc(c), rotationas(c):= 0,  rotationspeedas:=0, {Create the table and set all values at 0 and 1} settable(att([capacity],c),2,c), repeat(  nrows(c),  do(   setcell(count, 1, 1, c),   if(    cell(count,2)<3,    setcell(count,2,0,c)   )  ) ), setatt([carrier in front],1,c), {Define the position lying in front of the output position} If(  Att([clockwise],c),  {When the machine turns clockwise}  If(   Att([End],c) >= Att([Begin],c),   {When the end point is bigger than the beginpoint}   Att([carrier in front end], c) := Att([capacity],c) - Att([End],c) + Att([Begin],c) +1,    {When the beginpoint is bigger than the endpoint}   Att([carrier in front end], c) := Att([Begin],c) - Att([End],c) + 1   ),  {When the machine turns counter clockwise}  If(   Att([End],c) >= Att([Begin],c),   {When the end point is bigger than the beginpoint}   Att([carrier in front end], c) := Att([capacity],c) - Att([End],c) + Att([Begin],c) + 1,   {When the beginpoint is bigger than the endpoint}   Att([carrier in front end], c) := Att([Begin],c) - Att([End],c) + 1  ) ),       closeallic(c), {Create an event after the begin mill time to start the machine} createevent(att([Begin mill],c),c,4))]);
+Set(OnUser, [Do(
+  { Delete any current instances of this form.} 
+  GuiDestroy([CarouselServer]),
+
+  { Register the GUI-form for this atom.}
+  GuiRegister(PDir([\Atoms\Carousel Server.gui]), 1),
+
+  { Show the GUI-form.}
+   GuiCreate([CarouselServer], [CarouselServer], 0, c, 0, 1)
+)
+]);
+Set(OnOcReady, [if( >(content(c),0), moverequest(first(c),att([sendto],c)))]);
+Set(On2DDraw, [do( repeat(  att([capacity],c),  Do(     {Draw all the places on the machine}   dishape(    *(att([radius],c),cos(-(-90,*(/(360,att([capacity],c)),count-1),-(rotationas(c)))))-0.25,    *(att([radius],c),sin(-(-90,*(/(360,att([capacity],c)),count-1),-(rotationas(c)))))-0.25,    0.5,    0.5,    0,     colorblack,    color(c)   ),     diline(    0,    0,    *(att([radius],c),cos(-(-90,*(/(360,att([capacity],c)),count-1),-(rotationas(c))))),    *(att([radius],c),sin(-(-90,*(/(360,att([capacity],c)),count-1),-(rotationas(c))))),    color   )   ) ), {Draw the center of the machine} diarc(0,0,att([radius],c)/2,0,360,color(c),color(c)))]);
+Set(On3DDraw, [do( repeat(  att(1,c),  Do(   { Draw the places on the machine}   box(       *(att([radius],c),cos(-(-90,*(/(360,att([capacity],c)),count-1),0)))-0.25,    *(att([radius],c),sin(-(-90,*(/(360,att([capacity],c)),count-1),0)))-0.25,    0.8,    0.5,    0.5,    0.2,    0,    0,    0,    color   ),   {Draw the arms of the machine}   box(0,0,0.75,0.15,radius,0.2,180+(360/capacity)*(count-1),0,0,color)  ) ), {Draw the center of the machine} do(  cylinder(0,0,0,zsize,360,att(11,c)/2,0,90,0,color),  cone(0,0,zsize,0,att(11,c)/2,0,0,90,0,color),  cone(0,0,0,0,att(11,c)/2,0,0,90,0,color) ))]);
+SetStatus(0);
+int018;
+int007;

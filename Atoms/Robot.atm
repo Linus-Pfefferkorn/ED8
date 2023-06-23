@@ -1,0 +1,218 @@
+
+
+{Preregister functions}
+
+PreregisterFunction([DrawRobot1], 0, 7);
+
+
+{Atom: Robot}
+
+sets;
+BaseClass;
+CreateAtom(a, s, [], 1, false);
+int023([Robot], 767720, 1266);
+DefineFunction([DrawRobot1], [Icons3D], 0, 7, [if(
+ boxvisible(-4,-4,0,8,8,7),
+ do(
+  di3DBox(-0.5,-0.5,0,1,1,0.2,p(1),-(rotationas(c))),
+  Cylinder(0,0,0.2,1.5,360,0.2,0,90,0,p(1)),
+  Cylinder(0,0,1.7,0.3,360,0.2,+(p(2),90),0,0,colorblack),
+  Cylinder(0,0,1.7,0.3,360,0.2,+(p(2),270),0,0,colorblack),
+  Cylinder(0,0,1.7,1.5,360,0.15,p(2),p(3),0,p(1)),
+  SetVector(0,0,1.7,1.5,p(2),p(3),0),
+  Ball(vx,vy,vz,0.18,180,360,0,0,0,colorblack),
+  Cylinder(vx,vy,vz,1.3,360,0.1,p(5),p(4),0,p(1)),
+  SetVector(vx,vy,vz,1.3,p(5),p(4),0),
+  Cylinder(vx,vy,vz,0.2,360,0.03,p(7),p(6),0,coloryellow)
+ )
+)
+], [draws a 4-armed robot with color e1, xy rotation e2 around arm 1,e3,e4,e5,e6,e7], [robot(color,45)], 0, [Robot.atm]);
+Set(Icon(a), 
+	RegisterIcon(IconsDir([bmp\machines\mach1001.bmp]), [mach1001]));
+SetMaterial(
+	RegisterMaterial([Default], 8421504, 8421504, 3289650, 0, 0.100000001490116, 0, false, false, 1, 0), 1, a);
+Set(Version(a), 7.3);
+SetTreeIcon(pDir([Media\Icons\Robot.ico]));
+Set(Info, [Robot
+
+General
+------------
+Picks up an atom and brings it to the designated dropoff point.
+
+After the load time the robot selects a destination and starts rotating. Upon arrival 
+the unloadtime starts and then the atom is sent out. 
+
+Statuses: 
+--------------
+   1 - Idle
+   5 - Blocked
+   6 - Travel Full
+   7 - Travel Empty
+  16 - Load
+  17 - Unload
+
+Last Revision:
+---------------------
+March, 2008
+]);
+SetChannels(1, 1);
+SetChannelRanges(1, 255, 1, 255);
+int001(97);
+SetSize(2, 1, 4);
+LockPosition(false);
+LockSize(false);
+DisableIconRotation(false);
+SetProductCode([]);
+CreateAttributes(24);
+SetAttributeName(r(1), [curoc]);
+SetAttributeName(r(2), [curic]);
+SetAttributeName(r(3), [curxdest]);
+SetAttributeName(r(4), [curydest]);
+SetAttributeName(r(5), [curzdest]);
+SetAttributeName(r(6), [isondest]);
+SetAttributeName(r(7), [speed]);
+SetAttributeName(r(8), [calcangle]);
+SetAttributeName(r(9), [deltaangle]);
+SetAttributeName(r(10), [dx]);
+SetAttributeName(r(11), [dy]);
+SetAttributeName(r(12), [sendto]);
+SetAttributeName(r(13), [loadtime]);
+SetAttributeName(r(14), [unloadtime]);
+SetAttributeName(r(15), [instrategy]);
+SetAttributeName(r(16), [entrytrigger]);
+SetAttributeName(r(17), [exittrigger]);
+SetAttributeName(r(18), [curangle]);
+SetAttributeName(r(19), [nextangle]);
+SetAttributeName(r(20), [traveltime]);
+SetAttributeName(r(21), [curloadtime]);
+SetAttributeName(r(22), [loadstart]);
+SetAttributeName(r(23), [EndOfLoadTrigger]);
+SetAttributeName(r(24), [StartOfUnloadTrigger]);
+SetAtt(r(1), 1);
+SetAtt(r(7), 20);
+SetExprAtt(r(8), [do(
+ setatt(10,-(att(3,c),xloc(c)),c),
+ if(=(att(10,c),0),setatt(10,0.01,c)),
+ setatt(11,-(att(4,c),yloc(c)),c),
+ setatt(19,atan2(att(10,c),att(11,c))),
+ if(<(att(19,c),0),inc(att(19,c),360)),
+ setatt(9,-(att(19,c),att(18,c))),
+ if(>(att(9,c),180),inc(att(9,c),-360)), 
+ if(<(att(9,c),-180),inc(att(9,c),360)),
+ setatt(18,att(19,c),c)
+)]);
+SetExprAtt(r(12), [1]);
+SetExprAtt(r(13), [0]);
+SetExprAtt(r(14), [0]);
+SetExprAtt(r(15), [{.openallic(c)|Any inputchannel .}openallic(c)]);
+int024;
+Set(OnEvent, [case(
+ eventcode,
+ do( {1: at pick-up location before loading time }
+  set(rotationspeedas(c),0),
+  setatt(6,1,c),
+  openic(att(2,c),c)
+ ),
+ do( {2: at drop-off location unloading  }
+  setstatus(17,c),
+  set(rotationspeedas(c),0),
+  setatt(6,1,c),
+  createevent(att(14,c),c,4),
+  StartOfUnloadTrigger
+ ),
+ do(  {3: direct after loading start traveling } 
+  setstatus(6,c),
+  openalloc(c), {determine the destination}
+  setatt(1,att(12,c),c),
+  closealloc(c),
+  setatt(3,xloc(out(att(1,c),c)),c),
+  setatt(4,yloc(out(att(1,c),c)),c),
+  att(8,c),
+  setatt(20,/(abs(att(9,c)),att(7,c))),
+  createevent(att(20,c),c,2),
+  set(rotationspeedas(c),*(sign(att(9,c)),att(7,c))),
+  EndOfLoadTrigger
+ ),
+ do( {4: dropping off }
+  setstatus(5,c),
+  openoc(att(1,c),c)
+ ),
+ {5: input strategy }
+ att(15,c)
+)
+]);
+Set(OnEntered, [do(
+ setstatus(16,c),
+ setloc(xsize(c)-(xsize(i)/2),-(ysize(i)/2),1.7-zSize(i),i),
+ setatt(6,0,c),
+ closeallic(c),
+ closealloc(c),
+ setatt(22,time,c),
+ setatt(21,att(13,c),c),
+ createevent(att(21,c),c,3),
+ att(16,c)
+)
+
+]);
+Set(OnExited, [do(
+ setstatus(1,c),
+ setatt(6,0,c),
+ closealloc(c),
+ att(17,c),
+ createevent(0,c,5),
+ setatt(22,0,c)
+)
+]);
+Set(OnCreation, [autoconnect
+]);
+Set(OnReset, [do(
+ closealloc(c),
+ setstatus(1,c),
+ stopatom,
+ set(rotationspeedas(c),0),
+ set(rotationas(c),0),
+ setatt(9,0,c),
+ setatt(18,0,c),
+ setatt(19,0,c),
+ setatt(6,0,c),
+ setatt(22,0,c)
+)
+]);
+Set(OnUser, [Do(
+  { Delete any current instances of this form.} 
+  GuiDestroy([Robot]),
+
+  { Register the GUI-form for this atom.}
+  GuiRegister(PDir([\Atoms\Robot.gui]), 1),
+
+  { Show the GUI-form.}
+   GuiCreate([Robot], [Robot], 0, c, 0, 1)
+)
+]);
+Set(OnOcReady, [if(
+ att(6,c), {is on destination to drop-off}
+ moverequest(first(c),att(1,c))  {THEN drop -off}
+)
+]);
+Set(OnIcReady, [if(
+ not(att(6,c)),
+ do(
+  setstatus(7,c),
+  setatt(2,ic(c),c),
+  setatt(3,xloc(in(att(2,c),c)),c),
+  setatt(4,yloc(in(att(2,c),c)),c),
+  closeallic(c),
+  att(8,c),
+  setatt(20,/(abs(att(9,c)),att(7,c))),
+  set(rotationspeedas(c),*(sign(att(9,c)),att(7,c))),
+  createevent(att(20,c),c,1)
+ )
+)
+]);
+Set(On2DDraw, [ditext(.2,.05,name(c),colorwhite,color,.6,[Arial])
+]);
+Set(On3DDraw, [DrawRobot1(color(c),0,50,-50,0,-90,0)
+]);
+SetStatus(0);
+int018;
+int007;

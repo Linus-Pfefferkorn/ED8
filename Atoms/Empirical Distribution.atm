@@ -1,0 +1,111 @@
+
+
+{Atom: Empirical Distribution}
+
+sets;
+BaseClass;
+createAtom(a, s, [], 1, false);
+int023([Empirical Distribution], 8421504, 224);
+Set(Icon(a), 
+	RegisterIcon(pDir([media\images\default.jpg]), [default.jpg]));
+SetMaterial(
+	RegisterMaterial([Default], 8421504, 8421504, 3289650, 0, 0.100000001490116, 0, false, false, 1, 0), 1, a);
+Set(Version(a), 7.3);
+SetTreeIcon(pDir([Media\Icons\EmpiricalDistribution.ico]));
+Set(Info, [Empirical Distribution
+
+General
+------------
+Use this atom to define an empirical distribution with more than 
+2 possibilities. You can define and edit an empirical distribution. When 
+you define a distribution you are asked to enter a name: this name 
+becomes a 4DScript word that you can call to generate a sample from 
+the distribution.
+
+Rightclick: 
+  Popupmenu to define or edit a distribution and to fill with sample values.
+
+Will return a value or a string depending on if box is checked.
+
+Last Revision:
+---------------------
+February, 2008
+]);
+Set(DdbRec, [>t-alloworganize:1.]);
+int001(84);
+SetSize(9, 2, 1);
+LockPosition(false);
+LockSize(false);
+DisableIconRotation(false);
+SetProductCode([]);
+createAttributes(8);
+SetAttributeName(r(1), [empiricalname]);
+SetAttributeName(r(2), [nrrecords]);
+SetAttributeName(r(3), [randomnr]);
+SetAttributeName(r(4), [flag]);
+SetAttributeName(r(5), [value]);
+SetAttributeName(r(6), [regfunc]);
+SetAttributeName(r(7), [oldname]);
+SetAttributeName(r(8), [textflag]);
+SetTextAtt(r(1), [untitled]);
+SetAtt(r(2), 3);
+SetExprAtt(r(6), [registerfunction(textatt(1,c),[Stochastic],0,0,
+ concat(
+   [do(
+    vtp(],string(ptv(c)),[),
+    setatt(3,random(100)),
+    setatt(4,0),
+    repeat(nrows,
+     if(=(att(4),0),
+      if(<(att(3),cell(count,1)),
+       do(setatt(4,1),if(att(8),settextatt(5,cell(count,2,2)),setatt(5,cell(count,2))))
+      )
+     )
+    ),
+    att(5)
+   )]
+  ),
+  [Returns a random sample from the empirical distribution table],textatt(1,c),true
+)]);
+int024;
+SetTable(3, 2);
+int015(0, 0, [ 
+1
+2
+3
+]);
+int015(1, 0, [`Cumulative%`
+]);
+int015(2, 0, [`Value`
+]);
+Set(OnCreation, [setrank(1,c)
+]);
+Set(OnDestruction, [invalidatefunction(textatt(1,c))
+]);
+Set(OnReset, [do(
+ set(name(c),textatt(1,c)),
+ if(
+  <>(
+   cell(nrows(c),1),
+   100
+  ),
+  msg(concat([Empirical distribution "], name(c),[" is not 100%]))
+ )
+)
+]);
+Set(OnUser, [Do(
+ { Delete any current instances of this form.} 
+ GuiDestroy([EmpiricalDistribution]),
+
+ { Register the GUI-form for this atom.}
+ GuiRegister(PDir([\Atoms\EmpiricalDistribution.gui]), 1),
+
+ { Show the GUI-form.}
+ Guicreate([EmpiricalDistribution], [EmpiricalDistribution], 0, c, 0, 1)
+)
+]);
+Set(On2DDraw, [draw2dicon(3,[empirical],textatt(1,c))
+]);
+SetStatus(0);
+int018;
+int007;

@@ -1,0 +1,159 @@
+
+
+{Atom: Speed Changing Accumulating Conveyor}
+
+sets;
+BaseClass;
+CreateAtom(a, s, [], 1, false);
+int023([Speed Changing Accumulating Conveyor], 16711680, 1266);
+Set(Icon(a), 
+	RegisterIcon(pDir([media\images\default.jpg]), [default.jpg]));
+SetMaterial(
+	RegisterMaterial([Default], 8421504, 8421504, 3289650, 0, 0.100000001490116, 0, false, false, 1, 0), 1, a);
+Set(Version(a), 7.3);
+SetTreeIcon(pDir([Media\Icons\Speed Changing Accumulating Conveyor.ico]));
+Set(Info, [Speed Changing Accumulating conveyor.
+
+General
+------------
+If an atom enters, the conveyor closes the input channels. When the 
+atom that entered is conveyed by its length the input 
+opens again. The product is conveyed up to the end of the conveyor 
+or until it reaches another atom (distance depends on length of products 
+and defined spacing). The speed in m/s can be specified and modified.
+The capacity of the conveyor equal its length in meters or the capacity 
+you entered.
+
+REMARK:
+---------------
+If you have changed the conveyor size: first press reset before simulating.
+If you need to model a lot of conveyors, better 
+use the Fast Non Accumulating conveyor.
+
+Statuses:
+-------------
+  13 - Empty
+  26 - Conveying
+    5 - Blocked
+
+Last revision:
+-------------------
+March, 2008
+]);
+SetChannels(1, 1);
+SetChannelRanges(1, 255, 1, 255);
+int001(47);
+SetSize(10, 1, 1);
+LockPosition(false);
+LockSize(false);
+DisableIconRotation(false);
+SetProductCode([]);
+CreateAttributes(28);
+SetAttributeName(r(1), [speed]);
+SetAttributeName(r(2), [traveltime]);
+SetAttributeName(r(3), [tempmaxloc]);
+SetAttributeName(r(4), [curloc]);
+SetAttributeName(r(5), [exittime]);
+SetAttributeName(r(6), [curcontent]);
+SetAttributeName(r(7), [length]);
+SetAttributeName(r(8), [sendto]);
+SetAttributeName(r(9), [timeofentry]);
+SetAttributeName(r(10), [exitlength]);
+SetAttributeName(r(11), [calc locations]);
+SetAttributeName(r(12), [entrytrigger]);
+SetAttributeName(r(13), [capacity]);
+SetAttributeName(r(14), [spacingrule]);
+SetAttributeName(r(15), [spacing]);
+SetAttributeName(r(16), [exittrigger]);
+SetAttributeName(r(17), [Use_physical]);
+SetAttributeName(r(18), [Input_length]);
+SetAttributeName(r(19), [display_factor]);
+SetAttributeName(r(20), [leg_supports]);
+SetAttributeName(r(21), [elevation]);
+SetAttributeName(r(22), [angle]);
+SetAttributeName(r(23), [hor_length]);
+SetAttributeName(r(24), [curspeed]);
+SetAttributeName(r(25), [frontposition]);
+SetAttributeName(r(26), [changedtime]);
+SetAttributeName(r(27), [busy]);
+SetAttributeName(r(28), [IsConveyor]);
+SetAtt(r(1), 1);
+SetExprAtt(r(2), [/(att(7,c),att(24,c))]);
+SetExprAtt(r(4), [if( c.counter=1, min(  att(23,c)-xsize(rank(2,c)),  -(+(*(time-att(26,c),att(24,c)),att(25,c)),label([Sp_distance],cs)) ), -(*(att(19,c),min(-(att(23,c),att(23,c)-xloc(rank(2,c)),sum(c.counter-1,productspacing(att(14,c),xsize(rank(count+2,c)),att(15,c)))),-(+(*(time-att(26,c),att(24,c)),att(25,c)),label([Sp_distance],cs)))+xsize(cs)),xsize(cs)))]);
+SetExprAtt(r(7), [if( att(21,c)<>0, att(23,c)/cos(att(22,c)), att(23,c))]);
+SetExprAtt(r(8), [1]);
+SetExprAtt(r(11), [if( >(content(c),1), repeat(  content(c)-1,  do(   setcs(rank(count+1,c)),   c.counter:=count,   setloc(    att(4,c),    /(-(ysize(c),ysize(cs)),2),    +(zsize(c),max(*(/(att(4,c)+xsize(cs),/(att(23,c),att(7,c))),sin(att(22,c))),*(/(att(4,c)-xsize(cs),/(att(23,c),att(7,c))),sin(att(22,c))))),    cs   )  ) ))]);
+SetAtt(r(13), 10000);
+SetAtt(r(14), 1);
+SetAtt(r(17), 1);
+SetAtt(r(18), 10);
+SetAtt(r(20), 3);
+SetExprAtt(r(21), [0]);
+SetExprAtt(r(22), [arctan(/(att(21,c),att(23,c)))]);
+SetExprAtt(r(23), [if(att(17,c),xsize(c),att(18,c))]);
+SetAtt(r(28), 11);
+int024;
+Set(OnEvent, [case( eventcode,  {1: Open output channels} do(  setstatus(5,c),  openalloc(c) ), {2: Open input channels} openallic(c), {3: Stop atom if conveyor is blocked} do([nothing]), {4: Change speed} do(  {Adjust the label previous speed and the attribute speed}  setlabel([prevspeed],att(24,c),c),  setatt(24,label([msg],c),c),  setlabel([msg],0,c),  if(   content(c)>1,   {If there is a product on the conveyer all the events on this atom have to be delayed}   {The time is the time it takes the product with the new speed to reach the end of the conveyer}   {Compared with the time the event was scheduled on}   delayevents(    -(     /(-(xsize(c),+(-(+(*(time-att(26,c),label([prevspeed],c)),att(25,c)),label([Sp_distance],rank(2,c))),xsize(rank(2,c)))),att(24,c)),     /(-(xsize(c),+(-(+(*(time-att(26,c),label([prevspeed],c)),att(25,c)),label([Sp_distance],rank(2,c))),xsize(rank(2,c)))),label([prevspeed],c))    ),    c   )  ),  {If there is a product all the events on the opening atom have to be delayed}  {The event is delayed with the time it takes for the product to enter the conveyer completely}  {or leave the conveyer}  if(   content(c)>1,   delayevents(    -(     /(productspacing(att(14,c),max(0,-(0,-(+(*(time-att(26,c),label([prevspeed],c)),att(25,c)),label([Sp_distance],last(c))))),att(15,c)),att(24,c)),     /(productspacing(att(14,c),max(0,-(0,-(+(*(time-att(26,c),label([prevspeed],c)),att(25,c)),label([Sp_distance],last(c))))),att(15,c)),label([prevspeed],c))    ),    first(c)   )  ),  setatt(25,+(*(time-att(26,c),label([prevspeed],c)),att(25,c)),c),  setatt(26,time,c),  setlabel([prevspeed],0,c) ))]);
+Set(OnEntered, [do( closeallic(c), setatt(9,time,c), setatt(6,+(att(6,c),productspacing(att(14,c),xsize(i),att(15,c))),c), if(  =(content(c),2),  do(   setstatus(26,c),   {an event is created on the moment the porduct reaches the end of the conveyer}   createevent(att(2,c),c,1,1,i),   setatt(25,0,c),   setatt(26,time,c)  ) ), setlabel([Sp_distance],+(*(time-att(26,c),att(24,c)),att(25,c),xsize(i)),i), if(  <(att(6,c),att(7,c)),  {An event is created on the opening atom to open the input channels if the product is totally on the conveyer}  {this is done on another atom so that these events can be seperately delayed}  createevent(0,first(c),1),  setatt(27,1,c) ), {entrytrigger} att(12,c) )]);
+Set(OnExited, [do( closealloc(c), setatt(5,time,c), setatt(6,-(att(6,c),productspacing(att(14,c),xsize(i),att(15,c))),c), setatt(10,productspacing(att(14,c),xsize(i),att(15,c)),c), if(  content(c)>1,  do(   setlabel([Sp_distance],-(+(*(time-att(26,c),att(24,c)),att(25,c)),min(-(att(23,c),productspacing(att(14,c),xsize(i)+xsize(rank(2,c)),att(15,c))),-(+(*(time-att(26,c),att(24,c)),att(25,c)),label([Sp_distance],rank(2,c))))),rank(2,c)),   createevent(    max(/(productspacing(att(14,c),xsize(i),att(15,c)),att(24,c)),/(-(att(23,c),+(-(+(*(time-att(26,c),att(24,c)),att(25,c)),label([Sp_distance],rank(2,c))),xsize(rank(2,c)))),att(24,c))),    c,1,1,rank(2,c)   ),   if(    and(<(att(6,c),att(7,c)),<(content(c)-1,att(13,c)),att(27,c)),    do(     createevent(0,first(c),3),     setatt(27,0,c)    )   ),   setstatus(26,c)  ),  do(   setstatus(13,c),   createevent(0,c,2)  ) ), setlabel([Sp_distance],0,i), att(16,c) {exittrigger})]);
+Set(OnCreation, [do( AutoConnect,  {Legs} If(Leg_Supports > 0,  label([LegDist], c) :=Trunc(xSize(c) / Leg_Supports)     ))]);
+Set(OnReset, [do(
+ if(not(att(17,c)),setatt(19,xsize(c)/att(18,c),c),setatt(19,1,c)),
+ if(att(21,c)<>0,setatt(19,att(19,c)*cos(att(22,c)),c)),
+ closealloc(c),
+ setstatus(13,c),
+ setatt(5,0,c),
+ setatt(6,0,c),
+ setatt(9,0,c),
+ setatt(24,att(1,c),c),
+ setatt(25,0,c),
+ setatt(26,0,c),
+ setatt(27,0,c),
+ 
+   {Legs}
+ If(label([LegDist], c) > 0,
+ 
+   Leg_Supports :=Trunc(xSize(c) / label([LegDist], c)) + 1,
+    
+   Leg_Supports := 0)
+
+
+ 
+ 
+ 
+)
+]);
+Set(OnUser, [Do(  { Delete any current instances of this form.}   GuiDestroy([Speed Changing Accumulating Conveyor]),  { Register the GUI-form for this atom.}  GuiRegister(PDir([\Atoms\Speed Changing Accumulating Conveyor.gui]), 1),  { Show the GUI-form.}   GuiCreate([Speed Changing Accumulating Conveyor], [Speed Changing Accumulating Conveyor], 0, c, 0, 1))]);
+Set(OnOcReady, [if( >(content(c),1), moverequest(rank(2,c),att(8,c)))]);
+Set(On2DDraw, [att(11,c)]);
+Set(On3DDraw, [if( boxvisible(0,0,0,xsize(c),ysize(c),zsize(c)),  if(att(21,c)=0,  do(   if(>(ysize(c),0.5), {sidesupports}    do(     di3dbox(0,-0.06,-(zsize(c),0.1),xsize(c),0.06,0.1,color(c),0),     di3dbox(0,ysize(c),-(zsize(c),0.1),xsize(c),0.06,0.1,color(c),0)    ),    do(     di3dbox(0,-0.03,-(zsize(c),0.1),xsize(c),0.01,0.1,color(c),0),     di3dbox(0,ysize(c),-(zsize(c),0.1),xsize(c),0.01,0.1,color,0)    )   ),      If(Label([LegDist], c) > 0, {leg supports}    Do(     var([valLegDist], vbValue, Label([LegDist], c) ),     Repeat(Leg_Supports,      Do(       di3DBox(xSize(c) - (*(Count - 1, valLegDist)), -0.05, 0, 0.05, 0.05, zSize(c)- 0.05, 14473664, 0),       di3DBox(xSize(c) - (*(Count - 1, valLegDist)), ySize(c), 0, 0.05, 0.05, zSize(c)- 0.05, 14473664, 0),       If(zSize(c) > 0.3,        di3DBox(xSize(c) - (*(Count - 1, valLegDist)), 0, -(zSize(c), 0.3)- 0.05, 0.03, ySize(c), 0.03, Color(c), 0)       )      )     )    )      ),   {cross beams}   repeat(    *(xsize(c),3),    do(     di3dbox(*(count,0.333),0,-(zsize(c),0.05),0.03,ysize(c),0.03,colorsilver,0),     dionscale(100,di3dbox(*(count,0.333),0.1,-(zsize(c),0.05),0.06,-(ysize(c),0.2),0.06,colorwhite,0))    )   ),   att(11,c)  ),  do(   box(0,-0.06,-(zsize(c),0.1),/(xsize(c),cos(att(22,c))),0.06,0.1,0,att(22,c),0,color),   box(0,ysize(c),-(zsize(c),0.1),/(xsize(c),cos(att(22,c))),0.06,0.1,0,att(22,c),0,color),   box(0,0.1,-(zsize(c),0.05),/(xsize(c),cos(att(22,c))),-(ysize(c),0.2),0.05,0,att(22,c),0,colorblack),   If(Label([LegDist], c) > 0, {leg supports}    Do(     var([valLegDist], vbValue, Label([LegDist], c)),     Repeat(Leg_Supports,       Do(              di3DBox(xSize(c)- 0.05 - (*(Count - 1, valLegDist)), -0.05, 0, 0.05, 0.05, (zSize(c) + Elevation)- (Count - 1) * valLegDist* tan(Angle)- 0.05, 14473664, 0),       di3DBox(xSize(c)- 0.05 - (*(Count - 1, valLegDist)), ySize(c), 0, 0.05, 0.05, (zSize(c) + Elevation) - (Count - 1) * valLegDist* tan(Angle)- 0.05, 14473664, 0),       di3DBox(xSize(c)- 0.05 - (*(Count - 1, valLegDist)), 0, -((zSize(c) + Elevation) - (Count - 1) * valLegDist* tan(Angle), 0.3)- 0.05, 0.03, ySize, 0.03, Color, 0)      )     )    )   ),   att(11,c)  ) ))]);
+Set(OnMessage, [if( message>0, do(  setlabel([msg],message,c),  createevent(0,c,4,1000)   ))]);
+SetStatus(0);
+int018;
+
+
+{Atom: Opening-atom}
+
+sets;
+BaseClass;
+CreateAtom(a, s, [], 1, false);
+int023([Opening-atom], 0, 2048);
+Set(Icon(a), 
+	RegisterIcon(pDir([media\images\default.jpg]), [default.jpg]));
+SetMaterial(
+	RegisterMaterial([Default], 8421504, 8421504, 3289650, 0, 0.100000001490116, 0, false, false, 1, 0), 1, a);
+Set(Version(a), 7.3);
+SetTreeIcon(pDir([Media\Icons\Speed Changing Accumulating Conveyor.ico]));
+Set(DdbRec, [>t-nocreate:1.]);
+int001(48);
+SetSize(1, 1, 1);
+LockPosition(false);
+LockSize(false);
+DisableIconRotation(false);
+SetProductCode([]);
+int024;
+Set(OnEvent, [case( eventcode, {1: Create event 2 after the time it takes the product to get on the conveyer} createevent(/(productspacing(att(14,up(c)),xsize(last(up(c))),att(15,up(c))),att(24,up(c))),c,2), {2: } if(  =(content(up(c)),1),  createevent(0,up(c),2),  if(   <(content(up(c))-1,att(13,up(c))),   createevent(0,up(c),2),   setatt(27,1,up(c))  ) ), {3: } createevent(  /(productspacing(att(14,up(c)),max(0,-(0,-(+(*(time-att(26,up(c)),att(24,up(c))),att(25,up(c))),label([Sp_distance],last(up(c)))))),att(15,up(c))),att(24,up(c))),  c,  2 ))]);
+SetStatus(0);
+int018;
+Up;
+int007;

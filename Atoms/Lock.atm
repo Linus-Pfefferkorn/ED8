@@ -1,0 +1,195 @@
+
+
+{Atom: Lock}
+
+sets;
+BaseClass;
+createAtom(a, s, [], 1, false);
+int023([Lock], 3184303, 1256);
+Set(Icon(a), 
+	RegisterIcon(IconsDir([Png\products\circlered.png]), [circlered]));
+SetMaterial(
+	RegisterMaterial([Default], 8421504, 8421504, 3289650, 0, 0.100000001490116, 0, false, false, 1, 0), 1, a);
+Set(Version(a), 7.3);
+SetTreeIcon(pDir([Media\Icons\Lock.ico]));
+Set(Info, [Control number of passing products.
+
+General
+------------
+This atom can be used to control work in process or to limit the 
+number of products that pass through. 
+
+To control work in process, use it in combination with one or more 
+Unlock atoms. With the Lock and the Unlock atom(s) one can restrict 
+the maximum atom contents (work in process)  in a certain area of 
+the model. By connecting outputchannel 2 or higher of this atom with 
+inputchannel 2 of Unlock one achieves that the atom input is closed 
+when a certain quantity (locklevel)  is reached. This level is calculated 
+as the difference between the total input of Lock and the total output 
+of Unlock. The atoms input is opened again by Unlock when an 
+atom exits there.
+
+If the batchwise checkbox is checked, first a batch of product is 
+allowed into the system. When the batch is complete in the system 
+it will be allowed to exit. During that time no new atoms may enter 
+until there are no products in the system. This works only together 
+with the Unlock.
+
+To limit the number of products that pass through, the atom can be 
+used stand-alone. Outputchannel 2 (or higher) has no function in 
+this case.
+
+Channels:
+---------------
+1 inputchannel
+2 outputchannels (channel 1: atom out, channel 2: communication 
+with Unlock)
+
+Statuses:
+--------------
+  18 - Open
+  19 - Closed
+
+Applications: control work in process, easily model an operation 
+using a number of atoms in a sequence.
+
+Rightclick: 
+  Edit locklevel; value or expression (make sure that no 
+  zeroes are evaluated!).
+
+Note:
+--------
+If you use continues evaluation, whenever an atom enters the lock 
+or exits the unlock the expression is re-evaluated. Be careful using 
+this feature!!
+
+Last revision:
+-------------------
+February, 2008
+]);
+SetChannels(1, 2);
+SetChannelRanges(1, 255, 2, 255);
+int001(56);
+int013(1, 0, false, false, 0, 0, [], []);
+int013(2, 0, false, false, 1, 0, [T015-Unlock], []);
+SetSize(1, 1, 0.1);
+LockPosition(false);
+LockSize(false);
+DisableIconRotation(false);
+SetProductCode([]);
+createAttributes(5);
+SetAttributeName(r(1), [locklevel]);
+SetAttributeName(r(2), [curcont]);
+SetAttributeName(r(3), [lock expr]);
+SetAttributeName(r(4), [contevaluation]);
+SetAttributeName(r(5), [batchwise]);
+SetAtt(r(1), 1);
+SetExprAtt(r(3), [1]);
+int024;
+Set(OnEvent, [case(eventcode,
+ {1: entered}
+ openoc(1,c),
+ {2: exited}
+ if(<(att(2,c),att(1,c)),openallic(c)),
+ {3: openallic generated via the OnMessage }
+ openallic(c),
+ {4: openinput if batchwise control }
+ repeat(
+  -(nroc(c),1),
+  if(atomexists(out(+(1,count),c)),openinput(out(+(1,count),c)))
+ ) 
+)
+]);
+Set(OnEntered, [do(
+ closeallic(c),
+ if(and(att(5,c),=(att(2,c),0)),
+  repeat(
+   -(nroc(c),1),
+   if(atomexists(out(+(1,count),c)),closeinput(out(+(1,count),c)))
+  )   
+ ),
+ {add one atom entering}
+ setatt(2,inc(att(2,c)),c),
+ if(and(att(5,c),=(att(2,c),att(1,c)),>(sum(-(nroc(c),1),atomexists(out(+(count,1),c))),0)),createevent(0,c,4)),
+ if(>=(att(2,c),att(1,c)),setstatus(19,c)),
+ createevent(0,c,1)
+)
+]);
+Set(OnExited, [do(
+ closeoc(1,c),
+ createevent(0,c,2)
+)
+]);
+Set(OnCreation, [autoconnect
+]);
+Set(OnReset, [do(
+ setatt(2,0,c),
+ setstatus(18,c),
+ if(att(4,c),setexpratt(1,textatt(3,c),c),setatt(1,att(3,c),c)),
+ closeoc(1,c),
+ if(=(att(1,c),0),closeallic(c))
+)
+]);
+Set(OnUser, [Do(
+  { Delete any current instances of this form.} 
+  GuiDestroy([Lock]),
+
+  { Register the GUI-form for this atom.}
+  GuiRegister(PDir([\Atoms\Lock.gui]), 1),
+
+  { Show the GUI-form.}
+   Guicreate([Lock], [Lock], 0, c, 0, 1)
+ )
+]);
+Set(OnOcReady, [if(
+ atomexists(first(c)),
+ moverequest(first(c),1),
+ do(closeoc(1,c),
+  if(
+   <(att(2,c),att(1,c)),
+   do(
+    openallic(c),
+    setstatus(18,c)
+   )
+  )
+ )
+)
+]);
+Set(OnIcReady, [{if a product can not be sent through,it is not allowed in but oc should be open !}
+if(
+ not(icopen(ocicno(1,c),out(1,c))), {connected atom cannot receive}
+ do(
+  closeallic(c),
+  if(<(att(2,c),att(1,c)),openoc(1,c),closeoc(1,c))
+ )
+)
+]);
+Set(On2DDraw, [draw2dicon(2,[L])
+]);
+Set(OnMessage, [if(
+ comparetext(message,[Atomleft]),
+ do(
+  inc(att(2,c),-1),
+  if(
+   att(5,c),
+   if(
+    =(att(2,c),0),
+    do(
+     setstatus(18,c),
+     createevent(0,c,3)
+    )
+   ),
+   if(
+    <(att(2,c),att(1,c)),
+    do(
+     setstatus(18,c),
+     createevent(0,c,3)
+    )
+   )
+  )
+ )
+)
+]);
+SetStatus(18);
+int018;
+int007;

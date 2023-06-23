@@ -1,0 +1,87 @@
+
+
+{Atom: Sink}
+
+sets;
+BaseClass;
+CreateAtom(a, s, [], 1, false);
+int023([Sink], 7168771, 240);
+Set(Icon(a), 
+	RegisterIcon(pDir([Media\Images\Atoms\sink.bmp]), [sink]));
+AddModel3D(
+	RegisterModel3D(Model3DDir([\sink.wrl]), [sink.wrl], 0, 0, 0, 1, 1, -1, -90, 0, 0), a);
+AddModel3D(
+	RegisterModel3D(Model3DDir([\sink_Resized.wrl]), [sink_Resized.wrl], 0, 0, 0, 1, 1, -1, -90, 0, 0), a);
+SetMaterial(
+	RegisterMaterial([Default], 8421504, 8421504, 3289650, 0, 0.100000001490116, 0, false, false, 1, 0), 1, a);
+Set(Version(a), 7.3);
+SetTreeIcon(pDir([Media\Icons\Sink.ico]));
+Set(Info, [Destroys all atoms that enter.
+
+General
+------------
+Destroys all atoms that enter. The user can define a trigger that 
+can be executed when atoms enter.
+
+Channels:
+--------------
+N inputchannels
+
+Last revision:
+-------------------
+February, 2008
+]);
+SetChannels(1, 0);
+SetChannelRanges(1, 255, 0, 0);
+int001(13);
+SetSize(5, 2, 2);
+LockPosition(false);
+LockSize(false);
+DisableIconRotation(false);
+SetProductCode([]);
+CreateAttributes(2);
+SetAttributeName(r(1), [EntryTrigger]);
+SetAttributeName(r(2), [Icon3D]);
+SetAtt(r(2), 3);
+int024;
+Set(OnEvent, [DestroyAtom(i)]);
+Set(OnEntered, [Do( EntryTrigger, createEvent(0, c, 0, 0, i))]);
+Set(OnCreation, [Do(
+ AutoConnect,
+ {* Ilde *}
+ Status(c) := 1,
+ {* Implemented for backwards compatability *}
+ If(
+   And(
+     Model3D(2, c)>0,
+     CompareText(Model3DName(Model3D(2, c)), [Sink_Resized.wrl])
+   ),
+   Att([Icon3D], c) := 4
+ )
+)
+]);
+Set(OnUser, [Do(  { Delete any current instances of this form.}   GuiDestroy([Sink]),  { Register the GUI-form for this atom.}  GuiRegister(PDir([\Atoms\Sink.gui]), 1),  { Show the GUI-form.}   Guicreate([Sink], [Sink], 0, c, 0, 1)  )]);
+Set(On2DDraw, [StandardDisplay(Name, Concat([In: ], String(Input)), Icon)]);
+Set(On3DDraw, [Case(
+ Icon3D,
+  {** None **}
+  Do(
+    Icon3D := Icon3D
+  ),
+  {** Simple Box **}
+  Do(
+    DrawCube(xSize / 2, ySize / 2, 0.5, xSize, ySize, 1)
+  ),
+  {** 3D Source **}
+  Do(
+    Drawmodel3D(model3D(1, c), 0, 0, 0, xSize / 5, ySize / 2, zSize / 5)
+  ),
+  {** 3D Sink Resized **}
+  Do(
+    Drawmodel3D(model3D(2, c), 0, 0, 0, xSize, ySize, zSize)
+  )  
+)
+]);
+SetStatus(0);
+int018;
+int007;

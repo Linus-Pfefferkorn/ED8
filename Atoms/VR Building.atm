@@ -1,0 +1,75 @@
+
+
+{Atom: VR Building}
+
+sets;
+BaseClass;
+createAtom(a, s, [], 1, false);
+int023([VR Building], 16777215, 3312);
+Set(Icon(a), 
+	RegisterIcon(pDir([Media\Textures\Floor\c-stuc3.jpg]), [c-stuc3.jpg]));
+Addmodel3D(
+	Registermodel3D(model3DDir([Buildings\factory1.wrl]), [factory1.wrl], 0, 0, 0, 1, 1, -1, -90, 0, 0), a);
+Addmodel3D(
+	Registermodel3D(model3DDir([Buildings\factory2.wrl]), [factory2.wrl], 0, 0, 0, 1, 1, -1, -90, 0, 0), a);
+Addmodel3D(
+	Registermodel3D(model3DDir([Buildings\factory3.wrl]), [factory3.wrl], 0, 0, 0, 1, 1, -1, -90, 0, 0), a);
+Addmodel3D(
+	Registermodel3D(model3DDir([Buildings\factory_floor2.wrl]), [factory_floor2.wrl], 0, 0, 0, 1, 1, -1, -90, 0, 0), a);
+SetMaterial(
+	RegisterMaterial([White], 16777215, 16777215, 16777215, 16777215, 1, 0, false, false, 1, 0), 1, a);
+Set(Version(a), 7.3);
+SetTreeIcon(pDir([Media\Icons\VRBuilding.ico]));
+int001(100);
+SetSize(5, 2, 0);
+LockPosition(false);
+LockSize(false);
+DisableIconRotation(false);
+SetProductCode([]);
+createAttributes(4);
+SetAttributeName(r(1), [Icon3D]);
+SetAttributeName(r(2), [xScale]);
+SetAttributeName(r(3), [yScale]);
+SetAttributeName(r(4), [zScale]);
+SetAtt(r(1), 1);
+SetAtt(r(2), 7);
+SetAtt(r(3), 7);
+SetAtt(r(4), 3);
+int024;
+Set(OnUser, [Do(
+  { Delete any current instances of this form.} 
+  GuiDestroy([VR Building]),
+
+  { Register the GUI-form for this atom.}
+  GuiRegister(PDir([\Atoms\VR Building.gui]), 1),
+
+  { Show the GUI-form.}
+  Guicreate([VR Building], [VR Building], 0, c, 0, 1)
+)
+]);
+Set(On2DDraw, [do(
+ diShape(0, 0, xSize, ySize, 0.25, ColorBlack, ColorWhite),
+ diShape(0, 0, xSize, 1, 0.25, ColorBlack, 7485496),
+ diOnScale(13,
+  do(
+   diText(0.2, 0.1, Name(c), ColorWhite, 7485496, 0.5, [Arial], -(xSize, 0.3), 0.8),
+   diText(0.2, 1.1, Concat([Scale: ], String(xScale), [x], String(yScale), [x], String(zScale)), 0, ColorWhite, 0.5, [Arial], -(xSize, 0.3), 0.8)
+  )
+ )
+)
+]);
+Set(On3DDraw, [Case(
+ Icon3D,
+  {** Factory 1 **}
+  Drawmodel3D(model3D(1, c), 0, 0, 0, xScale, yScale, zScale),
+  {** Factory 2 **}
+  Drawmodel3D(model3D(2, c), 0, 0, 0, xScale, yScale, zScale),
+  {** Factory 3 **}
+  Drawmodel3D(model3D(3, c), 0, 0, 0, xScale, yScale, zScale),
+  {** Factory 4 **}
+  Drawmodel3D(model3D(4, c), 0, 0, 0, xScale, yScale, zScale)  
+)
+]);
+SetStatus(0);
+int018;
+int007;

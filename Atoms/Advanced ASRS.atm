@@ -1,0 +1,50 @@
+
+
+{Atom: Advanced ASRS}
+
+sets;
+BaseClass;
+CreateAtom(a, s, [], 1, false);
+int023([Advanced ASRS], 12632256, 81920);
+Set(Icon(a), 
+	RegisterIcon(IconsDir([bmp\atoms\storage.bmp]), [storage]));
+SetMaterial(
+	RegisterMaterial([Default], 8421504, 8421504, 3289650, 0, 0.100000001490116, 0, false, false, 1, 0), 1, a);
+Set(Version(a), 0);
+SetTreeIcon(pDir([Media\Icons\Advanced ASRS.ico]));
+Set(DdbRec, [>t-atomsubclass1:5.>t-atomclass:3.]);
+int001(225);
+SetSize(1, 1, 1);
+LockPosition(false);
+LockSize(false);
+DisableIconRotation(false);
+SetProductCode([]);
+int024;
+Set(OnCreation, [do(
+ if(
+  Confirm(
+   Concat(
+    [The ], Name(m(c)), [ atom is only included in the licensed Enterprise Dynamics Logistics full versions.], CR, CR,
+    [Press 'OK' to get more detailed information about this atom.], CR
+   )
+  ),
+  Case( 
+   PopupMenu(  
+    ScreenPosX,  
+    ScreenPosY,  
+    [See the atoms help file/Get online information] 
+   ), 
+   do(
+    Help(PDir([HELP\ED Help.hlp]), Name(m(c)))
+   ), 
+   do(
+    Exec([http://www.incontrolsim.com/index.php/ed-logistics.html])
+   )
+  )
+ ),
+ DestroyAtom(c)
+)
+]);
+SetStatus(0);
+int018;
+int007;

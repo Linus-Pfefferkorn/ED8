@@ -1,0 +1,77 @@
+
+
+{Atom: Export Table}
+
+sets;
+BaseClass;
+createAtom(a, s, [], 1, false);
+int023([Export Table], 0, 1248);
+Set(Icon(a), 
+	RegisterIcon(pDir([media\images\default.jpg]), [default.jpg]));
+SetMaterial(
+	RegisterMaterial([Default], 8421504, 8421504, 3289650, 0, 0.100000001490116, 0, false, false, 1, 0), 1, a);
+Set(Version(a), 7.3);
+SetTreeIcon(pDir([Media\Icons\ExportTable.ico]));
+Set(Info, [Exports an atoms table to file
+
+General
+------------
+Connect the inputchannel of the atom to the central channel of the 
+atom whose table you want to export.
+
+The filename is automatically generated: name of connected atom 
+plus extension '.tbl'. Existing files are automically overwritten. 
+The user can specify the delimiter (comma, tab,line), 
+whether to include a header and whether to automatically display 
+the file after creation.
+
+Channels:
+---------------
+1 inputchannel
+
+Doubleclick, Rightclick:
+  edit delimiter, display header switch, display file switch, export table
+
+Last Revision:
+---------------------
+February, 2008
+]);
+Set(DdbRec, [>t-alloworganize:1.]);
+SetChannels(1, 0);
+SetChannelRanges(1, 1, 0, 0);
+int001(40);
+SetSize(7, 2, 1);
+LockPosition(false);
+LockSize(false);
+DisableIconRotation(false);
+SetProductCode([]);
+createAttributes(7);
+SetAttributeName(r(1), [displayfile]);
+SetAttributeName(r(2), [delimiter]);
+SetAttributeName(r(3), [currow]);
+SetAttributeName(r(4), [curtext]);
+SetAttributeName(r(5), [includeheader]);
+SetAttributeName(r(6), [TableName]);
+SetAttributeName(r(7), [Path]);
+SetAtt(r(1), 1);
+SetAtt(r(2), 1);
+SetAtt(r(5), 1);
+SetTextAtt(r(6), [ExportedTable.txt]);
+SetTextAtt(r(7), [c:\]);
+int024;
+Set(OnUser, [Do(
+ { Delete any current instances of this form.} 
+ GuiDestroy([ExportTable]),
+
+ { Register the GUI-form for this atom.}
+ GuiRegister(PDir([\Atoms\ExportTable.gui]), 1),
+
+ { Show the GUI-form.}
+ Guicreate([ExportTable], [ExportTable], 0, c, 0, 1)
+)
+]);
+Set(On2DDraw, [Draw2Dicon(3, [Export table], TextAtt(6,c))
+]);
+SetStatus(0);
+int018;
+int007;

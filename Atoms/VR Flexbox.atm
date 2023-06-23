@@ -1,0 +1,112 @@
+
+
+{Atom: VR Flexbox}
+
+sets;
+BaseClass;
+createAtom(a, s, [], 1, false);
+int023([VR Flexbox], 8421504, 1264);
+Set(Icon(a), 
+	RegisterIcon(TexturesDir([\Floor\concrete2.jpg]), [concrete2.jpg], 1, 0, 0, 255, 255, false, 0));
+SetMaterial(
+	RegisterMaterial([Default], 8421504, 8421504, 3289650, 0, 0.100000001490116, 0, false, false, 1, 0), 1, a);
+Set(Version(a), 7.3);
+SetTreeIcon(pDir([Media\Icons\VRFlexBox.ico]));
+int001(96);
+SetSize(5, 2, 0);
+LockPosition(false);
+LockSize(false);
+DisableIconRotation(false);
+SetProductCode([]);
+createAttributes(15);
+SetAttributeName(r(1), [xoffset]);
+SetAttributeName(r(2), [yoffset]);
+SetAttributeName(r(3), [zoffset]);
+SetAttributeName(r(4), [boxxsize]);
+SetAttributeName(r(5), [boxysize]);
+SetAttributeName(r(6), [boxzsize]);
+SetAttributeName(r(7), [iconxrepeat]);
+SetAttributeName(r(8), [iconyrepeat]);
+SetAttributeName(r(9), [iconzrepeat]);
+SetAttributeName(r(10), [showleft]);
+SetAttributeName(r(11), [showright]);
+SetAttributeName(r(12), [showfront]);
+SetAttributeName(r(13), [showrear]);
+SetAttributeName(r(14), [showbottom]);
+SetAttributeName(r(15), [showtop]);
+SetAtt(r(3), -0.1);
+SetAtt(r(4), 4);
+SetAtt(r(5), 4);
+SetAtt(r(6), 1);
+SetAtt(r(7), 1);
+SetAtt(r(8), 1);
+SetAtt(r(9), 1);
+SetAtt(r(10), 1);
+SetAtt(r(11), 1);
+SetAtt(r(12), 1);
+SetAtt(r(13), 1);
+SetAtt(r(14), 1);
+SetAtt(r(15), 1);
+int024;
+Set(OnUser, [Do(
+  { Delete any current instances of this form.} 
+  GuiDestroy([VR Flexbox]),
+
+  { Register the GUI-form for this atom.}
+  GuiRegister(PDir([\Atoms\VR Flexbox.gui]), 1),
+
+  { Show the GUI-form.}
+   Guicreate([VR Flexbox], [VR Flexbox], 0, c, 0, 1)
+)
+]);
+Set(On2DDraw, [do(
+ dishape(0,0,xsize,ysize,0.25,colorblack,colorwhite),
+ dishape(0,0,xsize,1,0.25,colorblack,7485496),
+ dionscale(13,
+  do(
+   ditext(0.2,0.1,name(c),colorwhite,7485496,0.5,[Arial],-(xsize,0.3),0.8),
+   ditext(0.2,1.1,concat([size: ],string(att(4,c)),[x],string(att(5,c)),[x],string(att(6,c))),0,colorwhite,0.5,[Arial],-(xsize,0.3),0.8)
+  )
+ )
+)
+]);
+Set(On3DDraw, [do(
+ SetMaterialColor(Color(c)),
+ SetMaterialTexture(IconToTexture(icon(c))),
+ TranslateCoords(att(1, c), att(2, c), att(3, c)),
+ {// left //}
+  PushTextureCoords,
+  ScaleTextureCoords(att(7, c), att(9, c)),
+ if(att(10,0),
+  DrawPlane(0, 0, 0, att(4, c), 0, 0, 0, 0, att(6, c))
+ ),
+ {// right //}
+ if(att(11,c),
+  DrawPlane(0, att(5, c), 0, att(4, c), 0, 0, 0, 0, att(6, c))
+ ),
+ PopTextureCoords,
+ PushTextureCoords,
+ ScaleTextureCoords(att(8, c), att(9, c)),
+ {// front //}
+ if(att(12,c),
+  DrawPlane(0, 0, 0, 0, att(5, c), 0, 0, 0, att(6, c))
+ ),
+ {// rear //}
+ if(att(13,c),
+  DrawPlane(att(4, c), 0, 0, 0, att(5, c), 0, 0, 0, att(6, c))
+ ),
+ PopTextureCoords,
+ ScaleTextureCoords(att(7, c), att(8, c)), 
+ {// bottom //}
+ if(att(14,c),
+  DrawPlane(0, 0, 0, att(4, c), 0, 0, 0, att(5, c), 0)
+ ),
+ {// top //}
+ if(att(15,c),
+  DrawPlane(0, 0, att(6, c), att(4, c), 0, 0, 0, att(5, c), 0)
+ )
+)
+]);
+SetStatus(0);
+int018;
+int007;

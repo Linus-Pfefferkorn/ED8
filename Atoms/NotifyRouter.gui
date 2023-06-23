@@ -1,0 +1,127 @@
+EDControl(EditForm:
+  BorderIcons = set(SystemMenu),
+  BorderStyle = Single,
+  Caption = str('Notify Router'),
+  Height = 154,
+  Name = str('NotifyRouter'),
+  Position = Default,
+  ShowHint = True,
+  Top = 254,
+  Visible = True,
+  Width = 395,
+  Controls(
+    EDControl(MultiPage:
+      ActivePage = 2,
+      Align = Client,
+      Anchors = set(Left,Top,Right,Bottom),
+      Height = 78,
+      Left = 0,
+      Name = str('MultiPage1'),
+      TabOrder = 1,
+      Top = 0,
+      Width = 395,
+      Controls(
+        EDControl(SinglePage:
+          Caption = str('General'),
+          Name = str('SinglePage1'),
+          PageIndex = 1,
+          Controls(
+            EDControl(GroupBox:
+              Caption = str(''),
+              Height = 64,
+              Left = 8,
+              Name = str('GroupBox1'),
+              TabOrder = 1,
+              Top = 8,
+              Width = 370,
+            Controls(
+EDControl(Edit:
+              Height = 21,
+              Left = 132,
+              Name = str('AtomName'),
+              TabOrder = 2,
+              Top = 26,
+              Width = 225),
+            EDControl(Label:
+              Caption = str('Atom name:'),
+              Color = -16777208,
+              Left = 12,
+              Name = str('StaticText1'),
+              Top = 32,
+              Width = 60))))),
+EDControl(SinglePage:
+          Caption = str('Visualization'),
+          Name = str('SinglePage2'),
+          PageIndex = 2,
+          Controls(
+            EDControl(GroupBox:
+              Caption = str('Settings'),
+              Height = 64,
+              Left = 8,
+              Name = str('GroupBox2'),
+              TabOrder = 1,
+              Top = 8,
+              Width = 370,
+            Controls(
+EDControl(Icon:
+              Height = 24,
+              Left = 132,
+              Name = str('Icon'),
+              Top = 26,
+              Width = 225),
+            EDControl(Label:
+              Caption = str('Icon:'),
+              Color = -16777208,
+              Left = 12,
+              Name = str('StaticText622'),
+              Top = 32,
+              Width = 28))))))),
+    EDControl(Panel:
+      Align = Bottom,
+      Anchors = set(Left,Right,Bottom),
+      BevelOuter = None,
+      Caption = str(''),
+      Height = 40,
+      Left = 0,
+      Name = str('Panel1'),
+      TabOrder = 2,
+      Top = 78,
+      Width = 395,
+      Controls(
+        EDControl(Button:
+          Caption = str('&Help'),
+          Left = 8,
+          Name = str('btnHelp'),
+          TabOrder = 1,
+          Top = 8,
+          Events(
+            Click = str('Help(PDir([HELP\ED Help.hlp]), [Notify Router])'#13))),
+        EDControl(Button:
+          Caption = str('&Ok'),
+          Default = True,
+          Left = 144,
+          Name = str('btnOk'),
+          TabOrder = 2,
+          Top = 8,
+          Events(
+            Click = str('Do('#13' GuiControl([btnApply]),'#13' GuiRun([Click]),'#13' GuiDestroy,'#13' GuiUnregister([Lock])'#13')'#13))),
+        EDControl(Button:
+          Cancel = True,
+          Caption = str('&Cancel'),
+          Left = 230,
+          Name = str('btnCancel'),
+          TabOrder = 3,
+          Top = 8,
+          Events(
+            Click = str('Do('#13' GuiDestroy,'#13' GuiUnregister([Lock])'#13')'#13))),
+        EDControl(Button:
+          Caption = str('&Apply'),
+          Left = 312,
+          Name = str('btnApply'),
+          TabOrder = 4,
+          Top = 8,
+          Events(
+            Click = str('do('#13' '#13'  {Save TextField}'#13'   '#13'  Name(GuiAtom) := GuiControl([AtomName],GuiGet([Text])),'#13'  '#13'  {Rest}'#13'  '#13'  Icon(GuiAtom) := GuiControl([Icon],GuiGet([Icon]))'#13')'#13)))))),
+  Events(
+    Show = str('do('#13' '#13'  {Set Caption}'#13'  if('#13'   atomexists(m(GuiAtom)),'#13'   GuiControl([NotifyRouter],GuiSet([Caption],concat(name(m(GuiAtom)), [ - ], name(GuiAtom)))),'#13'   GuiControl([NotifyRouter],GuiSet([Caption],concat([Baseclass - ], name(GuiAtom))))'#13'  ), '#13' '#13'  {Set ActivePage}'#13'     '#13'  GuiControl([MultiPage1]),GuiSet([ActivePage],1),'#13'  '#13'  {Set TextField}'#13'  '#13'  GuiControl([AtomName],GuiSet([Text],Name(GuiAtom))),'#13'  '#13'  {Rest}'#13'      '#13'  GuiControl([Icon],GuiSet([Icon], Icon(GuiAtom))),'#13#13'  {Position the form}'#13'  Gui_PositionGuiAroundAtom(GuiControl([NotifyRouter])),'#13' '#13'  GuiRun([Update])'#13')'#13)))
+

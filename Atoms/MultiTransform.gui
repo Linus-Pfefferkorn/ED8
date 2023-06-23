@@ -1,0 +1,226 @@
+EDControl(EditForm:
+  BorderIcons = set(SystemMenu),
+  BorderStyle = Single,
+  Caption = str('MultiTransform'),
+  Height = 424,
+  Name = str('MultiTransform'),
+  Position = Default,
+  ShowHint = True,
+  Top = 284,
+  Visible = True,
+  Width = 395,
+  Controls(
+    EDControl(MultiPage:
+      ActivePage = 1,
+      Align = Client,
+      Anchors = set(Left,Top,Right,Bottom),
+      Height = 384,
+      Left = 0,
+      Name = str('MultiPage1'),
+      TabOrder = 1,
+      Top = 0,
+      Width = 395,
+      Controls(
+        EDControl(SinglePage:
+          Caption = str('General'),
+          Name = str('SinglePage1'),
+          PageIndex = 1,
+          Controls(
+            EDControl(GroupBox:
+              Caption = str(''),
+              Height = 64,
+              Left = 8,
+              Name = str('GroupBox1'),
+              TabOrder = 1,
+              Top = 8,
+              Width = 370,
+              Controls(
+                EDControl(Edit:
+                  Height = 21,
+                  Left = 132,
+                  Name = str('AtomName'),
+                  TabOrder = 1,
+                  Top = 26,
+                  Width = 225),
+                EDControl(Label:
+                  Caption = str('Atom name:'),
+                  Color = -16777208,
+                  Height = 13,
+                  Left = 12,
+                  Name = str('StaticText1'),
+                  Top = 32,
+                  Width = 56))),
+            EDControl(GroupBox:
+              Caption = str('Selection rules'),
+              Height = 96,
+              Left = 8,
+              Name = str('GroupBox12'),
+              TabOrder = 4,
+              Top = 88,
+              Width = 370,
+              Controls(
+                EDControl(Label:
+                  Caption = str('Atom selection rule:'),
+                  Color = -16777208,
+                  Height = 13,
+                  Left = 12,
+                  Name = str('StaticText522'),
+                  Top = 32,
+                  Width = 92),
+                EDControl(Label:
+                  Caption = str('Row selection rule:'),
+                  Color = -16777208,
+                  Height = 13,
+                  Left = 12,
+                  Name = str('StaticText523'),
+                  Top = 64,
+                  Width = 90))),
+            EDControl(GroupBox:
+              Caption = str('Miscelleanous'),
+              Height = 64,
+              Left = 8,
+              Name = str('GroupBox3'),
+              TabOrder = 5,
+              Top = 200,
+              Width = 370,
+              Controls(
+                EDControl(Button:
+                  Caption = str('&Edit transformation settings'),
+                  Left = 12,
+                  Name = str('btnEditTransformationSettings'),
+                  TabOrder = 1,
+                  Top = 24,
+                  Width = 150,
+                  Events(
+                    Click = str('do('#13' if('#13'  nrows(GuiAtom) = 0,'#13'  msg([No transformation settings available yet.], 1),'#13'  edittable(GuiAtom)'#13' )'#13')'#13))))),
+            EDControl(SmartEdit:
+              Left = 140,
+              Lines = str(''),
+              Name = str('AtomSelectionRule'),
+              String = str('{.~1|.}~1'),
+              TabOrder = 2,
+              Top = 114,
+              Width = 225),
+            EDControl(SmartEdit:
+              Left = 140,
+              Lines = str(''),
+              Name = str('RowSelectionRule'),
+              String = str('{.~1|.}~1'),
+              TabOrder = 3,
+              Top = 146,
+              Width = 225))),
+        EDControl(SinglePage:
+          Caption = str('Labels'),
+          Name = str('SinglePage2'),
+          PageIndex = 2,
+          Controls(
+            EDControl(GroupBox:
+              Caption = str('Overview'),
+              Height = 273,
+              Left = 8,
+              Name = str('GroupBox4'),
+              TabOrder = 1,
+              Top = 8,
+              Width = 370,
+              Controls(
+                EDControl(Table:
+                  ColCount = 2,
+                  Height = 176,
+                  Left = 12,
+                  Name = str('tblLabels'),
+                  Options = set(FixedVertLine,FixedHorzLine,VertLine,HorzLine,RangeSelect,ColSizing,RowSelect),
+                  RowCount = 2,
+                  TabOrder = 1,
+                  Top = 32,
+                  Width = 344),
+                EDControl(Button:
+                  Caption = str('&Add'),
+                  Left = 112,
+                  Name = str('btnAdd'),
+                  TabOrder = 2,
+                  Top = 224,
+                  Events(
+                    Click = str('do('#13'  GuiControl([lblAddOrEdit], GuiSet([Caption], [1])),'#13'   '#13'  GuiDestroy([frmMultitransformEditLabel]),'#13'   '#13'  GuiRegister(PDir([\Atoms\frmMultitransformEditLabel.gui]), 1),'#13'   '#13'  Guicreate([frmMultitransformEditLabel], [frmMultitransformEditLabel], 0, GuiAtom, 0, 1)  '#13')'#13))),
+                EDControl(Button:
+                  Caption = str('&Edit'),
+                  Left = 196,
+                  Name = str('btnEdit'),
+                  TabOrder = 3,
+                  Top = 224,
+                  Events(
+                    Click = str('do('#13'  GuiControl([lblAddOrEdit], GuiSet([Caption], [2])),'#13'   '#13'  GuiDestroy([frmMultitransformEditLabel]),'#13'   '#13'  GuiRegister(PDir([\Atoms\frmMultitransformEditLabel.gui]), 1),'#13'   '#13'  Guicreate([frmMultitransformEditLabel], [frmMultitransformEditLabel], 0, GuiAtom, 0, 1)'#13'  '#13')'#13))),
+                EDControl(Button:
+                  Caption = str('&Delete'),
+                  Left = 280,
+                  Name = str('btnDelete'),
+                  TabOrder = 4,
+                  Top = 224,
+                  Events(
+                    Click = str('do('#13'  var([numberoflabels], vbValue),'#13'  '#13'  numberoflabels := Value(GuiControl([lblNumberOfLabels], Guiget([Caption]))),'#13'  '#13'  if('#13'   numberoflabels > 0, '#13'      '#13'   {**Arrival exists**}'#13'   do('#13'    GuiControl('#13'     [tblLabels],'#13'     do( '#13'          GuiTableDeleteRow(GuiGet([ActiveRow])),'#13'{          DeleteColumn(nCols(GuiAtom)+1, GuiAtom),}'#13'          dec(numberoflabels),'#13'          if('#13'            numberoflabels = 0,'#13'            do('#13'              GuiTableInsertRow(1),'#13'              GuiSet([FixedRows], 1),'#13'              GuiSet([cells], 1, 1, []),'#13'              GuiSet([cells], 1, 2, [])'#13'            ),'#13'            do('#13'              Repeat('#13'                numberoflabels,'#13'                GuiSet([Cells], count, 0, ValueToString(count))'#13'              )'#13'            )'#13'          )'#13'        )'#13'      ),'#13'      '#13'      {**Update nrArrivals Label**}'#13'      '#13'      Value(GuiControl([lblNumberOfLabels], GuiSet([Caption], valuetostring(numberoflabels))))'#13'    )'#13'  )'#13')'#13))),
+                EDControl(Label:
+                  Caption = str('0'),
+                  Color = -16777208,
+                  Height = 13,
+                  Left = 292,
+                  Name = str('lblNumberOfLabels'),
+                  Top = 12,
+                  Visible = False,
+                  Width = 6),
+                EDControl(Label:
+                  Caption = str('0'),
+                  Color = -16777208,
+                  Height = 13,
+                  Left = 276,
+                  Name = str('lblAddOrEdit'),
+                  Top = 12,
+                  Visible = False,
+                  Width = 6))))))),
+    EDControl(Panel:
+      Align = Bottom,
+      Anchors = set(Left,Right,Bottom),
+      BevelOuter = None,
+      Caption = str(''),
+      Height = 40,
+      Left = 0,
+      Name = str('Panel1'),
+      TabOrder = 2,
+      Top = 384,
+      Width = 395,
+      Controls(
+        EDControl(Button:
+          Caption = str('&Help'),
+          Left = 8,
+          Name = str('btnHelp'),
+          TabOrder = 1,
+          Top = 8,
+          Events(
+            Click = str('Help(PDir([HELP\ED Help.hlp]), [MultiTransform])'#13))),
+        EDControl(Button:
+          Caption = str('&Ok'),
+          Default = True,
+          Left = 144,
+          Name = str('btnOk'),
+          TabOrder = 2,
+          Top = 8,
+          Events(
+            Click = str('Do('#13' GuiControl([btnApply]),'#13' GuiRun([Click]),'#13' GuiDestroy'#13')'#13))),
+        EDControl(Button:
+          Cancel = True,
+          Caption = str('&Cancel'),
+          Left = 230,
+          Name = str('btnCancel'),
+          TabOrder = 3,
+          Top = 8,
+          Events(
+            Click = str('GuiDestroy '#13))),
+        EDControl(Button:
+          Caption = str('&Apply'),
+          Left = 312,
+          Name = str('btnApply'),
+          TabOrder = 4,
+          Top = 8,
+          Events(
+            Click = str('do('#13' var([indexer], vbValue, 0),'#13'  '#13' {Save TextField}'#13'  '#13' Name(GuiAtom) := GuiControl([AtomName],GuiGet([Text])),'#13' '#13' Att([DDB change],GuiAtom) := Value(GuiControl([lblNumberOfLabels], GuiGet([Caption]))),'#13' '#13'{ Att([table rows],GuiAtom) := Value(GuiControl([NumberOfRows], GuiGet([Text]))),}'#13' Att([table rows],GuiAtom) := nrows(GuiAtom),'#13' '#13'{ nrows(GuiAtom) := Value(GuiControl([NumberOfRows], GuiGet([Text]))),}'#13' ncols(GuiAtom) := 7 + Value(GuiControl([lblNumberOfLabels], GuiGet([Caption]))),'#13' '#13' {Save SmartEditBox} '#13' '#13' SetExprAtt([filter logic],GuiControl([AtomSelectionRule],GuiGet([String])),GuiAtom),'#13' '#13' SetExprAtt([row logic],GuiControl([RowSelectionRule],GuiGet([String])),GuiAtom),'#13#13' { Set the column captions of the table}'#13' setcell(0, 0, [Row], GuiAtom),'#13' setcell(0, 1, [Selector], GuiAtom),'#13' setcell(0, 2, [new name], GuiAtom),'#13' setcell(0, 3, [new icon], GuiAtom),'#13' setcell(0, 4, [new color] ,GuiAtom),'#13' setcell(0, 5, [new X size], GuiAtom),'#13' setcell(0, 6, [new Y size], GuiAtom),'#13' setcell(0, 7, [new Z size], GuiAtom),'#13' '#13' { Save the label names }'#13' SetAttributes(7 + Value(GuiControl([lblNumberOfLabels], GuiGet([Caption]))), GuiAtom),'#13' '#13' for('#13'  indexer := 1, indexer <= Value(GuiControl([lblNumberOfLabels], GuiGet([Caption]))), inc(indexer),'#13'  do('#13'   SetAttributeName(7+indexer, GuiControl([tblLabels], Guiget([Cells], indexer, 1)), GuiAtom),'#13'   cell(0, 7+indexer, GuiAtom) := GuiControl([tblLabels], Guiget([Cells], indexer, 1))'#13'  )'#13' )  '#13')'#13)))))),
+  Events(
+    Show = str('do('#13' var([indexer], vbValue, 0),'#13' var([labelNumber], vbValue, 0),'#13' '#13' {Set Caption}'#13' if('#13'  atomexists(m(GuiAtom)),'#13'  GuiControl([MultiTransform],GuiSet([Caption],concat(name(m(GuiAtom)), [ - ], name(GuiAtom)))),'#13'  GuiControl([MultiTransform],GuiSet([Caption],concat([Baseclass - ], name(GuiAtom))))'#13' ), '#13#13' {Set ActivePage}'#13'    '#13' GuiControl([MultiPage1]),GuiSet([ActivePage],1),'#13' '#13' {Set TextField}'#13' '#13' GuiControl([AtomName],GuiSet([Text],Name(GuiAtom))),'#13' '#13' {Set SmartEditBox}           '#13'     '#13' FillPredefinedLogicList([AtomSelectionRule], [getAtomSelectionRule]),'#13' GuiControl([AtomSelectionRule],GuiSet([String],textatt([filter logic],GuiAtom))), '#13' '#13' FillPredefinedLogicList([RowSelectionRule], [getRowSelectionRule]),'#13' GuiControl([RowSelectionRule],GuiSet([String],textatt([row logic],GuiAtom))),'#13#13' GuiControl([tblLabels], GuiSet([Cells], 0, 1, [Name])),'#13' '#13' { Load the label names that are stored as attributes into the table of labels }'#13#13' for('#13'  indexer:=1, indexer <= Att([DDB Change], GuiAtom), inc(indexer),'#13'  do('#13'   if('#13'    indexer > 1,'#13'    GuiControl([tblLabels], GuiTableInsertRow(indexer-1))'#13'   ),'#13'   GuiControl([tblLabels], GuiSet([Cells], indexer, 1, AttributeName(7+indexer, GuiAtom)))'#13'  ) '#13' ),'#13' '#13' { Increase the invisible label on the Gui form of the composition container. }'#13' Guicontrol( [lblNumberOfLabels], GuiSet([Caption], TextAtt([DDB Change], GuiAtom))),'#13'  '#13' { Finally adjust the numbering of the table rows...}'#13' For('#13'  indexer := 1, indexer <= Att([DDB Change], GuiAtom), inc(indexer),'#13'  GuiControl([tblLabels], GuiSet([Cells], indexer, 0, String(indexer)))'#13' ),'#13#13' {Position the form}'#13' Gui_PositionGuiAroundAtom(GuiControl([Multitransform])),'#13' {'#13' labelNumber :=  GuiControl([tblLabels], GuiGet([RowCount])) - 1,   '#13#13' GuiControl([lblNumberOfLabels],GuiSet([Caption], string(labelNumber))),'#13'  }'#13' GuiRun([Update])'#13')'#13)))
+

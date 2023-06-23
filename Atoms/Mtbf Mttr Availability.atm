@@ -1,0 +1,168 @@
+
+
+{Atom: Mtbf Mttr Availability}
+
+sets;
+BaseClass;
+createAtom(a, s, [], 1, false);
+int023([Mtbf Mttr Availability], 32768, 1264);
+Set(Icon(a), 
+	RegisterIcon(pDir([media\images\default.jpg]), [default.jpg]));
+Addmodel3D(
+	Registermodel3D(model3DDir([\controller.wrl]), [controller.wrl], 0, 0, 0, 1, 1, -1, -90, 0, 0), a);
+Addmodel3D(
+	Registermodel3D(model3DDir([\controller1.wrl]), [controller1.wrl], 0, 0, 0, 1, 1, -1, -90, 0, 0), a);
+Addmodel3D(
+	Registermodel3D(model3DDir([\controller2.wrl]), [controller2.wrl], 0, 0, 0, 1, 1, -1, -90, 0, 0), a);
+SetMaterial(
+	RegisterMaterial([Default], 8421504, 8421504, 3289650, 0, 0.100000001490116, 0, false, false, 1, 0), 1, a);
+Set(Version(a), 7.3);
+SetTreeIcon(pDir([Media\Icons\MtbfMtbrAvailability.ico]));
+Set(Info, [Specify MTBF/MTTR.
+
+General
+-----------
+Used to define Mean Time Between Failure and Mean Time To 
+Repair.
+
+This atom is not part of the flow of atoms but is ALWAYS used in 
+conjunction with the Availability Control.
+
+Connect the outputchannels with the inputchannels of one or more 
+availabilty controls. The availability controls in their turn control the 
+availability of atoms in the flow. The user can specify mean time 
+between failure and mean time to repair, as well as the first 
+breakdown (usefull with constant mtbf/mttr times to model fixed 
+patterns).
+
+Channels:
+--------------
+N outputchannels
+
+Statuses:
+-------------
+   3 - Down
+  10 - Not Down
+
+Applications: machine breakdowns, shifts, working hours, breaks, 
+holidays, etc.
+
+Last revision:
+-------------------
+February, 2008
+]);
+SetChannels(0, 1);
+SetChannelRanges(0, 0, 1, 255);
+int001(31);
+SetSize(5, 1, 1);
+LockPosition(false);
+LockSize(false);
+DisableIconRotation(false);
+SetProductCode([]);
+createAttributes(4);
+SetAttributeName(r(1), [mtbf]);
+SetAttributeName(r(2), [mttr]);
+SetAttributeName(r(3), [firstdown]);
+SetAttributeName(r(4), [3DIcon]);
+SetExprAtt(r(1), [negexp(100)]);
+SetExprAtt(r(2), [negexp(100)]);
+SetExprAtt(r(3), [negexp(100)]);
+SetAtt(r(4), 5);
+int024;
+Set(OnEvent, [Case(
+ EventCode,
+ {* Event 1: All the connected atoms have to go down *}
+ Do(
+  {* Down *}
+  Status(c) := 3,
+  SetLabel([t-available], 0, c),
+  Color(c) := ColorRed,
+  createEvent(mttr, c, 2),
+  OpenAllOC(c)
+ ),
+ {* Event 2: All the connected atoms have to go up *}
+ Do(
+ {* Not Down *}
+  Status(c) := 10,
+  SetLabel([t-available], 1, c),
+  Color(c) := ColorGreen,
+  createEvent(mtbf, c, 1),
+  OpenAllOC(c)
+ )
+)
+]);
+Set(OnCreation, [Do(
+ SetLabel([t-atomoutconnect], [t028], c),
+ Label([t-available], c) := 1
+)
+]);
+Set(OnReset, [Do(
+ 
+ SetLabel([t-available], 1, c),
+ 
+ {* Not Down *}
+ Status(c) := 10,
+ Color(c) := ColorGreen,
+ createEvent(firstdown, c, 1),
+
+ {* create an error message if the atom is connected with the wrong atom *}
+ Repeat(
+  NrOc(c),
+  If(
+   Or(
+    Not(AtomExists(Out(Count, c))),
+    Not(CompareText(Label([t-atomtype], Out(Count, c)), [t028]))
+   ),
+   Msg(
+    Concat(
+     [Outputchannel ],
+     String(Count),
+     [ of ],
+     Name(c),
+     [ must be connected with an Availability Control atom]
+    ),
+    3
+   )   
+  )
+ )
+)
+]);
+Set(OnUser, [Do(
+  { Delete any current instances of this form.} 
+  GuiDestroy([Mtbf Mttr Availability]),
+
+  { Register the GUI-form for this atom.}
+  GuiRegister(PDir([\Atoms\Mtbf Mttr Availability.gui]), 1),
+
+  { Show the GUI-form.}
+   Guicreate([Mtbf Mttr Availability], [Mtbf Mttr Availability], 0, c, 0, 1)
+)
+]);
+Set(On2DDraw, [Do(
+ diShape(0, 0, xSize(c), 1, 0.25, ColorBlack, Color(c)),
+ diOnScale(
+  13,
+  diText(0.2, 0.1, Name(c), ColorWhite, Color(c), 0.5, [Arial], xSize(c) - 0.3, 0.8)
+ )
+)
+]);
+Set(On3DDraw, [Case(
+ 3DIcon,
+ {* Draw None *}
+ SetSetting(sa3DDraw, 0, c),
+ {* Draw Simple Box *}
+ Do(
+  di3DBox(0, 0, 0, 1, 0.5, 2, ColorGray),
+  di3DBox(0.2, -0.05, 1.5, 0.6, 0.6, 0.3, Color(c))
+  ),
+ {** Draw empty controller **}
+ Drawmodel3D(model3D(1, c), 0, 0, 0),
+ {** Draw controller 1 **}
+ Drawmodel3D(model3D(2, c), 0, 0, 0),
+ {** Draw controller 2 **}
+ Drawmodel3D(model3D(3, c), 0, 0, 0)
+)
+]);
+SetStatus(0);
+int018;
+int007;

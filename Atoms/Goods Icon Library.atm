@@ -1,0 +1,38 @@
+
+
+{Atom: Goods Icon Library}
+
+sets;
+BaseClass;
+CreateAtom(a, s, [], 1, false);
+Set(OnInit, [do(
+ autoloadicon(pdir([Icons\Png\Products\circle.png]),[circle]),
+ autoloadicon(pdir([Icons\Png\Products\circleblue.png]),[circleblue]),
+ autoloadicon(pdir([Icons\Png\Products\circlebrown.png]),[circlebrown]),
+ autoloadicon(pdir([Icons\Png\Products\circlefuchsia.png]),[circlefuchsia]),
+ autoloadicon(pdir([Icons\Png\Products\circlegray.png]),[circlegray]),
+ autoloadicon(pdir([Icons\Png\Products\circlegreen.png]),[circlegreen]),
+ autoloadicon(pdir([Icons\Png\Products\circleorange.png]),[circleorange]),
+ autoloadicon(pdir([Icons\Png\Products\circlepurple.png]),[circlepurple]),
+ autoloadicon(pdir([Icons\Png\Products\circlered.png]),[circlered]),
+ autoloadicon(pdir([Icons\Png\Products\circleyellow.png]),[circleyellow])
+)
+]);
+int023([Goods Icon Library], 0, 0);
+Set(Icon(a), 
+	RegisterIcon(pDir([media\images\default.jpg]), [default.jpg]));
+SetMaterial(
+	RegisterMaterial([Default], 8421504, 8421504, 3289650, 0, 0.100000001490116, 0, false, false, 1, 0), 1, a);
+Set(Version(a), 8.2);
+SetTreeIcon(pDir([Media\Icons\Tools.ico]));
+Set(DdbRec, [>t-nocreate:1.]);
+int001(14);
+SetSize(1, 1, 1);
+LockPosition(false);
+LockSize(false);
+DisableIconRotation(false);
+SetProductCode([]);
+int024;
+SetStatus(0);
+int018;
+int007;

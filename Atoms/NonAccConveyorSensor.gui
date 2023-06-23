@@ -1,0 +1,98 @@
+EDControl(EditForm:
+  Caption = str('Sensor'),
+  Height = 144,
+  MaxHeight = 144,
+  MaxWidth = 368,
+  MinHeight = 144,
+  MinWidth = 368,
+  Name = str('frmSensor'),
+  Position = DesktopCenter,
+  ShowHint = True,
+  Top = 304,
+  Visible = True,
+  Width = 368,
+  Controls(
+    EDControl(Panel:
+      Align = Top,
+      Anchors = set(Left,Top,Right,Bottom),
+      Caption = str(''),
+      Height = 100,
+      Left = 0,
+      Name = str('Panel1'),
+      TabOrder = 1,
+      Top = 0,
+      Width = 368,
+      Controls(
+        EDControl(Label:
+          Caption = str('Sensor trigger'),
+          Height = 13,
+          Left = 16,
+          Name = str('lbSensorTrigger'),
+          Top = 56),
+        EDControl(Label:
+          Caption = str('Sensor position [m]'),
+          Height = 13,
+          Left = 16,
+          Name = str('lbSensorPosition'),
+          Top = 24,
+          Width = 89),
+        EDControl(SyntaxComboBox:
+          CodeItems = str(#1'objectstart'#1'code:mm(1000)'#1'objectend'#1'objectstart'#1'code:cm(100)'#1'objectend'#1'objectstart'#1'code:inch(36)'#1'objectend'#1'objectstart'#1'code:feet(3)'#1'objectend'#1'objectstart'#1'code:yard(1)'#1'objectend'),
+          Hint = str('Location of the sensor, seen from the beginning of the conveyor'),
+          Left = 112,
+          Name = str('scbSensorPosition'),
+          TabOrder = 1,
+          Top = 22,
+          Width = 241,
+          Events(
+            Init = str('do( '#13'  if( Value(GuiSelect([NonAccConvForm],[lbAddOrEdit],GuiGet([Caption])))=1,'#13'     do( {Add}'#13'        GuiControl([scbSensorPosition],GuiSet([ResultCode],[0]))'#13'      ),'#13'      do( {Edit}'#13'       GuiControl([scbSensorPosition],GuiSet([ResultCode],GuiSelect([NonAccConvForm],[tblSensors],GuiGet([Cells],GuiGet([ActiveRow]),0))))'#13'      )'#13'  )'#13')'#13))),
+        EDControl(SyntaxComboBox:
+          CodeItems = str(#1'objectstart'#1'code:Label([?],i) := 1'#1'objectend'#1'objectstart'#1'code:name(i) := [?]'#1'objectend'#1'objectstart'#1'code:icon(i) := iconbyname([?])'#1'objectend'#1'objectstart'#1'code:color(i) := ColorRed'#1'objectend'#1'objectstart'#1'code:setsize(1,1,0,i)'#1'objectend'#1'objectstart'#1'code:setloc(1,1,0,i)'#1'objectend'#1'objectstart'#1'code:if(label([?],i)=1,do([?]),do([?]))'#1'objectend'#1'objectstart'#1'code:if(comparetext(name(i),[?]),do([?]),do([?]))'#1'objectend'),
+          Hint = str('Code executed every time an atom passes the sensor'),
+          Left = 112,
+          Name = str('scbSensorTrigger'),
+          Sorted = True,
+          TabOrder = 2,
+          Top = 56,
+          Width = 242,
+          Events(
+            Init = str('do( '#13'  if( Value(GuiSelect([NonAccConvForm],[lbAddOrEdit],GuiGet([Caption])))=1,'#13'     do( {Add}'#13'        GuiControl([scbSensorTrigger],GuiSet([ResultCode],[0]))'#13'      ),'#13'      do( {Edit}'#13'       GuiControl([scbSensorTrigger],GuiSet([ResultCode],GuiSelect([NonAccConvForm],[tblSensors],GuiGet([Cells],GuiGet([ActiveRow]),1))))'#13'      )'#13'  )'#13')'#13))))),
+    EDControl(Panel:
+      Align = Client,
+      Anchors = set(Left,Top,Right,Bottom),
+      BevelOuter = None,
+      Caption = str(''),
+      Height = 44,
+      Left = 0,
+      Name = str('Panel2'),
+      TabOrder = 2,
+      Top = 100,
+      Width = 368,
+      Controls(
+        EDControl(Button:
+          Anchors = set(Top,Right),
+          Caption = str('&Cancel'),
+          Height = 33,
+          Left = 250,
+          ModalResult = Cancel,
+          Name = str('btnCancel'),
+          TabOrder = 2,
+          Top = 7,
+          Width = 107,
+          Events(
+            Click = str('GuiDestroy'#13))),
+        EDControl(Button:
+          Anchors = set(Top,Right),
+          Caption = str('&OK'),
+          Height = 33,
+          Left = 130,
+          ModalResult = Ok,
+          Name = str('btnOK'),
+          TabOrder = 1,
+          Top = 7,
+          Width = 107,
+          Events(
+            Click = str('do('#13'  if( Value(GuiSelect([NonAccConvForm],[lbAddOrEdit],GuiGet([Caption])))=1,'#13'     do( {Add}'#13'        GuiSelect([NonAccConvForm],[tblSensors],GuiSet([RowCount],GuiGet([RowCount])+1)),'#13'        if( GuiSelect([NonAccConvForm],[tblSensors],GuiGet([RowCount]))=2,'#13'           GuiSelect([NonAccConvForm],[tblSensors],GuiSet([FixedRows],1))'#13'         ),'#13'        GuiSelect([NonAccConvForm],[tblSensors],GuiSet([Cells], GuiGet([RowCount])-1,0,'#13'          GuiSelect([SensorForm],[scbSensorPosition],GuiGet([ResultCode]))'#13'        )),'#13'        GuiSelect([NonAccConvForm],[tblSensors],GuiSet([Cells], GuiGet([RowCount])-1,1,'#13'          GuiSelect([SensorForm],[scbSensorTrigger],GuiGet([ResultCode]))'#13'        )),        '#13'        GuiSelect([NonAccConvForm],[tblSensors],GuiSet([Cells], GuiGet([RowCount])-1,2,'#13'          string(execstring(GuiSelect([SensorForm],[scbSensorPosition],GuiGet([ResultCode]))),0,3)'#13'        ))        '#13'      ),'#13'      do( {Edit}'#13'        GuiSelect([NonAccConvForm],[tblSensors],GuiSet([Cells], GuiGet([ActiveRow]),0,'#13'          GuiSelect([SensorForm],[scbSensorPosition],GuiGet([ResultCode]))'#13'        )),'#13'        GuiSelect([NonAccConvForm],[tblSensors],GuiSet([Cells], GuiGet([ActiveRow]),1,'#13'          GuiSelect([SensorForm],[scbSensorTrigger],GuiGet([ResultCode]))'#13'        )),        '#13'        GuiSelect([NonAccConvForm],[tblSensors],GuiSet([Cells], GuiGet([ActiveRow]),2,'#13'          string(execstring(GuiSelect([SensorForm],[scbSensorPosition],GuiGet([ResultCode]))),0,3)'#13'        ))'#13'      )'#13'  ),   '#13'  {Sort the table on Position of the sensors}'#13'  GuiSelect([NonAccConvForm],[tblSensors],GuiTableSortByColumn(3,1,0)),'#13'  {Update the listbox}'#13'  GuiSelect([NonAccConvForm],[lbxSensorPosition],GuiRun([Update])),'#13'  '#13'  GuiDestroy'#13'  '#13')'#13)))))),
+  Events(
+    Destroy = str('GuiSelect([NonAccConvForm],[lbAddOrEdit],GuiSet([Caption],[0]))'#13)))
+

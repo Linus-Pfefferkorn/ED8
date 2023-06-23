@@ -1,0 +1,400 @@
+
+
+{Atom: Reservoir}
+
+sets;
+BaseClass;
+CreateAtom(a, s, [], 1, false);
+int023([Reservoir], 4227072, 4336);
+Set(Icon(a), 
+	RegisterIcon(IconsDir([bmp\atoms\server.bmp]), [server]));
+SetMaterial(
+	RegisterMaterial([Default], 8421504, 8421504, 3289650, 0, 0.100000001490116, 0, false, false, 1, 0), 1, a);
+Set(Version(a), 7.3);
+SetTreeIcon(pDir([Media\Icons\Reservoir.ico]));
+Set(Info, [Collects products with triggers on lower and upper level. 
+
+General
+------------
+Depending on attribute works like a flow control or as a queue.
+When it works like a flow control, products leave after inter 
+departure time (Flow rate). 
+In and output are controled depending on measuring units.
+Measuring units can increment and decrement on entering and exiting of 
+products. The value of the units can depend on amount of products, 
+sizes of products, labels or a userdefined statement.
+
+Channels:
+---------------
+N inputchannels, M outputchannels
+
+Statuses:
+-------------
+    1 - Idle
+    2 - Busy
+  25 - Busy and Blocked
+    5 - Blocked
+  19 - Closed
+
+Last Revision:
+---------------------
+March, 2008
+
+]);
+SetChannels(1, 1);
+SetChannelRanges(1, 255, 1, 255);
+int001(131407);
+SetSize(8, 6, 6);
+LockPosition(false);
+LockSize(false);
+DisableIconRotation(false);
+SetProductCode([]);
+CreateAttributes(26);
+SetAttributeName(r(1), [capacity]);
+SetAttributeName(r(2), [cycletime]);
+SetAttributeName(r(3), [tempcycle]);
+SetAttributeName(r(4), [nblocked]);
+SetAttributeName(r(5), [sendto]);
+SetAttributeName(r(6), [flow/prod]);
+SetAttributeName(r(7), [entrytrigger]);
+SetAttributeName(r(8), [exittrigger]);
+SetAttributeName(r(9), [counter]);
+SetAttributeName(r(10), [send]);
+SetAttributeName(r(11), [variable]);
+SetAttributeName(r(12), [qty]);
+SetAttributeName(r(13), [max.]);
+SetAttributeName(r(14), [min.]);
+SetAttributeName(r(15), [min-down]);
+SetAttributeName(r(16), [min-up]);
+SetAttributeName(r(17), [max-up]);
+SetAttributeName(r(18), [max-down]);
+SetAttributeName(r(19), [out]);
+SetAttributeName(r(20), [situation]);
+SetAttributeName(r(21), [counter]);
+SetAttributeName(r(22), [check]);
+SetAttributeName(r(23), [trig1]);
+SetAttributeName(r(24), [trig2]);
+SetAttributeName(r(25), [trig3]);
+SetAttributeName(r(26), [trig4]);
+SetAtt(r(1), 10);
+SetExprAtt(r(2), [negexp(9)]);
+SetExprAtt(r(5), [1]);
+SetAtt(r(6), 1);
+SetTextAtt(r(10), [do([nothing])]);
+SetTextAtt(r(11), [{.1|1. Amount of products  .}1]);
+SetAtt(r(13), 8);
+SetAtt(r(14), 2);
+SetAtt(r(15), 2);
+SetAtt(r(16), 2);
+SetAtt(r(17), 3);
+SetAtt(r(18), 1);
+SetTextAtt(r(19), [{.1|1. Amount of products .}1]);
+SetTextAtt(r(22), [{.1|1. Amount of products .}1]);
+int024;
+Set(OnEvent, [Case(
+ EventCode,
+
+ { 1: product is ready to send on to next stage }
+ do(
+  inc(att(21, c)), { increase counter }
+  if(
+   att(6, c), { flow/prod }
+   CreateEvent(att(2, c), c, 2),
+   do(
+    att(4, c) := att(4, c) + 1, { inc nblocked }
+    SetRank(att(4, c), first(c)),
+    CreateEvent(0, c, 2)
+   )
+  )
+ ),
+
+ { 2: send product on }
+ do(
+  inc(att(21, c), -1), { decrease counter }
+  if(
+   or(
+    att(20, c) < 4,
+    att(20, c) = 6
+   ),
+   do(
+    { define status }
+    if(
+     att(6, c), { flow/prod }
+     SetStatus(5, c),   { Blocked }
+     if(
+      att(4, c) < att(1, c),
+      SetStatus(25, c), { Busy and blocked }
+      SetStatus(5, c)   { Blocked }
+     )
+    ),
+    
+    { release product }
+    OpenAllOC(c)
+   )
+  )
+ ),
+
+ { 3: new entry allowed-inputstrategy }
+ do(
+  { check if current content (qty) is smaller than max. content (capacity) }
+  if(
+   att(12, c) < att(1, c),
+
+   { then new products are allowed to enter }
+   OpenAllIC(c),
+
+   { else new products are not allowed to enter and status is set to closed }
+   SetStatus(19, c) { Closed }
+  )
+ ),
+
+ { 4: add value to the content }
+ do(
+  att(9, c) := att(12, c),
+  if(
+   att(9, c) = 0,
+   if(
+    ExecString(TextAtt(11, c)) = 0,
+    msg([The measuring unit is not valid])
+   )
+  ),
+  att(12, c) := att(12, c) + ExecString(TextAtt(11, c)),
+
+  { check if current content (qty) is higher than upper level (max.) }
+  if(
+   att(12, c) > att(13, c),
+
+   { check if previous content was smaller or equal than upper level }
+   if(
+    att(9, c) <= att(13, c),
+
+    { then trigger event:  maximum from lower level }
+    CreateEvent(0, c, 6),
+    CreateEvent(0, c, 3)
+   ),
+
+   { check if current content (qty) is higher than lower level (min.) }
+   if(
+    att(12, c) > att(14, c),
+
+    { check if previous content was smaller or equal than lower level }
+    if(
+     att(9, c) <= att(14, c),
+
+     { then trigger event: minimum from lower level }
+     CreateEvent(0, c, 7),
+     CreateEvent(0, c, 3)
+    ),
+    CreateEvent(0, c, 3)
+   )
+  )
+ ),
+
+ { 5: decrease value of content }
+ do(
+  { store info in counter (1) what the content was before product was released -> that basically means the previous content!
+    (hint: the one just released product can reduce the content by a figure different to 1!) }
+  att(9, c) := att(12, c),
+
+  { update current content (qty) based on a figure stored within one of the following attributes: variable or out }
+  if(
+   att(6, c),
+   att(12, c) := att(12, c) - ExecString(TextAtt(19, c)),
+   att(12, c) := att(12, c) - ExecString(TextAtt(11, c))
+  ),
+
+  { first check if for content }
+  if(
+   att(12, c) > 0,
+   do(
+    { then check if current content (qty) is smaller or equal than lower level (min.) }
+    if(
+     att(12, c) <= att(14, c),
+
+     { check if previous content was higher than lower level }
+     if(
+      att(9, c) > att(14, c),
+
+      { then trigger event: minimum from higher level }
+      CreateEvent(0, c, 9),
+      CreateEvent(0, c, 1)
+     ),
+
+     { check if current content (qty) is smaller or equal than upper level (max.)}
+     if(
+      att(12, c) <= att(13, c),
+
+      { check if previous content was higher than upper level }
+      if(
+       att(9, c) > att(13, c),
+
+       { then trigger event: maximum from higher level }
+       CreateEvent(0, c, 8),
+       CreateEvent(0, c, 1)
+      ),
+      do(
+       CreateEvent(0, c, 1),
+       if(
+        att(20, c) < 3,
+        OpenAllIC(c)
+       )
+      )
+     )
+    )
+   )
+  )
+ ),
+
+ { 6: maximum from lower level }
+ do(
+  if(
+   att(17, c) < 4,
+   att(20, c) := att(17, c)
+  ),
+  {att(25, c),} att(23, c),
+  CreateEvent(0, c, 10)
+ ),
+
+ { 7: minimum from lower level }
+ do(
+  if(
+   att(16, c) < 4,
+   att(20, c) := att(16, c)
+  ),
+  att(24, c),
+  CreateEvent(0, c, 10)
+ ),
+
+ { 8: maximum from higher level }
+ do(
+  if(
+   att(18, c) < 4,
+   att(20, c) := att(18, c)
+  ),
+  {att(26, c),} att(25, c),
+  CreateEvent(0, c, 10)
+ ),
+
+ { 9: minimum from higher level }
+ do(
+  if(
+   att(15, c) < 4,
+   att(20, c) := att(15, c)
+  ),
+  {att(23, c),} att(26, c),
+  CreateEvent(0, c, 10)
+ ),
+
+ { 10: open/close in/outputchannels }
+ Case(
+  att(20, c),
+  do(
+   SetStatus(2, c), { Busy }
+   CreateEvent(0, c, 3),
+   if(
+    not(att(21, c)),
+    CreateEvent(0, c, 1)
+   )
+  ),
+  do(
+   SetStatus(22, c), { Collecting }
+   CloseAllOC(c),
+   CreateEvent(0, c, 3)
+  ),
+  do(
+   SetStatus(2, c), { Busy }
+   CloseAllIC(c),
+   if(
+    not(att(21, c)),
+    CreateEvent(0, c, 1)
+   )
+  )
+ )
+)
+]);
+Set(OnEntered, [do(
+ if(
+  att(4, c) > 0,    { nblocked }
+  SetStatus(25, c), { Busy and blocked }
+  SetStatus(2, c)   { Busy }
+ ),
+ CloseAllIC(c),
+ if(
+  att(6, c), { flow / prod }
+  if(
+   Content(c) > 1,
+   DestroyAtom(first(c))
+  )
+ ),
+ Setcs(i),
+ CreateEvent(0, c, 4), { event 4: add value to the content }
+ att(7, c) { entrytrigger }
+)
+]);
+Set(OnExited, [do(
+ CloseAllOC(c),
+ if(
+  not(att(6, c)), { flow/prod }
+  att(4, c) := att(4, c) - 1 { dec nBlocked }
+ ),
+
+ { set status based on current content }
+ if(
+  Content(c) = 0,
+  SetStatus(1, c),   { Idle }
+  if(
+   att(4, c) > 0,
+   SetStatus(25, c), { Busy and blocked }
+   SetStatus(2, c)   { Busy }
+  )
+ ),
+ Setcs(i),
+ CreateEvent(0, c, 5),
+ att(8, c) { exittrigger }
+)
+]);
+Set(OnCreation, [AutoConnect]);
+Set(OnReset, [do(
+ SetStatus(1, c), { Idle }
+
+ { initialize attributes }
+ att(12, c) := 0,
+ att(9, c) := 0,
+ att(4, c) := 0,
+ att(20, c) := 2,
+ att(21, c) := 0,
+
+ CloseAllOC(c)
+)
+]);
+Set(OnUser, [do(
+ { Delete any current instances of this form.} 
+ GuiDestroy([Reservoir]),
+
+ { Register the GUI-form for this atom.}
+ GuiRegister(PDir([\Atoms\Reservoir.gui]), 1),
+
+ { Show the GUI-form.}
+ GuiCreate([Reservoir], [Reservoir], 0, c, 0, 1)
+)
+]);
+Set(OnOcReady, [do(
+ if(
+  att(6, c),
+  CreateAtomCopy(first(c), c, Name(first(c)))
+ ),
+ if(
+  Content(c) > 0,
+  do(
+   att(10, c),
+   MoveRequest(first(c), att(5, c))
+  )
+ )
+) 
+]);
+Set(OnIcReady, [if( att(12, c) + ExecString(TextAtt(22, c)) > att(1, c), do(  CloseIC(ic(c), c),  SetStatus(19, c) ))]);
+Set(On2DDraw, [do( standarddisplay(  name(c),  if(<=(att(12,c),att(1,c)),   concat([Percentage ],string(*(/(att(12,c),att(1,c)),100)),[%]),   concat([Percentage ],string(*(/(att(12,c),att(1,c)),100)),[% !!!])  ) ), dishape(0,max(-(ysize(c),*(/(att(12,c),att(1,c)),-(ysize(c),2))),2),xsize(c),min(*(/(att(12,c),att(1,c)),-(ysize(c),2)),-(ysize(c),2)),0.25,colorblack,colorblue), diline(0,-(ysize(c),*(/(att(14,c),att(1,c)),-(ysize(c),2))),xsize(c),0,colorblack), diline(0,-(ysize(c),*(/(att(13,c),att(1,c)),-(ysize(c),2))),xsize(c),0,colorblack), if(or(status(c)=5,status(c)=25),ditext(-(xsize(c),min(3,-(xsize(c),5))),1.1,[Blocked !],colorblack,colorwhite,0.5,[Arial],min(2.8,-(xsize(c),5)),0.8)))]);
+Set(On3DDraw, [do( cone(/(xsize(c),2),/(ysize(c),2),*(/(att(12,c),att(1,c)),/(ysize(c),2)),0,/(xsize(c),4),0,0,90,0,colorblue), cylinder(/(xsize(c),2),/(ysize(c),2),0,*(/(att(12,c),att(1,c)),/(ysize(c),2)),360,/(xsize(c),4),0,90,0,colorblue), cylinder(/(xsize(c),2),/(ysize(c),2),*(/(att(12,c),att(1,c)),/(ysize(c),2)),*(-(1,/(att(12,c),att(1,c))),/(ysize(c),2)),360,/(xsize(c),4),0,90,0,color))]);
+SetStatus(0);
+int018;
+int007;

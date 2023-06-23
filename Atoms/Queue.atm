@@ -1,0 +1,155 @@
+
+
+{Atom: Queue}
+
+sets;
+BaseClass;
+CreateAtom(a, s, [], 1, false);
+int023([Queue], 12615680, 1264);
+Set(Icon(a), 
+	RegisterIcon(IconsDir([bmp\atoms\queue.bmp]), [queue]));
+SetMaterial(
+	RegisterMaterial([Default], 8421504, 8421504, 3289650, 0, 0.100000001490116, 0, false, false, 1, 0), 1, a);
+Set(Version(a), 7.3);
+SetTreeIcon(pDir([Media\Icons\Queue.ico]));
+Set(Info, [Queue.
+
+General
+-----------
+Atoms that enter are sent out immediately if the output is open. If 
+not, the atoms are stored in the queue, until output is open. The 
+maximum queue capacity can be set, if the queue is full, the input 
+channel is closed. The user can define a trigger on entry and 
+a trigger on exit.
+
+The queue discipline can be specifie: entering atoms are placed 
+in a position of the queue according to the queue discipline 
+defined. 
+
+The atom at the front of the queue is sent out first always.
+The input strategy can be set as well: a specific channel will be 
+opened according to the selection.
+
+Channels:
+--------------
+N input channels
+N output channels
+
+Statuses:
+-------------
+ 13 - Empty
+ 14 - Full
+ 15 - Not Empty
+
+Last revision:
+------------------
+November, 2008
+]);
+SetChannels(1, 1);
+SetChannelRanges(1, 255, 1, 255);
+int001(27);
+SetSize(5, 2, 0);
+LockPosition(false);
+LockSize(false);
+DisableIconRotation(false);
+SetProductCode([]);
+CreateAttributes(8);
+SetAttributeName(r(1), [SendTo]);
+SetAttributeName(r(2), [Capacity]);
+SetAttributeName(r(3), [EntryTrigger]);
+SetAttributeName(r(4), [ExitTrigger]);
+SetAttributeName(r(5), [QueueDiscipline]);
+SetAttributeName(r(6), [DrawLoc]);
+SetAttributeName(r(7), [InStrategy]);
+SetAttributeName(r(8), [3DIcon]);
+SetExprAtt(r(1), [1]);
+SetAtt(r(2), 10);
+SetExprAtt(r(5), [{.content(c)|Fifo (First In First Out) .}content(c)]);
+SetAtt(r(6), 1);
+SetExprAtt(r(7), [{.openallic(c)|Any inputchannel .}openallic(c)]);
+SetAtt(r(8), 2);
+int024;
+Set(OnEvent, [Case( EventCode, {** Event  1: Open the output channel **} OpenAllOc( c), {** Event 2: Input strategy **} InStrategy)]);
+Set(OnEntered, [Do(
+ CloseAllIc(c),
+ {* Set the status and create an event to open the inputchannels if the queue hasn't reached its capacity *}
+ If(
+  Content(c) >= Capacity,
+  {** full **}
+  Status(c) := 14,
+  Do(
+   {** not empty **}
+   Status(c) := 15, 
+   createEvent(0, c, 2)
+  )
+ ),
+ {** Define the position in the queue of the entered product **}
+ Rank(i) := QueueDiscipline,
+ EntryTrigger,
+ CreateEvent(0, c, 1),
+ 
+ If(GetSetting(saContents),
+  Do(
+   SetAtt(6, +(-(xSize(c), xSize(i)),/(xSize(c),Att(2,c)) ), c),
+   ForAtomLayerUnder(
+    c,
+    Do(
+     setcs,
+     Dec(
+      Att(6,c),/(xSize(c),Att(2,c))
+     ),
+     SetLoc(
+      Att(6,c), 1, zSize(c), cs
+     )
+    )
+   )
+  )
+ )
+)
+]);
+Set(OnExited, [Do(
+ CloseAllOc(c),
+ If(
+  Content(c)  = 0,
+  {** empty **}
+  Status(c) := 13,   
+  Do(
+   {** not empty **}
+   Status(c) := 15,
+   CreateEvent(0, c, 1)
+  )
+ ),
+ {** If the capacity is not reached, define the inputstrategy **}
+ If(
+  Content(c) < Capacity,
+  CreateEvent(0, c, 2)
+ ),
+ ExitTrigger,
+ If(GetSetting(saContents),
+  Do(
+   SetAtt(6, +(-(xSize(c), xSize(i)),/(xSize(c),Att(2,c)) ), c),
+   ForAtomLayerUnder(
+    c,
+    Do(
+     Setcs,
+     Dec(
+      Att(6,c),/(xSize(c),Att(2,c))
+     ),
+     SetLoc(
+      Att(6,c), 1, zSize(c), cs
+     )
+    )
+   )
+  )
+ )
+)
+]);
+Set(OnCreation, [AutoConnect]);
+Set(OnReset, [Do( {** empty **} Status(c) := 13, CloseAllOc(c))]);
+Set(OnUser, [Do(  { Delete any current instances of this form.}   GuiDestroy([Queue]),  { Register the GUI-form for this atom.}  GuiRegister(PDir([\Atoms\Queue.gui]), 1),  { Show the GUI-form.}   Guicreate([Queue], [Queue], 0, c, 0, 1)  )]);
+Set(OnOcReady, [If( Content(c) > 0, MoveRequest(First(c), SendTo))]);
+Set(On2DDraw, [Do( StandardDisplay(Name, String(Content), Icon), If(  Or(Not(GetSetting(saContents)), Capacity > 10),  {** Do not show the contents, but a status bar **}  Do(   SetSetting(saContents, 0, c),   diShape(0, 0.8, xSize(c), 0.4, 0, ColorBlack, ColorRed),   diShape(0, 0.8, *( xSize(c), /( -(Capacity, Content(c)), Capacity)), 0.4, 0, ColorBlack, ColorWhite)  ),  Do(   SetSetting(saContents, 1, c)  ) ))]);
+Set(On3DDraw, [Case( 3DIcon,  {** Draw a simple flat field **} Do(  SetSize(xSize, ySize, 0),  di3DBox(0, 0, 0, xSize, ySize, 0, Color) ), {** Draw a basket **} Do(  SetSize(xSize, ySize, 0),  DrawBasketEx( 1, Color) ),  {** Draw a table **} Do(  SetSize(xSize, ySize, 1),  DrawTable(1) ))]);
+SetStatus(0);
+int018;
+int007;

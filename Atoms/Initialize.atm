@@ -1,0 +1,54 @@
+
+
+{Atom: Initialize}
+
+sets;
+BaseClass;
+CreateAtom(a, s, [], 1, false);
+int023([Initialize], 4194432, 248);
+Set(Icon(a), 
+	RegisterIcon(pDir([media\images\default.jpg]), [default.jpg]));
+SetMaterial(
+	RegisterMaterial([Default], 8421504, 8421504, 3289650, 0, 0.100000001490116, 0, false, false, 1, 0), 1, a);
+Set(Version(a), 7.3);
+SetTreeIcon(pDir([Media\Icons\Initialize.ico]));
+Set(Info, [Initialize
+
+General
+------------
+Can be used to initialize values. You can use the atom orginizer to 
+group this atom with functions, tables  etc...
+
+The code you can write here will be executed at the beginning of 
+the simulation, assuming there is no event with a priority higher 
+than 10000 or on the OnReset event.
+
+Last Revision:
+---------------------
+February, 2008
+]);
+Set(DdbRec, [>t-alloworganize:1.]);
+SetChannels(1, 0);
+SetChannelRanges(1, 255, 0, 255);
+int001(72);
+SetSize(5, 2, 1);
+LockPosition(false);
+LockSize(false);
+DisableIconRotation(false);
+SetProductCode([]);
+CreateAttributes(2);
+SetAttributeName(r(1), [code to execute]);
+SetAttributeName(r(2), [check]);
+int024;
+Set(OnEvent, [execstring(att(1,c))]);
+Set(OnReset, [if(
+ att(2,c),
+ att(1,c),
+ createevent(0,c,1,10000)
+)
+]);
+Set(OnUser, [Do( { Delete any current instances of this form.}  GuiDestroy([Initialize]), { Register the GUI-form for this atom.} GuiRegister(PDir([\Atoms\Initialize.gui]), 1), { Show the GUI-form.} Guicreate([Initialize], [Initialize], 0, c, 0, 1))]);
+Set(On2DDraw, [draw2dicon(3,[Initialize],name)]);
+SetStatus(0);
+int018;
+int007;

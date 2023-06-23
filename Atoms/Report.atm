@@ -1,0 +1,92 @@
+
+
+{Preregister functions}
+
+PreregisterFunction([averagecontent], 3, 3);
+PreregisterFunction([averagestaytime], 3, 3);
+
+
+{Atom: Report}
+
+sets;
+BaseClass;
+CreateAtom(a, s, [], 1, false);
+int023([Report], 4210816, 1248);
+DefineFunction([averagecontent], [Atom Status], 3, 3, [Do( sddb([t-ref],ptv(p(1)),main), if(  =(ddb([t-ref],main),0),  msg([Wrong atom reference]),  if(   not(generalhistory),   msg(concat([General history is not on],cr,[It can be switched on in the run control],cr,[You must rerun to be able to view graphs],cr,[Notice that you must also switch on the history of the atom you want to study])),   if(    not(atomhistory(vtp(ddb([t-ref],main)))),    msg(concat([Atom history is not on],cr,[It can be switched on with the Various History menu],cr,[You must rerun to be able to view results])),    do(     analysehistory(      workdir([ed.his]),      atomid(vtp(ddb([t-ref],main))),      2,      p(2),      p(3),      0,   sddb([v1], sum(hqueuecount, *(count - 1, hqueuefreq(count))) / (p(3)-p(2)), main)     ),     ddb([v1],main)    )   )  ) ))], [Returns the average number of products that were queued in atom e1 during the time period from e2 to e3 absolute seconds.NOTE: this will only work correctly when history is stored in the ed.his file for atom e1.], [maxcontent(animatom,0,time)], 0, [Report.atm]);
+DefineFunction([averagestaytime], [Atom Reference], 3, 3, [Do( sddb([t-ref],ptv(p(1)),main), if(  =(ddb([t-ref],main),0),  msg([Wrong atom reference]),  if(   not(generalhistory),   msg(concat([General history is not on],cr,[It can be switched on in the run control],cr,[You must rerun to be able to view graphs],cr,[Notice that you must also switch on the history of the atom you want to study])),   if(    not(atomhistory(vtp(ddb([t-ref],main)))),    msg(concat([Atom history is not on],cr,[It can be switched on with the Various History menu],cr,[You must rerun to be able to view results])),    do(     sddb([v1],0,main),     sddb([v2],0,main),     analysehistory(      workdir([ed.his]),      atomid(vtp(ddb([t-ref],main))),      2,      p(2),      p(3),      0,      repeat(       hreccount,       do(        hrecread,        if(         hrecstatus=2,         do(          inc(ddb([v1],main),1),          inc(ddb([v2],main),hrecstaytime)         )        )       )      )     ),     if(      ddb([v1], main) > 0,      /(ddb([v2],main),ddb([v1],main)),      10e20     )    )   )  ) ))], [Returns the maximum number of products that were queued at one time in atom e1 during the time period from e2 to e3 absolute seconds.NOTE: this will only work correctly when history is stored in the ed.his file for atom e1.], [maxcontent(animatom,0,time)], 0, [Report.atm]);
+Set(Icon(a), 
+	RegisterIcon(pDir([media\images\default.jpg]), [default.jpg]));
+SetMaterial(
+	RegisterMaterial([Default], 8421504, 8421504, 3289650, 0, 0.100000001490116, 0, false, false, 1, 0), 1, a);
+Set(Version(a), 7.3);
+SetTreeIcon(pDir([Media\Icons\Report.ico]));
+Set(Info, [Summary Report
+
+General
+------------
+Collects results for user selected model atoms in the ed.his history 
+file and then generates reports. The reports are displayed in 
+tables and rtf files. The report tables can be exported to an Excel 
+spreadsheet.
+
+Last Revision:
+---------------------
+February, 2008
+]);
+Set(DdbRec, [>v1:25.]);
+int001(91);
+SetSize(9, 2, 1);
+LockPosition(false);
+LockSize(false);
+DisableIconRotation(false);
+SetProductCode([]);
+CreateAttributes(16);
+SetAttributeName(r(1), [FileName]);
+SetAttributeName(r(2), [Current Content]);
+SetAttributeName(r(3), [Avg. Content]);
+SetAttributeName(r(4), [Max. Content]);
+SetAttributeName(r(5), [Avg. Stay Time]);
+SetAttributeName(r(6), [Total Input]);
+SetAttributeName(r(7), [Total Output]);
+SetAttributeName(r(8), [Current Status]);
+SetAttributeName(r(9), [states]);
+SetAttributeName(r(10), [analysestart]);
+SetAttributeName(r(11), [endtime]);
+SetAttributeName(r(12), [analyseduration]);
+SetAttributeName(r(13), [format]);
+SetAttributeName(r(14), [decimals]);
+SetAttributeName(r(15), [ViewResultsAfterExport]);
+SetAttributeName(r(16), [ReportGenerated]);
+SetTextAtt(r(1), [C:\Report.rtf]);
+SetAtt(r(2), 1);
+SetAtt(r(3), 1);
+SetAtt(r(4), 1);
+SetAtt(r(5), 1);
+SetAtt(r(6), 1);
+SetAtt(r(7), 1);
+SetAtt(r(8), 1);
+SetAtt(r(9), 1);
+SetExprAtt(r(10), [0]);
+SetExprAtt(r(11), [+(att(10,c),att(12,c))]);
+SetExprAtt(r(12), [time]);
+SetAtt(r(13), 1);
+SetAtt(r(14), 1);
+SetAtt(r(15), 1);
+int024;
+Set(OnEvent, [case(eventcode, if(  confirmync([Do you want to create a history file?]),  do(   repeat(    nrows(c),    if(     atomexists(atombyname(cell(count,1,c,2),model)),     atomhistory(atombyname(cell(count,1,c,2),model)):=1    )   ),   generalhistory:=1  ),  generalhistory:=0 ), if(generalhistory,  do(   if(    att(6,c),    repeat(     nrows(c),     do(      setcs(atombyname(cell(count,1,c,2),model)),      if(atomexists(cs),       sddb(concat([tin],string(count)),input(cs),c)      )     )    )   ),   if(    att(7,c),    repeat(     nrows(c),     do(      setcs(atombyname(cell(count,1,c,2),model)),      if(atomexists(cs),       sddb(concat([tout],string(count)),output(cs),c)      )     )    )   )  ) ))]);
+Set(OnReset, [do( createevent(0,c,1,999999), createevent(analysestart,c,2), repeat(  ncols(c)-1,  do(   v:=count,   repeat(    nrows(c),    setcell(count,v+1,[ ],c)   )  ) ),  { Put the boolean ReportGenerated back to false when the user reruns or resets the model. } Att([ReportGenerated], c) := False)]);
+Set(OnUser, [Do( { Delete any current instances of this form.}  GuiDestroy([Report]), { Register the GUI-form for this atom.} GuiRegister(PDir([\Atoms\Report.gui]), 1), { Show the GUI-form.} Guicreate([Report], [Report], 0, c, 0, 1))]);
+Set(On2DDraw, [Draw2DIcon(3,[Summary Report], Name)]);
+Set(OnMessage, [{ This code is fired from the Gui's button Export To File. We needed this construction
+  because we need the correct reference to c. This reference is used in the .rtf file. }
+
+if(
+ Att([Format], c) > 0,
+ do(
+  processdocument(pdir([atoms/Report.rtf]),Att([FileName], c))
+ )
+)
+]);
+SetStatus(0);
+int018;
+int007;

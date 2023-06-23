@@ -1,0 +1,239 @@
+
+
+{Preregister functions}
+
+PreregisterFunction([ExcelActiveX_Open], 1, 3);
+PreregisterFunction([ExcelActiveX_OpenSheet], 1, 2);
+PreregisterFunction([ExcelActiveX_ReadBlock], 9, 9);
+PreregisterFunction([ExcelActiveX_WriteBlock], 9, 9);
+PreregisterFunction([ExcelActiveX_SetupConnection], 0, 0);
+PreregisterFunction([ExcelActiveX_Disconnect], 1, 1);
+PreregisterFunction([ExcelActiveX_Read], 2, 4);
+PreregisterFunction([ExcelActiveX_Write], 3, 5);
+PreregisterFunction([ExcelActiveX_UpdateTable], 0, 0);
+PreregisterFunction([ExcelActiveX_Init], 1, 1);
+PreregisterFunction([ExcelActiveX_UpgradeAtom], 1, 1);
+PreregisterFunction([ExcelActiveX_SetTableHeaders], 1, 1);
+PreregisterFunction([ExcelActiveX_SetDefaultLabels], 1, 1);
+PreregisterFunction([ExcelActiveX_MakePathRelativeToModDir], 1, 1);
+PreregisterFunction([ExcelActiveX_GetRefWorkbook], 1, 1);
+PreregisterFunction([ExcelActiveX_SetRefWorkbook], 2, 2);
+PreregisterFunction([ExcelActiveX_GetRefWorkbookName], 1, 1);
+PreregisterFunction([ExcelActiveX_SetRefWorkbookName], 2, 2);
+PreregisterFunction([ExcelActiveX_ReadWriteTable], 2, 2);
+PreregisterFunction([ExcelActiveX_GetFileName], 1, 1);
+PreregisterFunction([ExcelActiveX_SetFileName], 2, 2);
+PreregisterFunction([ExcelActiveX_GetSheetName], 1, 1);
+PreregisterFunction([ExcelActiveX_SetSheetName], 2, 2);
+PreregisterFunction([ExcelActiveX_SetScreenUpdatingtoFalse], 0, 0);
+PreregisterFunction([ExcelActiveX_ReadText], 2, 4);
+PreregisterFunction([ExcelActiveX_WriteText], 3, 5);
+PreregisterFunction([ExcelActiveX_SaveWorkbook], 0, 1);
+PreregisterFunction([ExcelActiveX_IsConnected], 1, 1);
+PreregisterFunction([ExcelActiveX_NrOfConnections], 0, 0);
+PreregisterFunction([ExcelActiveX_GetVisible], 1, 1);
+PreregisterFunction([ExcelActiveX_SetVisible], 2, 2);
+PreregisterFunction([ExcelActiveX_FindExcelFile], 1, 1);
+PreregisterFunction([ExcelActiveX_MakePathFullToModDir], 1, 1);
+PreregisterFunction([ExcelActiveX_New], 1, 3);
+
+
+{Atom: ExcelActiveX}
+
+sets;
+BaseClass;
+CreateAtom(a, s, [], 1, false);
+Set(OnInit, [do( Dim([valExcelActiveX_AtomCounter], vbValue, 0), Dim([atmExcelActiveX], vbAtom), Dim([oleExcelActiveX_Connection], vbOle), Dim([RefExcelActiveXAtom], vbAtom, c), Dim([strExcelActiveX_False], vbString))]);
+int023([ExcelActiveX], 16744448, 1248);
+DefineFunction([ExcelActiveX_Open], [Office], 1, 3, [Do( var([strPath], vbString, p(1)), var([valVisible], vbValue, p(2)), var([atmExcelAtom], vbAtom, p(3)), var([App], vbOle), var([oleWorkbook], vbOle, 0),  { if necessary, fall back to default excel atom } if(  not(atmExcelAtom > 0),  atmExcelAtom := atmExcelActiveX ),   { if it is a relative path, prepend ModDir } strPath := ExcelActiveX_MakePathFullToModDir(strPath),   { See if the file is already open in Excel } App := ExcelActiveX_SetupConnection, Repeat(  Ole(App, [Workbooks.Count]),  if(   CompareText(strPath, Ole(App, Concat([Workbooks.Item(], String(Count), [).FullName]))),   do(    oleWorkbook := Ole(App, Concat([Workbooks.Item(], String(Count), [)])),    Ole(oleWorkbook, [Activate])   )  ) ), var([strEscapedPath], vbString, StringReplace(strPath, [\], [\\], SR_REPLACE_ALL)), if(  oleWorkbook = 0,  if(   FileExists(strPath),   do(    oleWorkbook := Ole(App, Concat([WorkBooks.Open(], sbo, strEscapedPath, sbc, [)]))   ),   { File not open and does not exist on disk }    return(0)  ) ), if(oleWorkbook = 0,  return(0) ),  {Store the fileName in the atrribute of the ExcelAtom} ExcelActiveX_SetFileName(atmExcelAtom, ExcelActiveX_MakePathRelativeToModDir(strPath)), ExcelActiveX_SetVisible(atmExcelAtom, valVisible), { Never set visible to 0, another workbook may need Excel to be visible. } if(valVisible, Ole(App, [Visible], 1)), { If necessary, create a global variable to hold this atoms workbook reference } if(  Not(VariableExists(ExcelActiveX_GetRefWorkbookName(atmExcelAtom))),  do(   Inc(valExcelActiveX_AtomCounter),   var([strNewName], vbString, Concat([oleExcelActiveX_Workbook], String(valExcelActiveX_AtomCounter))),   Dim(strNewName, vbOle),   ExcelActiveX_SetRefWorkbookName(atmExcelAtom, strNewName)  ) ),  { Store the workbook reference in the global variable to keep the reference count positive. } ExecString(Concat(ExcelActiveX_GetRefWorkbookName(atmExcelAtom), [:= ], String(oleWorkbook))),  { Store the workbook reference in an attribute of this atom for quick reference } ExcelActiveX_SetRefWorkbook(atmExcelAtom, oleWorkbook),   { return the workbook reference } oleWorkbook)], [Connect excel atom e3 (or the default excel atom if e3 is not specified)  to excel file e1. If e2 is nonzero, the workbook will be visible on screen. ], [ExcelActiveX_Open([c:\temp\test.xls], 1, c)], 0, [ExcelActiveX.atm]);
+DefineFunction([ExcelActiveX_OpenSheet], [Office], 1, 2, [Do( var([strSheetName], vbString, String(p(1))), var([atmExcelAtom], vbAtom, p(2)), var([ExcelApp], vbOle, ExcelActiveX_GetRefWorkbook(atmExcelAtom)),  Ole(ExcelApp, Concat([Sheets(],sbo,strSheetName,sbc,[).Select])), Ole(ExcelApp, Concat([ActiveSheet.Range(], sbo, [A1], sbc, [).Select])) {to prevent graphs of being selected})], [Select the sheet named e1 in the Excel workbook referenced by atom e2.], [ExcelActiveX_OpenSheet([Sheet1], c)], 0, [ExcelActiveX.atm]);
+DefineFunction([ExcelActiveX_ReadBlock], [Office], 9, 9, [do( var([valStartRowTable], vbValue, p(1)), var([valStartColTable], vbValue, p(2)), var([valStartRowExcel], vbValue, p(3)), var([valStartColExcel], vbValue, p(4)), var([valRowsToCopy], vbValue, p(5)),  var([valColsToCopy], vbValue, p(6)), var([atmTable], vbAtom, p(7)), var([strSheetName], vbString, p(8)), var([atmExcelAtom], vbAtom, p(9)), var([oleWorkbook], vbOle, ExcelActiveX_GetRefWorkbook(atmExcelAtom)), var([strValue], vbString), var([valValue], vbValue), var([valNRCellsToCopy], vbValue, valRowsToCopy * valColsToCopy), var([valCellsCopied], vbValue, 0), var([strMessage], vbString, Concat([Reading from Excel sheet ], strSheetName, [ to table ], Name(atmTable))),   var(  [oleSheet],   vbOle,   Ole(   oleWorkbook,    Concat([Sheets(], sbo, strSheetName, sbc, [)])  ) ),  Dec(valStartRowTable), Dec(valStartColTable), Dec(valStartRowExcel), Dec(valStartColExcel),  if(  valNRCellsToCopy > 1000,  ProgressBar(1, valNRCellsToCopy, valCellsCopied, strMessage) ),  MatrixRepeat(  valRowsToCopy,  valColsToCopy,  Do(        { NOTE! We need to be VERY careful to correctly interpret the value of the cell.     Especially because ED always reads numbers with a decimal point, but depending on the language settings, the decimal separator     used by excel may be a comma.           We first read the cell as a number. If it is a number and nonzero, reading it as a Value will correctly handle the decimal separator.     If the number reads as zero, it may be an actual number zero or a non empty string or an empty string. Writing this to the table     as a string has the correct result. }      valValue := Ole(oleSheet, Concat([Cells(], String(mcX + valStartRowExcel), [,], String(mcY + valStartColExcel), [).Value])),   if(    valValue <> 0,    SetCell(mcX + valStartRowTable, mcY + valStartColTable, valValue, atmTable, {write as value} 1),    do(     strValue := Ole(oleSheet, Concat([Cells(], String(mcX + valStartRowExcel), [,], String(mcY + valStartColExcel), [).Text])),     SetCell(mcX + valStartRowTable, mcY + valStartColTable, strValue, atmTable, {write as text} 2)    )   ),       inc(valCellsCopied),   if(    And(valNRCellsToCopy > 1000, Mod(valCellsCopied, 100) = 0),    ProgressBar(1, valNrCellsToCopy, valCellsCopied, strMessage)   )  ) ),  if(  valNRCellsToCopy > 1000,  ProgressBar(0, valNRCellsToCopy, valNRCellsToCopy, [Finished Reading]) ) )], [Read a block of code from Excel and write the data to a table ExcelActiveX_ReadBlock(e1, e2, e3, e4, e5) with e1 the value of the starting row in the ED table, e2 the value of the starting column of the ED table, e3 the value for the starting row in Excel, e4 the value for the starting column in Excel, e5 the number of rows to copy, e6 the number of columns to copy, e7 a reference to the table to put the data in, e8 the name of the Excel sheet and e9 a reference to the ExcelActiveX atom. ], [ExcelActiveX_ReadBlock(StratRowTable, StartColTable, StartRowExcel, StartColExcel, RowsToCopy, ColsToCopy, cs, [Sheet1], RefExcel)], 0, [ExcelActiveX.atm]);
+DefineFunction([ExcelActiveX_WriteBlock], [Office], 9, 9, [do( var([valStartRowTable], vbValue, p(1)), var([valStartColTable], vbValue, p(2)), var([valStartRowExcel], vbValue, p(3)), var([valStartColExcel], vbValue, p(4)), var([valRowsToCopy], vbValue, p(5)),  var([valColsToCopy], vbValue, p(6)), var([atmTable], vbAtom, p(7)), var([strSheetName], vbString, p(8)), var([atmExcelAtom], vbAtom, p(9)), var([strVal], vbString), var([valIsNumeric], vbValue), var([oleWorkbook], vbOle, ExcelActiveX_GetRefWorkbook(atmExcelAtom)), var([oleSheet], vbOle, Ole(oleWorkbook, Concat([Sheets(], sbo, strSheetName, sbc, [)]))), Dec(valStartRowTable), Dec(valStartColTable), Dec(valStartRowExcel), Dec(valStartColExcel), var([valNRCellsToCopy], vbValue, valRowsToCopy * valColsToCopy), var([valCellsCopied], vbValue, 0), var([strMessage], vbString, Concat([Writing to Excel sheet ], strSheetName, [ from table ], Name(atmTable))),  if(  valNRCellsToCopy > 1000,  ProgressBar(1, valNRCellsToCopy, valCellsCopied, strMessage) ), MatrixRepeat(  valRowsToCopy,  valColsToCopy,  do(   strVal := Cell(mcX + valStartRowTable, mcY + valStartColTable, atmTable, 2),   valIsNumeric := IsNumeric(strVal),   Ole(    oleSheet,    Concat([Cells(],string(mcX + valStartRowExcel),[,],string(mcY + valStartColExcel),[).Value]),    if(valIsNumeric, Value(strVal), strVal),    2 - valIsNumeric { Excel takes 1 to be a number and 2 to be string }   ),   inc(valCellsCopied),   if(    And(valNRCellsToCopy > 1000, Mod(valCellsCopied, 100) = 0),    ProgressBar(1, valNrCellsToCopy, valCellsCopied, strMessage)   )  ) ), ProgressBar(0, valNRCellsToCopy, valNRCellsToCopy, [Finished Writing]))], [Write a block of data from a table in ED to  Excel . Usage: ExcelActiveX(e1,e2,e3,e4,e5,e6,e7,e8,e9).e1 - starting row in table, e2 - starting column in table, e3 - starting row in excel, e4 - starting column in excel, e5 - number of rows to copy, e6 - number of columns to copy, e7 - atom reference to the table, e8 - sheet name to write to, e9 - atom reference to excel atom], [ExcelActiveX_WriteBlock(1,1,1,1,5,5,cs,[Sheet1], RefExcel)], 0, [ExcelActiveX.atm]);
+DefineFunction([ExcelActiveX_SetupConnection], [Office], 0, 0, [{ If the ExcelApp variable contains an Ole reference, return it.   Otherwise, create a new instance in oleTemp and use GetOle to get  an instance.  If Excel was already running before, GetOle will return  a reference to the older instance and the new instance can be destroyed.    The only reason to first use CreateOle is that GetOle gives an error message  if called when no Excel is running at all. }do( if(  not(oleExcelActiveX_Connection > 0),  do(   var([oleTemp], vbOle),   oleTemp := CreateOle([Excel.Application]),   oleExcelActiveX_Connection:= GetOle([Excel.Application]),      { Determine the spelling of the VB constant False in the local language setting }   var([valLanguageID], vbvalue),   valLanguageID := ole(oleExcelActiveX_Connection, [LanguageSettings.LanguageID(2)]),   var([valRowFalse], vbValue),   valRowFalse := IndexMatchRank(nRows(RefExcelActiveXAtom), valLanguageID, Cell(Count,1,RefExcelActiveXAtom), 1),   strExcelActiveX_False := if(valRowFalse > 0, Cell(valRowFalse, 3, RefExcelActiveXAtom), [])  ) ), oleExcelActiveX_Connection)], [Returns the Ole reference to Excel, creating one if none exists yet.], [ExcelActiveX_SetupConnection], 0, [ExcelActiveX.atm]);
+DefineFunction([ExcelActiveX_Disconnect], [Office], 1, 1, [do( var([atmExcelAtom], vbAtom, p(1)), var([strVarName], vbString, ExcelActiveX_GetRefWorkbookName(atmExcelAtom)), if(not(ExcelActiveX_IsConnected(atmExcelAtom)), return), { Make Excel visible if Excel is not visible and changes have been made to the workbook } if(  ole(oleExcelActiveX_Connection, [Visible]) = 0,  Do(   var([oleWorkbook], vbOle, ExcelActiveX_GetRefWorkbook(atmExcelAtom)),   if(    ole(oleWorkbook, [Saved]) = 0,    { Changes have been made to the workbook. }    Do(     Msg([Changes have been made to the workbook, Excel will be made visible.]),           ole(oleExcelActiveX_Connection, [Visible], 1)    ),    { No changes were made. Close the workbook in this excel so the user can open it in another. }    ole(oleWorkbook, [close])   )  ) ), { Disconnect the workbook. } if(  VariableExists(strVarName),  ExecString(Concat(strVarName, [ := 0])) ), ExcelActiveX_SetRefWorkbookName(atmExcelAtom, []), ExcelActiveX_SetRefWorkbook(atmExcelAtom, 0),  { If all workbook connection are disconnected then also disconnect from the Excel application. } if(  ExcelActiveX_NrOfConnections = 0,  if(   VariableExists([oleExcelActiveX_Connection]),   oleExcelActiveX_Connection := 0  ) ))], [Disconnect the excel workbook connection of atom e1. Disconnect from Excel if there are no more workbook connections.], [ExcelActiveX_Disconnect(c)], 0, [ExcelActiveX.atm]);
+DefineFunction([ExcelActiveX_Read], [Office], 2, 4, [do( var([valRow], vbValue, p(1)), var([valCol], vbValue, p(2)), var([strSheetName], vbString, p(3)), var([valExcelAtomPointer], vbValue, p(4)), var([atmExcelAtom], vbAtom, if(valExcelAtomPointer <> 0, vtp(valExcelAtomPointer), atmExcelActiveX)),  var([oleWorkbook], vbOle), if(  atmExcelAtom = 0,   Do(   Msg(    Concat(     [ No default Excel atom has been set.], cr, lf,     [ Reset the Model or open the Excel User interface and try again. ]    ),     1   ),   return(0)  ) ),   if(  StringLength(strSheetName) = 0,   strSheetName := Att(2,atmExcelAtom) ),   oleWorkbook := ExcelActiveX_GetRefWorkbook(atmExcelAtom),  Ole(  oleWorkbook,   Concat(   [Sheets(], sbo,   strSheetName,   sbc, [).Cells(],   String(valRow), [,], String(valCol),   [).Value]  ) ))], [Read the value at row e1, column e2 of the sheet named e3 on the workbook referenced by excel atom e4. If e4 is not specified, the default excel atom is used. If e3 is not specified or the empty string, the default sheet of the excel atom is used.], [ExcelActiveX_Read(1,1, [Sheet1], c)], 0, [ExcelActiveX.atm]);
+DefineFunction([ExcelActiveX_Write], [Office], 3, 5, [do( var([valRow], vbValue, p(1)), var([valCol], vbValue, p(2)), var([strVal], vbString, String(p(3))), var([strSheetName], vbString, p(4)), var([valExcelAtomPointer], vbValue, p(5)), var([atmExcelAtom], vbAtom, if(valExcelAtomPointer <> 0, vtp(valExcelAtomPointer), atmExcelActiveX)), var([valIsNumeric], vbValue, IsNumeric(strVal)), var([oleWorkbook], vbOle),   if(  atmExcelAtom = 0,   Do(   Msg(    Concat(     [ an atom reference has not been set.], cr, lf,     [ Reset the Model or open the Excel User interface and try again. ]    ),     1   ),   return(0)  ) ), if(  StringLength(strSheetName) = 0,   strSheetName := Att(2,atmExcelAtom) ), oleWorkbook := ExcelActiveX_GetRefWorkbook(atmExcelAtom), Ole(  oleWorkbook,  Concat([Sheets(], sbo, strSheetName, sbc, [).Cells(], String(valRow),[,], String(valCol),[).Value]),  if(valIsNumeric, Value(strVal), strVal),  2 - valIsNumeric { Excel takes 1 to be a number and 2 to be string } ))], [To write a single value to Excel. ExcelActiveX_Write(e1, e2, e3{, e4, e5}), the value e3 will be written to Excel row e1 and column e2 of the Excel sheet with name e4 and e5 a reference to the Excel atom which maintance the connection with the Excel workbook. ], [ExcelActiveX_Write(3,6,2,[Sheet1],RefExcel)], 0, [ExcelActiveX.atm]);
+DefineFunction([ExcelActiveX_UpdateTable], [Various], 0, 0, [do(  EmptyTable(c),  nRows(c) := Content(c),  Repeat(  content(c),  Do(   Setcs(Rank(Count, c)),   cell(Count, 1, c) := Name(cs),   cell(Count, 2, c) := Label([t-SheetName], cs),   cell(Count, 3, c) := nRows(cs),   cell(Count, 4, c) := nCols(cs),   cell(Count, 5, c) := Label([t-StartRowExcel], cs),   cell(Count, 6, c) := Label([t-StartColExcel], cs),   cell(Count, 7, c) := Label([t-NrOfRowsToCopy], cs),   cell(Count, 8, c) := Label([t-NrOfColsToCopy], cs),   cell(Count, 9, c) := Label([t-ReadWriteTime], cs),    cell(Count, 10, c) := Label([t-ReadOrWrite], cs),   cell(Count, 11, c) := Label([t-ResetOrAtTime], cs)  ) ))], [Updates the table from atom c.], [ExcelActiveX_UpdateTable], 0, [ExcelActiveX.atm]);
+DefineFunction([ExcelActiveX_Init], [Office], 1, 1, [do( var([atmExcelAtom], vbAtom, p(1)),  atmExcelActiveX := atmExcelAtom, ExcelActiveX_SetRefWorkbookName(atmExcelAtom, []),  if(  ExcelActiveX_GetRefWorkbook(atmExcelAtom) > 0,  { The ExcelActiveX atom was connected when the model was saved. }  do(   { Set the ref to 0.  If the file cannot be opened, it will contain zero and no stale reference. }   ExcelActiveX_SetRefWorkbook(atmExcelAtom, 0),   ExcelActiveX_Open(ExcelActiveX_GetFileName(atmExcelAtom), ExcelActiveX_GetVisible(atmExcelAtom), atmExcelAtom)  ) ),  ExcelActiveX_SetTableHeaders(atmExcelAtom))], [To Initialize an ExcelActiveX atom. This function is only used internally. ], [ExcelActiveX_Init(c)], 0, [ExcelActiveX.atm]);
+DefineFunction([ExcelActiveX_UpgradeAtom], [Various], 1, 1, [do( var([valIndex], vbValue, 0), var([atmExcelAtom], vbAtom, p(1)), var([atmTable], vbAtom), ForAtomLayerUnder(  atmExcelAtom,   Do(   atmTable := a,   valIndex := GetRank(atmTable),   Label([t-SheetName], atmTable)      := cell(valIndex, 2, atmExcelAtom),   Label([t-StartRowExcel], atmTable)  := cell(valIndex, 5, atmExcelAtom),   Label([t-StartColExcel], atmTable)  := cell(valIndex, 6, atmExcelAtom),   Label([t-NrOfRowsToCopy], atmTable) := cell(valIndex, 7, atmExcelAtom),   Label([t-NrOfColsToCopy], atmTable) := cell(valIndex, 8, atmExcelAtom),   Label([t-ReadWriteTime], atmTable)  := cell(valIndex, 9, atmExcelAtom),   Label([t-ReadOrWrite], atmTable)    := cell(valIndex, 10, atmExcelAtom),   Label([t-ResetOrAtTime], atmTable)  := cell(valIndex, 11, atmExcelAtom)  ) ), Set(OnInit(atmExcelAtom), [LateInit([ExcelActiveX_Init(c)])]))], [Upgrades table e1.], [ExcelActiveX_UpgradeAtom(c)], 0, [ExcelActiveX.atm]);
+DefineFunction([ExcelActiveX_SetTableHeaders], [Various], 1, 1, [do(  var([atmExcel], vbAtom, p(1)),  ClearTable(atmExcel), SetTable(3,11, atmExcel),  SetCell(0, 1, [Atom Name], atmExcel), SetCell(0, 2, [Sheet Name], atmExcel), SetCell(0, 3, [# Rows Table], atmExcel), SetCell(0, 4, [# Cols Table], atmExcel), SetCell(0, 5, [Start Row Excel], atmExcel), SetCell(0, 6, [Start Col Excel], atmExcel), SetCell(0, 7, [# Rows from/to Excel], atmExcel), SetCell(0, 8, [# Cols from/to Excel], atmExcel), SetCell(0, 9, [Time to Read/Write], atmExcel), SetCell(0, 10, [Read(1))/Write(2)], atmExcel), SetCell(0, 11, [OnReset(1)/OnTime(2)], atmExcel))], [Sets the Tableheaders of the ExcelActiveX atom], [ExcelActiveX_SetTableHeaders(c)], 0, [ExcelActiveX.atm]);
+DefineFunction([ExcelActiveX_SetDefaultLabels], [Various], 1, 1, [do(  var([atmExcelTable], vbAtom, p(1)), Label([t-SheetName], atmExcelTable) := [Sheet1],  Label([t-StartRowExcel], atmExcelTable) := 1, Label([t-StartColExcel], atmExcelTable) := 1, Label([t-ReadWriteTime], atmExcelTable) := [hr(1)],  Label([t-ReadOrWrite], atmExcelTable) := 1, Label([t-ResetOrAtTime], atmExcelTable) := 1)], [If an Table atom is moved into an Excel atom this function is used to set the default Read/Write settings of the Table.], [ExcelActiveX_SetDefaultLabels(i)], 0, [ExcelActiveX.atm]);
+DefineFunction([ExcelActiveX_MakePathRelativeToModDir], [Various], 1, 1, [do( var([strPath], vbString, p(1)), var([strModDir], vbString, Concat(ExtractDir(Att(1, Model)), [\])), var([valModDirLen], vbValue, StringLength(strModDir)),  {if the model has not been saved set strModDir to empty string.} if(CompareText([strModDir], [untitled]), strModDir := []),  if(  StringPos(strModDir, strPath, 1) = 1,  strPath := StringCopy(strPath, valModDirLen + 1, StringLength(strPath) - valModDirLen) ), return(strPath))], [If the path e1 starts with the Model Directory, strip Model Directory off to yield a path relative to the Model Directory.], [ExcelActiveX_MakePathRelativeToModDir([C:\Program Files\Enterprise Dynamics\Work\Data.xls])], 0, [ExcelActiveX.atm]);
+DefineFunction([ExcelActiveX_GetRefWorkbook], [Atom Parameters], 1, 1, [Att(5, p(1))], [Returns the value of attribute RefWorkbook (# 5) of ExcelActiveX e1], [ExcelActiveX_GetRefWorkbook(c)], 0, [ExcelActiveX.atm]);
+DefineFunction([ExcelActiveX_SetRefWorkbook], [Atom Parameters], 2, 2, [Att(5, p(1)) := p(2)], [Sets the value of attribute RefWorkbook (# 5) of ExcelActiveX e1 to e2], [ExcelActiveX_SetRefWorkbook(c, 1)], 0, [ExcelActiveX.atm]);
+DefineFunction([ExcelActiveX_GetRefWorkbookName], [Atom Parameters], 1, 1, [TextAtt(6, p(1))], [Returns the string value of attribute RefWorkbookName (# 6) of ExcelActiveX e1], [ExcelActiveX_GetRefWorkbookName(c)], 0, [ExcelActiveX.atm]);
+DefineFunction([ExcelActiveX_SetRefWorkbookName], [Atom Parameters], 2, 2, [TextAtt(6, p(1)) := p(2)], [Sets the string value of attribute RefWorkbookName (# 6) of ExcelActiveX e1 to e2], [ExcelActiveX_SetRefWorkbookName(c, [TableName])], 0, [ExcelActiveX.atm]);
+DefineFunction([ExcelActiveX_ReadWriteTable], [Office], 2, 2, [do(  var([atmTable], vbAtom, p(1)), var([atmExcel], vbAtom, p(2)), var([valVisibilitySheet], vbValue), var([oleWorkBook], vbOle), var([strSheet], vbString, Label([t-SheetName], atmTable, 2)), {Cell(EventCode,2,atmExcel,2),} { initialize constants } var([valStartRow], vbValue, Label([t-StartRowExcel], atmTable)),  var([valStartCol], vbValue, Label([t-StartColExcel], atmTable)), var([valRowsToCopy], vbValue, Label([t-NrOfRowsToCopy], atmTable)), var([valColsToCopy], vbValue, Label([t-NrOfColsToCopy], atmTable)), var([valCopyRowHeader], vbValue, Label([t-CopyRowHeader], atmTable)), var([valCopyColHeader], vbValue, Label([t-CopyColumnHeader], atmTable)),  { connect to workbook } ExcelActiveX_Open(Att(1,AtmExcel), Att(3,AtmExcel)), oleWorkBook := ExcelActiveX_GetRefWorkbook(AtmExcel),  { read from or write to Excel } if(  OleExists(oleWorkBook),  Do(   {Set Application.ScreenUpdating at [false] to speed up the processing of the data}   ExcelActiveX_SetScreenUpdatingtoFalse,    ExcelActiveX_OpenSheet(strSheet),   if(    Label([t-ReadOrWrite],  atmTable) = 1,     ExcelActiveX_ReadBlock(     1 - valCopyColHeader, 1 - valCopyRowHeader,     valStartRow, valStartCol,      valRowsToCopy + valCopyColHeader, valColsToCopy + valCopyRowHeader,      atmTable, strSheet, atmExcel    ),    ExcelActiveX_WriteBlock(     1 - valCopyColHeader, 1 - valCopyRowHeader,     valStartRow, valStartCol,      valRowsToCopy + valCopyColHeader, valColsToCopy + valCopyRowHeader,      atmTable, strSheet, atmExcel    )   ),      Ole(oleExcelActiveX_Connection, [ScreenUpdating], -1)  {ScreenUpdating is set to True so the data changes can be seen}  ),  Msg(Concat([The sheetname to read from or write to of the table named], Name(atmTable), [ is unvalid!])) ))], [Read or write data from Excel and put it in Table of atom e1 use the Excel connection established by atom e2], [ExcelActiveX_ReadWriteTable(refMyTable, c)], 0, [ExcelActiveX.atm]);
+DefineFunction([ExcelActiveX_GetFileName], [Atom Parameters], 1, 1, [TextAtt(1, p(1))], [Returns the string value of attribute FileName (# 1) of ExcelActiveX e1], [ExcelActiveX_GetFileName(c)], 0, [ExcelActiveX.atm]);
+DefineFunction([ExcelActiveX_SetFileName], [Atom Parameters], 2, 2, [TextAtt(1, p(1)) := p(2)], [Sets the string value of attribute FileName (# 1) of ExcelActiveX e1 to e2], [ExcelActiveX_SetFileName(c, [TableName])], 0, [ExcelActiveX.atm]);
+DefineFunction([ExcelActiveX_GetSheetName], [Atom Parameters], 1, 1, [TextAtt(2, p(1))], [Returns the string value of attribute SheetName (# 2) of ExcelActiveX e1], [ExcelActiveX_GetSheetName(c)], 0, [ExcelActiveX.atm]);
+DefineFunction([ExcelActiveX_SetSheetName], [Atom Parameters], 2, 2, [TextAtt(2, p(1)) := p(2)], [Sets the string value of attribute SheetName (# 2) of ExcelActiveX e1 to e2], [ExcelActiveX_SetSheetName(c, [TableName])], 0, [ExcelActiveX.atm]);
+DefineFunction([ExcelActiveX_SetScreenUpdatingtoFalse], [Office], 0, 0, [{This to speed up the processing of the data we set the property ScreenUpdating to False}if( StringLength(strExcelActiveX_False) > 0, Ole(oleExcelActiveX_Connection, [ScreenUpdating], strExcelActiveX_False))], [Sets Screenupdating to False for performance reasons.], [ExcelActiveX_SetScreenUpdatingtoFalse], 0, [ExcelActiveX.atm]);
+DefineFunction([ExcelActiveX_ReadText], [Office], 2, 4, [do( var([valRow], vbValue, p(1)), var([valCol], vbValue, p(2)), var([strSheetName], vbString, p(3)), var([valExcelAtomPointer], vbValue, p(4)), var([atmExcelAtom], vbAtom, if(valExcelAtomPointer <> 0, vtp(valExcelAtomPointer), atmExcelActiveX)),  var([oleWorkbook], vbOle), if(  atmExcelAtom = 0,   Do(   Msg(    Concat(     [ No default Excel atom has been set.], cr, lf,     [ Reset the Model or open the Excel User interface and try again. ]    ),     1   ),   return(0)  ) ),   if(  StringLength(strSheetName) = 0,   strSheetName := Att(2,atmExcelAtom) ),   oleWorkbook := ExcelActiveX_GetRefWorkbook(atmExcelAtom),  Ole(  oleWorkbook,   Concat(   [Sheets(], sbo,   strSheetName,   sbc, [).Cells(],   String(valRow), [,], String(valCol),   [).Text]  ) ))], [Read the text at row e1, column e2 of the sheet named e3 on the workbook referenced by excel atom e4. If e4 is not specified, the default excel atom is used. If e3 is not specified or the empty string, the default sheet of the excel atom is used.], [ExcelActiveX_ReadText(1,2,[Sheet1], c)], 0, [ExcelActiveX]);
+DefineFunction([ExcelActiveX_WriteText], [Office], 3, 5, [do( var([valRow], vbValue, p(1)), var([valCol], vbValue, p(2)), var([strVal], vbString, p(3)), var([strSheetName], vbString, p(4)), var([valExcelAtomPointer], vbValue, p(5)), var([atmExcelAtom], vbAtom, if(valExcelAtomPointer <> 0, vtp(valExcelAtomPointer), atmExcelActiveX)), var([oleWorkbook], vbOle),   if(  atmExcelAtom = 0,   Do(   Msg(    Concat(     [ an atom reference has not been set.], cr, lf,     [ Reset the Model or open the Excel User interface and try again. ]    ),     1   ),   return(0)  ) ), if(  StringLength(strSheetName) = 0,   strSheetName := Att(2,atmExcelAtom) ), oleWorkbook := ExcelActiveX_GetRefWorkbook(atmExcelAtom), Ole(  oleWorkbook,  Concat([Sheets(], sbo, strSheetName, sbc, [).Cells(], String(valRow),[,], String(valCol),[).Value]),  strVal,  2 ))], [To write a single text to Excel. ExcelActiveX_Write(e1, e2, e3{, e4, e5}), the string e3 will be written to Excel row e1 and column e2 of the Excel sheet with name e4 and e5 a reference to the Excel atom which maintance the connection with the Excel workbook.], [ExcelActiveX_WriteText(3, 6, [Hello World], [Sheet1], RefExcel)], 0, [ExcelActiveX]);
+DefineFunction([ExcelActiveX_SaveWorkbook], [Office], 0, 1, [do( var([valExcelAtomPointer], vbValue, p(1)), var([atmExcelAtom], vbAtom, if(valExcelAtomPointer <> 0, vtp(valExcelAtomPointer), atmExcelActiveX)), var([oleWorkbook], vbOle, ExcelActiveX_GetRefWorkbook(atmExcelAtom)),  Ole(oleWorkbook, [Save]))], [Save the workbook that is connected to ExcelActiveX atom e1. If e1 is not given, the default ExcelActiveX atom is used.], [ExcelActiveX_SaveWorkbook(c)], 0, [ExcelActiveX.atm]);
+DefineFunction([ExcelActiveX_IsConnected], [Office], 1, 1, [do( var([atmExcel], vbAtom, p(1)), var([strVarName], vbString, ExcelActiveX_GetRefWorkbookName(atmExcel)), var([valConnected], vbValue, 0),  if(  VariableExists(strVarName),  Do(   var([oleWorkbook], vbOle, ExecString(strVarName)),    if(     OleExists(oleWorkbook) > 0,    valConnected := 1   )  ) ), {return 1 if Excel atom e1 still has a connection to a workbook.}  valConnected)], [Checks if atom e1 is still connected to the workbook, i.e., it checks if the workbook reference of atom e1 still holds a valid ole reference.], [ExcelActiveX_IsConnected(c)], 0, [ExcelActiveX.atm]);
+DefineFunction([ExcelActiveX_NrOfConnections], [Various], 0, 0, [do( var([valNrOfConnections], vbValue, 0),  var([strWorkbook], vbString), Repeat(  valExcelActiveX_AtomCounter,  Do(   strWorkbook := Concat([oleExcelActiveX_Workbook], String(Count)),   if(    VariableExists(strWorkbook),    Do(     var([oleWorkbook], vbOle, ExecString(strWorkbook)),     if(OleExists(oleWorkbook) > 0, Inc(valNrOfConnections))    )   )  ) ), valNrOfConnections)], [Returns the number of connected ExcelActiveX atoms.], [ExcelActiveX_NrOfConnections], 0, [ExcelActiveX.atm]);
+DefineFunction([ExcelActiveX_GetVisible], [Atom Parameters], 1, 1, [Att(3, p(1))], [Returns the value of attribute Visible (# 3) of ExcelActiveX e1], [ExcelActiveX_GetVisible(c)], 0, [ExcelActiveX.atm]);
+DefineFunction([ExcelActiveX_SetVisible], [Atom Parameters], 2, 2, [Att(3, p(1)) := p(2)], [Sets the value of attribute Visible (# 3) of ExcelActiveX e1 to e2], [ExcelActiveX_SetVisible(c, 1)], 0, [ExcelActiveX.atm]);
+DefineFunction([ExcelActiveX_FindExcelFile], [Office], 1, 1, [do( var([strFileName], vbString, p(1)), var([strPath], vbString, ExcelActiveX_MakePathFullToModDir(strFileName)),  var([strCandidate], vbString),  strCandidate := strPath, if(FileExists(strCandidate), return(strCandidate)),  strCandidate := Concat(strPath, [.xlsx]), if(FileExists(strCandidate), return(strCandidate)),  strCandidate := Concat(strPath, [.xls]), if(FileExists(strCandidate), return(strCandidate)),  return([]))], [Returns e1 or else e1.xlsx or e1.xls if it exists. Relative paths are resolved relative to the model. If no file found an empty string is returned. ], [ExcelActiveX_FindExcelFile([FileName.xls])], 0, [ExcelActiveX.atm]);
+DefineFunction([ExcelActiveX_MakePathFullToModDir], [Various], 1, 1, [do( var([strPath], vbString, p(1)), if(  not(   or(    StringPos([:], strPath, 2, 1) = 2, { c:/temp/... }    StringPos([\\], strPath, 1, 2) = 1  { \\servername\share\... }   )  ),  Do(   var([strModDir], vbString),   { When loading a Model Att(1, Model) is not set yet and is still untitled. }   { If a model is saved for the first time the ModDir is not yet set to the model directory but can be found in Att(1, Model). }    if(    CompareText(Att(1,Model), [untitled]),    strModDir := ModDir,    strModDir := Concat(ExtractDir(Att(1, Model)), [\])   ),   if(    not(CompareText([strModDir], [untitled])),    strPath := Concat(strModDir, strPath)   )  ) ), strPath )], [Returns e1 if it is a complete path, if e1 is a relative path it returns e1 prepended with the Model Directory. ], [ExcelActiveX_MakePathFullToModDir([path])], 0, [ExcelActiveX.atm]);
+DefineFunction([ExcelActiveX_New], [Office], 1, 3, [do(
+ var([strPath], vbString, p(1)),
+ var([valVisible], vbValue, p(2)),
+ var([atmExcelAtom], vbAtom, p(3)),
+ var([App], vbOle),
+ var([oleWorkbook], vbOle, 0),
+ var([strEscapedPath], vbString),
+ 
+ { if necessary, fall back to default excel atom }
+ if(
+  not(atmExcelAtom > 0),
+  atmExcelAtom := atmExcelActiveX
+ ), 
+ 
+ { if it is a relative path, prepend ModDir }
+ strPath := ExcelActiveX_MakePathFullToModDir(strPath),
+ 
+ { check if directory exists }
+ if(not(DirectoryExists(ExtractDir(strPath))), return(0)),
+
+ strEscapedPath := StringReplace(strPath, [\], [\\], SR_REPLACE_ALL),
+ 
+ App := ExcelActiveX_SetupConnection,
+
+ 
+ if(
+  not(FileExists(strPath)),
+ { Create New Workbook }
+  Do(
+   oleWorkbook := Ole(App, [Workbooks.Add]),
+   Ole(oleWorkbook, Concat([SaveAs(], sbo,  strEscapedPath, sbc, [)]))
+  )
+ ),
+
+ if(oleWorkbook = 0, return(0)),
+ 
+ { Excel may have changed the file name, adding .xls or .xlsx. }
+ var([strFullNameInExcel], vbString, Ole(oleWorkbook, [FullName])),
+ if(
+  not(CompareText(ExtractPreName(strFullNameInExcel), ExtractPreName(strPath))),
+  { Creation was not successfull Excel created BookX instead of name found in strPath}
+  Do(
+   ole(oleWorkbook, [close]),
+   if(ExcelActiveX_IsConnected(atmExcelAtom), ExcelActiveX_Disconnect(atmExcelAtom)),
+   return(0)
+  )
+ ),
+
+ ExcelActiveX_SetFileName(atmExcelAtom, ExcelActiveX_MakePathRelativeToModDir(strFullNameInExcel)),
+
+ ExcelActiveX_SetVisible(atmExcelAtom, valVisible),
+ { Never set visible to 0, another workbook may need Excel to be visible. }
+ if(valVisible, Ole(App, [Visible], 1)),
+
+ { If necessary, create a global variable to hold this atoms workbook reference }
+ if(
+  Not(VariableExists(ExcelActiveX_GetRefWorkbookName(atmExcelAtom))),
+  do(
+   Inc(valExcelActiveX_AtomCounter),
+   var([strNewName], vbString, Concat([oleExcelActiveX_Workbook], String(valExcelActiveX_AtomCounter))),
+   Dim(strNewName, vbOle),
+   ExcelActiveX_SetRefWorkbookName(atmExcelAtom, strNewName)
+  )
+ ),
+ 
+ { Store the workbook reference in the global variable to keep the reference count positive. }
+ ExecString(Concat(ExcelActiveX_GetRefWorkbookName(atmExcelAtom), [:= ], String(oleWorkbook))),
+ 
+ { Store the workbook reference in an attribute of this atom for quick reference }
+ ExcelActiveX_SetRefWorkbook(atmExcelAtom, oleWorkbook),
+ 
+ { return the workbook reference }
+ oleWorkbook
+)
+], [Creates a New Excel Workbook with name e1 and connects it to Excel atom e3. If e2 equals 1 Excel will be made visible.
+], [ExcelActiveX_New([c:\temp\test.xls], 1, c)], 0, [ExcelActiveX.atm]);
+Set(Icon(a), 
+	RegisterIcon(pDir([media\images\default.jpg]), [default.jpg]));
+SetMaterial(
+	RegisterMaterial([Default], 8421504, 8421504, 3289650, 0, 0.100000001490116, 0, false, false, 1, 0), 1, a);
+Set(Version(a), 8.3);
+SetTreeIcon(pDir([Media\Icons\Excel2k7.ico]));
+Set(DdbRec, [>t-excel:1.>t-alloworganize:1.]);
+int001(47);
+SetSize(8, 2, 1);
+LockPosition(false);
+LockSize(false);
+DisableIconRotation(false);
+SetProductCode([]);
+CreateAttributes(6);
+SetAttributeName(r(1), [FileName]);
+SetAttributeName(r(2), [SheetName]);
+SetAttributeName(r(3), [Visible]);
+SetAttributeName(r(4), [NoTables]);
+SetAttributeName(r(5), [RefWorkbook]);
+SetAttributeName(r(6), [RefWorkbookName]);
+SetTextAtt(r(1), [untitled]);
+SetTextAtt(r(2), [Sheet1]);
+SetAtt(r(3), 1);
+int024;
+SetTable(10, 3);
+int015(0, 64, [0
+1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+]);
+int015(1, 88, [`LanguageIDInstall`
+1033
+1043
+1031
+1036
+3082
+1040
+1053
+1030
+1044
+1035
+]);
+int015(2, 64, [`Language`
+`English`
+`Dutch`
+`German`
+`French`
+`Spanish`
+`Italian`
+`Swedish`
+`Danish`
+`Norwegian`
+`Finnish`
+]);
+int015(3, 64, [`False`
+`False`
+`Onwaar`
+`Falsch`
+`Faux`
+`Falso`
+`Falso`
+`Falskt`
+`Falsk`
+`Usann`
+`EPÄTOSI`
+]);
+Set(OnEvent, [ExcelActiveX_ReadWriteTable(Rank(EventCode, c), c)]);
+Set(OnEntered, [ExcelActiveX_SetDefaultLabels(i)]);
+Set(OnCreation, [Do(  Label([t-excel],c) := 1,  atmExcelActiveX := c,  Set(OnInit(c), [LateInit([ExcelActiveX_Init(c)])]),  ExcelActiveX_SetTableHeaders(c))]);
+Set(OnDestruction, [ExcelActiveX_Disconnect(c)]);
+Set(OnReset, [If( ExcelActiveX_GetRefWorkbook(c) > 0,  Do(  ExcelActiveX_UpdateTable,   {Loop over the content, i.e. all tables in the Excel atom to perform   the Read/Write action onReset or create an event to do so }  {****Read/Write Table on Reset****}  Repeat(   Content(c),   Do(    var([atmTable], vbAtom, Rank(Count, c)),    if(     Label([t-ResetOrAtTime], atmTable) = 1,     ExcelActiveX_ReadWriteTable(atmTable, c)    )   )  ),     {****create the events****}  Repeat(   Content(c),   Do(    SetCs(Rank(Count, c)),    If(     Not(Label([t-ResetOrAtTime], cs) = 1),     CreateEvent(ExecString(Label([t-ReadWriteTime], cs, 2)), c, Count, 999)    )   )  )       ))]);
+Set(OnUser, [Do( { Delete any current instances of this form.}  GuiDestroy([ExcelActiveX]), { Register the GUI-form for this atom.} GuiRegister(PDir([Atoms\ExcelActiveX.gui]), 1), { Show the GUI-form.} Guicreate([ExcelActiveX], [ExcelActiveX], 0, c, 0, 1))]);
+Set(On2DDraw, [Draw2DIcon(3, [Excel ActiveX], FileName)]);
+SetStatus(0);
+int018;
+int007;

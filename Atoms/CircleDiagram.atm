@@ -1,0 +1,838 @@
+
+
+{Preregister functions}
+
+PreregisterFunction([CircleDiagram_SetNumberOfSegments], 2, 2);
+PreregisterFunction([CircleDiagram_GetNumberOfSegments], 1, 1);
+PreregisterFunction([CircleDiagram_Initialize], 1, 1);
+PreregisterFunction([CircleDiagram_SetSegmentColor], 3, 3);
+PreregisterFunction([CircleDiagram_SetSegmentScore], 3, 3);
+PreregisterFunction([CircleDiagram_Animate2D], 1, 1);
+PreregisterFunction([CircleDiagram_SetTotalScore], 2, 2);
+PreregisterFunction([CircleDiagram_GetTotalScore], 1, 1);
+PreregisterFunction([CircleDiagram_DetermineScores], 1, 1);
+PreregisterFunction([CircleDiagram_SetSegmentName], 3, 3);
+PreregisterFunction([CircleDiagram_SetLegendVisible], 2, 2);
+PreregisterFunction([CircleDiagram_GetLegendVisible], 1, 1);
+PreregisterFunction([CircleDiagram_GetSegmentColor], 2, 2);
+PreregisterFunction([CircleDiagram_SetRadius], 2, 2);
+PreregisterFunction([CircleDiagram_GetRadius], 1, 1);
+PreregisterFunction([CircleDiagram_SetBorderColor], 2, 2);
+PreregisterFunction([CircleDiagram_GetBorderColor], 1, 1);
+PreregisterFunction([CircleDiagram_GetSegmentScore], 2, 2);
+PreregisterFunction([CircleDiagram_GetSegmentCumulativeScore], 2, 2);
+PreregisterFunction([CircleDiagram_UseDefaultColours], 1, 1);
+PreregisterFunction([CircleDiagram_SetPercentagesVisible], 2, 2);
+PreregisterFunction([CircleDiagram_GetPercentagesVisible], 1, 1);
+PreregisterFunction([CircleDiagram_SetTitle], 2, 2);
+PreregisterFunction([CircleDiagram_GetTitle], 1, 1);
+PreregisterFunction([CircleDiagram_SetTitleVisible], 2, 2);
+PreregisterFunction([CircleDiagram_GetTitleVisible], 1, 1);
+PreregisterFunction([CircleDiagram_SetTextColor], 2, 2);
+PreregisterFunction([CircleDiagram_GetTextColor], 1, 1);
+PreregisterFunction([CircleDiagram_SetTextSizePercentages], 2, 2);
+PreregisterFunction([CircleDiagram_GetTextSizePercentages], 1, 1);
+PreregisterFunction([CircleDiagram_SetTextSizeTitle], 2, 2);
+PreregisterFunction([CircleDiagram_GetTextSizeTitle], 1, 1);
+PreregisterFunction([CircleDiagram_SetTextSizeLegend], 2, 2);
+PreregisterFunction([CircleDiagram_GetTextSizeLegend], 1, 1);
+PreregisterFunction([CircleDiagram_GuiDataTypeAndRangeValidation], 1, 1);
+PreregisterFunction([CircleDiagram_GuiApplyChanges], 1, 1);
+PreregisterFunction([CircleDiagram_GetSegmentName], 2, 2);
+PreregisterFunction([CircleDiagram_SetShowPercentagesBesidesLegend], 2, 2);
+PreregisterFunction([CircleDiagram_GetShowPercentagesBesidesLegend], 1, 1);
+PreregisterFunction([CircleDiagram_SetDiagramVisible], 2, 2);
+PreregisterFunction([CircleDiagram_GetDiagramVisible], 1, 1);
+PreregisterFunction([CircleDiagram_IncreaseSegmentScore], 3, 3);
+PreregisterFunction([CircleDiagram_DecreaseSegmentScore], 3, 3);
+PreregisterFunction([CircleDiagram_Setid], 2, 2);
+PreregisterFunction([CircleDiagram_Getid], 1, 1);
+PreregisterFunction([CircleDiagram_InitializeStatuses], 1, 1);
+PreregisterFunction([CircleDiagram_GetStatusesInitialized], 1, 1);
+PreregisterFunction([CircleDiagram_SetStatusesInitialized], 2, 2);
+PreregisterFunction([CircleDiagram_GetAutomaticScaling], 1, 1);
+PreregisterFunction([CircleDiagram_SetAutomaticScaling], 2, 2);
+PreregisterFunction([CircleDiagram_Animate3D], 1, 1);
+PreregisterFunction([CircleDiagram_GetAliasName], 1, 1);
+PreregisterFunction([CircleDiagram_SetAliasName], 2, 2);
+PreregisterFunction([CircleDiagram_GetCreateAlias], 1, 1);
+PreregisterFunction([CircleDiagram_SetCreateAlias], 2, 2);
+PreregisterFunction([CircleDiagram_GetAliasesCreated], 1, 1);
+PreregisterFunction([CircleDiagram_SetAliasesCreated], 2, 2);
+PreregisterFunction([CircleDiagram_CreateAliases], 1, 1);
+PreregisterFunction([CircleDiagram_OnCreation], 1, 1);
+PreregisterFunction([CircleDiagram_DeleteAliases], 1, 1);
+PreregisterFunction([CircleDiagram_GetUseAtomName], 1, 1);
+PreregisterFunction([CircleDiagram_SetUseAtomName], 2, 2);
+PreregisterFunction([CircleDiagram_Init], 1, 1);
+PreregisterFunction([CircleDiagram_RepairAliasOnPaste], 1, 1);
+
+
+{Atom: CircleDiagram}
+
+sets;
+BaseClass;
+CreateAtom(a, s, [], 1, false);
+Set(OnInit, [do(
+  { This constant is set according to the number of statuses in the StatusList atom.
+   If you added statuses manually then change this constant to represent the number
+   of available statuses. }
+ dim([CIRCLEDIAGRAM_NUMBEROFSTATUSES], vbConstant, 33),
+ 
+ { Define some columnnumber constants for the Circle Diagram}
+ dim([CircleDiagram_COLUMNNUMBER_SEGMENTSCORE], vbValue, 1),
+ dim([CircleDiagram_COLUMNNUMBER_SEGMENTCUMULATIVESCORE], vbValue, 2),
+ dim([CircleDiagram_COLUMNNUMBER_SEGMENTCOLOR], vbValue, 3),
+ dim([CircleDiagram_COLUMNNUMBER_SEGMENTNAME], vbValue, 4)
+)
+]);
+int023([CircleDiagram], 0, 48);
+DefineFunction([CircleDiagram_SetNumberOfSegments], [CircleDiagram], 2, 2, [do( Att([NumberOfSegments], p(1)) := p(2), nrows(p(1)) := p(2))], [p(1) as CircleDiagramp(2) as integer, the number of segmentsResult: none. Sets the property NumberOfSegments of CircleDiagram.], [CircleDiagram_SetNumberOfSegments( atmCircleDiagram, newNumberOfSegments )], 0, [CircleDiagram.atm]);
+DefineFunction([CircleDiagram_GetNumberOfSegments], [CircleDiagram], 1, 1, [Att([NumberOfSegments], p(1))], [p(1) as CircleDiagramResult: integer. Get the property NumberOfSegments of CircleDiagram.], [newNumberOfSegments := CircleDiagram_GetNumberOfSegments( atmCircleDiagram )], 0, [CircleDiagram.atm]);
+DefineFunction([CircleDiagram_Initialize], [CircleDiagram], 1, 1, [do(
+ var([indexer], vbValue, 0),
+
+ { Put all segment scores back to zero. }
+ for(
+  indexer := 1, indexer <= CircleDiagram_GetNumberOfSegments(p(1)), inc(indexer),
+  CircleDiagram_SetSegmentScore(p(1), indexer, 0)
+ )
+)
+], [p(1) as CircleDiagram
+
+Result: none. INitializes the diagram.
+], [CircleDiagram_Initialize(c)], 0, [CircleDiagram.atm]);
+DefineFunction([CircleDiagram_SetSegmentColor], [CircleDiagram], 3, 3, [cell(p(2), CircleDiagram_COLUMNNUMBER_SEGMENTCOLOR, p(1)) := p(3)], [p(1) as CircleDiagramp(2) as integer, Segment Indexp(3) as ColorResult: none. Sets the color for the specified Segment], [CircleDiagram_SetSegmentColor(c, indexer, colorred)], 0, [CircleDiagram.atm]);
+DefineFunction([CircleDiagram_SetSegmentScore], [CircleDiagram], 3, 3, [do( if(  p(3) >= 0,  cell(p(2), CircleDiagram_COLUMNNUMBER_SEGMENTSCORE, p(1)) := p(3),  do(   cell(p(2), CircleDiagram_COLUMNNUMBER_SEGMENTSCORE, p(1)) := 0,   trace(    concat(     [The score of segment ],     string(p(2)),     [ has been set to zero because an attempt was made to set it to a value lower than zero. CircleDiagram: ],     string(name),     [, Atomid: ],     String(atomid(p(1)))    )   ),   displaytracer  ) ), CircleDiagram_DetermineScores(p(1)))], [p(1) as CircleDiagramp(2) as integer, Segment Indexp(3) as double, ScoreResult: none. Sets the socre for the specified Segment], [CircleDiagram_SetSegmentScore(c, indexer, 3)], 0, [CircleDiagram.atm]);
+DefineFunction([CircleDiagram_Animate2D], [CircleDiagram], 1, 1, [do(
+ var([atmC], vbAtom, p(1)),
+ var([indexer], vbValue, 0),
+ var([degrees], vbValue, 0),
+ var([segmentsdrawn], vbValue, 0),
+ var([offsetx], vbValue, 0),
+ var([offsety], vbValue, 0),
+ 
+ CircleDiagram_SetRadius(atmC, xSize(atmC) / 2),
+
+ if(
+   CircleDiagram_GetAutomaticScaling(atmC),
+   do(
+     CircleDiagram_SetTextSizeTitle(atmC, xSize(atmC) / 10),
+     CircleDiagram_SetTextSizeLegend(atmC, xSize(atmC) / 20),
+     CircleDiagram_SetTextSizePercentages(atmC, xSize(atmC) / 20)
+   )
+ ),
+ 
+ if(
+  CircleDiagram_GetDiagramVisible(atmC) = false,
+  do(
+   offsetx := CircleDiagram_GetRadius(atmC) + 8 * CircleDiagram_GetTextSizePercentages(atmC),
+   offsety := 1.2 * CircleDiagram_GetRadius(atmC)
+  )
+ ),
+
+ ySize(atmC) := xSize(atmC) + CircleDiagram_GetTextSizeTitle(atmC) * 2,
+ 
+ { The Diagram's Title }
+ if(
+  CircleDiagram_GetTitleVisible(atmC),
+  DrawText(
+   0,
+   xSize(atmC),
+   StringLength(CircleDiagram_GetTitle(atmC)) * CircleDiagram_GetTextSizeTitle(atmC),
+   CircleDiagram_GetTextSizeTitle(atmC) * 2,
+   CircleDiagram_GetTitle(atmC),
+   CircleDiagram_GetTextColor(atmC),
+   CircleDiagram_GetTextSizeTitle(atmC),
+   [Arial],
+   0,
+   0,
+   0,
+   HA_LEFT + VA_TOP
+  )
+ ),
+ 
+ if(
+  CircleDiagram_GetTotalScore(atmC) = 0,
+  do(
+   DrawCircle(
+    CircleDiagram_GetRadius(atmC),
+    CircleDiagram_GetRadius(atmC),
+    CircleDiagram_GetRadius(atmC),
+    ColorBlack,
+    CircleDiagram_GetBorderColor(atmC),
+    1,
+    0,
+    360
+   ),
+   return(0)
+  )
+ ),
+ 
+ for(
+  indexer := 1, indexer <= CircleDiagram_GetNumberOfSegments(atmC), inc(indexer),
+  if(
+   CircleDiagram_GetSegmentScore(atmC, indexer) > 0,
+   do(
+    inc(segmentsdrawn),
+    
+    { **************** COLORED SEGMENTS ******************* }
+    if(
+     CircleDiagram_GetDiagramVisible(atmC) = True,
+     do(
+      DrawCircle(
+       CircleDiagram_GetRadius(atmC),
+       CircleDiagram_GetRadius(atmC),
+       CircleDiagram_GetRadius(atmC),
+       cell(indexer, CircleDiagram_COLUMNNUMBER_SEGMENTCOLOR, atmC),
+       CircleDiagram_GetBorderColor(atmC),
+       1,
+       if(
+        indexer = 1,
+        0,
+        (cell(indexer - 1, CircleDiagram_COLUMNNUMBER_SEGMENTCUMULATIVESCORE, atmC) / CircleDiagram_GetTotalScore(atmC)) * 360
+       ),
+       (cell(indexer, CircleDiagram_COLUMNNUMBER_SEGMENTCUMULATIVESCORE, atmC) / CircleDiagram_GetTotalScore(atmC)) * 360
+      ),
+     
+      { **************** PERCENTAGES ******************* }
+      if(
+       and(
+        CircleDiagram_GetPercentagesVisible(atmC) = True,
+        CircleDiagram_GetShowPercentagesBesidesLegend(atmC) = false,
+        CircleDiagram_GetDiagramVisible(atmC) = true
+       ),
+       do(
+        if(
+         indexer = 1,
+         degrees := CircleDiagram_GetSegmentScore(atmC, indexer) / (2 * CircleDiagram_GetTotalScore(atmC)) * 360,
+         degrees := (CircleDiagram_GetSegmentCumulativeScore(atmC, indexer) + CircleDiagram_GetSegmentCumulativeScore(atmC, indexer - 1)) / (2 * CircleDiagram_GetTotalScore(atmC)) * 360
+        ),
+        DrawText(
+         { If the percentage is to be drawn to the left of the diagram correct the x position with the width of the bounding box. }
+         if(
+          degrees > 180,
+          CircleDiagram_GetRadius(atmC) - CircleDiagram_GetTextSizePercentages(atmC) * 10 - CircleDiagram_GetRadius(atmC) * sin(degrees - 180),
+          CircleDiagram_GetRadius(atmC) + CircleDiagram_GetRadius(atmC) * sin(degrees)
+         ),
+         if(
+          or(
+           degrees < 90,
+           degrees > 270
+          ),
+          CircleDiagram_GetRadius(atmC) - CircleDiagram_GetRadius(atmC) * cos(degrees) - 1.25 * CircleDiagram_GetTextSizePercentages(atmC),
+          CircleDiagram_GetRadius(atmC) - CircleDiagram_GetRadius(atmC) * cos(degrees)
+         ),
+         CircleDiagram_GetTextSizePercentages(atmC) * 10,
+         CircleDiagram_GetTextSizePercentages(atmC) * 2,
+         concat(
+          String(CircleDiagram_GetSegmentScore(atmC, indexer) / CircleDiagram_GetTotalScore(atmC) * 100, 0, 2),
+          [%]
+         ),
+         CircleDiagram_GetTextColor(atmC),
+         CircleDiagram_GetTextSizePercentages(atmC),
+         [Arial],
+         0,
+         0,
+         0,
+         { If the percentage is to be drawn to the left of the diagram use Right Align for the Text. }
+         if(
+          degrees > 180,
+          HA_RIGHT,
+          HA_LEFT
+         )
+        )
+       )
+      ) 
+     )
+    ),
+
+    { **************** PERCENTAGES ******************* }
+    if(
+     CircleDiagram_GetLegendVisible(atmC) = True,
+       
+     { Show the percentages besides the legend??? }
+     if(
+      CircleDiagram_GetShowPercentagesBesidesLegend(atmC) = false,
+      do(
+       { The box for the color }
+       DrawRectangle(
+        CircleDiagram_GetRadius(atmC) * 2 + 6 * CircleDiagram_GetTextSizePercentages(atmC) - offsetx,
+        CircleDiagram_GetTextSizeLegend(atmC) * (2 * segmentsdrawn - 2) + offsety,
+        CircleDiagram_GetRadius(atmC) * 2 + 6 * CircleDiagram_GetTextSizePercentages(atmC) + CircleDiagram_GetTextSizeLegend(atmC) - offsetx,
+        CircleDiagram_GetTextSizeLegend(atmC) * (2 * segmentsdrawn - 1) + offsety,
+        CircleDiagram_GetSegmentColor(atmC, indexer),
+        CircleDiagram_GetBorderColor(atmC)
+       ),
+       
+       { The name of the segment }
+       DrawText(
+        CircleDiagram_GetRadius(atmC) * 2 + 6 * CircleDiagram_GetTextSizePercentages(atmC) + 2 * CircleDiagram_GetTextSizeLegend(atmC) - offsetx,
+        CircleDiagram_GetTextSizeLegend(atmC) * (2 * segmentsdrawn - 2) + offsety - CircleDiagram_GetTextSizeLegend(atmC) / 5,
+        StringLength(String(cell(indexer, CircleDiagram_COLUMNNUMBER_SEGMENTNAME, atmC))) * CircleDiagram_GetTextSizeLegend(atmC),
+        CircleDiagram_GetTextSizeLegend(atmC) * 2,
+        String(cell(indexer, CircleDiagram_COLUMNNUMBER_SEGMENTNAME, atmC)),
+        CircleDiagram_GetTextColor(atmC),
+        CircleDiagram_GetTextSizeLegend(atmC),
+        [Arial],
+        0,
+        0,
+        0,
+        HA_LEFT + VA_TOP
+       )     
+      ),
+      { Show the percentages besides the legend! }
+      do(
+       DrawText(
+        - 10 * CircleDiagram_GetTextSizeLegend(atmC) + CircleDiagram_GetRadius(atmC) * 2 + 8 * CircleDiagram_GetTextSizeLegend(atmC) - offsetx,
+        CircleDiagram_GetTextSizeLegend(atmC) * (2 * segmentsdrawn - 2) + offsety - CircleDiagram_GetTextSizeLegend(atmC) / 5,
+        CircleDiagram_GetTextSizeLegend(atmC) * 10,
+        CircleDiagram_GetTextSizeLegend(atmC) * 2,
+        concat(
+         String(CircleDiagram_GetSegmentScore(atmC, indexer) / CircleDiagram_GetTotalScore(atmC) * 100, 0, 2),
+         [%]
+        ),
+        CircleDiagram_GetTextColor(atmC),
+        CircleDiagram_GetTextSizeLegend(atmC),
+        [Arial],
+        0,
+        0,
+        0,
+        HA_RIGHT
+       ),
+        
+       { The box for the color }
+       DrawRectangle(
+        CircleDiagram_GetRadius(atmC) * 2 + 9 * CircleDiagram_GetTextSizeLegend(atmC) - offsetx,
+        CircleDiagram_GetTextSizeLegend(atmC) * (2 * segmentsdrawn - 2) + offsety,
+        CircleDiagram_GetRadius(atmC) * 2 + 9 * CircleDiagram_GetTextSizeLegend(atmC) + CircleDiagram_GetTextSizeLegend(atmC) - offsetx,
+        CircleDiagram_GetTextSizeLegend(atmC) * (2 * segmentsdrawn - 1) + offsety,
+        CircleDiagram_GetSegmentColor(atmC, indexer),
+        CircleDiagram_GetBorderColor(atmC)
+       ),
+      
+       { The name of the segment }
+       DrawText(
+        CircleDiagram_GetRadius(atmC) * 2 + 9 * CircleDiagram_GetTextSizeLegend(atmC) + 2 * CircleDiagram_GetTextSizeLegend(atmC) - offsetx,
+        CircleDiagram_GetTextSizeLegend(atmC) * (2 * segmentsdrawn - 2) + offsety - CircleDiagram_GetTextSizeLegend(atmC) / 5,
+        StringLength(String(cell(indexer, CircleDiagram_COLUMNNUMBER_SEGMENTNAME, atmC))) * CircleDiagram_GetTextSizeLegend(atmC),
+        CircleDiagram_GetTextSizeLegend(atmC) * 2,
+        String(cell(indexer, CircleDiagram_COLUMNNUMBER_SEGMENTNAME, atmC)),
+        CircleDiagram_GetTextColor(atmC),
+        CircleDiagram_GetTextSizeLegend(atmC),
+        [Arial],
+        0,
+        0,
+        0,
+        HA_LEFT + VA_TOP
+       )
+      )    
+     )
+    )
+   )
+  )
+ )
+)
+
+], [p(1) as CircleDiagram
+], [CircleDiagram_Animate2D(c)], 0, [CircleDiagram.atm]);
+DefineFunction([CircleDiagram_SetTotalScore], [CircleDiagram], 2, 2, [Att([TotalScore], p(1)) := p(2)], [p(1) as CircleDiagramp(2) as doubleResult: none. Sets the property TotalScore of CircleDiagram.], [CircleDiagram_SetTotalScore( atmCircleDiagram, newTotalScore )], 0, [CircleDiagram.atm]);
+DefineFunction([CircleDiagram_GetTotalScore], [CircleDiagram], 1, 1, [Att([TotalScore], p(1))], [p(1) as CircleDiagramResult: double. Get the property TotalScore of CircleDiagram.], [newTotalScore := CircleDiagram_GetTotalScore( atmCircleDiagram )], 0, [CircleDiagram.atm]);
+DefineFunction([CircleDiagram_DetermineScores], [CircleDiagram], 1, 1, [do( var([indexer], vbValue, 0),  for(  indexer := 1, indexer <= CircleDiagram_GetNumberOfSegments(p(1)), inc(indexer),    if(   indexer = 1,   cell(indexer, CircleDiagram_COLUMNNUMBER_SEGMENTCUMULATIVESCORE, p(1)) := cell(indexer, CircleDiagram_COLUMNNUMBER_SEGMENTSCORE, p(1)),   cell(indexer, CircleDiagram_COLUMNNUMBER_SEGMENTCUMULATIVESCORE, p(1)) := cell(indexer - 1, CircleDiagram_COLUMNNUMBER_SEGMENTCUMULATIVESCORE, p(1)) + cell(indexer, CircleDiagram_COLUMNNUMBER_SEGMENTSCORE, p(1))  ) ),  CircleDiagram_SetTotalScore(p(1), cell(CircleDiagram_GetNumberOfSegments(p(1)), CircleDiagram_COLUMNNUMBER_SEGMENTCUMULATIVESCORE, p(1))))], [p(1) as CircleDiagram], [CircleDiagram_DetermineScores(c)], 0, [CircleDiagram.atm]);
+DefineFunction([CircleDiagram_SetSegmentName], [CircleDiagram], 3, 3, [cell(p(2), CircleDiagram_COLUMNNUMBER_SEGMENTNAME, p(1)) := p(3)], [p(1) as CircleDiagramp(2) as integer, Segment indexp(3) as string, Segment Name], [CircleDiagram_SetSegmentName(c, indexer, [segment])], 0, [CircleDiagram.atm]);
+DefineFunction([CircleDiagram_SetLegendVisible], [CircleDiagram], 2, 2, [Att([LegendVisible], p(1)) := p(2)], [p(1) as CircleDiagramp(2) as BooleanResult: none. Sets the property LegendVisible of CircleDiagram.], [CircleDiagram_SetLegendVisible( atmCircleDiagram, newLegendVisible )], 0, [CircleDiagram.atm]);
+DefineFunction([CircleDiagram_GetLegendVisible], [CircleDiagram], 1, 1, [Att([LegendVisible], p(1))], [p(1) as CircleDiagramResult: Boolean. Get the property LegendVisible of CircleDiagram.], [newLegendVisible := CircleDiagram_GetLegendVisible( atmCircleDiagram )], 0, [CircleDiagram.atm]);
+DefineFunction([CircleDiagram_GetSegmentColor], [CircleDiagram], 2, 2, [cell(p(2), CircleDiagram_COLUMNNUMBER_SEGMENTCOLOR, p(1))], [p(1) as CircleDiagramp(2) as integer, Segment indexResult: Color. The color pointer for the requested Segmetn index], [CircleDiagram_GetSegmentColor(c, indexer)], 0, [CircleDiagram.atm]);
+DefineFunction([CircleDiagram_SetRadius], [CircleDiagram], 2, 2, [Att([Radius], p(1)) := p(2)], [p(1) as CircleDiagramp(2) as DoubleResult: none. Sets the property Radius of CircleDiagram.], [CircleDiagram_SetRadius( atmCircleDiagram, newRadius )], 0, [CircleDiagram.atm]);
+DefineFunction([CircleDiagram_GetRadius], [CircleDiagram], 1, 1, [Att([Radius], p(1))], [p(1) as CircleDiagramResult: Double. Get the property Radius of CircleDiagram.], [newRadius := CircleDiagram_GetRadius( atmCircleDiagram )], 0, [CircleDiagram.atm]);
+DefineFunction([CircleDiagram_SetBorderColor], [CircleDiagram], 2, 2, [Att([BorderColor], p(1)) := p(2)], [p(1) as CircleDiagramp(2) as DoubleResult: none. Sets the property BorderColor of CircleDiagram.], [CircleDiagram_SetBorderColor( atmCircleDiagram, newBorderColor )], 0, [CircleDiagram.atm]);
+DefineFunction([CircleDiagram_GetBorderColor], [CircleDiagram], 1, 1, [Att([BorderColor], p(1))], [p(1) as CircleDiagramResult: Double. Get the property BorderColor of CircleDiagram.], [newBorderColor := CircleDiagram_GetBorderColor( atmCircleDiagram )], 0, [CircleDiagram.atm]);
+DefineFunction([CircleDiagram_GetSegmentScore], [CircleDiagram], 2, 2, [cell(p(2), CircleDiagram_COLUMNNUMBER_SEGMENTSCORE, p(1))], [p(1) as CircleDiagramp(2) as integer, Segment indexResult: Double. The score for the segment with index p(2) of CircleDiagram p(1)], [CircleDiagram_GetSegmentScore(c, indexer)], 0, [CircleDiagram.atm]);
+DefineFunction([CircleDiagram_GetSegmentCumulativeScore], [CircleDiagram], 2, 2, [cell(p(2), CircleDiagram_COLUMNNUMBER_SEGMENTCUMULATIVESCORE, p(1))], [p(1) as CircleDiagramp(2) as integer, Segment indexResult: Double. The cumulative score for the segment with index p(2) of CircleDiagram p(1)], [CircleDiagram_GetSegmentCumulativeScore(c, indexer)], 0, [CircleDiagram.atm]);
+DefineFunction([CircleDiagram_UseDefaultColours], [CircleDiagram], 1, 1, [do( var([indexer], vbValue, 0), var([indexer2], vbValue, 0), var([cred], vbValue, 0), var([cgreen], vbValue, 0), var([cblue], vbValue, 0),  { We divide the number of segments in 5 ranges. Every range will vary one of the color components Red, Green or Blue.   This way we get smoothly changing colors from red to purple to blue to green to yellow. Some understanding of color profiles is assumed.} var([b1], vbValue, 0), var([b2], vbValue, 0), var([b3], vbValue, 0), var([b4], vbValue, 0), var([b5], vbValue, 0),  { Obtain the ranges borders depending on the number of segments } b1 := Round(CircleDiagram_GetNumberOfSegments(p(1)) / 5 * 1), b2 := 2 * b1, b3 := 3 * b1, b4 := 4 * b1, b5 := 5 * b1,  { Define the default coloring of the segments. } for(  indexer2 := 1, indexer2 <= CircleDiagram_GetNumberOfSegments(p(1)), inc(indexer2),    do(   indexer := mod(indexer2, 5),      if(    indexer = 0,    indexer := 5   ),      indexer := indexer / 5,    indexer := indexer * CircleDiagram_GetNumberOfSegments(p(1)),   indexer := indexer - b1 + 1,   indexer := indexer + trunc(indexer2 / 5),   if(    indexer <= b1,    do(     cred := 255,     cgreen := 0,     cblue := indexer / b1 * 255    )   ),     if(    and(     indexer > b1,     indexer <= b2    ),    do(     cred := 255 - ((indexer - b1)/ (b2 - b1)) * 255,     cgreen := 0,     cblue := 255    )   ),       if(    and(     indexer > b2,     indexer <= b3    ),    do(     cred := 0,     cgreen := ((indexer - b2) / (b3 - b2)) * 255,     cblue := 255    )   ),      if(    and(     indexer > b3,     indexer <= b4    ),    do(     cred := 0,     cgreen := 255,     cblue := 255 - ((indexer - b3) / (b4 - b3)) * 255    )   ),        if(    and(     indexer > b4,     indexer <= b5    ),    do(     cred := ((indexer - b4) / (b5 - b4)) * 255,     cgreen := 255,     cblue := 0    )   ),     CircleDiagram_SetSegmentColor(p(1), indexer2, RgbColor(cred, cgreen, cblue))  ) ))], [p(1) as CircleDiagramResult: none. Uses the default colors of CircleDiagram.], [CircleDiagram_UseDefaultColours(c)], 0, [CircleDiagram.atm]);
+DefineFunction([CircleDiagram_SetPercentagesVisible], [CircleDiagram], 2, 2, [Att([PercentagesVisible], p(1)) := p(2)], [p(1) as CircleDiagramp(2) as BooleanResult: none. Sets the property PercentagesVisible of CircleDiagram.], [CircleDiagram_SetPercentagesVisible( atmCircleDiagram, newPercentagesVisible )], 0, [CircleDiagram.atm]);
+DefineFunction([CircleDiagram_GetPercentagesVisible], [CircleDiagram], 1, 1, [Att([PercentagesVisible], p(1))], [p(1) as CircleDiagramResult: Boolean. Get the property PercentagesVisible of CircleDiagram.], [newPercentagesVisible := CircleDiagram_GetPercentagesVisible( atmCircleDiagram )], 0, [CircleDiagram.atm]);
+DefineFunction([CircleDiagram_SetTitle], [CircleDiagram], 2, 2, [Att([Title], p(1)) := p(2)], [p(1) as CircleDiagramp(2) as StringResult: none. Sets the property Title of CircleDiagram.], [CircleDiagram_SetTitle( atmCircleDiagram, newTitle )], 0, [CircleDiagram.atm]);
+DefineFunction([CircleDiagram_GetTitle], [CircleDiagram], 1, 1, [Att([Title], p(1))], [p(1) as CircleDiagramResult: String. Get the property Title of CircleDiagram.], [newTitle := CircleDiagram_GetTitle( atmCircleDiagram )], 0, [CircleDiagram.atm]);
+DefineFunction([CircleDiagram_SetTitleVisible], [CircleDiagram], 2, 2, [Att([TitleVisible], p(1)) := p(2)], [p(1) as CircleDiagramp(2) as BooleanResult: none. Sets the property TitleVisible of CircleDiagram.], [CircleDiagram_SetTitleVisible( atmCircleDiagram, newTitleVisible )], 0, [CircleDiagram.atm]);
+DefineFunction([CircleDiagram_GetTitleVisible], [CircleDiagram], 1, 1, [Att([TitleVisible], p(1))], [p(1) as CircleDiagramResult: Boolean. Get the property TitleVisible of CircleDiagram.], [newTitleVisible := CircleDiagram_GetTitleVisible( atmCircleDiagram )], 0, [CircleDiagram.atm]);
+DefineFunction([CircleDiagram_SetTextColor], [CircleDiagram], 2, 2, [Att([TextColor], p(1)) := p(2)], [p(1) as CircleDiagramp(2) as ColorResult: none. Sets the property TextColor of CircleDiagram.], [CircleDiagram_SetTextColor( atmCircleDiagram, newTextColor )], 0, [CircleDiagram.atm]);
+DefineFunction([CircleDiagram_GetTextColor], [CircleDiagram], 1, 1, [Att([TextColor], p(1))], [p(1) as CircleDiagramResult: Color. Get the property TextColor of CircleDiagram.], [newTextColor := CircleDiagram_GetTextColor( atmCircleDiagram )], 0, [CircleDiagram.atm]);
+DefineFunction([CircleDiagram_SetTextSizePercentages], [CircleDiagram], 2, 2, [Att([TextSizePercentages], p(1)) := p(2)], [p(1) as CircleDiagramp(2) as DoubleResult: none. Sets the property TextSizePercentages of CircleDiagram.], [CircleDiagram_SetTextSizePercentages( atmCircleDiagram, newTextSizePercentages )], 0, [CircleDiagram.atm]);
+DefineFunction([CircleDiagram_GetTextSizePercentages], [CircleDiagram], 1, 1, [Att([TextSizePercentages], p(1))], [p(1) as CircleDiagramResult: Double. Get the property TextSizePercentages of CircleDiagram.], [newTextSizePercentages := CircleDiagram_GetTextSizePercentages( atmCircleDiagram )], 0, [CircleDiagram.atm]);
+DefineFunction([CircleDiagram_SetTextSizeTitle], [CircleDiagram], 2, 2, [Att([TextSizeTitle], p(1)) := p(2)], [p(1) as CircleDiagramp(2) as DoubleResult: none. Sets the property TextSizeTitle of CircleDiagram.], [CircleDiagram_SetTextSizeTitle( atmCircleDiagram, newTextSizeTitle )], 0, [CircleDiagram.atm]);
+DefineFunction([CircleDiagram_GetTextSizeTitle], [CircleDiagram], 1, 1, [Att([TextSizeTitle], p(1))], [p(1) as CircleDiagramResult: Double. Get the property TextSizeTitle of CircleDiagram.], [newTextSizeTitle := CircleDiagram_GetTextSizeTitle( atmCircleDiagram )], 0, [CircleDiagram.atm]);
+DefineFunction([CircleDiagram_SetTextSizeLegend], [CircleDiagram], 2, 2, [Att([TextSizeLegend], p(1)) := p(2)], [p(1) as CircleDiagramp(2) as DoubleResult: none. Sets the property TextSizeLegend of CircleDiagram.], [CircleDiagram_SetTextSizeLegend( atmCircleDiagram, newTextSizeLegend )], 0, [CircleDiagram.atm]);
+DefineFunction([CircleDiagram_GetTextSizeLegend], [CircleDiagram], 1, 1, [Att([TextSizeLegend], p(1))], [p(1) as CircleDiagramResult: Double. Get the property TextSizeLegend of CircleDiagram.], [newTextSizeLegend := CircleDiagram_GetTextSizeLegend( atmCircleDiagram )], 0, [CircleDiagram.atm]);
+DefineFunction([CircleDiagram_GuiDataTypeAndRangeValidation], [CircleDiagram], 1, 1, [do(
+ var([PassCheck], vbValue, true),
+ var([TextValue], vbString, 0),
+ var([NumericValue], vbValue, 0),
+
+ { First we do a DataType and DataRange validation before we really apply the changes...}
+
+ { TITLE }
+ textvalue := GuiControl([ebTitle], GuiGet([Text])),
+ 
+ if(
+  StringLength(textvalue) = 0,
+  do(
+   passcheck := false,   
+   msg([The title has to contain at least one character.])
+  )
+ ),
+ 
+ { RADIUS } 
+ textvalue := GuiControl([ebRadius], GuiGet([Text])),
+ numericvalue := Value(GuiControl([ebRadius], GuiGet([Text]))),
+ if(
+  passcheck = true,
+  if(
+   or(
+    StringLength(textvalue) = 0,
+    numericvalue <= 0
+   ),
+   do(
+    passcheck := false,   
+    msg([The inserted value for the radius is invalid.])
+   )
+  )
+ ),
+ 
+ { TEXTSIZE TITLE } 
+ textvalue := GuiControl([ebTextSizeTitle], GuiGet([Text])),
+ numericvalue := Value(GuiControl([ebTextSizeTitle], GuiGet([Text]))),
+ if(
+  passcheck = true,
+  if(
+   or(
+    StringLength(textvalue) = 0,
+    numericvalue <= 0
+   ),
+   do(
+    passcheck := false,   
+    msg([The inserted value for the textsize of the title is invalid.])
+   )
+  )
+ ),
+
+ { TEXTSIZE LEGEND } 
+ textvalue := GuiControl([ebTextSizeLegend], GuiGet([Text])),
+ numericvalue := Value(GuiControl([ebTextSizeLegend], GuiGet([Text]))),
+ if(
+  passcheck = true,
+  if(
+   or(
+    StringLength(textvalue) = 0,
+    numericvalue <= 0
+   ),
+   do(
+    passcheck := false,   
+    msg([The inserted value for the textsize of the legend is invalid.])
+   )
+  )
+ ),
+
+ { TEXTSIZE PERCENTAGES } 
+ textvalue := GuiControl([ebTextSizePercentages], GuiGet([Text])),
+ numericvalue := Value(GuiControl([ebTextSizePercentages], GuiGet([Text]))),
+ if(
+  passcheck = true,
+  if(
+   or(
+    StringLength(textvalue) = 0,
+    numericvalue <= 0
+   ),
+   do(
+    passcheck := false,   
+    msg([The inserted value for the textsize of the percentages is invalid.])
+   )
+  )
+ ),
+  
+ { If the check succeeds then apply the changes to the CircleDiagram }
+ if(
+  passcheck = true,
+  CircleDiagram_GuiApplyChanges(p(1))
+ ),
+ 
+ return(passcheck)
+)
+], [p(1) as CircleDiagram
+
+Result: Boolean. Returns tru if the data validation succeeds else false 
+], [CircleDiagram_GuiDataTypeAndRangeValidation(GuiAtom)], 0, [CircleDiagram.atm]);
+DefineFunction([CircleDiagram_GuiApplyChanges], [CircleDiagram], 1, 1, [do(
+  var([atmC], vbAtom, p(1)),  
+  var([strNewAliasName], vbString), 
+  
+  
+  {**Page 1: General**}
+ 
+  {**Naming**}
+ 
+  Name(atmC) := GuiControl([ebAtomName], GuiGet([Text])), 
+  
+  CircleDiagram_SetCreateAlias(atmC, GuiControl([chkCreateAlias], GuiGet([Checked]))),
+  CircleDiagram_SetUseAtomName(atmC, GuiControl([chkUseAtomName], GuiGet([Checked]))),
+
+  {**Postpone setting AliasName until aliases have been redefined**} 
+  if(
+    CircleDiagram_GetUseAtomName(atmC),
+
+    strNewAliasName := Name(atmC),
+    strNewAliasName := GuiControl([ebAliasName], GuiGet([Text]))
+  ),
+  
+  {**Check if aliases should be created**}
+  if(
+    CircleDiagram_GetAliasesCreated(atmC),
+    if(
+      CircleDiagram_GetCreateAlias(atmC),
+      if(
+        CompareText(CircleDiagram_GetAliasName(atmC), strNewAliasName),
+        { Nothing changes }
+        0,
+        { Function name has changed! }
+        do(
+          CircleDiagram_DeleteAliases(atmC),
+          CircleDiagram_SetAliasName(atmC, strNewAliasName),
+          CircleDiagram_CreateAliases(atmC)
+        )
+      ),
+      { Alias existed but should be removed. }
+      CircleDiagram_DeleteAliases(atmC)
+    ),
+    if(
+      CircleDiagram_GetCreateAlias(atmC),
+      { No alias existed but it should be created. }
+      do(
+        CircleDiagram_SetAliasName(atmC, strNewAliasName),
+        CircleDiagram_CreateAliases(atmC),
+        { Backward compatibility: maybe this atom has been created in an earlier version of ED }
+        if(
+          StringPos([CircleDiagram_Init], OnInit(atmC)) = 0,
+          { We have to add it! }
+          if(
+           StringLength(OnInit(atmC)) = 0,
+           Set(OnInit(atmC), [CircleDiagram_Init(c)]),
+           Set(OnInit(atmC), Concat([do(CircleDiagram_Init(c),], OnInit(atmC))) { hope it's not a space! }     
+          )
+        )
+      ),
+      { No alias existed and it doesn't need to be created either }
+      0
+    )
+  ),
+  
+  { Maybe Create Aliases and Use Atom Name were unflagged but the user did change Alias Name }
+  CircleDiagram_SetAliasName(atmC, strNewAliasName),
+     
+  CircleDiagram_SetTitle(
+    atmC,
+    GuiControl([ebTitle], GuiGet([Text]))
+  ),
+   
+  {**Page 3**}
+  
+  CircleDiagram_SetRadius(
+   atmC,
+   Value(GuiControl([ebRadius], GuiGet([Text])))
+  ),
+  
+  CircleDiagram_SetTextColor(
+   atmC,
+   GuiControl([cpText], GuiGet([Color]))
+  ),
+ 
+  CircleDiagram_SetBorderColor(
+   atmC,
+   GuiControl([cpBorder], GuiGet([Color]))
+  ),
+  
+  CircleDiagram_SetAutomaticScaling(
+   atmC,
+   GuiControl([cbAutomaticScaling], GuiGet([Checked]))
+  ),
+  
+ {**Update GUI**}
+  if(
+    CircleDiagram_GetAutomaticScaling(atmC) = True,
+    do(    
+      GuiControl(
+       [ebTextSizeTitle], 
+       GuiSet([Text], String(CircleDiagram_GetTextSizeTitle(GuiAtom)))
+      ),
+      
+      GuiControl(
+       [ebTextSizeLegend], 
+       GuiSet([Text], String(CircleDiagram_GetTextSizeLegend(GuiAtom)))
+      ),
+      
+      GuiControl(
+       [ebTextSizePercentages], 
+       GuiSet([Text], String(CircleDiagram_GetTextSizePercentages(GuiAtom)))
+      )    
+    )
+  ),
+ 
+  CircleDiagram_SetTextSizeTitle(
+   atmC,
+   Value(GuiControl([ebTextSizeTitle], GuiGet([Text])))
+  ),
+ 
+  CircleDiagram_SetTextSizeLegend(
+   atmC,
+   Value(GuiControl([ebTextSizeLegend], GuiGet([Text])))
+  ),
+  
+  CircleDiagram_SetTextSizePercentages(
+   atmC,
+   Value(GuiControl([ebTextSizePercentages], GuiGet([Text])))
+  ),
+  
+  {**Adjust size accordingly**}
+  xSize(atmC) := CircleDiagram_GetRadius(atmC) * 2,
+  ySize(atmC) := xSize(atmC) + 2 * CircleDiagram_GetTextSizeTitle(atmC), 
+  
+  CircleDiagram_SetTitleVisible(
+   atmC,
+   GuiControl([cbTitleVisible], GuiGet([Checked]))
+  ),
+ 
+  CircleDiagram_SetLegendVisible(
+   atmC,
+   GuiControl([cbLegendVisible], GuiGet([Checked]))
+  ),
+  
+  CircleDiagram_SetPercentagesVisible(
+   atmC,
+   GuiControl([cbPercentagesVisible], GuiGet([Checked]))
+  ),
+ 
+  CircleDiagram_SetDiagramVisible(
+   atmC,
+   GuiControl([cbDiagramVisible], GuiGet([Checked]))
+  ),
+  
+  CircleDiagram_SetShowPercentagesBesidesLegend(
+   atmC,
+   GuiControl([cbShowPercentagesBesidesLegend], GuiGet([Checked]))
+  ),
+   
+  UpdateAnimator
+)
+], [p(1) as CircleDiagram
+
+Result: none. Applies all the inserted values for the CircleDiagram atom
+], [CircleDiagram_GuiApplyChanges(GuiAtom)], 0, [CircleDiagram.atm]);
+DefineFunction([CircleDiagram_GetSegmentName], [CircleDiagram], 2, 2, [cell(p(2), CircleDiagram_COLUMNNUMBER_SEGMENTNAME, p(1), 2)], [p(1) as CircleDiagramp(2) as Integer, index of the segmentResult: String. The name og the segment with index p(2)], [CircleDiagram_GetSegmentName(c, indexer)], 0, [CircleDiagram.atm]);
+DefineFunction([CircleDiagram_SetShowPercentagesBesidesLegend], [CircleDiagram], 2, 2, [Att([ShowPercentagesBesidesLegend], p(1)) := p(2)], [p(1) as CircleDiagramp(2) as BooleanResult: none. Sets the property ShowPercentagesLeftOfLegend of CircleDiagram.], [CircleDiagram_SetShowPercentagesLeftOfLegend( atmCircleDiagram, newShowPercentagesLeftOfLegend )], 0, [CircleDiagram.atm]);
+DefineFunction([CircleDiagram_GetShowPercentagesBesidesLegend], [CircleDiagram], 1, 1, [Att([ShowPercentagesBesidesLegend], p(1))], [p(1) as CircleDiagramResult: Boolean. Get the property ShowPercentagesLeftOfLegend of CircleDiagram.], [newShowPercentagesLeftOfLegend := CircleDiagram_GetShowPercentagesLeftOfLegend( atmCircleDiagram )], 0, [CircleDiagram.atm]);
+DefineFunction([CircleDiagram_SetDiagramVisible], [CircleDiagram], 2, 2, [Att([DiagramVisible], p(1)) := p(2)], [p(1) as CircleDiagramp(2) as BooleanResult: none. Sets the property DiagramVisible of CircleDiagram.], [CircleDiagram_SetDiagramVisible( atmCircleDiagram, newDiagramVisible )], 0, [CircleDiagram.atm]);
+DefineFunction([CircleDiagram_GetDiagramVisible], [CircleDiagram], 1, 1, [Att([DiagramVisible], p(1))], [p(1) as CircleDiagramResult: Boolean. Get the property DiagramVisible of CircleDiagram.], [newDiagramVisible := CircleDiagram_GetDiagramVisible( atmCircleDiagram )], 0, [CircleDiagram.atm]);
+DefineFunction([CircleDiagram_IncreaseSegmentScore], [CircleDiagram], 3, 3, [CircleDiagram_SetSegmentScore( p(1), p(2), CircleDiagram_GetSegmentScore(p(1), p(2)) + p(3))], [p(1) as CircleDiagramp(2) as Integer, segment indexp(3) as Double, increasementResult: none. Increases the score for the segment p(2) with p(3)], [CircleDiagram_IncreaseSegmentScore(c, indexer, 3)], 0, [CircleDiagram.atm]);
+DefineFunction([CircleDiagram_DecreaseSegmentScore], [CircleDiagram], 3, 3, [CircleDiagram_SetSegmentScore( p(1), p(2), CircleDiagram_GetSegmentScore(p(1), p(2)) - p(3))], [p(1) as CircleDiagramp(2) as Integer, segment indexp(3) as Double, decreasementResult: none. Decreases the score for the segment p(2) with p(3)], [CircleDiagram_DecreaseSegmentScore(c)], 0, [CircleDiagram.atm]);
+DefineFunction([CircleDiagram_Setid], [CircleDiagram], 2, 2, [Att([id], p(1)) := p(2)], [p(1) as CircleDiagramp(2) as IntegerResult: none. Sets the property id of CircleDiagram.], [CircleDiagram_Setid( atmCircleDiagram, newid )], 0, [CircleDiagram.atm]);
+DefineFunction([CircleDiagram_Getid], [CircleDiagram], 1, 1, [Att([id], p(1))], [p(1) as CircleDiagramResult: Integer. Get the property id of CircleDiagram.], [newid := CircleDiagram_Getid( atmCircleDiagram )], 0, [CircleDiagram.atm]);
+DefineFunction([CircleDiagram_InitializeStatuses], [CircleDiagram], 1, 1, [do( { Only initialize the status when the atom is created for the first time in the model. When an atom is duplicated in the model we don't want the statuses to be   initialized again because then coloring information can get lost. And that's exactly something why you want to duplicate a CircleDiagram because you want to   reuse self defined coloring of the segments. } var([atmC], vbAtom, p(1)),  if(  CircleDiagram_GetStatusesInitialized(atmC) = false,  do(   var([indexer], vbValue, 0),       CircleDiagram_SetNumberOfSegments(atmC, CircleDiagram_NUMBEROFSTATUSES),     for(    indexer := 1, indexer <= CircleDiagram_NUMBEROFSTATUSES, inc(indexer),    CircleDiagram_SetSegmentName(atmC, indexer, statusname(indexer))   ),      CircleDiagram_UseDefaultColours(atmC),     CircleDiagram_SetStatusesInitialized(atmC, true)   ) ))], [p(1) as CircleDiagramResult: none. Initializes the available statuses for the Status Monitor], [CircleDiagram_InitializeStatuses(c)], 0, [StatusMonitor.atm]);
+DefineFunction([CircleDiagram_GetStatusesInitialized], [Atom Parameters], 1, 1, [Att(16, p(1))], [Returns the value of attribute StatusesInitialized (# 16) of CircleDiagram e1], [CircleDiagram_GetStatusesInitialized(c)], 0, [CircleDiagram.atm]);
+DefineFunction([CircleDiagram_SetStatusesInitialized], [Atom Parameters], 2, 2, [Att(16, p(1)) := p(2)], [Sets the value of attribute StatusesInitialized (# 16) of CircleDiagram e1 to e2], [CircleDiagram_SetStatusesInitialized(c, 1)], 0, [CircleDiagram.atm]);
+DefineFunction([CircleDiagram_GetAutomaticScaling], [Atom Parameters], 1, 1, [Att(17, p(1))], [Returns the value of attribute AutomaticScaling (# 17) of CircleDiagram e1], [CircleDiagram_GetAutomaticScaling(c)], 0, [CircleDiagram.atm]);
+DefineFunction([CircleDiagram_SetAutomaticScaling], [Atom Parameters], 2, 2, [Att(17, p(1)) := p(2)], [Sets the value of attribute AutomaticScaling (# 17) of CircleDiagram e1 to e2], [CircleDiagram_SetAutomaticScaling(c, 1)], 0, [CircleDiagram.atm]);
+DefineFunction([CircleDiagram_Animate3D], [Various], 1, 1, [do( var([atmC], vbAtom, p(1)), var([indexer], vbValue, 0), var([degrees], vbValue, 0), var([segmentsdrawn], vbValue, 0), var([offsetx], vbValue, 0), var([offsety], vbValue, 0), var([offsetz], vbValue, 0.5), if(  CircleDiagram_GetDiagramVisible(atmC) = false,  do(   offsetx := CircleDiagram_GetRadius(atmC) + 8 * CircleDiagram_GetTextSizePercentages(atmC),   offsety := 1.2 * CircleDiagram_GetRadius(atmC)  ) ), TranslateCoords(0, 0, offsetz), { APP-124 JG (29-04-2008) Show a message when the diagram is not refreshed...} if(  runspeed = 1E40,  DrawText(   0,   -4 * CircleDiagram_GetTextSizeTitle(atmC),   CircleDiagram_GetTextSizeTitle(atmC) * 10,   CircleDiagram_GetTextSizeTitle(atmC) * 4,   Concat(    [Refresment has been paused.],    CR,    [(Lower the runspeed to refresh the diagram)]   ),   ColorRed,   CircleDiagram_GetTextSizeTitle(atmC),   [Arial],   True,   0,   0,   HA_LEFT + VA_TOP  ) ), { The Diagram's Title } if(  CircleDiagram_GetTitleVisible(atmC),  DrawText(   -1 * 0.5 * CircleDiagram_GetTextSizeTitle(atmC) * StringLength(CircleDiagram_GetTitle(atmC)) + 0.5,   1.2 * CircleDiagram_GetRadius(atmC) + offsety,   CircleDiagram_GetTextSizeTitle(atmC) * StringLength(CircleDiagram_GetTitle(atmC)),   2 * CircleDiagram_GetTextSizeTitle(atmC),      CircleDiagram_GetTitle(atmC),   CircleDiagram_GetTextColor(atmC),   CircleDiagram_GetTextSizeTitle(atmC),   [Arial],   0,   0,   0,   HA_CENTER + VA_TOP  ) ),  for(  indexer := 1, indexer <= CircleDiagram_GetNumberOfSegments(atmC), inc(indexer),  if(   CircleDiagram_GetSegmentScore(atmC, indexer) > 0,   do(    inc(segmentsdrawn),        { **************** COLORED SEGMENTS ******************* }    if(     CircleDiagram_GetDiagramVisible(atmC) = True,     do(      PushCoords,      TranslateCoords(0, 0, -0.25),      RotateCoords(180, 1, 0, 0, 0.5, 0.5, 0),      RotateCoords(if(indexer = 1, 0, 0 - (cell(indexer - 1, CircleDiagram_COLUMNNUMBER_SEGMENTCUMULATIVESCORE, atmC) / CircleDiagram_GetTotalScore(atmC)) * 360), 0, 0, 1, 0.5, 0.5),      SetMaterialColor(cell(indexer, CircleDiagram_COLUMNNUMBER_SEGMENTCOLOR, atmC), DIFFUSE_AND_AMBIENT_COLOR),      DrawCone(       0.5,       0.5,       0,       0.5,       CircleDiagram_GetRadius(atmC),       CircleDiagram_GetRadius(atmC),       (cell(indexer, CircleDiagram_COLUMNNUMBER_SEGMENTCUMULATIVESCORE, atmC) / CircleDiagram_GetTotalScore(atmC)) * 360 - if(indexer = 1,0,(cell(indexer - 1, CircleDiagram_COLUMNNUMBER_SEGMENTCUMULATIVESCORE, atmC) / CircleDiagram_GetTotalScore(atmC)) * 360),       Z_AXIS,       CP_BOTTOM + CP_SIDES + CP_TOP      ),      SetMaterialColor(ColorBlack, DIFFUSE_AND_AMBIENT_COLOR),            TranslateCoords(0, 0, -0.25),      DrawCone(       0.5,       0.5,       0,       0.01,       CircleDiagram_GetRadius(atmC) + 0.001,       CircleDiagram_GetRadius(atmC) + 0.001,       (cell(indexer, CircleDiagram_COLUMNNUMBER_SEGMENTCUMULATIVESCORE, atmC) / CircleDiagram_GetTotalScore(atmC)) * 360 - if(indexer = 1,0,(cell(indexer - 1, CircleDiagram_COLUMNNUMBER_SEGMENTCUMULATIVESCORE, atmC) / CircleDiagram_GetTotalScore(atmC)) * 360),       Z_AXIS,       CP_SIDES      ),      TranslateCoords(0, 0, 0.49),      DrawCone(       0.5,       0.5,       0,       0.01,       CircleDiagram_GetRadius(atmC) + 0.001,       CircleDiagram_GetRadius(atmC) + 0.001,       (cell(indexer, CircleDiagram_COLUMNNUMBER_SEGMENTCUMULATIVESCORE, atmC) / CircleDiagram_GetTotalScore(atmC)) * 360 - if(indexer = 1,0,(cell(indexer - 1, CircleDiagram_COLUMNNUMBER_SEGMENTCUMULATIVESCORE, atmC) / CircleDiagram_GetTotalScore(atmC)) * 360),       Z_AXIS,       CP_SIDES      ),           TranslateCoords(0, 0, -0.24),      RotateCoords(if(indexer = 1,0, 0.2), 0, 0, 1, 0.5, 0.5),      DrawCone(       0.5,       0.5,       0,       0.501,       CircleDiagram_GetRadius(atmC) + 0.001,       CircleDiagram_GetRadius(atmC) + 0.001,       0.4,       Z_AXIS,       CP_BOTTOM + CP_SIDES + CP_TOP      ),      PopCoords,           { **************** PERCENTAGES ******************* }      if(       and(        CircleDiagram_GetPercentagesVisible(atmC) = True,        CircleDiagram_GetShowPercentagesBesidesLegend(atmC) = false,        CircleDiagram_GetDiagramVisible(atmC) = true       ),       do(        if(         indexer = 1,         degrees := CircleDiagram_GetSegmentScore(atmC, indexer) / (2 * CircleDiagram_GetTotalScore(atmC)) * 360,         degrees := (CircleDiagram_GetSegmentCumulativeScore(atmC, indexer) + CircleDiagram_GetSegmentCumulativeScore(atmC, indexer - 1)) / (2 * CircleDiagram_GetTotalScore(atmC)) * 360        ),        DrawText(         { If the percentage is to be drawn to the left of the diagram correct the x position with the width of the bounding box. }         if(          degrees > 180,          0.5 - 40 + CircleDiagram_GetRadius(atmC) * sin(degrees),          0.5 + CircleDiagram_GetRadius(atmC) * sin(degrees)         ),         if(          or(           degrees < 90,           degrees > 270          ),          0.5 - CircleDiagram_GetRadius(atmC) * cos(degrees) - 1.25 * CircleDiagram_GetTextSizePercentages(atmC),          0.5 - CircleDiagram_GetRadius(atmC) * cos(degrees)         ),         40,         10,         concat(          String(CircleDiagram_GetSegmentScore(atmC, indexer) / CircleDiagram_GetTotalScore(atmC) * 100, 0, 2),          [%]         ),         CircleDiagram_GetTextColor(atmC),         CircleDiagram_GetTextSizePercentages(atmC),         [Arial],         0,         0,         0,         { If the percentage is to be drawn to the left of the diagram use Right Align for the Text. }         if(          degrees > 180,          HA_RIGHT,          HA_LEFT         )        )       )      )      )    ),    { **************** PERCENTAGES ******************* }    if(     CircleDiagram_GetLegendVisible(atmC) = True,            { Show the percentages besides the legend??? }     if(      CircleDiagram_GetShowPercentagesBesidesLegend(atmC) = false,      do(       { The box for the color }       di3DBox(        CircleDiagram_GetRadius(atmC) + 8 * CircleDiagram_GetTextSizePercentages(atmC) - offsetx,        -1 * CircleDiagram_GetRadius(atmC) + CircleDiagram_GetTextSizeLegend(atmC) * (2 * segmentsdrawn- 1) + offsety,        0,        CircleDiagram_GetTextSizeLegend(atmC),        CircleDiagram_GetTextSizeLegend(atmC),        CircleDiagram_GetTextSizeLegend(atmC),        CircleDiagram_GetSegmentColor(atmC, indexer)       ),              { The name of the segment }       DrawText(        CircleDiagram_GetRadius(atmC) + 8 * CircleDiagram_GetTextSizePercentages(atmC) + 2 * CircleDiagram_GetTextSizeLegend(atmC) - offsetx,        -1 * CircleDiagram_GetRadius(atmC) + CircleDiagram_GetTextSizeLegend(atmC) * (2 * segmentsdrawn- 1) + offsety - CircleDiagram_GetTextSizeLegend(atmC) / 5,        20,        10,        String(cell(indexer, CircleDiagram_COLUMNNUMBER_SEGMENTNAME, atmC)),        CircleDiagram_GetTextColor(atmC),        CircleDiagram_GetTextSizeLegend(atmC)       )           ),      { Show the percentages besides the legend! }      do(       DrawText(        -20 + CircleDiagram_GetRadius(atmC) + 8 * CircleDiagram_GetTextSizeLegend(atmC) - offsetx,        -1 * CircleDiagram_GetRadius(atmC) + CircleDiagram_GetTextSizeLegend(atmC) * (2 * segmentsdrawn - 1) + offsety - CircleDiagram_GetTextSizeLegend(atmC) / 5,        20,        10,        concat(         String(CircleDiagram_GetSegmentScore(atmC, indexer) / CircleDiagram_GetTotalScore(atmC) * 100, 0, 2),         [%]        ),        CircleDiagram_GetTextColor(atmC),        CircleDiagram_GetTextSizeLegend(atmC),        [Arial],        0,        0,        0,        HA_RIGHT       ),       { The box for the color }       di3DBox(        CircleDiagram_GetRadius(atmC) + 9 * CircleDiagram_GetTextSizeLegend(atmC) - offsetx,        -1 * CircleDiagram_GetRadius(atmC) + CircleDiagram_GetTextSizeLegend(atmC) * (2 * segmentsdrawn- 1) + offsety,        0,        CircleDiagram_GetTextSizeLegend(atmC),        CircleDiagram_GetTextSizeLegend(atmC),        CircleDiagram_GetTextSizeLegend(atmC),        CircleDiagram_GetSegmentColor(atmC, indexer)       ),             { The name of the segment }       DrawText(        CircleDiagram_GetRadius(atmC) + 9 * CircleDiagram_GetTextSizeLegend(atmC) + 2 * CircleDiagram_GetTextSizeLegend(atmC) - offsetx,        -1 * CircleDiagram_GetRadius(atmC) + CircleDiagram_GetTextSizeLegend(atmC) * (2 * segmentsdrawn- 1) + offsety - CircleDiagram_GetTextSizeLegend(atmC) / 5,        20,        10,        String(cell(indexer, CircleDiagram_COLUMNNUMBER_SEGMENTNAME, atmC)),        CircleDiagram_GetTextColor(atmC),        CircleDiagram_GetTextSizeLegend(atmC)       )      )         )    )   )  ) ))], [Enter helptext], [Enter Syntax Example], 0, [elroy deege]);
+DefineFunction([CircleDiagram_GetAliasName], [Atom Parameters], 1, 1, [TextAtt(18, p(1))], [Returns the string value of attribute AliasName (# 18) of CircleDiagram e1], [CircleDiagram_GetAliasName(c)], 0, [CircleDiagram.atm]);
+DefineFunction([CircleDiagram_SetAliasName], [Atom Parameters], 2, 2, [TextAtt(18, p(1)) := p(2)], [Sets the string value of attribute AliasName (# 18) of CircleDiagram e1 to e2], [CircleDiagram_SetAliasName(c, [TableName])], 0, [CircleDiagram.atm]);
+DefineFunction([CircleDiagram_GetCreateAlias], [Atom Parameters], 1, 1, [Att(19, p(1))], [Returns the value of attribute CreateAlias (# 19) of CircleDiagram e1], [CircleDiagram_GetCreateAlias(c)], 0, [CircleDiagram.atm]);
+DefineFunction([CircleDiagram_SetCreateAlias], [Atom Parameters], 2, 2, [Att(19, p(1)) := p(2)], [Sets the value of attribute CreateAlias (# 19) of CircleDiagram e1 to e2], [CircleDiagram_SetCreateAlias(c, 1)], 0, [CircleDiagram.atm]);
+DefineFunction([CircleDiagram_GetAliasesCreated], [Atom Parameters], 1, 1, [Att(20, p(1))], [Returns the value of attribute AliasesCreated (# 20) of CircleDiagram e1], [CircleDiagram_GetAliasesCreated(c)], 0, [CircleDiagram.atm]);
+DefineFunction([CircleDiagram_SetAliasesCreated], [Atom Parameters], 2, 2, [Att(20, p(1)) := p(2)], [Sets the value of attribute AliasesCreated (# 20) of CircleDiagram e1 to e2], [CircleDiagram_SetAliasesCreated(c, 1)], 0, [CircleDiagram.atm]);
+DefineFunction([CircleDiagram_CreateAliases], [Tables], 1, 1, [do(
+ var([atmTable], vbAtom, p(1)),
+ var([strCodeRef], vbString), 
+
+ strCodeRef :=  { vtp(ptv(atmTable))) }
+  Concat(                                      
+   [vtp(],
+   String(ptv(atmTable)),
+   [)]
+  ),
+
+ DefineFunction( 
+   
+   CircleDiagram_GetAliasName(atmTable),               { Name }  
+   [Basic],                                            { Category }            
+   0, 0,                                               { Parameters Min, Max }
+   strCodeRef,                                         { Code }
+   [An atom reference to the table with an alias],     { Help Text }
+   Concat([Ref], CircleDiagram_GetAliasName(atmTable)),{ Syntax Example }
+   True,                                               { Scope } 
+   [CircleDiagram.atm]                                 { Creator } 
+ ), 
+   
+ 
+ { Set attribute AliasesCreated to show that the functions have been created }
+ CircleDiagram_SetAliasesCreated(atmTable,1)
+
+)
+], [Defines function on the atom To Reference to the Table of the CircleDiagram
+], [CircleDiagram_CreateAliases(c)], 0, [CircleDiagram.atm]);
+DefineFunction([CircleDiagram_OnCreation], [Various], 1, 1, [do(
+ var([atmTable], vbAtom, p(1)),
+ 
+ { Suppress OnCreation calls while loading from file }
+ if(StringLength(Name(atmTable)) = 0, return(0)),
+ 
+ Set(OnInit, [CircleDiagram_Init(c)])
+ 
+)
+], [Internal function of the CircleDiagram atom containing the OnCreation actions.
+], [CircleDiagram_OnCreation(c)], 0, [CircleDiagram.atm]);
+DefineFunction([CircleDiagram_DeleteAliases], [Tables], 1, 1, [Do(
+ var([atmTable], vbAtom, p(1)), 
+  
+ if(FunctionExists(CircleDiagram_GetAliasName(atmTable)), UnDefineFunction(CircleDiagram_GetAliasName(atmTable))),
+ 
+ CircleDiagram_SetAliasesCreated(atmTable, 0) { to show the functions are not there anymore }
+)
+], [Undefines or unregister the aliases for the table of the CircleDiagram], [CircleDiagram_DeleteAliases(c)], 0, [CircleDiagram.atm]);
+DefineFunction([CircleDiagram_GetUseAtomName], [Atom Parameters], 1, 1, [Att(21, p(1))], [Returns the value of attribute UseAtomName (# 21) of CircleDiagram e1], [CircleDiagram_GetUseAtomName(c)], 0, [CircleDiagram.atm]);
+DefineFunction([CircleDiagram_SetUseAtomName], [Atom Parameters], 2, 2, [Att(21, p(1)) := p(2)], [Sets the value of attribute UseAtomName (# 21) of CircleDiagram e1 to e2], [CircleDiagram_SetUseAtomName(c, 1)], 0, [CircleDiagram.atm]);
+DefineFunction([CircleDiagram_Init], [Various], 1, 1, [do(
+ 
+ LateInit(
+  [
+   if(
+    CircleDiagram_GetAliasesCreated(c),
+    do(
+     { The current alias function has a hardcoded atom reference which is now wrong and must be redefined. }
+     CircleDiagram_DeleteAliases(c),
+     CircleDiagram_CreateAliases(c)
+    )
+   )
+  ]
+ )
+
+)
+], [Internal Function of the table atom to initialize the CircleDiagram. To redefine the aliasses of the CircleDiagram.
+], [CircleDiagram_Init(c)], 0, [CircleDiagram.atm]);
+DefineFunction([CircleDiagram_RepairAliasOnPaste], [Various], 1, 1, [do(
+ var([atmCircleDiagram], vbAtom, p(1)), 
+
+ If(
+  CircleDiagram_GetCreateAlias(atmCircleDiagram) = 1,
+  Do(
+   var([strRef], vbString, CircleDiagram_GetAliasName(atmCircleDiagram)),
+   if(
+    And(FunctionExists(strRef), AtomID(ExecString(strRef)) <> AtomID(atmCircleDiagram)),
+    Do(
+     {this atom is a copy and the original has aliases}
+     
+     {Aliasses have not been created for the copy thus should be 0}
+     CircleDiagram_SetAliasesCreated(atmCircleDiagram, 0),
+     
+     {if alias should be based on the atom name then correct the alias name}
+     if(
+      CircleDiagram_GetUseAtomName(atmCircleDiagram) = 1,
+      CircleDiagram_SetAliasName(atmCircleDiagram, Name(atmCircleDiagram))
+     ),
+     
+     {Also set CreateAlias of atmTable to zero}
+     CircleDiagram_SetCreateAlias(atmCircleDiagram, 0)
+    )
+   )
+  )
+ )
+ 
+)
+{}
+], [For internal use. Necessary to make sure that when an atom is copied, its aliases still belong to the right atom and not to the copy.
+], [CircleDiagram_RepairAliasOnPaste(c)], 0, [CircleDiagram.atm]);
+Set(Icon(a), 
+	RegisterIcon(pDir([media\images\default.jpg]), [default.jpg]));
+SetMaterial(
+	RegisterMaterial([Default], 8421504, 8421504, 3289650, 0, 0.100000001490116, 0, false, false, 1, 0), 1, a);
+Set(Version(a), 7.3);
+SetTreeIcon(pDir([Media\Icons\CircleDiagram.ico]));
+int001(178);
+SetSize(6, 7.2, 1);
+LockPosition(false);
+LockSize(false);
+DisableIconRotation(false);
+SetProductCode([]);
+CreateAttributes(21);
+SetAttributeName(r(1), [id]);
+SetAttributeName(r(2), [NumberOfSegments]);
+SetAttributeName(r(3), [TotalScore]);
+SetAttributeName(r(4), [Title]);
+SetAttributeName(r(5), [Radius]);
+SetAttributeName(r(6), [TextColor]);
+SetAttributeName(r(7), [BorderColor]);
+SetAttributeName(r(8), [TextSizeTitle]);
+SetAttributeName(r(9), [TextSizePercentages]);
+SetAttributeName(r(10), [TextSizeLegend]);
+SetAttributeName(r(11), [LegendVisible]);
+SetAttributeName(r(12), [PercentagesVisible]);
+SetAttributeName(r(13), [TitleVisible]);
+SetAttributeName(r(14), [DiagramVisible]);
+SetAttributeName(r(15), [ShowPercentagesBesidesLegend]);
+SetAttributeName(r(16), [StatusesInitialized]);
+SetAttributeName(r(17), [AutomaticScaling]);
+SetAttributeName(r(18), [AliasName]);
+SetAttributeName(r(19), [CreateAlias]);
+SetAttributeName(r(20), [AliasesCreated]);
+SetAttributeName(r(21), [UseAtomName]);
+SetTextAtt(r(4), [Circle Diagram]);
+SetAtt(r(5), 3);
+SetExprAtt(r(6), [colorblack]);
+SetExprAtt(r(7), [colorblack]);
+SetAtt(r(8), 0.6);
+SetAtt(r(9), 0.3);
+SetAtt(r(10), 0.3);
+SetAtt(r(11), 1);
+SetAtt(r(12), 1);
+SetAtt(r(13), 1);
+SetAtt(r(14), 1);
+SetAtt(r(17), 1);
+SetTextAtt(r(18), [untitled]);
+SetAtt(r(21), 1);
+int024;
+SetTable(1, 4);
+int015(0, 64, [ 
+1
+]);
+int015(1, 107, [`SegmentScore`
+]);
+int015(2, 128, [`SegmentCumulativeScore`
+]);
+int015(3, 107, [`SegmentColor`
+]);
+int015(4, 66, [`SegmentName`
+]);
+Set(OnCreation, [CircleDiagram_OnCreation(c)]);
+Set(OnDestruction, [if(
+  StringPos([CircleDiagram_Init], OnInit(c)) = 0,
+  CircleDiagram_DeleteAliases(c)
+)
+]);
+Set(OnReset, [do(
+ CircleDiagram_Initialize(c),
+ CircleDiagram_RepairAliasOnPaste(c)
+)
+]);
+Set(OnUser, [Do(
+ { Delete any current instances of this form.} 
+ GuiDestroy([CircleDiagram]),
+ 
+ { Register the GUI-form for this atom.}
+ GuiRegister(PDir([\Atoms\CircleDiagram.gui]), 1),
+
+ { Show the GUI-form.}
+ Guicreate([formCircleDiagram], [CircleDiagram], 0, c, 0, 1)
+)
+]);
+Set(On2DDraw, [CircleDiagram_Animate2D(c)]);
+Set(On3DDraw, [CircleDiagram_Animate3D(c)]);
+SetStatus(0);
+int018;
+int007;

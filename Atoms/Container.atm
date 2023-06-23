@@ -1,0 +1,66 @@
+
+
+{Atom: Container}
+
+sets;
+BaseClass;
+CreateAtom(a, s, [], 1, false);
+Set(OnInit, [RegisterEditField( [t-container3dicon], [3D Icon], [Att([ContainerType])], [SetAtt([ContainerType], &)], FieldListBox(  7,  [Box/Transparant Box/Container/Pallet/Pallet with Stabilizers/Box with Texture/VR Icon] ))]);
+int023([Container], 6080220, 1234);
+Set(Icon(a), 
+	RegisterIcon(IconsDir([bmp\atoms\Pallet.bmp]), [Pallet.bmp]));
+AddModel3D(
+	RegisterModel3D(Model3DDir([\pallet-wood.wrl]), [pallet-wood.wrl], 0, 0, 0, 1, 1, -1, -90, 0, 0), a);
+AddModel3D(
+	RegisterModel3D(Model3DDir([\pallet-plastic.wrl]), [pallet-plastic.wrl], 0, 0, 0, 1, 1, -1, -90, 0, 0), a);
+AddModel3D(
+	RegisterModel3D(Model3DDir([\crate.wrl]), [crate.wrl], 0, 0, 0, 1, 1, -1, -90, 0, 0), a);
+SetMaterial(
+	RegisterMaterial([Default], 8421504, 8421504, 3289650, 0, 0.100000001490116, 0, false, false, 1, 0), 1, a);
+Set(Version(a), 0);
+SetTreeIcon(pDir([Media\Icons\Container.ico]));
+Set(Info, [Container.
+
+General
+------------
+Container for other atoms. Pack other atoms into this atom.
+
+Right click parameters:
+- several 3D icons like pallet, box and transparant box.
+- triggers to manipulate atoms that enter/exit
+- resize entering atoms to fit the container
+
+Double click to edit content.
+
+Last revision:
+-------------------
+September 29, 2003
+]);
+Set(DdbRec, [>centerpoint:0.22.>t-nodestroy:1.]);
+int001(185);
+SetSize(1.1, 1.1, 0.15);
+LockPosition(false);
+LockSize(false);
+DisableIconRotation(false);
+SetProductCode([]);
+CreateAttributes(6);
+SetAttributeName(r(1), [AutoReSize]);
+SetAttributeName(r(2), [sx]);
+SetAttributeName(r(3), [sy]);
+SetAttributeName(r(4), [sz]);
+SetAttributeName(r(5), [ContainerType]);
+SetAttributeName(r(6), [UseBoxVisible]);
+SetExprAtt(r(2), [1.1]);
+SetExprAtt(r(3), [1.1]);
+SetExprAtt(r(4), [1]);
+SetAtt(r(5), 4);
+SetAtt(r(6), 1);
+int024;
+Set(OnEntered, [Do( If(  AutoReSize,  SetSize( sx, sy, sz, i) ), If(  Content(c) = 1,  SetLoc(   Max( (sx - xSize( i)) / 2, 0),   Max( (sy - ySize( i)) / 2, 0),   zSize( c),   i  ),  Do(   SetLoc(    xLoc( Prev( i)) + sx,    yLoc( Prev( i)),    zLoc( Prev( i)),    i   ),   If(    xLoc( i) >= xSize( c),    Do(     SetLoc(       xLoc( First( c)),       yLoc( i) + sy,       zLoc( i),       i     ),     If(      yLoc( i) >= ySize( c),      SetLoc(       xLoc( First( c)),       yLoc( First( c)),       zLoc( i) + sz,       i      )     )    )   )  ) ))]);
+Set(OnReset, [If( Label([t-nodestroy], c) = 0, DestroyAtom)]);
+Set(OnUser, [If( DoubleClick, {* Double Click *} If(  SelectAtom(a, First, [Select an atom from the contents]),  ExecOnUser(a) ), {* Right click *}Do(  { Delete any current instances of this form.}   GuiDestroy([Container]),  { Register the GUI-form for this atom.}  GuiRegister(PDir([\Atoms\Container.gui]), 1),  { Show the GUI-form.}   GuiCreate([Container], [Container], 0, c, 0, 1)   ))]);
+Set(On2DDraw, [if( c.DrawFlag,  {--External atom(s) control container rotationas--} do(  {--Variables for rotationas in order to compensate change of transportation direction--}  RotateCoords(c.DrawRotationas, 0, 0, 1),    {--Variables for translation in order to compensate change of transportation direction--}  TranslateCoords(c.DrawXtranslate, c.DrawYtranslate, 0),    {--Rotated shape--}  dishape(0, 0, c.DrawXsize, c.DrawYsize, 0.01, ColorBlack, color(c)) ),  {--Standard--} do(  c.DrawXsize := xSize(c),  c.DrawYsize := ySize(c)  {--Outline--} ) )]);
+Set(On3DDraw, [do( if(  {--Container rotationas has been changed by external atom (e.g. Corner Transfer Unit)--}  c.DrawFlag,  do(   {--Variables for rotationas in order to compensate change of transportation direction--}   RotateCoords(c.DrawRotationas,0,0,1),      {--Variables for translation in order to compensate change of transportation direction--}   TranslateCoords(c.DrawXtranslate, c.DrawYtranslate,0)  ),  {--Standard--}  do(   c.DrawXsize := xSize(c),   c.DrawYsize := ySize(c)  ) ), If(  Or(   BoxVisible(0, 0, 0, c.DrawXsize, c.DrawYsize ,zSize(c)),   Not(UseBoxVisible)  ),  Case(   ContainerType,   {* Draw a Box *}   Do(    di3DBox(0, 0, 0, c.DrawXsize, c.DrawYsize, 0.01, Color(c)),    di3DBox(0, 0, 0, c.DrawXsize, 0.01, zSize(c), Color(c)),    di3DBox(0, c.DrawYsize, 0, c.DrawXsize, 0.01, zSize(c), Color(c)),    di3DBox(0, 0, 0, 0.01, c.DrawYsize, zSize(c), Color(c)),    di3DBox(c.DrawXsize, 0, 0, 0.01, c.DrawYsize, zSize(c), Color(c))   ),   {* Draw a Transparant box *}   Do(    di3DBox(-0.06, -0.06, 0, c.DrawXsize + 0.12, c.DrawYsize + 0.12, 0.1, ColorBlack),    Plane(-0.04, -0.04, zSize(c), c.DrawYsize + 0.08, 0.15, 0, 90, 0, 90, ColorBlack),    Plane(c.DrawXsize + 0.04, -0.04, zSize(c), c.DrawYsize + 0.08, 0.15, 0, 90, 0, 90, ColorBlack),    Plane(-0.04, -0.04, zSize(c), c.DrawXsize + 0.08, 0.15, 0, 0, 0, 90, ColorBlack),    Plane(-0.04, c.DrawYsize + 0.04, zSize(c), c.DrawXsize + 0.08, 0.15, 0, 0, 0, 90, ColorBlack),    Glass(0.5),     Plane(-0.04, -0.04, 0.1, c.DrawYsize + 0.08, zSize(c) - 0.1, 0, 90, 0, 90, Color),    Plane(c.DrawXsize + 0.04, -0.04, 0.1, c.DrawYsize + 0.08, zSize(c) - 0.1, 0, 90, 0, 90, Color),    Plane(-0.04, -0.04, 0.1, c.DrawXsize + 0.08, zSize(c) - 0.1, 0, 0, 0, 90, Color),    Plane(-0.04, c.DrawYsize + 0.04, 0.1, c.DrawXsize + 0.08, zSize(c) - 0.1, 0, 0, 0, 90, Color),    Glass(1)   ),   {* Draw a Container *}   Do(    di3DBox(-0.05, -0.05, 0, c.DrawXsize + 0.1, c.DrawYsize + 0.1, 0.01, Color(c)),    di3DBox(-0.05, -0.05, zSize(c), c.DrawXsize + 0.1, c.DrawYsize + 0.1, 0.01, Color(c)),    di3DBox(-0.05, -0.05, 0, c.DrawXsize + 0.1, 0.01, zSize(c), Color(c)),    di3DBox(-0.05, c.DrawYsize + 0.05, 0, c.DrawXsize + 0.1, -0.01, zSize(c), Color(c)),    di3DBox(c.DrawXsize + 0.05, -0.04, 0, -0.01, c.DrawYsize + 0.08, zSize(c), Color(c))   ),   {* Draw a Pallet *}   Do(    di3DBox(0, 0, 0, c.DrawXsize, 0.1, zSize(c) - 0.05, Color),    di3DBox(0, c.DrawYsize / 2 - 0.05, 0, c.DrawXsize, 0.1, zSize(c) - 0.05, Color),    Di3DBox(0, c.DrawYsize - 0.1, 0, c.DrawXsize, 0.1, zSize(c) - 0.05, Color),    c.CenterPoint := c.DrawXsize / 5,    Repeat(     5,     di3DBox(Count * c.CenterPoint, 0, zSize(c) - 0.05, -0.1, c.DrawYsize, 0.05, Color)    )   ),   {* Draw a Stabilized pallet *}   Do(     di3DBox(0, 0, 0, c.DrawXsize, c.DrawYsize / 4 - 0.05, 0.05, 4823990),    di3DBox(0, c.DrawYsize / 4, 0, c.DrawXsize, c.DrawYsize / 4 - 0.05, 0.05, 4823990),    di3DBox(0, c.DrawYsize / 2, 0, c.DrawXsize,c.DrawYsize / 4 - 0.05, 0.05, 4823990),    di3DBox(0, c.DrawYsize / 4 * 3, 0, c.DrawXsize, c.DrawYsize / 4, 0.05, 4823990),     di3DBox(-0.05, -0.05, 0, c.DrawXsize + 0.1, 0.05, 0.05, ColorGray),    di3DBox(-0.05, -0.05, 0, 0.05, c.DrawYsize + 0.1, 0.05, ColorGray),    di3DBox(c.DrawXsize, c.DrawYsize + 0.05, 0, 0.05, -0.1 - c.DrawYsize, 0.05, ColorGray),    di3DBox(c.DrawXsize + 0.05, c.DrawYsize, 0,  -0.1 - c.DrawXsize, 0.05, 0.05, ColorGray),    di3DBox(-0.05, -0.05, 0.05, 0.05, 0.05, zSize(c), ColorGray),    di3DBox(-0.05, c.DrawYsize, 0.05, 0.05, 0.05, zSize(c), ColorGray),    di3DBox(c.DrawXsize, c.DrawYsize, 0.05, 0.05, 0.05, zSize(c),ColorGray),    di3DBox(c.DrawXsize, -0.05, 0.05, 0.05, 0.05, zSize(c), ColorGray)   ),   {* Draw a Textured Box (VR only) *}   Do(    DrawVRIcon(vrIcon, -0.05, -0.05, 0, c.DrawXsize + 0.1, c.DrawYsize + 0.1, 0.01, 0, 0, 0, Icon(c), Color(c)),    DrawVRIcon(vrIcon, -0.05, -0.05, 0, c.DrawXsize + 0.1, 0.01, zSize(c), 0, 0, 0, Icon(c), Color(c)),    DrawVRIcon(vrIcon, -0.05, c.DrawYsize + 0.04, 0, c.DrawXsize + 0.1, 0.01, zSize(c), 0, 0, 0, Icon(c), Color(c)),    DrawVRIcon(vrIcon, -0.05, -0.04, 0, 0.01, c.DrawYsize + 0.08, zSize(c), 0, 0, 0, Icon(c), Color(c)),    DrawVRIcon(vrIcon, c.DrawXsize + 0.04, -0.04, 0, 0.01, c.DrawYsize + 0.08, zSize(c), 0, 0, 0, Icon(c), Color(c))   ),   {** Pallet - Wood **}   DrawModel3D(Model3D(1, c), 0, 0, 0, c.DrawXsize, c.DrawYsize, zSize(c)),   {** Pallet - Plastic **}   DrawModel3D(Model3D(2, c), 0, 0, 0, c.DrawXsize, c.DrawYsize, zSize(c)),   {** Crate **}   DrawModel3D(Model3D(3, c), 0, 0, 0, c.DrawXsize, c.DrawYsize, zSize(c))  ) ) )]);
+SetStatus(0);
+int018;
+int007;

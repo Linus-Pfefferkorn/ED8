@@ -1,0 +1,58 @@
+
+
+{Atom: History Viewer}
+
+sets;
+BaseClass;
+CreateAtom(a, s, [], 1, false);
+int023([History Viewer], 65535, 1128);
+Set(Icon(a), 
+	RegisterIcon(pDir([media\images\default.jpg]), [default.jpg]));
+SetMaterial(
+	RegisterMaterial([Default], 8421504, 8421504, 3289650, 0, 0.100000001490116, 0, false, false, 1, 0), 1, a);
+Set(Version(a), 7.3);
+SetTreeIcon(pDir([Media\Icons\HistoryViewer.ico]));
+Set(Info, [Convert data from history file to a text file or a table.
+
+General
+------------
+Select an atom and define which period you want to study. The 
+data from the history is converted for easy reading and 
+understanding. If exported to a file, the filename can be choosen. 
+The user can choose to look at the recorded changes in the queue 
+or the recorded changes in the statusses.
+
+Doubleclick, Rightclick:
+  select atom, start time, duration, file name and type of analyses.
+
+Last Revision:
+---------------------
+February, 2008
+]);
+Set(DdbRec, [>t-alloworganize:1.]);
+int001(169);
+SetSize(7, 2, 1);
+LockPosition(false);
+LockSize(false);
+DisableIconRotation(false);
+SetProductCode([]);
+CreateAttributes(8);
+SetAttributeName(r(1), [name atomid]);
+SetAttributeName(r(2), [analysestart]);
+SetAttributeName(r(3), [analyseduration]);
+SetAttributeName(r(4), [statusqueue]);
+SetAttributeName(r(5), [path]);
+SetAttributeName(r(6), [filename]);
+SetAttributeName(r(7), [SelectedAtomID]);
+SetAttributeName(r(8), [ViewResultsAfterExport]);
+SetExprAtt(r(2), [0]);
+SetExprAtt(r(3), [time {current time}]);
+SetAtt(r(4), 1);
+SetTextAtt(r(5), [c:\]);
+SetTextAtt(r(6), [history.txt]);
+int024;
+Set(OnUser, [Do( { Delete any current instances of this form.}  GuiDestroy([HistoryViewer]), { Register the GUI-form for this atom.} GuiRegister(PDir([\Atoms\HistoryViewer.gui]), 1), { Show the GUI-form.} Guicreate([HistoryViewer], [HistoryViewer], 0, c, 0, 1))]);
+Set(On2DDraw, [draw2dicon(3,[History viewer],[])]);
+SetStatus(0);
+int018;
+int007;

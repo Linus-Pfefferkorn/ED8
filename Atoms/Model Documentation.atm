@@ -1,0 +1,51 @@
+
+
+{Atom: model Documentation}
+
+sets;
+BaseClass;
+CreateAtom(a, s, [], 1, false);
+int023([model Documentation], 16711680, 1248);
+Set(Icon(a), 
+	RegisterIcon(pDir([media\images\default.jpg]), [default.jpg]));
+SetMaterial(
+	RegisterMaterial([Default], 8421504, 8421504, 3289650, 0, 0.100000001490116, 0, false, false, 1, 0), 1, a);
+Set(Version(a), 7.3);
+SetTreeIcon(pDir([Media\Icons\modelDocumentation.ico]));
+int001(170);
+SetSize(9, 2, 1);
+LockPosition(false);
+LockSize(false);
+DisableIconRotation(false);
+SetProductCode([]);
+CreateAttributes(14);
+SetAttributeName(r(1), [attribute]);
+SetAttributeName(r(2), [atom]);
+SetAttributeName(r(3), [atomname]);
+SetAttributeName(r(4), [mothername]);
+SetAttributeName(r(5), [attributename]);
+SetAttributeName(r(6), [channels]);
+SetAttributeName(r(7), [location]);
+SetAttributeName(r(8), [size]);
+SetAttributeName(r(9), [labels]);
+SetAttributeName(r(10), [labelname]);
+SetAttributeName(r(11), [labelnumber]);
+SetAttributeName(r(12), [filename]);
+SetAttributeName(r(13), [containername]);
+SetAttributeName(r(14), [ViewResultsAfterExport]);
+int024;
+Set(OnUser, [Do(
+ { Delete any current instances of this form.} 
+ GuiDestroy([modelDocumentation]),
+
+ { Register the GUI-form for this atom.}
+ GuiRegister(PDir([\Atoms\ModelDocumentation.gui]), 1),
+
+ { Show the GUI-form.}
+ Guicreate([modelDocumentation], [modelDocumentation], 0, c, 0, 1)
+)
+]);
+Set(On2DDraw, [draw2dicon(3,name,name)]);
+SetStatus(0);
+int018;
+int007;

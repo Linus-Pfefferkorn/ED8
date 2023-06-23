@@ -1,0 +1,18 @@
+Library; ExecFile(PDir([Atoms\Group.atm])); Set(Name(Last(Library)), [BASIC MODELING]); 
+Set(t, PDir([Atoms\3DIcons.atm])); Last(Library); ExecFile(t);
+Set(t, PDir([Atoms\Product.atm])); Last(Library); ExecFile(t); 
+Set(t, PDir([Atoms\Source.atm])); Last(Library); ExecFile(t); 
+Set(t, PDir([Atoms\Queue.atm])); Last(Library); ExecFile(t); 
+Set(t, PDir([Atoms\Server.atm])); Last(Library); ExecFile(t); 
+Set(t, PDir([Atoms\Sink.atm])); Last(Library); ExecFile(t); 
+Set(t, PDir([Atoms\Node.atm])); Last(Library); ExecFile(t); 
+Set(t, PDir([Atoms\Container.atm])); Last(Library); ExecFile(t);
+Set(t, PDir([Atoms\Atom Versions.atm])); Last(Library); ExecFile(t);
+Set(t, PDir([Atoms\Search.atm])); Last(Library); ExecFile(t);
+Set(t, PDir([Atoms\Gui.atm])); Last(Library); ExecFile(t);
+Set(t, PDir([Atoms\Attribute.atm])); Last(Library); ExecFile(t);
+Set(t, PDir([Atoms\MoveAtom3D.atm])); Last(Library); ExecFile(t);
+
+SetRank(9, Rank(1,AtomByName([BASIC MODELING], Library)));
+
+Library; ExecFile(PDir([Atoms\Group.atm])); Set(Name(Last(Library)), [AUTOLOADED]);

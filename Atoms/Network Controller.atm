@@ -1,0 +1,722 @@
+
+
+{Preregister functions}
+
+PreregisterFunction([NetworkController_CalculateAngles], 1, 1);
+PreregisterFunction([NetworkController_IdentifyChargingStation], 1, 1);
+PreregisterFunction([NetworkController_CalculateDistancetoCharging], 1, 1);
+PreregisterFunction([NetworkController_IdentifyAtoms], 1, 1);
+PreregisterFunction([NetworkController_ExecuteConnectionTable], 1, 1);
+PreregisterFunction([NetworkController_BuildConnectionTable], 1, 1);
+PreregisterFunction([NetworkController_IdentifyNodes], 1, 1);
+PreregisterFunction([NetworkController_OptimizeNetwork], 1, 1);
+PreregisterFunction([NetworkController_InitializePointersToTables], 1, 1);
+PreregisterFunction([CalculateAngles], 1, 1);
+PreregisterFunction([Identify_Atoms], 1, 1);
+PreregisterFunction([Identify_ChargingStation], 1, 1);
+PreregisterFunction([CalculateDistancetoCharging], 1, 1);
+
+
+{Atom: Network Controller}
+
+sets;
+BaseClass;
+CreateAtom(a, s, [], 1, false);
+int023([Network Controller], 0, 6240);
+DefineFunction([NetworkController_CalculateAngles], [Network], 1, 1, [do(
+ {// variables/settings //}
+ var([valRowCounter], vbValue),
+ var([valNodeCounter], vbValue),
+ var([valCurrentNode], vbValue),
+ var([atmNetworkPointerTable], vbAtom),
+ var([atmNetworkAnglesTable], vbAtom),
+ 
+ atmNetworkPointerTable := Rank(3, p(1)),
+ atmNetworkAnglesTable:= Rank(4, p(1)),
+ 
+ SetTable(0, 0, atmNetworkAnglesTable), 
+ valNodeCounter := nRows(atmNetworkPointerTable),
+ SetTable(valNodeCounter, valNodeCounter, atmNetworkAnglesTable),
+ 
+ 
+ {// calculate angles}
+ Repeat(
+  valNodeCounter,
+  do(
+    valCurrentNode := vtp(Cell(Count, 1, atmNetworkPointerTable)),
+    SetCell(Count, 0, Name(valCurrentNode), atmNetworkAnglesTable),
+    SetCell(0, Count, Name(valCurrentNode), atmNetworkAnglesTable),
+   
+    valRowCounter := Count,
+    Repeat(
+     NrOC(valCurrentNode),
+     If(
+       AtomExists(Out(Count, valCurrentNode)),
+       If(
+         Label([t-node], Out(Count, valCurrentNode)),
+         Do(
+           SetCell(valRowCounter, Att([nodenumber], Out(Count, valCurrentNode)), 
+           
+           case(
+            WhichIsTrue(
+             and({1      90 degree }
+               xAbsLoc(out(Count,valCurrentNode),Model)-xAbsLoc(valCurrentNode,Model)=0,
+               yAbsLoc(out(Count,valCurrentNode),Model)-yAbsLoc(valCurrentNode,Model)>0
+                ),
+             and({2     -90 or 270 degree }
+               xAbsLoc(out(Count,valCurrentNode),Model)-xAbsLoc(valCurrentNode,Model)=0,
+               yAbsLoc(out(Count,valCurrentNode),Model)-yAbsLoc(valCurrentNode,Model)<0
+                ),
+             and({3       0 degree }
+               xAbsLoc(out(Count,valCurrentNode),Model)-xAbsLoc(valCurrentNode,Model)>0,
+               yAbsLoc(out(Count,valCurrentNode),Model)-yAbsLoc(valCurrentNode,Model)=0
+                ),
+             and({4     180 degree } 
+               xAbsLoc(out(Count,valCurrentNode),Model)-xAbsLoc(valCurrentNode,Model)<0,
+               yAbsLoc(out(Count,valCurrentNode),Model)-yAbsLoc(valCurrentNode,Model)=0
+                ),
+             and({5_    other angle (tangens calculation required!) }
+                xAbsLoc(out(Count,valCurrentNode),Model)-xAbsLoc(valCurrentNode,Model)<>0,
+                yAbsLoc(out(Count,valCurrentNode),Model)-yAbsLoc(valCurrentNode,Model)<>0
+                )                   
+            ),
+            {cases}           
+            90,
+            270,
+            0,
+            180,            
+            do(
+              if(
+                aTan2(
+                  xAbsLoc(out(Count,valCurrentNode),Model)-xAbsLoc(valCurrentNode,Model),
+                  yAbsLoc(out(Count,valCurrentNode),Model)-yAbsLoc(valCurrentNode,Model)
+                 )<0,
+                do(
+                  360+ aTan2(
+                         xAbsLoc(out(Count,valCurrentNode),Model)-xAbsLoc(valCurrentNode,Model),
+                         yAbsLoc(out(Count,valCurrentNode),Model)-yAbsLoc(valCurrentNode,Model) )
+                  ),
+                do(
+                  aTan2(
+                   xAbsLoc(out(Count,valCurrentNode),Model)-xAbsLoc(valCurrentNode,Model),
+                   yAbsLoc(out(Count,valCurrentNode),Model)-yAbsLoc(valCurrentNode,Model)
+                   )
+                  )  
+                )          
+              ) 
+           ),                                  
+           atmNetworkAnglesTable)      
+           )
+         )
+       )
+     )
+    )
+  )
+)
+], [Calculates the angle between two nodes referring to standard 0 degree.
+The angles will be stored in the atom "Angle Table".
+The angles will be used to decide for a corner node that can cause deceleration and acceleration at such a corner node.
+], [NetworkController_CalculateAngles(c)], 0, [Network Controller.atm]);
+DefineFunction([NetworkController_IdentifyChargingStation], [Network], 1, 1, [{Identify Battery-Charging Stations}
+do(
+ var([atmDummy], vbAtom),
+ var([atmChargingTable],vbAtom, rank(6, p(1))),
+
+ {p(1) is the reference to the "Network Controller" atom}
+ 
+ settable(0,0,atmChargingTable),
+ setchannels(0,0,atmChargingTable),
+ foratomtreeunder(
+  model,
+  do(
+    atmDummy := a,
+    if(
+     and(
+       label([t-network],atmDummy)=att([network],p(1) ),
+       label([t-chargingstation],atmDummy)
+       ),
+     do(
+       settable(nrows(atmChargingTable)+1,2,atmChargingTable),
+       setcell(nrows(atmChargingTable),0,name(atmDummy),atmChargingTable),
+       setcell(nrows(atmChargingTable),1,ptv(atmDummy),atmChargingTable),
+       setcell(nrows(atmChargingTable),2,label([t-node1],atmDummy),atmChargingTable),
+       
+       setchannels(0,nroc(atmChargingTable)+1,atmChargingTable),
+       connect(nroc(atmChargingTable),atmChargingTable,0,atmDummy)
+       )
+     )
+    )
+  ),
+ {Header}
+ setcell(0,1,[Pointer Value],atmChargingTable),
+ setcell(0,2,[Connected Node],atmChargingTable)
+
+)
+], [e1 = networkcontroller
+], [NetworkController_Identify_ChargingStation], 0, [Network Controller.atm]);
+DefineFunction([NetworkController_CalculateDistancetoCharging], [Network], 1, 1, [do(
+ var([atmNC], vbAtom, p(1)),
+ var([atmChargingDistanceTable], vbAtom, rank(7, atmNC)),
+ var([atmAtomTable], vbAtom, rank(5, atmNC)),
+ var([atmChargingTable], vbAtom, rank(6, atmNC)),
+ var([valRowCount], vbValue),
+ 
+ {atmNC is the reference to the "Network Controller" atom}
+ 
+ SetTable(0,0,atmChargingDistanceTable),
+ 
+ {Define table and set headers (atom names!)}
+ SetTable(nRows(atmChargingTable),nRows(atmAtomTable),atmChargingDistanceTable),
+ Repeat(
+  nRows(atmChargingDistanceTable),
+  SetCell(Count,0,Cell(Count,0,atmChargingTable),atmChargingDistanceTable)
+  ),
+ Repeat(
+  nCols(atmChargingDistanceTable),
+  SetCell(0,Count,Cell(Count,0,atmAtomTable),atmChargingDistanceTable)
+  ),         
+ 
+
+ {Set distances between destinations and battery-charging stations}
+ Repeat(
+  nRows(atmChargingDistanceTable),
+  do(
+    valRowCount:= Count,
+    Repeat(
+     nCols(atmChargingDistanceTable),
+     {Write distance between destination and charging location from "Distance Table" to "Battery Distance Table"}
+     SetCell(
+       valRowCount,
+       Count,
+       Cell(Cell(Count,2,atmAtomTable),Cell(valRowCount,2,atmChargingTable), first(atmNC)), 
+       atmChargingDistanceTable
+      )
+     
+     )
+    
+    )
+  
+  )
+ 
+)
+], [This function is used to find the nearest Battery-Charging Station from a certain Destination point in case that more Charging Stations are available in the model. 
+According to that information, the right connections are set so that the transporter will move to that nearest charging location.], [NetworkController_CalculateDistancetoCharging(c)], 0, [Network Controller.atm]);
+DefineFunction([NetworkController_IdentifyAtoms], [Network], 1, 1, [{Identify Atoms}
+do(
+ var([atmDummy], vbAtom),
+ var([atmAtomTable], vbAtom, Rank(5, p(1))),
+
+ settable(0,0,atmAtomTable),
+ setchannels(0,0,atmAtomTable),
+ foratomtreeunder(
+  model,
+  do(
+    atmDummy := a,
+    if(
+     and(
+       label([t-network], atmDummy)=att([network],p(1)),
+       not(label([t-chargingstation],atmDummy))
+     ),
+     do(
+       settable(nrows(atmAtomTable) + 1, 2, atmAtomTable),
+       setcell(nrows(atmAtomTable),0,name(atmDummy),atmAtomTable),
+       setcell(nrows(atmAtomTable),1,ptv(atmDummy),atmAtomTable),
+       setcell(nrows(atmAtomTable),2,label([t-node1],atmDummy),atmAtomTable),
+       
+       setchannels(0,nroc(atmAtomTable)+1,atmAtomTable),
+       connect(nroc(atmAtomTable),atmAtomTable,0,atmDummy)
+      )
+    )
+   )
+ ),
+ {Header}
+ setcell(0,1,[Pointer Value],atmAtomTable),
+ setcell(0,2,[Connected Node],atmAtomTable)
+)
+], [p(1) as NetworkController
+
+Identifies all atoms integrated in current node network.
+], [NetworkController_IdentifyAtoms(c)], 0, [Network Controller.atm]);
+DefineFunction([NetworkController_ExecuteConnectionTable], [Network], 1, 1, [do(
+ var([atmNC], vbAtom, p(1)),
+ var([atmDummy], vbAtom, 0),
+ var([valNodes], vbValue),
+ var([valRow], vbValue),
+ var([valAtoms], vbValue),
+ var([valNodeConnections], vbValue),
+
+ if(
+  nRows(rank(3, atmNC)) = nrows(atmNC),
+  do(
+ 
+   {// store previous connections and capacities //}
+   valNodes := nrows(atmNC),
+   repeat(
+    valNodes,
+    do(
+     valRow := count,
+     valNodeConnections := 0,
+     valAtoms := 0,
+ 
+     atmDummy := out(count,vtp(rank(3,atmNC))),
+     repeat(
+      nroc(atmDummy),
+      if(
+       atomexists(out(count,atmDummy)),
+       if(
+        ddb([t-node],out(count,atmDummy)),
+        do( 
+         valNodeConnections := valNodeConnections + 1,
+         {sddb(concat([node],string(valNodeConnections)),ptv(out(count,atmDummy)),atmNC),
+         sddb(concat([capacity],string(valNodeConnections)),cell(count,1,atmDummy),atmNC),}
+         Label(Concat([Node], string(valNodeConnections)), atmNC) := ptv(out(Count, atmDummy)),
+         Label(Concat([Capacity], string(valNodeConnections)), atmNC) := Cell(Count, 1, atmDummy),
+         Label(Concat([UseSpeedLimit], string(valNodeConnections)), atmNC) := Cell(Count, 3, atmDummy),
+         Label(Concat([SpeedLimit], string(valNodeConnections)), atmNC) := Cell(Count, 4, atmDummy)
+        ),
+        do(
+         valAtoms:=valAtoms+1,
+         sddb(concat([atom],string(valAtoms)),ptv(out(count,atmDummy)),atmNC)
+        )
+       )
+      )
+     ),
+     setchannels(0,0,atmDummy),
+     settable(0,0,atmDummy),
+ 
+     {// Create node-node connections. If connection existed before then restore node capacity and speed limit //}
+     repeat(
+      ncols(atmNC),
+      if(
+       and(
+        cell(valRow,count,atmNC)=1,
+        valRow<>count
+       ),
+       do(
+        setchannels(0,nroc(atmDummy)+1,atmDummy),
+        settable(nroc(atmDummy), 4, atmDummy),
+        
+        connect(nroc(atmDummy),atmDummy,0,out(count,vtp(rank(3,atmNC)))),
+        repeat(
+         valNodeConnections,
+         if(
+          atomid(out(nroc(atmDummy),atmDummy)) = atomid(vtp(ddb(concat([node],string(count)),atmNC))),
+          {setcell(nrows(atmDummy), 1, ddb(concat([capacity], string(count)), atmNC), atmDummy)}
+          do(
+           Cell(nRows(atmDummy), 1, atmDummy) := Label(Concat([Capacity], string(Count)), atmNC),
+           Cell(nRows(atmDummy), 3, atmDummy) := Label(Concat([UseSpeedLimit], string(Count)), atmNC),
+           Cell(nRows(atmDummy), 4, atmDummy) := Label(Concat([SpeedLimit], string(Count)), atmNC)
+          )
+         )
+        ),
+        if(
+         cell(nrows(atmDummy),1,atmDummy,1)=0,
+         do(
+          SetCell(nrows(atmDummy), 1, 1000000, atmDummy),
+          SetCell(nrows(atmDummy), 3, 0, atmDummy),
+          SetCell(nrows(atmDummy), 4, 0, atmDummy)
+         )
+        )
+       )
+      )
+     ),
+ 
+     {// Reconnect the atoms to this node //}
+     repeat(
+      valAtoms,
+      do(
+       setchannels(0,nroc(atmDummy)+1,atmDummy),
+       connect(nroc(atmDummy),atmDummy,0,vtp(ddb(concat([atom],string(count)),atmNC)))
+      )
+     )
+    )
+   ),
+ 
+   
+ 
+   repeat(
+    Max(valAtoms, nroc(atmDummy), ncols(atmNC)),
+    do(
+     sddb(concat([atom],string(count)),0,atmNC),
+     sddb(concat([node],string(count)),0,atmNC),
+     sddb(concat([capacity],string(count)),0,atmNC)
+    )
+   )
+  ),
+  msg([The number of nodes in your model is not consistent with the node table. First select <Edit node table> to update your table.],2)
+ )
+)
+], [p(1) as NetworkController], [NetworkController_ExecuteConnectionTable(c)], 0, [Network Controller.atm]);
+DefineFunction([NetworkController_BuildConnectionTable], [Network], 1, 1, [do(
+ var([atmNC], vbAtom, p(1)),
+ var([atmPTable], vbAtom),
+ var([atmDummy], vbAtom),
+ var([valNodes], vbValue),
+ var([valRow], vbValue),
+
+ atmPTable := rank(3, atmNC),
+
+ settable(0,0,atmNC),
+ valNodes := nrows(atmPTable),
+ settable(valNodes, valNodes, atmNC),
+ repeat(
+  valNodes,
+  setcell(count,0,name(vtp(cell(count,1,atmPTable))), atmNC)
+ ),
+ 
+ repeat(
+  valNodes,
+  setcell(0,count,name(vtp(cell(count,1,atmPTable))), atmNC)
+ ),
+ 
+ repeat(
+  valNodes,
+  do(
+   atmDummy := vtp(cell(count,1,atmPTable)),
+   valRow := count,
+   repeat(
+    nroc(atmDummy),
+    if(
+     and(
+      atomexists(out(count,atmDummy)),
+      ddb([t-node],out(count,atmDummy))
+     ),
+     setcell(valRow, att([nodenumber], out(count,atmDummy)), 1, atmNC)
+    )
+   )
+  )
+ )
+)
+], [p(1) as NetworkController
+], [NetworkController_BuildConnectionTable(c)], 0, [Network Controller.atm]);
+DefineFunction([NetworkController_IdentifyNodes], [Network], 1, 1, [do(
+ var([atmNC], vbAtom, p(1)),
+ var([atmPTable], vbAtom), 
+ var([atmDummy], vbAtom),
+
+ atmPTable := rank(3,atmNC), 
+ settable(0,0,atmPTable),
+ setchannels(0,0,atmPTable),
+ 
+ foratomtreeunder(
+  model,
+  do(
+   atmDummy := a,
+   if(
+    and(
+     att([network],atmDummy)=att([network],atmNC),
+     ddb([t-node],atmDummy)
+    ),
+    do(
+     settable(nrows(atmPTable)+1,1,atmPTable),
+     setcell(nrows(atmPTable),0,name(atmDummy),atmPTable),
+     setcell(nrows(atmPTable),1,ptv(atmDummy),atmPTable),
+     setchannels(0,nroc(atmPTable)+1,atmPTable),
+     connect(nroc(atmPTable),atmPTable,0,atmDummy),
+     setatt([nodenumber],nrows(atmPTable),atmDummy),
+     sddb([t-node1],att([nodenumber],atmDummy),atmDummy),
+     sddb([t-netreference],ptv(atmNC),atmDummy),
+     if(att(6,atmNC),set(name(atmDummy),concat([N],string(att([network],atmNC)),[-],string(att([nodenumber],atmDummy)))))
+    )
+   )
+  )
+ )
+)
+], [p(1) as NetworkController
+], [NetworkController_IdentifyNodes(c)], 0, [Network Controller.atm]);
+DefineFunction([NetworkController_OptimizeNetwork], [Network], 1, 1, [do(
+ var([atmNC], vbAtom, p(1)),
+ var([atmDummy], vbAtom),
+ var([indexer], vbValue, 0),
+ var([indexer2], vbValue, 0),
+ var([valNodes], vbValue),
+ var([valRow], vbValue),
+
+ { initialize distance and node tables }
+ { atmDummy points at distance table   }
+ { next(atmDummy) points at node table }
+
+ atmDummy := first(atmNC),
+ SetTable(0, 0, atmDummy),
+ SetTable(0, 0, next(atmDummy)),
+ 
+ valNodes := nRows(rank(3, atmNC)),
+ 
+ SetTable(valNodes, valNodes, atmDummy),
+ SetTable(valNodes, valNodes, next(atmDummy)),
+ 
+ Repeat(
+  valNodes,
+  do(
+   valRow := Count,
+   Repeat(
+    valNodes,
+    if(
+     valRow = Count,
+     do(
+      SetCell(valRow, Count, 0, atmDummy),
+      SetCell(valRow, Count, Count, next(atmDummy))
+     ),
+     SetCell(valRow, Count, 1000000000, atmDummy)
+    )
+   )
+  )
+ ),
+ 
+ { // set direct distance // }
+ Repeat(
+  valNodes,
+  do(
+   atmDummy := vtp(Cell(Count, 1, rank(3, atmNC))),
+   
+   SetCell(Count, 0, name(atmDummy), rank(1, atmNC)),
+   SetCell(0, Count, name(atmDummy), rank(1,atmNC)),
+   SetCell(Count, 0, name(atmDummy), rank(2,atmNC)),
+   SetCell(0, Count, name(atmDummy), rank(2,atmNC)),
+   valRow := Count,
+   Repeat(
+    NrOC(atmDummy),
+    if(
+     AtomExists(out(Count, atmDummy)),
+     if(
+      ddb([t-node], out(Count, atmDummy)),
+      do(
+       SetCell(valRow, att([nodenumber], out(count, atmDummy)), atomdistance(atmDummy, out(count, atmDummy)), rank(1, atmNC)),
+       setcell(valRow, att([nodenumber], out(count, atmDummy)), att([nodenumber], out(count, atmDummy)), rank(2, atmNC))
+      ),
+      do(
+       sddb([t-node1], 0, out(count, atmDummy)),
+       sddb([t-node2], 0, out(count, atmDummy))
+      )
+     )
+    )
+   )
+  )
+ ),
+
+ { // optimize with dijkstra algorithm // }
+ atmDummy := first(atmNC),
+ dijkstra(atmDummy, next(atmDummy)),
+
+ { // set node numbers at atoms // }
+ repeat(
+  valNodes,
+  do(
+   atmDummy := vtp(cell(count, 1, rank(3, atmNC))),
+   valRow := count,
+   repeat(
+    nroc(atmDummy),
+    if(
+     and(
+      atomexists(out(count, atmDummy)),
+      not(ddb([t-node], out(count, atmDummy)))
+     ),
+     do(
+      sddb([t-network], att([network], atmDummy), out(count, atmDummy)),
+      if(
+       ddb([t-node1], out(count, atmDummy)) = 0,
+       sddb([t-node1], att([nodenumber], atmDummy), out(count, atmDummy)),
+       sddb([t-node2], att([nodenumber], atmDummy), out(count, atmDummy))
+      )
+     )
+    )
+   )
+  )
+ )
+)
+], [p(1) as NetworkController
+], [NetworkController_OptimizeNetwork(c)], 0, [Network Controller.atm]);
+DefineFunction([NetworkController_InitializePointersToTables], [Network], 1, 1, [do(
+ { Make sure the atom references are set correctly. }
+ var([atmNC], vbAtom, p(1)), 
+ 
+ att([distancetable], atmNC) := ptv(rank(1,atmNC)),
+ att([nodetable], atmNC) := ptv(rank(2,atmNC)),
+ att([pointertable], atmNC) := ptv(rank(3,atmNC)),
+ att([angletable], atmNC) := ptv(rank(4,atmNC)),
+ att([atomtable], atmNC) := ptv(rank(5,atmNC)),
+ att([batterytable], atmNC) := ptv(rank(6,atmNC)),
+ att([batterydistancetable], atmNC) := ptv(rank(7,atmNC))
+)
+], [p(1) as NetworkController
+], [NetworkController_InitializePointersToTables(c)], 0, [Network Controller.atm]);
+DefineFunction([CalculateAngles], [Network], 1, 1, [NetworkController_CalculateAngles(p(1))
+], [], [CalculateAngles(c)], 0, [Network Controller.atm]);
+DefineFunction([Identify_Atoms], [Network], 1, 1, [NetworkController_IdentifyAtoms(p(1))
+], [
+], [Identify_Atoms(c)], 0, [Network Controller.atm]);
+DefineFunction([Identify_ChargingStation], [Various], 1, 1, [NetworkController_IdentifyChargingStation(p(1))
+], [
+], [Identify_ChargingStation(c)], 0, [Network Controller.atm]);
+DefineFunction([CalculateDistancetoCharging], [Various], 1, 1, [NetworkController_CalculateDistancetoCharging(p(1))
+], [
+], [CalculateDistancetoCharging(c)], 0, [Network Controller.atm]);
+Set(Icon(a), 
+	RegisterIcon(pDir([media\images\default.jpg]), [default.jpg]));
+SetMaterial(
+	RegisterMaterial([Default], 8421504, 8421504, 3289650, 0, 0.100000001490116, 0, false, false, 1, 0), 1, a);
+Set(Version(a), 7.3);
+SetTreeIcon(pDir([Media\Icons\NetworkController.ico]));
+Set(Info, [Network Controller
+
+General
+------------
+This atom MUST be in your model if you want to create a node 
+network. Each independent node network in your model should 
+have its own network controller.
+
+Select network settings to edit the network number it should 
+control.
+
+Select edit node table to quickly edit node connections in the 
+network, 1 = connect, 0 = disconnect.
+
+Select execute node table to build/delete connections you edited in 
+the node table.
+
+After you've edited nodes (connections/location), select optimize 
+network to activate your changes.
+
+Last Revision:
+---------------------
+March, 2008
+]);
+int001(137);
+SetSize(9, 2, 0);
+LockPosition(false);
+LockSize(false);
+DisableIconRotation(false);
+SetProductCode([]);
+CreateAttributes(10);
+SetAttributeName(r(1), [network]);
+SetAttributeName(r(2), [optimize]);
+SetAttributeName(r(3), [distancetable]);
+SetAttributeName(r(4), [nodetable]);
+SetAttributeName(r(5), [pointertable]);
+SetAttributeName(r(6), [renamenodes]);
+SetAttributeName(r(7), [angletable]);
+SetAttributeName(r(8), [atomtable]);
+SetAttributeName(r(9), [batterytable]);
+SetAttributeName(r(10), [batterydistancetable]);
+SetAtt(r(1), 1);
+int024;
+Set(OnEvent, [do(
+  var([atmC], vbAtom),
+  if(
+    content(c)>0,
+    do(
+      atmC := rank(3,c),
+      repeat(
+        nroc(atmC),
+        if(
+          atomexists(out(count,atmC)),
+          sddb([t-netreference],ptv(c),out(count,atmC))
+        )
+      )
+    )
+  )
+)
+]);
+Set(OnCreation, [do(
+ createevent(0,c,1,1000000),
+ SetSetting(saOnCreationOnLoad, True, c),
+ 
+ {**Remove old labels, not needed anymore**}
+ c.Row := 0,
+ c.nodes := 0,
+ c.ptab := 0
+
+)
+
+
+
+]);
+Set(OnReset, [do(
+ var([atmC], vbAtom),
+ NetworkController_IdentifyNodes(c),
+
+ if(
+  content(c)>3, 
+  do(
+   
+   {**Set all references**}
+   NetworkController_IdentifyAtoms(c),
+   NetworkController_IdentifyChargingStation(c),  
+     
+   if(
+    Optimize = False,
+    do(
+     atmC := rank(3, c),
+     if( 
+      countmatch(nroc(atmC),atomexists(out(count,atmC)),true)<>nroc(atmC),
+      msg(concat([Missing nodes in the network controlled by ],name(c),[. Rebuild network before simulating.]),2)
+     ),
+     createevent(0,c,1,1000000)
+    ),
+    do( 
+     if(
+      Optimize,
+      do(
+       NetworkController_OptimizeNetwork(c),
+       NetworkController_BuildConnectionTable(c),
+       NetworkController_CalculateAngles(c),
+       NetworkController_CalculateDistancetoCharging(c)
+      )
+     ),
+     
+     atmC := rank(3,c),
+     
+     {**Set references at nodes: used by advanced transporter**}
+     repeat(
+      nroc(atmC),
+      if(
+       atomexists(out(count,atmC)),
+       sddb([t-netreference],ptv(c),out(count,atmC))
+      )
+     )
+    )
+   )
+  ),
+  do( { Prior to EDv7 the controllor contained only 3 tables, in that case we have to update to 7 }
+   while(content(c)>0,destroyAtom(first(c))),
+   repeat(
+    7,
+    do(
+     createatom(baseclass,c,case(count,[Distance Table],[Node Table],[Pointer Table],[Angle Table],[Atom Table],[Battery Pointer Table],[Battery Distance Table])),
+     setsetting(sa3dshape,0,last(c)),
+     setsetting(sashape,0,last(c)),
+     setsetting(sahidechannels,1,last(c))
+    )
+   ),
+
+   NetworkController_IdentifyAtoms(c),
+   NetworkController_IdentifyChargingStation(c), 
+
+   NetworkController_OptimizeNetwork(c),
+   NetworkController_BuildConnectionTable(c),
+   NetworkController_CalculateAngles(c),
+   NetworkController_CalculateDistancetoCharging(c)
+  )
+ ),
+ 
+ {**Seems useless, but just to be sure**}
+ NetworkController_InitializePointersToTables(c)
+
+)
+]);
+Set(OnUser, [Do(
+  { Delete any current instances of this form.} 
+  GuiDestroy([NetworkController]),
+
+  { Register the GUI-form for this atom.}
+  GuiRegister(PDir([\Atoms\NetworkController.gui]), 1),
+
+  { Show the GUI-form.}
+   GuiCreate([NetworkController], [NetworkController], 0, c, 0, 1)
+)
+]);
+Set(On2DDraw, [draw2dicon(3,name(c),concat([controlling network ],string(att(1,c))))
+]);
+SetStatus(0);
+int018;
+int007;

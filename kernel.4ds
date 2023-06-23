@@ -1,0 +1,9 @@
+{Do not change the contents of this file}
+{This file is part of the Enterprise Dynamics installation and can be modified with the release of new versions}
+
+{Check loading of Kernel Functions.atm}
+Do(
+ If(Not(AtomExists(AtomByName([Kernel Functions], Main))),
+ int035([Kernel Functions], pDir([Atoms\Kernel Functions.atm]))
+ )
+);

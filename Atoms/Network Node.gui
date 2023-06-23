@@ -1,0 +1,189 @@
+EDControl(EditForm:
+  BorderIcons = set(SystemMenu),
+  BorderStyle = Single,
+  Caption = str('Network Node'),
+  Height = 407,
+  Name = str('NetworkNode'),
+  Position = Default,
+  ShowHint = True,
+  Top = 247,
+  Visible = True,
+  Width = 395,
+  Controls(
+    EDControl(MultiPage:
+      ActivePage = 1,
+      Align = Client,
+      Anchors = set(Left,Top,Right,Bottom),
+      Height = 367,
+      Left = 0,
+      Name = str('MultiPage1'),
+      TabOrder = 1,
+      Top = 0,
+      Width = 395,
+      Controls(
+        EDControl(SinglePage:
+          Caption = str('General'),
+          Name = str('SinglePage1'),
+          PageIndex = 1,
+          Controls(
+            EDControl(GroupBox:
+              Caption = str('Settings'),
+              Height = 128,
+              Left = 8,
+              Name = str('GroupBox2'),
+              TabOrder = 3,
+              Top = 88,
+              Width = 369,
+              Controls(
+                EDControl(Label:
+                  Caption = str('Network number:'),
+                  Color = -16777208,
+                  Height = 13,
+                  Left = 12,
+                  Name = str('StaticText12'),
+                  Top = 32,
+                  Width = 81),
+                EDControl(Label:
+                  Caption = str('X location [m]:'),
+                  Color = -16777208,
+                  Height = 13,
+                  Left = 12,
+                  Name = str('StaticText122'),
+                  Top = 64,
+                  Width = 67),
+                EDControl(Label:
+                  Caption = str('Y location [m]:'),
+                  Color = -16777208,
+                  Height = 13,
+                  Left = 12,
+                  Name = str('StaticText123'),
+                  Top = 96,
+                  Width = 67),
+                EDControl(Edit:
+                  Height = 21,
+                  Left = 132,
+                  Name = str('Network'),
+                  TabOrder = 1,
+                  Top = 26,
+                  Width = 100),
+                EDControl(Edit:
+                  Height = 21,
+                  Left = 132,
+                  Name = str('LocationX'),
+                  TabOrder = 2,
+                  Top = 58,
+                  Width = 100),
+                EDControl(Edit:
+                  Height = 21,
+                  Left = 132,
+                  Name = str('LocationY'),
+                  TabOrder = 3,
+                  Top = 90,
+                  Width = 100))),
+            EDControl(GroupBox:
+              Caption = str('Miscellaneous'),
+              Height = 96,
+              Left = 8,
+              Name = str('GroupBox3'),
+              TabOrder = 1,
+              Top = 232,
+              Width = 370,
+              Controls(
+                EDControl(CheckBox:
+                  Caption = str(''),
+                  Left = 140,
+                  Name = str('chbSpeedLimit'),
+                  TabOrder = 1,
+                  Top = 28,
+                  Width = 17),
+                EDControl(Label:
+                  Caption = str('Show speed limit:'),
+                  Color = -16777208,
+                  Height = 13,
+                  Left = 20,
+                  Name = str('Label1'),
+                  Top = 32,
+                  Width = 82),
+                EDControl(Button:
+                  Caption = str('&Edit capacity and speed limit'),
+                  Left = 16,
+                  Name = str('Button1'),
+                  TabOrder = 2,
+                  Top = 56,
+                  Width = 155,
+                  Events(
+                    Click = str('do('#13'  { First Check if there''s is another atom connected to the output channel. Because'#13'    the table size of the NetworkNode is based on this. When there''s not an atom connected '#13'    then the table gets a zero-dimension and it has no use of showing it. }'#13'  if('#13'   AtomExists(Out(1, GuiAtom)) = False,'#13'   do('#13'    msg([It has no use to show the table because it''s dimension will be 0x0. This is because there''s no atom connected to the output channel.]),'#13'    Return(-1) '#13'   )   '#13'  ),'#13#13'  SetTable(CountMatch(NrOC(GuiAtom),ddb([t-node], out(Count, GuiAtom)), true), 4, GuiAtom),'#13'  '#13'  { Set table headers }  '#13'  SetCell(0, 0, [Direction], GuiAtom),'#13'  SetCell(0, 1, [Capacity], GuiAtom),'#13'  SetCell(0, 2, [Content], GuiAtom),'#13'  SetCell(0, 3, [Use speed limit], GuiAtom),'#13'  SetCell(0, 4, [Speed limit [m/s]], GuiAtom),'#13'  '#13'  Repeat('#13'   nRows(GuiAtom),'#13'   SetCell(Count, 0, Name(out(Count, GuiAtom)), GuiAtom)'#13'  ),'#13'  '#13'  EditTable(GuiAtom)'#13')'#13))))),
+            EDControl(GroupBox:
+              Caption = str(''),
+              Height = 64,
+              Left = 8,
+              Name = str('GroupBox1'),
+              TabOrder = 2,
+              Top = 8,
+              Width = 370,
+              Controls(
+                EDControl(Edit:
+                  Height = 21,
+                  Left = 132,
+                  Name = str('NodeName'),
+                  TabOrder = 1,
+                  Top = 26,
+                  Width = 225),
+                EDControl(Label:
+                  Caption = str('Atom name:'),
+                  Color = -16777208,
+                  Height = 13,
+                  Left = 12,
+                  Name = str('StaticText13'),
+                  Top = 32,
+                  Width = 56))))))),
+    EDControl(Panel:
+      Align = Bottom,
+      Anchors = set(Left,Right,Bottom),
+      BevelOuter = None,
+      Caption = str(''),
+      Height = 40,
+      Left = 0,
+      Name = str('Panel1'),
+      TabOrder = 2,
+      Top = 367,
+      Width = 395,
+      Controls(
+        EDControl(Button:
+          Caption = str('&Apply'),
+          Left = 312,
+          Name = str('btnApply'),
+          TabOrder = 4,
+          Top = 8,
+          Events(
+            Click = str('do('#13' '#13'  {Save TextField}'#13'  '#13'  name(GuiAtom) := GuiControl([NodeName],GuiGet([Text])),'#13'  '#13'  Att([Network],GuiAtom) := value(GuiControl([Network],GuiGet([Text]))),'#13'  '#13'  xLoc(GuiAtom) := value(GuiControl([LocationX],GuiGet([Text]))), '#13#13'  yLoc(GuiAtom) := value(GuiControl([LocationY],GuiGet([Text]))),'#13'  '#13'  {Save checkbox}'#13'  Att([ShowSpeedLimit], GuiAtom) := GuiControl([chbSpeedLimit], GuiGet([Checked]))'#13')'#13))),
+        EDControl(Button:
+          Cancel = True,
+          Caption = str('&Cancel'),
+          Left = 230,
+          Name = str('btnCancel'),
+          TabOrder = 3,
+          Top = 8,
+          Events(
+            Click = str('GuiDestroy '#13))),
+        EDControl(Button:
+          Caption = str('&Ok'),
+          Default = True,
+          Left = 144,
+          Name = str('btnOk'),
+          TabOrder = 2,
+          Top = 8,
+          Events(
+            Click = str('Do('#13' GuiControl([btnApply]),'#13' GuiRun([Click]),'#13' GuiDestroy'#13')'#13))),
+        EDControl(Button:
+          Caption = str('&Help'),
+          Left = 8,
+          Name = str('btnHelp'),
+          TabOrder = 1,
+          Top = 8,
+          Events(
+            Click = str('do('#13'  help(pdir([Help\ED HELP.HLP]), [Network Node]) '#13')'#13)))))),
+  Events(
+    Show = str('do('#13'  {Set Caption}'#13'  if('#13'   atomexists(m(GuiAtom)),'#13'   GuiControl([NetworkNode],GuiSet([Caption],concat(name(m(GuiAtom)), [ - ], name(GuiAtom)))),'#13'   GuiControl([NetworkNode],GuiSet([Caption],concat([Baseclass - ], name(GuiAtom))))'#13'  ),'#13' '#13'  {Set ActivePage}'#13'     '#13'  GuiControl([MultiPage1]),GuiSet([ActivePage],1),'#13'      '#13'  {Set TextField}'#13'  GuiControl([NodeName],GuiSet([Text],name(GuiAtom))),'#13'  '#13'  GuiControl([Network],GuiSet([Text],textatt([network],GuiAtom))), '#13'  '#13'  GuiControl([LocationX],GuiSet([Text], string(xLoc(GuiAtom)))), '#13#13'  GuiControl([LocationY],GuiSet([Text], string(yLoc(GuiAtom)))),'#13'  '#13'  {Set checkbox}'#13'  if('#13'   CompareText(AttributeName(7, GuiAtom), [ShowSpeedLimit]),'#13'   do('#13'    GuiControl([chbSpeedLimit], GuiSet([Enabled], true)),'#13'    GuiControl([chbSpeedLimit], GuiSet([Checked], Att([ShowSpeedLimit], GuiAtom)))'#13'   ),'#13'   GuiControl([chbSpeedLimit], GuiSet([Enabled], false))'#13'  ),'#13'  '#13'  {Position the form}'#13'  Gui_PositionGuiAroundAtom(GuiControl([NetworkNode])),'#13'  GuiRun([Update])'#13')'#13),
+    Update = str('if('#13' nRows(GuiAtom) = 0,'#13' GuiControl([Button1], GuiSet([Enabled], false)),'#13' GuiControl([Button1], GuiSet([Enabled], true))'#13')'#13)))
+

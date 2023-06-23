@@ -1,0 +1,122 @@
+
+
+{Atom: Objective}
+
+sets;
+BaseClass;
+createAtom(a, s, [], 1, false);
+int023([Objective], 255, 1120);
+Set(Icon(a), 
+	RegisterIcon(pDir([media\images\default.jpg]), [default.jpg]));
+SetMaterial(
+	RegisterMaterial([Default], 8421504, 8421504, 3289650, 0, 0.100000001490116, 0, false, false, 1, 0), 1, a);
+Set(Version(a), 7.3);
+SetTreeIcon(pDir([Media\Icons\Objective.ico]));
+Set(Info, [Optimization Objective
+
+General
+------------
+This atom assists in defining an objective for your optimization via OptQuest.
+
+The Objective expression can be chosen from a picklist or defined 
+by the user.  
+
+It is usually convenient to reference an atom in your 4DScript 
+expression by "looking" through one or more input channels with 
+the 4DScript word "in(1,c)".
+
+REMARK:
+---------------
+Only one objective per optimization.
+
+Edit parameters:
+  Name, Objective expression, Objective goal.
+
+Last Revision:
+---------------------
+February, 2008
+]);
+SetChannels(1, 0);
+SetChannelRanges(1, 100, 0, 0);
+int001(52);
+SetSize(8, 2, 1);
+LockPosition(false);
+LockSize(false);
+DisableIconRotation(false);
+SetProductCode([]);
+createAttributes(4);
+SetAttributeName(r(1), [atom]);
+SetAttributeName(r(2), [objective]);
+SetAttributeName(r(3), [max_min]);
+SetAttributeName(r(4), [name_obj]);
+SetTextAtt(r(1), [Connect with atom]);
+SetExprAtt(r(2), [input(in(1,c))]);
+SetTextAtt(r(3), [maximize]);
+SetTextAtt(r(4), [Objective]);
+int024;
+Set(OnCreation, [if(
+ ddb([T186],up),
+ if(countmatch(content(up(c)),name(rank(count,up(c))),[Objective]),
+  do(
+  destroyatom(c),
+  msg([You only need one objective])
+  ),
+  set(name(c),[Objective])
+ ),
+ do(
+  baseclass,setcs,
+  foratomtreeunder(
+   model,
+   if(ddb([T186]),setcs)
+  ),
+  if(
+   not(atomexists(cs)),
+   do(
+    createatom(atombyname([Optimizer],library),model,[Optimizer]),
+    setcs
+   )
+  ),
+  if(countmatch(content(cs),name(rank(count,cs)),[Objective]),
+   do(
+   destroyatom(c),
+   msg([You only need one objective])
+   ),
+   do(
+    set(viewx,xabsloc(cs,dispatom)),
+    set(viewy,+(*(2,+(1,content(cs))),yabsloc(cs,dispatom))),
+    moveatom(c,cs),
+    settimerevent(
+     concat(
+      [setloc(1,],
+      string(*(2,content(up(c)))),
+      [,0,vtp(],
+      string(ptv(c)),
+      [))]
+     )
+    ),
+    setsize(xsize(cs),+(2.8,*(content(cs),2)),0,cs),
+    set(name(c),[Objective]),
+    baseclass,setcs
+   )
+  )
+ )
+)
+]);
+Set(OnUser, [Do(
+ { Delete any current instances of this form.} 
+ GuiDestroy([Objective]),
+
+ { Register the GUI-form for this atom.}
+ GuiRegister(PDir([\Atoms\Objective.gui]), 1),
+
+ { Show the GUI-form.}
+ Guicreate([Objective], [Objective], 0, c, 0, 1)
+)
+]);
+Set(On2DDraw, [draw2dicon(3,name,[])
+]);
+Set(OnMessage, [SetDbVal(1,3,att([objective],c))
+]);
+SetStatus(0);
+int018;
+int007;

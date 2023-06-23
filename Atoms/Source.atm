@@ -1,0 +1,117 @@
+
+
+{Atom: Source}
+
+sets;
+BaseClass;
+CreateAtom(a, s, [], 1, false);
+int023([Source], 7168771, 240);
+Set(Icon(a), 
+	RegisterIcon(pDir([Media\Images\Atoms\source.bmp]), [source]));
+AddModel3D(
+	RegisterModel3D(Model3DDir([\source.wrl]), [source.wrl], 0, 0, 0, 1, 1, -1, -90, 0, 0), a);
+AddModel3D(
+	RegisterModel3D(Model3DDir([\source_Resized.wrl]), [Source_Resized.wrl], 0, 0, 0, 1, 1, -1, -90, 0, 0), a);
+SetMaterial(
+	RegisterMaterial([Default], 8421504, 8421504, 3289650, 0, 0.100000001490116, 0, false, false, 1, 0), 1, a);
+Set(Version(a), 7.3);
+SetTreeIcon(pDir([Media\Icons\Source.ico]));
+Set(Info, [Generates atoms
+
+General
+------------
+Generates atoms with a certain inter arrival time (cycletime) 
+and send them out. 
+
+To specify the type of atom to be generated, connect the 
+source's inputhannel with the central channel of the atom to 
+be generated. If the inputchannel is not connected the atom 
+generated is of the type Product. 
+
+The user can specify a trigger on creation to change the 
+appearance, labels or other characteristics of the atom generated. 
+The trigger field contains a number of predefined settings.
+
+Channels:
+--------------
+1 inputchannel, N outputchannels
+
+Notes:
+---------
+Three exclamation marks are shown during animation 
+if the generator has been blocked. 
+
+Statuses:
+---------------
+ 5 - Blocked
+ 2 - Busy
+
+Last revision:
+-------------------
+February, 2008
+]);
+SetChannels(1, 1);
+SetChannelRanges(1, 1, 1, 255);
+int001(10);
+SetSize(5, 2, 2);
+LockPosition(false);
+LockSize(false);
+DisableIconRotation(false);
+SetProductCode([]);
+CreateAttributes(7);
+SetAttributeName(r(1), [SendTo]);
+SetAttributeName(r(2), [CycleTime]);
+SetAttributeName(r(3), [CreationTrigger]);
+SetAttributeName(r(4), [ExitTrigger]);
+SetAttributeName(r(5), [FirstProduct]);
+SetAttributeName(r(6), [MaxProducts]);
+SetAttributeName(r(7), [Icon3D]);
+SetExprAtt(r(1), [1]);
+SetExprAtt(r(2), [10]);
+SetExprAtt(r(3), [{.0|10. Do Nothing .}0]);
+SetAtt(r(5), 10);
+SetExprAtt(r(6), [{. -1 |1. Unlimited .} -1 ]);
+SetAtt(r(7), 3);
+int024;
+Set(OnEvent, [Case( EventCode, {* Event 1: create atom *} Do(  {* Blocked *}  Status(c) := 5,  createAtom(In(1, c), c, Name(In(1, c))),  createEvent(0, c, 2, 0, Last(c)) ), {* Event 2: Execute creation trigger and move atom out *} Do(  SetCs(i),  SetSetting(saHideChannels, 1, i),  CreationTrigger,  OpenAllOc(c) ))]);
+Set(OnExited, [Do( If(  Or(   Output(c) < MaxProducts,   MaxProducts = -1  ),  createEvent(CycleTime, c, 1) ), {* Busy *} Status(c) := 2, CloseAllOc(c), ExitTrigger)]);
+Set(OnCreation, [{* Implemented for backwards compatability *}
+If(
+  And(
+    Model3D(2, c)>0,
+    CompareText(Model3DName(Model3D(2, c)), [Source_Resized.wrl])
+  ),
+  Att([Icon3D], c) := 4
+)
+  
+  
+  
+]);
+Set(OnReset, [Do( If(  Not(AtomExists(In(1, c))),  Do(   createAtomCopy(    AtomByName([Product], Library),    Up( c),    [Product]   ),   Connect(0, Last(Up(c)), 1, c),   SetLoc(xLoc(c) - 5, yLoc(c), 0, Last(Up(c)))  ) ), If(  Or(   MaxProducts > 0,   MaxProducts = -1  ),  createEvent(FirstProduct, c, 1) ), {* Busy *} Status(c) := 2, CloseAllOc(c))]);
+Set(OnUser, [Do(  { Delete any current instances of this form.}   GuiDestroy([Source]),   { Register the GUI-form for this atom.}  GuiRegister(PDir([\Atoms\Source.gui]), 1),  { Show the GUI-form.}   Guicreate([Source], [Source], 0, c, 0, 1)  )]);
+Set(OnOcReady, [If( Content(c) > 0, MoveRequest(First(c), SendTo))]);
+Set(On2DDraw, [StandardDisplay( Name, Concat(   [Out: ],   String(Output),   If(    AvgContent > 0,    [ !!!],    []  ) ), Icon)]);
+Set(On3DDraw, [Case(
+ Icon3D,
+  {** None **}
+  Do(
+   { Nothing }
+   Icon3D := Icon3D
+  ),
+  {** Simple Box **}
+  Do(
+    DrawCube(xSize / 2, ySize / 2, 0.5, xSize, ySize, 1)
+  ),
+  {** 3D Source **}
+  Do(
+    Drawmodel3D(model3D(1, c), 0, 0, 0, xSize / 5, ySize / 2, zSize / 5)
+  ),
+  {** 3D Source resized **}
+  Do(
+    Drawmodel3D(model3D(2, c), 0, 0, 0, xSize, ySize, zSize)
+  )  
+)
+]);
+SetStatus(0);
+int018;
+int007;

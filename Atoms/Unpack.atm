@@ -1,0 +1,156 @@
+
+
+{Atom: Unpack}
+
+sets;
+BaseClass;
+createAtom(a, s, [], 1, false);
+int023([Unpack], 4194432, 1264);
+Set(Icon(a), 
+	RegisterIcon(pDir([Media\Images\Atoms\server.bmp]), [server]));
+Addmodel3D(
+	Registermodel3D(model3DDir([\disassembler.wrl]), [disassembler.wrl], 0, 0, 0, 1, 1, -1, -90, 0, 0), a);
+SetMaterial(
+	RegisterMaterial([Default], 8421504, 8421504, 3289650, 0, 0.100000001490116, 0, false, false, 1, 0), 1, a);
+Set(Version(a), 7.3);
+SetTreeIcon(pDir([Media\Icons\Unpack.ico]));
+Set(Info, [Unpack contents from atoms.
+
+General
+------------
+If an atom enters that contains other atoms, the specified number 
+of atoms from the content are sent out  through channel 1,  the 
+remaining  package is sent out through channel 2. Allows only one 
+package at a time.  If the specified number of atoms is larger than the real 
+content, the complete content will be set out.
+
+Channels:
+---------------
+1 inputchannel
+2 outputchannels (channel 1 = contents, channel 2 = package)
+
+Statuses:
+--------------
+   21 - Waiting for package
+   23 - Contents blocked
+    5 - Blocked
+
+Applications: unpack products from boxes, boxes from pallets, 
+pallets from containers, etc.
+
+Last Revision:
+---------------------
+February, 2008
+]);
+SetChannels(1, 2);
+SetChannelRanges(1, 255, 2, 2);
+int001(63);
+int013(1, 0, false, false, 0, 0, [Contents], []);
+int013(2, 0, false, false, 0, 0, [Package], []);
+SetSize(4, 2, 1);
+LockPosition(false);
+LockSize(false);
+DisableIconRotation(false);
+SetProductCode([]);
+createAttributes(8);
+SetAttributeName(r(1), [nr unpack products]);
+SetAttributeName(r(2), [cycletime]);
+SetAttributeName(r(3), [curunpack]);
+SetAttributeName(r(4), [entrytrigger]);
+SetAttributeName(r(5), [exittrigger]);
+SetAttributeName(r(6), [exitpackagetrigger]);
+SetAttributeName(r(7), [instrategy]);
+SetAttributeName(r(8), [3DIcon]);
+SetExprAtt(r(1), [content(first(c))]);
+SetExprAtt(r(2), [0]);
+SetExprAtt(r(3), [0]);
+SetExprAtt(r(7), [{.openallic(c)|1. Any inputchannel .}openallic(c)]);
+SetAtt(r(8), 2);
+int024;
+Set(OnEvent, [case(eventcode,
+ {1: after cycletime unpack all atoms or specified number}
+ do(
+  setatt(3,att(1,c),c),
+  repeat(
+   if(<=(content(first(c)),att(3,c)),content(first(c)),att(3,c)),
+   moveatom(last(first(c)),c)
+  ),
+  {make sure that box or container is the last in queue }
+  setrank(content(c),first(c)),
+  setstatus(23,c),
+  createevent(0,c,2)
+ ),
+ {2: send products on through 1 the contents through 2 the box}
+ if(>(content(c),1),openoc(1,c),openoc(2,c)),
+ {3: On exit start cycle over again } 
+ instrategy
+)
+]);
+Set(OnEntered, [{if needed because moveatom is used causes this trigger to go off}
+if(
+ <>(ic(c),0),
+ do(
+  setloc(0,0,zsize(c),i),
+  closeallic(c),
+  setstatus(2,c),
+  att(4,c),
+  createevent(att(2,c),c,1)  
+ )
+)
+]);
+Set(OnExited, [do(
+ closealloc(c),
+ if(
+  oc(c),
+  att(5,c),
+  att(6,c)
+ ),
+ if(
+  =(content(c),0),
+  do(
+   setstatus(21,c),
+   createevent(0,c,3)
+  ),
+  createevent(0,c,2)
+ )
+)
+]);
+Set(OnCreation, [autoconnect
+]);
+Set(OnReset, [do(
+ closealloc(c),
+ setstatus(21,c),
+ setatt(3,0,c)
+)
+]);
+Set(OnUser, [Do(
+  { Delete any current instances of this form.} 
+  GuiDestroy([Unpack]),
+
+  { Register the GUI-form for this atom.}
+  GuiRegister(PDir([\Atoms\Unpack.gui]), 1),
+
+  { Show the GUI-form.}
+   Guicreate([Unpack], [Unpack], 0, c, 0, 1)
+ )
+]);
+Set(OnOcReady, [if(=(oc(c),1),
+ moverequest(first(c),1),
+ moverequest(first(c),2)
+)
+]);
+Set(On2DDraw, [standarddisplay(name(c),if(atomexists(first(c)),string(if(=(content(first(c)),0),-(content(c),1),content(first(c))))))
+]);
+Set(On3DDraw, [Case(
+ 3DIcon,
+  {** Simple Box **}
+  Do(
+    DrawCube(xSize / 2, ySize / 2, 0.5, xSize, ySize, 1)
+  ),
+ { Assembler 1 }
+ Drawmodel3D(model3D(1, c), 0, 0, 0, 1, 1, 1)
+)
+]);
+SetStatus(0);
+int018;
+int007;

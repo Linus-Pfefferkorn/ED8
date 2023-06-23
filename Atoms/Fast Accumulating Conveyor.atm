@@ -1,0 +1,104 @@
+
+
+{Atom: Fast Accumulating Conveyor}
+
+sets;
+BaseClass;
+CreateAtom(a, s, [], 1, false);
+int023([Fast Accumulating Conveyor], 6467134, 1266);
+Set(Icon(a), 
+	RegisterIcon(pDir([Media\Images\Atoms\conveyor.bmp]), [conveyor]));
+SetMaterial(
+	RegisterMaterial([Default], 8421504, 8421504, 3289650, 0, 0.100000001490116, 0, false, false, 1, 0), 1, a);
+Set(Version(a), 7.3);
+SetTreeIcon(pDir([Media\Icons\FastConveyor.ico]));
+Set(Info, [Fast Accumulating conveyor
+
+General
+------------
+Accumulating conveyor. If an atom enters, the conveyor closes 
+the inputchannels. When the atom that entered is conveyed by its 
+length the input opens again. The product is conveyed up to the 
+end of the conveyor or until it reaches another atom (distance 
+depends on length of products). The speed in m/s can be 
+specified. The capacity of the conveyor equals its length in meters. 
+If an atom reaches the end of the conveyor it is moved out.
+This conveyor is faster in evaluation as the Accumulating 
+Conveyor
+
+Statuses:
+--------------
+  13 - Empty
+  26 - Conveying
+    5 - Blocked
+
+Last revision:
+-------------------
+February, 2008
+
+]);
+SetChannels(1, 1);
+SetChannelRanges(1, 255, 1, 255);
+int001(33);
+SetSize(10, 1, 1);
+LockPosition(false);
+LockSize(false);
+DisableIconRotation(false);
+SetProductCode([]);
+CreateAttributes(17);
+SetAttributeName(r(1), [speed]);
+SetAttributeName(r(2), [traveltime]);
+SetAttributeName(r(3), [tempmaxloc]);
+SetAttributeName(r(4), [curloc]);
+SetAttributeName(r(5), [exittime]);
+SetAttributeName(r(6), [curcontent]);
+SetAttributeName(r(7), [length]);
+SetAttributeName(r(8), [sendto]);
+SetAttributeName(r(9), [timeofentry]);
+SetAttributeName(r(10), [exitlength]);
+SetAttributeName(r(11), [calc locations]);
+SetAttributeName(r(12), [entrytrigger]);
+SetAttributeName(r(13), [exittrigger]);
+SetAttributeName(r(14), [displayfact]);
+SetAttributeName(r(15), [displaycont]);
+SetAttributeName(r(16), [capacity]);
+SetAttributeName(r(17), [Use_Physical]);
+SetAtt(r(1), 1);
+SetExprAtt(r(2), [/(att(7,c),att(1,c))]);
+SetExprAtt(r(4), [min(att(3,c),*(att(1,c),-(time,entrytime(cs))))]);
+SetExprAtt(r(7), [10]);
+SetExprAtt(r(8), [1]);
+SetExprAtt(r(11), [ if(  and(att(15,c),<>(content(c),0)),  do(   setatt(   3,   min(    att(7,c),    +(     -(att(7,c),att(10,c)),     *(      att(1,c),      -(time,att(5,c))     )    )   )   ,c   ),   foratomlayerunder(    c,    do(     setcs,     setloc(-(*(att(4,c),att(14,c)),xsize(cs)),/(-(ysize(c),ysize(cs)),2),zsize(c),cs),     setatt(3,-(att(3,c),xsize(cs)),c)    )   )  ) )]);
+SetAtt(r(15), 1);
+SetAtt(r(16), 10000);
+SetAtt(r(17), 1);
+int024;
+Set(OnEvent, [Case( EventCode, do(setstatus(5,c),openalloc(c)), if(  =(content(c),0),  openallic(c),  if(and(<(att(6,c),att(7,c)),<(content(c),att(16,c)),<=(/(xsize(last(c)),att(1,c)),+(-(time,entrytime(last(c))),0.00001))),   openallic(c)  ) ))]);
+Set(OnEntered, [do(
+ setatt(9,time,c),
+ setatt(6,+(att(6,c),xsize(i)),c),
+ closeallic(c),
+ att(12,c),
+ if(
+  =(content(c),1),
+  do(
+   setstatus(26,c),
+   createevent(att(2,c),c,1,1,i)
+  )
+ ),
+ if(
+  and(<(att(6,c),att(7,c)),<(content(c),att(16,c))),
+  createevent(/(xsize(i),att(1,c)),c,2)
+ )
+)
+]);
+Set(OnExited, [do( setatt(6,-(att(6,c),xsize(i)),c), closealloc(c), setatt(5,time,c), setatt(10,xsize(i),c), if(  <>(content(c),0),  do(   createevent(    max(/(xsize(i),att(1,c)),-(att(2,c),-(time,entrytime(first(c))))),    c,1,1,first(c)   ),   if(    <(att(6,c),att(7,c)),    createevent(     max(      0,      max(       /(-(+(xsize(i),att(6,c)),att(7,c)),att(1,c)),       -(/(xsize(last(c)),att(1,c)),-(time,att(9,c)))      )     ),     c,2)   ),   setstatus(26,c)  ),  do(   setstatus(13,c),   createevent(0,c,2)  ) ), att(13,c))]);
+Set(OnCreation, [autoconnect]);
+Set(OnReset, [do( closealloc(c), setstatus(13,c), setatt(5,0,c), setatt(6,0,c), setatt(9,0,c), If(Not(Use_Physical),   setatt(14,xsize(c)/att(7,c),c),   Do(    SetAtt(7,xSize(c),c),        setatt(14,1,c)   )     ))]);
+Set(OnUser, [Do(  { Delete any current instances of this form.}   GuiDestroy([Fast Accumulating Conveyor]),  { Register the GUI-form for this atom.}  GuiRegister(PDir([\Atoms\Fast Accumulating Conveyor.gui]), 1),  { Show the GUI-form.}   Guicreate([Fast Accumulating Conveyor], [Fast Accumulating Conveyor], 0, c, 0, 1) )]);
+Set(OnOcReady, [if( <>(content(c),0), do(  setstatus(5,c),  moverequest(first(c),att(8,c)) ))]);
+Set(On2DDraw, [do( if(att(15),  att(11, c),  if(>(discale,11),   ditext(0.4,0,concat([Content : ],string(content(c))),colorblack,color(c),0.5,[arial])  ) ))]);
+Set(On3DDraw, [if(boxvisible(0,0,0,xsize,ysize,zsize), do(  if(att(15),att(11,c)),  draw3dicon(2) ))]);
+SetStatus(0);
+int018;
+int007;

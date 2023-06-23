@@ -1,0 +1,249 @@
+
+
+{Preregister functions}
+
+PreregisterFunction([Generic_Monitor_Animate2D], 1, 1);
+PreregisterFunction([Generic_Monitor_VariableCodes], 1, 1);
+PreregisterFunction([Generic_Monitor_GetFillColor], 1, 1);
+PreregisterFunction([Generic_Monitor_SetFillColor], 2, 2);
+PreregisterFunction([Generic_Monitor_GetYAxisNumberOfDecimals], 1, 1);
+PreregisterFunction([Generic_Monitor_SetYAxisNumberOfDecimals], 2, 2);
+PreregisterFunction([Generic_Monitor_GetSubscript], 1, 1);
+PreregisterFunction([Generic_Monitor_SetSubscript], 2, 2);
+PreregisterFunction([Generic_Monitor_SetMonitorVisible], 2, 2);
+PreregisterFunction([Generic_Monitor_GetMonitorVisible], 1, 1);
+PreregisterFunction([Generic_Monitor_SetYAxisLinesVisible], 2, 2);
+PreregisterFunction([Generic_Monitor_GetYAxisLinesVisible], 1, 1);
+PreregisterFunction([Generic_Monitor_SetYAxisValuesVisible], 2, 2);
+PreregisterFunction([Generic_Monitor_GetYAxisValuesVisible], 1, 1);
+PreregisterFunction([Generic_Monitor_SetYAxisLinesColor], 2, 2);
+PreregisterFunction([Generic_Monitor_GetYAxisLinesColor], 1, 1);
+PreregisterFunction([Generic_Monitor_SetYAxisNumberOfValues], 2, 2);
+PreregisterFunction([Generic_Monitor_GetYAxisNumberOfValues], 1, 1);
+PreregisterFunction([Generic_Monitor_SetTextSizeYAxis], 2, 2);
+PreregisterFunction([Generic_Monitor_GetTextSizeYAxis], 1, 1);
+PreregisterFunction([Generic_Monitor_SetScoresVisible], 2, 2);
+PreregisterFunction([Generic_Monitor_GetScoresVisible], 1, 1);
+PreregisterFunction([Generic_Monitor_SetTitleVisible], 2, 2);
+PreregisterFunction([Generic_Monitor_GetTitleVisible], 1, 1);
+PreregisterFunction([Generic_Monitor_SetAutomaticScaling], 2, 2);
+PreregisterFunction([Generic_Monitor_GetAutomaticScaling], 1, 1);
+PreregisterFunction([Generic_Monitor_SetTextSizeScores], 2, 2);
+PreregisterFunction([Generic_Monitor_GetTextSizeScores], 1, 1);
+PreregisterFunction([Generic_Monitor_SetTextSizeTitle], 2, 2);
+PreregisterFunction([Generic_Monitor_GetTextSizeTitle], 1, 1);
+PreregisterFunction([Generic_Monitor_SetBorderColor], 2, 2);
+PreregisterFunction([Generic_Monitor_GetBorderColor], 1, 1);
+PreregisterFunction([Generic_Monitor_SetTextColor], 2, 2);
+PreregisterFunction([Generic_Monitor_GetTextColor], 1, 1);
+PreregisterFunction([Generic_Monitor_SetInBetweenSpace], 2, 2);
+PreregisterFunction([Generic_Monitor_GetInBetweenSpace], 1, 1);
+PreregisterFunction([Generic_Monitor_SetIntervalWidth], 2, 2);
+PreregisterFunction([Generic_Monitor_GetIntervalWidth], 1, 1);
+PreregisterFunction([Generic_Monitor_GetNrOfIntervals], 1, 1);
+PreregisterFunction([Generic_Monitor_SetNrOfIntervals], 2, 2);
+PreregisterFunction([Generic_Monitor_SetExpression], 2, 2);
+PreregisterFunction([Generic_Monitor_GetExpression], 1, 1);
+PreregisterFunction([Generic_Monitor_SetRefreshRate], 2, 2);
+PreregisterFunction([Generic_Monitor_GetRefreshRate], 1, 1);
+PreregisterFunction([Generic_Monitor_SetGraphShape], 2, 2);
+PreregisterFunction([Generic_Monitor_GetGraphShape], 1, 1);
+PreregisterFunction([Generic_Monitor_GetMonHeight], 1, 1);
+PreregisterFunction([Generic_Monitor_SetMonHeight], 2, 2);
+PreregisterFunction([Generic_Monitor_SetAutoAdjust], 2, 2);
+PreregisterFunction([Generic_Monitor_GetAutoAdjust], 1, 1);
+PreregisterFunction([Generic_Monitor_SetMaxValue], 2, 2);
+PreregisterFunction([Generic_Monitor_GetMaxValue], 1, 1);
+PreregisterFunction([Generic_Monitor_GetNrofDecimals], 1, 1);
+PreregisterFunction([Generic_Monitor_SetNrofDecimals], 2, 2);
+PreregisterFunction([Generic_Monitor_GetResultValue], 1, 1);
+PreregisterFunction([Generic_Monitor_SetResultValue], 2, 2);
+PreregisterFunction([Generic_Monitor_GetMonitorText], 1, 1);
+PreregisterFunction([Generic_Monitor_SetMonitorText], 2, 2);
+PreregisterFunction([Generic_Monitor_GetMonitorMax], 1, 1);
+PreregisterFunction([Generic_Monitor_SetMonitorMax], 2, 2);
+PreregisterFunction([Generic_Monitor_GetAutomaticSubscript], 1, 1);
+PreregisterFunction([Generic_Monitor_SetAutomaticSubscript], 2, 2);
+
+
+{Atom: Generic Monitor}
+
+sets;
+BaseClass;
+CreateAtom(a, s, [], 1, false);
+int023([Generic Monitor], 15793151, 1120);
+DefineFunction([Generic_Monitor_Animate2D], [Various], 1, 1, [do(  var([atmC], vbAtom, p(1)),  var([indexer], vbValue, 0),   {**Adjust interval width accordingly**}  if(    Generic_Monitor_GetNrOfIntervals(atmC) > 0,    Generic_Monitor_SetIntervalWidth(atmC, (xSize(atmC) - 2 - (Generic_Monitor_GetNrOfIntervals(atmC)) * Generic_Monitor_GetInBetweenSpace(atmC)) / Generic_Monitor_GetNrOfIntervals(atmC))  ),    if(    Generic_Monitor_GetAutomaticScaling(atmC),    do(      Generic_Monitor_SetTextSizeTitle(atmC, Generic_Monitor_GetMonHeight(atmC) / 10),      Generic_Monitor_SetTextSizeScores(atmC, Min(xSize(atmC), Generic_Monitor_GetMonHeight(atmC)) / 20),      Generic_Monitor_SetTextSizeYAxis(atmC, Min(xSize(atmC), Generic_Monitor_GetMonHeight(atmC)) / 20)    )  ),    if(    InList(Generic_Monitor_GetGraphShape(atmC), 1, 4) > 0,    Generic_Monitor_SetMonHeight(atmC, ySize(atmC) - 4 * Generic_Monitor_GetTextSizeTitle(atmC)),    Generic_Monitor_SetMonHeight(atmC, ySize(atmC) - 2 * Generic_Monitor_GetTextSizeTitle(atmC))  ),     {**The Diagram's Title**}  if(    Generic_Monitor_GetTitleVisible(atmC),    DrawText(      1,      if(        Generic_Monitor_GetAutoAdjust(atmC) = True,        - 2 * Generic_Monitor_GetTextSizeTitle(atmC),        ySize(atmC)      ),      StringLength(Generic_Monitor_GetMonitorText(atmC)) * Generic_Monitor_GetTextSizeTitle(atmC),      Generic_Monitor_GetTextSizeTitle(atmC) * 2,      Generic_Monitor_GetMonitorText(atmC),       Generic_Monitor_GetTextColor(atmC),      Generic_Monitor_GetTextSizeTitle(atmC),      [Arial],      0,      0,      0,      HA_LEFT + VA_TOP       )  ),  {**The Subscript and Result value**}  if(    Generic_Monitor_GetTitleVisible(atmC),    if(      InList(Generic_Monitor_GetGraphShape(atmC), 1, 4) > 0,      {**Show subscript lower when x-axis values are drawn**}      DrawText(        1,        Generic_Monitor_GetMonHeight(atmC) + 2.5 * Generic_Monitor_GetTextSizeTitle(atmC),        StringLength(Concat(Generic_Monitor_GetSubscript(atmC), [: ], String(Generic_Monitor_GetResultValue(atmC)))) * Generic_Monitor_GetTextSizeTitle(atmC),        Generic_Monitor_GetTextSizeTitle(atmC) * 2,        Concat(Generic_Monitor_GetSubscript(atmC), [: ], String(Generic_Monitor_GetResultValue(atmC), 0, Generic_Monitor_GetNrofDecimals(atmC))),        Generic_Monitor_GetTextColor(atmC),        Generic_Monitor_GetTextSizeTitle(atmC),        [Arial],        0,        0,        0,        HA_LEFT + VA_TOP         ),      DrawText(        1,        Generic_Monitor_GetMonHeight(atmC),        StringLength(Concat(Generic_Monitor_GetSubscript(atmC), [: ], String(Generic_Monitor_GetResultValue(atmC)))) * Generic_Monitor_GetTextSizeTitle(atmC),        Generic_Monitor_GetTextSizeTitle(atmC) * 2,        Concat(Generic_Monitor_GetSubscript(atmC), [: ], String(Generic_Monitor_GetResultValue(atmC), 0, Generic_Monitor_GetNrofDecimals(atmC))),        Generic_Monitor_GetTextColor(atmC),        Generic_Monitor_GetTextSizeTitle(atmC),        [Arial],        0,        0,        0,        HA_LEFT + VA_TOP         )    )  ),    {**Default View when not connected or no scores yet available**}  if(    or(      Generic_Monitor_GetMonitorMax(atmC) = 0,      Generic_Monitor_GetMaxValue(atmC) = 0    ),    do(      DrawRectangle(        1,        0,        xSize(atmC),        Generic_Monitor_GetMonHeight(atmC),        colorblack,        colorblack,        1      ),       {**Return nothing to quit the function**}      return(0)    )  ),   if(    and(      Generic_Monitor_GetYAxisValuesVisible(atmC) = true,      Generic_Monitor_GetMonitorVisible(atmC) = true,      {**Do not draw y-axis when graphtype is Meter 180**}      Generic_Monitor_GetGraphShape(atmC) <> 5        ),    do(      {**Y-Axis**}      DrawLine(        1,        0,        1,        Generic_Monitor_GetMonHeight(atmC),        Generic_Monitor_GetBorderColor(atmC),         1      ),      { Y-Axis values. }      for(        indexer := 0, indexer <= Generic_Monitor_GetYAxisNumberOfValues(atmC), inc(indexer),        do(          DrawText(            - 10 * Generic_Monitor_GetTextSizeYAxis(atmC) - Generic_Monitor_GetTextSizeYAxis(atmC),            (Generic_Monitor_GetMonHeight(atmC) / Generic_Monitor_GetYAxisNumberOfValues(atmC)) * (Generic_Monitor_GetYAxisNumberOfValues(atmC) - indexer),            10 * Generic_Monitor_GetTextSizeYAxis(atmC),            2 * Generic_Monitor_GetTextSizeYAxis(atmC),            String((Generic_Monitor_GetMonitorMax(atmC) / Generic_Monitor_GetYAxisNumberOfValues(atmC)) * indexer, 0, Generic_Monitor_GetYAxisNumberOfDecimals(atmC)),            Generic_Monitor_GetTextColor(atmC),            Generic_Monitor_GetTextSizeYAxis(atmC),            [Arial],            0,            0,            0,            HA_RIGHT + VA_TOP          ),                    { The horizontal lines belonging to the individual values on the Y Axis. }          if(            Generic_Monitor_GetYAxisLinesVisible(atmC) = true,            DrawLine(              1,              (Generic_Monitor_GetMonHeight(atmC) / Generic_Monitor_GetYAxisNumberOfValues(atmC)) * (Generic_Monitor_GetYAxisNumberOfValues(atmC) - indexer),              2 + Generic_Monitor_GetNrOfIntervals(atmC) * (Generic_Monitor_GetIntervalWidth(atmC) + Generic_Monitor_GetInBetweenSpace(atmC)),              (Generic_Monitor_GetMonHeight(atmC) / Generic_Monitor_GetYAxisNumberOfValues(atmC)) * (Generic_Monitor_GetYAxisNumberOfValues(atmC) - indexer),              Generic_Monitor_GetYAxisLinesColor(atmC),               1            )          )        )      )    )        ),  if(    and(      {Generic_Monitor_GetXAxisValuesVisible(atmC) = true,}      Generic_Monitor_GetMonitorVisible(atmC) = true,      {**Draw x-axis only for Bargraph and Linegraph**}      InList(Generic_Monitor_GetGraphShape(atmC), 1, 4) > 0    ),        { X-Axis values. }    for(      indexer := 1, indexer <= nRows(atmC), inc(indexer),      do(        DrawText(          (indexer - 1) * Generic_Monitor_GetIntervalWidth(atmC) + 2 + (indexer - 1) * Generic_Monitor_GetInBetweenSpace(atmC),          Generic_Monitor_GetMonHeight(atmC) + 0.75 * Generic_Monitor_GetTextSizeTitle(atmC),          Generic_Monitor_GetIntervalWidth(atmC),          1.5 * Generic_Monitor_GetTextSizeYAxis(atmC),                    if(            Label([LastRefreshMoment], atmC) - Generic_Monitor_GetRefreshRate(atmC) * (indexer - 1) > hr(24),            Concat(              String(Trunc((Label([LastRefreshMoment], atmC) - Generic_Monitor_GetRefreshRate(atmC) * (indexer - 1)) / 3600)),              StringCopy(                DateTime(Label([LastRefreshMoment], atmC) - Generic_Monitor_GetRefreshRate(atmC) * (indexer - 1), [h:mm:ss]),                StringPos([:], DateTime(Label([LastRefreshMoment], atmC) - Generic_Monitor_GetRefreshRate(atmC) * (indexer - 1), [h:mm:ss])),                StringLength(DateTime(Label([LastRefreshMoment], atmC) - Generic_Monitor_GetRefreshRate(atmC) * (indexer - 1), [h:mm:ss])) -                  StringPos([:], DateTime(Label([LastRefreshMoment], atmC) - Generic_Monitor_GetRefreshRate(atmC) * (indexer - 1), [h:mm:ss])) + 1              )            ),                                  DateTime(Label([LastRefreshMoment], atmC) - Generic_Monitor_GetRefreshRate(atmC) * (indexer - 1), [h:mm:ss])                      ),          Generic_Monitor_GetTextColor(atmC),          Generic_Monitor_GetTextSizeYAxis(atmC),          [Arial],          0,          0,          315,          HA_CENTER + VA_BOTTOM        )      )    )      ),  if(    Generic_Monitor_GetMonitorVisible(atmC) = True,    {if the dynamic icon has to be drawn}    case(      Generic_Monitor_GetGraphShape(atmC),      {** 1 : BarGraph**}      do(        indexer := Label([NewestRecord], atmC),        repeat(          Generic_Monitor_GetNrOfIntervals(atmC),          do(            if(              indexer = Count - 1,              indexer := indexer + Generic_Monitor_GetNrOfIntervals(atmC)            ),                                    DrawRectangle(              (Count - 1) * Generic_Monitor_GetIntervalWidth(atmC) + 2 + (Count - 1) * Generic_Monitor_GetInBetweenSpace(atmC),              Generic_Monitor_GetMonHeight(atmC),              Count * Generic_Monitor_GetIntervalWidth(atmC) + 2 + (Count - 1) * Generic_Monitor_GetInBetweenSpace(atmC),              Generic_Monitor_GetMonHeight(atmC) - (Generic_Monitor_GetMonHeight(atmC) / Generic_Monitor_GetMonitorMax(atmC)) * Cell((indexer - Count + 1), 1, atmC),                                  Generic_Monitor_GetFillColor(atmC),              Generic_Monitor_GetBorderColor(atmC),              1            )          )        ),        indexer := Label([NewestRecord], atmC),               if(          Generic_Monitor_GetScoresVisible(atmC) = True,               { ***************** SCORES ******************* }          repeat(            Generic_Monitor_GetNrOfIntervals(atmC),            do(              if(                indexer = Count - 1,                indexer := indexer + Generic_Monitor_GetNrOfIntervals(atmC)              ),                                                   DrawText(                (Count - 1) * Generic_Monitor_GetIntervalWidth(atmC) + 2 + (Count - 1) * Generic_Monitor_GetInBetweenSpace(atmC),                Generic_Monitor_GetMonHeight(atmC) - (Generic_Monitor_GetMonHeight(atmC) / Generic_Monitor_GetMonitorMax(atmC)) * Cell((indexer - Count + 1), 1, atmC) - 2 * Generic_Monitor_GetTextSizeScores(atmC),                Generic_Monitor_GetTextSizeScores(atmC) * StringLength(String(Cell((indexer - Count + 1), 1, atmC))),                Generic_Monitor_GetTextSizeScores(atmC) * 2,                String(Cell((indexer - Count + 1), 1, atmC), 0, Generic_Monitor_GetNrofDecimals(atmC)),                Generic_Monitor_GetTextColor(atmC),                Generic_Monitor_GetTextSizeScores(atmC),                [Arial],                0,                0,                0,                HA_LEFT + VA_BOTTOM              )            )          )        )      ),      {**2 : Level**}      DrawRectangle(        1.1,        Generic_Monitor_GetMonHeight(atmC),        xSize(atmC),                      Generic_Monitor_GetMonHeight(atmC) - (Generic_Monitor_GetMonHeight(atmC) / Generic_Monitor_GetMonitorMax(atmC)) * Generic_Monitor_GetResultValue(atmC),                            Generic_Monitor_GetFillColor(atmC),        Generic_Monitor_GetBorderColor(atmC),        1      ),      {**3 : Maximum level**}                  DrawRectangle(        1.1,        Generic_Monitor_GetMonHeight(atmC),        xsize(atmC),        Generic_Monitor_GetMonHeight(atmC) - (Generic_Monitor_GetMonHeight(atmC) / Generic_Monitor_GetMonitorMax(atmC)) * Generic_Monitor_GetMaxValue(atmC),        Generic_Monitor_GetFillColor(atmC),        Generic_Monitor_GetBorderColor(atmC),        1                                  ),      {**4 : linegraph from topleft edge of a bar to the topleft edge of the next bar**}        if(        Time > Generic_Monitor_GetRefreshRate(atmC),        do(          indexer := Label([NewestRecord], atmC),          repeat(            Generic_Monitor_GetNrOfIntervals(atmC) - 1,            do(              if(                indexer = Count - 1,                indexer := indexer + Generic_Monitor_GetNrOfIntervals(atmC)              ),                                      DrawLine(                (Count - 1) * Generic_Monitor_GetIntervalWidth(atmC) + 2 + (Count - 1) * Generic_Monitor_GetInBetweenSpace(atmC),                Generic_Monitor_GetMonHeight(atmC) - (Generic_Monitor_GetMonHeight(atmC) / Generic_Monitor_GetMonitorMax(atmC)) * Cell((indexer - Count + 1), 1, atmC),                                    (Count) * Generic_Monitor_GetIntervalWidth(atmC) + 2 + (Count - 1) * Generic_Monitor_GetInBetweenSpace(atmC),                Generic_Monitor_GetMonHeight(atmC) - (Generic_Monitor_GetMonHeight(atmC) / Generic_Monitor_GetMonitorMax(atmC)) * Cell((if(indexer - Count = 0, Generic_Monitor_GetNrOfIntervals(atmC), indexer - Count)), 1, atmC),                                    Generic_Monitor_GetFillColor(atmC),                1              )            )          )        )      ),      {**5 : meter 180**}        do(        {**Y-axis Values**}        if(          Generic_Monitor_GetYAxisValuesVisible(atmC) = True,          for(            indexer := 0, indexer <= Generic_Monitor_GetYAxisNumberOfValues(atmC), inc(indexer),                              DrawText(              (xSize(atmC) / 2) - cos(indexer * (180 / Generic_Monitor_GetYAxisNumberOfValues(atmC))) * (xsize(atmC) / 2),              Generic_Monitor_GetMonHeight(atmC) - sin(indexer * (180 / Generic_Monitor_GetYAxisNumberOfValues(atmC))) * (xSize(atmC) / 2),                                                 10 * Generic_Monitor_GetTextSizeYAxis(atmC),              2 * Generic_Monitor_GetTextSizeYAxis(atmC),              String((Generic_Monitor_GetMonitorMax(atmC) / Generic_Monitor_GetYAxisNumberOfValues(atmC)) * indexer, 0, Generic_Monitor_GetYAxisNumberOfDecimals(atmC)),              Generic_Monitor_GetTextColor(atmC),              Generic_Monitor_GetTextSizeYAxis(atmC),              [Arial],              0,              0,              0,              HA_LEFT + VA_TOP            )                            )        ),                  {**X-axis**}        DrawLine(          0,          Generic_Monitor_GetMonHeight(atmC),          xSize(atmC),          Generic_Monitor_GetMonHeight(atmC),          Generic_Monitor_GetYAxisLinesColor(atmC),           1        ),        if(          Generic_Monitor_GetResultValue(c) > Generic_Monitor_GetMonitorMax(c),          DrawLine(            xsize(atmC) / 2,             Generic_Monitor_GetMonHeight(atmC),             xsize(atmC),             Generic_Monitor_GetMonHeight(atmC),             Generic_Monitor_GetFillColor(atmC),            2          ),          if(            Generic_Monitor_GetResultValue(atmC) < 0,            DrawLine(              xSize(atmC) / 2,              Generic_Monitor_GetMonHeight(atmC),               0,              Generic_Monitor_GetMonHeight(atmC),               Generic_Monitor_GetFillColor(atmC),              2            ),            DrawLine(              xSize(atmC) / 2,              Generic_Monitor_GetMonHeight(atmC),               (xSize(atmC) / 2) - cos(Generic_Monitor_GetResultValue(atmC) * (180 / Generic_Monitor_GetMonitorMax(atmC))) * (xsize(atmC) / 2),              Generic_Monitor_GetMonHeight(atmC) - sin(Generic_Monitor_GetResultValue(atmC) * (180 / Generic_Monitor_GetMonitorMax(atmC))) * (xSize(atmC) / 2),               Generic_Monitor_GetFillColor(atmC),              2            )          )         )      )    )                   ))], [p(1) as Monitor], [Generic_Monitor_Animate2D(c)], 0, [Monitor.atm]);
+DefineFunction([Generic_Monitor_VariableCodes], [Various], 1, 1, [do(  Case(    p(1),    [Output(In(1, c))|1. Output],    [Input(In(1, c))|2. Input],    [Status(In(1, c))|3. Status],    [Content(In(1, c))|4. Content],    [AvgContent(In(1, c))|5. Average Content],    [AvgStay(In(1, c))|6. Average Stay],    [Output(In(1, c)) * 3600 / (Time + 0.00001)|7. Output per hour],    [Label([~1], In(1, c))|8. Label ~LabelName~ of monitoring atom],    [if(Content(In(1, c)) > 0, Label([~1], First(In(1, c))))|9. Label ~LabelName~ of first of monitoring atom],    [if(Content(In(1, c)) > 0, Label([~1], Last(In(1, c))))|10. Label ~LabelName~ of last of monitoring atom],    [0|11. 4DScript Expression. Click the square button on the right to write 4DScript code.]  ))], [Fills GUI smartedit with predefined variables to monitor.], [Generic_Monitor_VariableCodes(count)], 0, [Monitor.atm]);
+DefineFunction([Generic_Monitor_GetFillColor], [Atom Parameters], 1, 1, [Att(27, p(1))], [Returns the value of attribute FillColor (# 27) of Monitor e1], [Generic_Monitor_GetFillColor(c)], 0, [Monitor.atm]);
+DefineFunction([Generic_Monitor_SetFillColor], [Atom Parameters], 2, 2, [Att(27, p(1)) := p(2)], [Sets the value of attribute FillColor (# 27) of Monitor e1 to e2], [Generic_Monitor_SetFillColor(c, 1)], 0, [Monitor.atm]);
+DefineFunction([Generic_Monitor_GetYAxisNumberOfDecimals], [Atom Parameters], 1, 1, [Att(28, p(1))], [Returns the value of attribute YAxisNumberOfDecimals (# 28) of Monitor e1], [Generic_Monitor_GetYAxisNumberOfDecimals(c)], 0, [Monitor.atm]);
+DefineFunction([Generic_Monitor_SetYAxisNumberOfDecimals], [Atom Parameters], 2, 2, [Att(28, p(1)) := p(2)], [Sets the value of attribute YAxisNumberOfDecimals (# 28) of Monitor e1 to e2], [Generic_Monitor_SetYAxisNumberOfDecimals(c, 1)], 0, [Monitor.atm]);
+DefineFunction([Generic_Monitor_GetSubscript], [Atom Parameters], 1, 1, [TextAtt(29, p(1))], [Returns the string value of attribute Subscript (# 29) of Monitor e1], [Generic_Monitor_GetSubscript(c)], 0, [Monitor.atm]);
+DefineFunction([Generic_Monitor_SetSubscript], [Atom Parameters], 2, 2, [TextAtt(29, p(1)) := p(2)], [Sets the string value of attribute Subscript (# 29) of Monitor e1 to e2], [Generic_Monitor_SetSubscript(c, [TableName])], 0, [Monitor.atm]);
+DefineFunction([Generic_Monitor_SetMonitorVisible], [Atom Parameters], 2, 2, [Att(19, p(1)) := p(2)], [Sets the value of attribute MonitorVisible (# 19) of Monitor e1 to e2], [Generic_Monitor_SetMonitorVisible(c, 1)], 0, [Monitor.atm]);
+DefineFunction([Generic_Monitor_GetMonitorVisible], [Atom Parameters], 1, 1, [Att(19, p(1))], [Returns the value of attribute MonitorVisible (# 19) of Monitor e1], [Generic_Monitor_GetMonitorVisible(c)], 0, [Monitor.atm]);
+DefineFunction([Generic_Monitor_SetYAxisLinesVisible], [Atom Parameters], 2, 2, [Att(26, p(1)) := p(2)], [Sets the value of attribute YAxisLinesVisible (# 26) of Monitor e1 to e2], [Generic_Monitor_SetYAxisLinesVisible(c, 1)], 0, [Monitor.atm]);
+DefineFunction([Generic_Monitor_GetYAxisLinesVisible], [Atom Parameters], 1, 1, [Att(26, p(1))], [Returns the value of attribute YAxisLinesVisible (# 26) of Monitor e1], [Generic_Monitor_GetYAxisLinesVisible(c)], 0, [Monitor.atm]);
+DefineFunction([Generic_Monitor_SetYAxisValuesVisible], [Atom Parameters], 2, 2, [Att(25, p(1)) := p(2)], [Sets the value of attribute YAxisValuesVisible (# 25) of Monitor e1 to e2], [Generic_Monitor_SetYAxisValuesVisible(c, 1)], 0, [Monitor.atm]);
+DefineFunction([Generic_Monitor_GetYAxisValuesVisible], [Atom Parameters], 1, 1, [Att(25, p(1))], [Returns the value of attribute YAxisValuesVisible (# 25) of Monitor e1], [Generic_Monitor_GetYAxisValuesVisible(c)], 0, [Monitor.atm]);
+DefineFunction([Generic_Monitor_SetYAxisLinesColor], [Atom Parameters], 2, 2, [Att(24, p(1)) := p(2)], [Sets the value of attribute YAxisLinesColor (# 24) of Monitor e1 to e2], [Generic_Monitor_SetYAxisLinesColor(c, 1)], 0, [Monitor.atm]);
+DefineFunction([Generic_Monitor_GetYAxisLinesColor], [Atom Parameters], 1, 1, [Att(24, p(1))], [Returns the value of attribute YAxisLinesColor (# 24) of Monitor e1], [Generic_Monitor_GetYAxisLinesColor(c)], 0, [Monitor.atm]);
+DefineFunction([Generic_Monitor_SetYAxisNumberOfValues], [Atom Parameters], 2, 2, [Att(23, p(1)) := p(2)], [Sets the value of attribute YAxisNumberOfValues (# 23) of Monitor e1 to e2], [Generic_Monitor_SetYAxisNumberOfValues(c, 1)], 0, [Monitor.atm]);
+DefineFunction([Generic_Monitor_GetYAxisNumberOfValues], [Atom Parameters], 1, 1, [Att(23, p(1))], [Returns the value of attribute YAxisNumberOfValues (# 23) of Monitor e1], [Generic_Monitor_GetYAxisNumberOfValues(c)], 0, [Monitor.atm]);
+DefineFunction([Generic_Monitor_SetTextSizeYAxis], [Atom Parameters], 2, 2, [Att(22, p(1)) := p(2)], [Sets the value of attribute TextSizeYAxis (# 22) of Monitor e1 to e2], [Generic_Monitor_SetTextSizeYAxis(c, 1)], 0, [Monitor.atm]);
+DefineFunction([Generic_Monitor_GetTextSizeYAxis], [Atom Parameters], 1, 1, [Att(22, p(1))], [Returns the value of attribute TextSizeYAxis (# 22) of Monitor e1], [Generic_Monitor_GetTextSizeYAxis(c)], 0, [Monitor.atm]);
+DefineFunction([Generic_Monitor_SetScoresVisible], [Atom Parameters], 2, 2, [Att(21, p(1)) := p(2)], [Sets the value of attribute ScoresVisible (# 21) of Monitor e1 to e2], [Generic_Monitor_SetScoresVisible(c, 1)], 0, [Monitor.atm]);
+DefineFunction([Generic_Monitor_GetScoresVisible], [Atom Parameters], 1, 1, [Att(21, p(1))], [Returns the value of attribute ScoresVisible (# 21) of Monitor e1], [Generic_Monitor_GetScoresVisible(c)], 0, [Monitor.atm]);
+DefineFunction([Generic_Monitor_SetTitleVisible], [Atom Parameters], 2, 2, [Att(20, p(1)) := p(2)], [Sets the value of attribute TitleVisible (# 20) of Monitor e1 to e2], [Generic_Monitor_SetTitleVisible(c, 1)], 0, [Monitor.atm]);
+DefineFunction([Generic_Monitor_GetTitleVisible], [Atom Parameters], 1, 1, [Att(20, p(1))], [Returns the value of attribute TitleVisible (# 20) of Monitor e1], [Generic_Monitor_GetTitleVisible(c)], 0, [Monitor.atm]);
+DefineFunction([Generic_Monitor_SetAutomaticScaling], [Atom Parameters], 2, 2, [Att(18, p(1)) := p(2)], [Sets the value of attribute AutomaticScaling (# 18) of Monitor e1 to e2], [Generic_Monitor_SetAutomaticScaling(c, 1)], 0, [Monitor.atm]);
+DefineFunction([Generic_Monitor_GetAutomaticScaling], [Atom Parameters], 1, 1, [Att(18, p(1))], [Returns the value of attribute AutomaticScaling (# 18) of Monitor e1], [Generic_Monitor_GetAutomaticScaling(c)], 0, [Monitor.atm]);
+DefineFunction([Generic_Monitor_SetTextSizeScores], [Atom Parameters], 2, 2, [Att(17, p(1)) := p(2)], [Sets the value of attribute TextSizeScores (# 17) of Monitor e1 to e2], [Generic_Monitor_SetTextSizeScores(c, 1)], 0, [Monitor.atm]);
+DefineFunction([Generic_Monitor_GetTextSizeScores], [Atom Parameters], 1, 1, [Att(17, p(1))], [Returns the value of attribute TextSizeScores (# 17) of Monitor e1], [Generic_Monitor_GetTextSizeScores(c)], 0, [Monitor.atm]);
+DefineFunction([Generic_Monitor_SetTextSizeTitle], [Atom Parameters], 2, 2, [Att(16, p(1)) := p(2)], [Sets the value of attribute TextSizeTitle (# 16) of Monitor e1 to e2], [Generic_Monitor_SetTextSizeTitle(c, 1)], 0, [Monitor.atm]);
+DefineFunction([Generic_Monitor_GetTextSizeTitle], [Atom Parameters], 1, 1, [Att(16, p(1))], [Returns the value of attribute TextSizeTitle (# 16) of Monitor e1], [Generic_Monitor_GetTextSizeTitle(c)], 0, [Monitor.atm]);
+DefineFunction([Generic_Monitor_SetBorderColor], [Atom Parameters], 2, 2, [Att(15, p(1)) := p(2)], [Sets the value of attribute BorderColor (# 15) of Monitor e1 to e2], [Generic_Monitor_SetBorderColor(c, 1)], 0, [Monitor.atm]);
+DefineFunction([Generic_Monitor_GetBorderColor], [Atom Parameters], 1, 1, [Att(15, p(1))], [Returns the value of attribute BorderColor (# 15) of Monitor e1], [Generic_Monitor_GetBorderColor(c)], 0, [Monitor.atm]);
+DefineFunction([Generic_Monitor_SetTextColor], [Atom Parameters], 2, 2, [Att(14, p(1)) := p(2)], [Sets the value of attribute TextColor (# 14) of Monitor e1 to e2], [Generic_Monitor_SetTextColor(c, 1)], 0, [Monitor.atm]);
+DefineFunction([Generic_Monitor_GetTextColor], [Atom Parameters], 1, 1, [Att(14, p(1))], [Returns the value of attribute TextColor (# 14) of Monitor e1], [Generic_Monitor_GetTextColor(c)], 0, [Monitor.atm]);
+DefineFunction([Generic_Monitor_SetInBetweenSpace], [Atom Parameters], 2, 2, [Att(13, p(1)) := p(2)], [Sets the value of attribute InBetweenSpace (# 13) of Monitor e1 to e2], [Generic_Monitor_SetInBetweenSpace(c, 1)], 0, [Monitor.atm]);
+DefineFunction([Generic_Monitor_GetInBetweenSpace], [Atom Parameters], 1, 1, [Att(13, p(1))], [Returns the value of attribute InBetweenSpace (# 13) of Monitor e1], [Generic_Monitor_GetInBetweenSpace(c)], 0, [Monitor.atm]);
+DefineFunction([Generic_Monitor_SetIntervalWidth], [Atom Parameters], 2, 2, [Att(12, p(1)) := p(2)], [Sets the value of attribute IntervalWidth (# 12) of Monitor e1 to e2], [Generic_Monitor_SetIntervalWidth(c, 1)], 0, [Monitor.atm]);
+DefineFunction([Generic_Monitor_GetIntervalWidth], [Atom Parameters], 1, 1, [Att(12, p(1))], [Returns the value of attribute IntervalWidth (# 12) of Monitor e1], [Generic_Monitor_GetIntervalWidth(c)], 0, [Monitor.atm]);
+DefineFunction([Generic_Monitor_GetNrOfIntervals], [Atom Parameters], 1, 1, [Att(6, p(1))], [Returns the value of attribute NrOfIntervals (# 6) of Monitor e1], [Generic_Monitor_GetNrOfIntervals(c)], 0, [Monitor.atm]);
+DefineFunction([Generic_Monitor_SetNrOfIntervals], [Atom Parameters], 2, 2, [Att(6, p(1)) := p(2)], [Sets the value of attribute NrOfIntervals (# 6) of Monitor e1 to e2], [Generic_Monitor_SetNrOfIntervals(c, 1)], 0, [Monitor.atm]);
+DefineFunction([Generic_Monitor_SetExpression], [Atom Parameters], 2, 2, [SetExprAtt(7, p(2), p(1))], [Sets the 4D script expression of attribute Expression (# 7) of Monitor e1 to e2], [Generic_Monitor_SetExpression(c, [NegExp(9)])], 0, [Monitor.atm]);
+DefineFunction([Generic_Monitor_GetExpression], [Atom Parameters], 1, 1, [Att(7, p(1))], [Returns the result of the 4D script expression of attribute Expression (# 7) of Monitor e1], [Generic_Monitor_GetExpression(c)], 0, [Monitor.atm]);
+DefineFunction([Generic_Monitor_SetRefreshRate], [Atom Parameters], 2, 2, [SetExprAtt(3, p(2), p(1))], [Sets the 4D script expression of attribute RefreshRate (# 3) of Monitor e1 to e2], [Generic_Monitor_SetRefreshRate(c, [NegExp(9)])], 0, [Monitor.atm]);
+DefineFunction([Generic_Monitor_GetRefreshRate], [Atom Parameters], 1, 1, [Att(3, p(1))], [Returns the result of the 4D script expression of attribute RefreshRate (# 3) of Monitor e1], [Generic_Monitor_GetRefreshRate(c)], 0, [Monitor.atm]);
+DefineFunction([Generic_Monitor_SetGraphShape], [Atom Parameters], 2, 2, [Att(4, p(1)) := p(2)], [Sets the value of attribute GraphShape (# 4) of Monitor e1 to e2], [Generic_Monitor_SetGraphShape(c, 1)], 0, [Monitor.atm]);
+DefineFunction([Generic_Monitor_GetGraphShape], [Atom Parameters], 1, 1, [Att(4, p(1))], [Returns the value of attribute GraphShape (# 4) of Monitor e1], [Generic_Monitor_GetGraphShape(c)], 0, [Monitor.atm]);
+DefineFunction([Generic_Monitor_GetMonHeight], [Atom Parameters], 1, 1, [Att(5, p(1))], [Returns the value of attribute MonHeight (# 5) of Monitor e1], [Generic_Monitor_GetMonHeight(c)], 0, [Monitor.atm]);
+DefineFunction([Generic_Monitor_SetMonHeight], [Atom Parameters], 2, 2, [Att(5, p(1)) := p(2)], [Sets the value of attribute MonHeight (# 5) of Monitor e1 to e2], [Generic_Monitor_SetMonHeight(c, 1)], 0, [Monitor.atm]);
+DefineFunction([Generic_Monitor_SetAutoAdjust], [Atom Parameters], 2, 2, [Att(9, p(1)) := p(2)], [Sets the value of attribute AutoAdjust (# 9) of Monitor e1 to e2], [Generic_Monitor_SetAutoAdjust(c, 1)], 0, [Monitor.atm]);
+DefineFunction([Generic_Monitor_GetAutoAdjust], [Atom Parameters], 1, 1, [Att(9, p(1))], [Returns the value of attribute AutoAdjust (# 9) of Monitor e1], [Generic_Monitor_GetAutoAdjust(c)], 0, [Monitor.atm]);
+DefineFunction([Generic_Monitor_SetMaxValue], [Atom Parameters], 2, 2, [Att(8, p(1)) := p(2)], [Sets the value of attribute MaxValue (# 8) of Monitor e1 to e2], [Generic_Monitor_SetMaxValue(c, 1)], 0, [Monitor.atm]);
+DefineFunction([Generic_Monitor_GetMaxValue], [Atom Parameters], 1, 1, [Att(8, p(1))], [Returns the value of attribute MaxValue (# 8) of Monitor e1], [Generic_Monitor_GetMaxValue(c)], 0, [Monitor.atm]);
+DefineFunction([Generic_Monitor_GetNrofDecimals], [Atom Parameters], 1, 1, [Att(10, p(1))], [Returns the value of attribute NrofDecimals (# 10) of Monitor e1], [Generic_Monitor_GetNrofDecimals(c)], 0, [Monitor.atm]);
+DefineFunction([Generic_Monitor_SetNrofDecimals], [Atom Parameters], 2, 2, [Att(10, p(1)) := p(2)], [Sets the value of attribute NrofDecimals (# 10) of Monitor e1 to e2], [Generic_Monitor_SetNrofDecimals(c, 1)], 0, [Monitor.atm]);
+DefineFunction([Generic_Monitor_GetResultValue], [Atom Parameters], 1, 1, [Att(11, p(1))], [Returns the value of attribute ResultValue (# 11) of Monitor e1], [Generic_Monitor_GetResultValue(c)], 0, [Monitor.atm]);
+DefineFunction([Generic_Monitor_SetResultValue], [Atom Parameters], 2, 2, [Att(11, p(1)) := p(2)], [Sets the value of attribute ResultValue (# 11) of Monitor e1 to e2], [Generic_Monitor_SetResultValue(c, 1)], 0, [Monitor.atm]);
+DefineFunction([Generic_Monitor_GetMonitorText], [Atom Parameters], 1, 1, [TextAtt(1, p(1))], [Returns the string value of attribute MonitorText (# 1) of Monitor e1], [Generic_Monitor_GetMonitorText(c)], 0, [Monitor.atm]);
+DefineFunction([Generic_Monitor_SetMonitorText], [Atom Parameters], 2, 2, [TextAtt(1, p(1)) := p(2)], [Sets the string value of attribute MonitorText (# 1) of Monitor e1 to e2], [Generic_Monitor_SetMonitorText(c, [TableName])], 0, [Monitor.atm]);
+DefineFunction([Generic_Monitor_GetMonitorMax], [Atom Parameters], 1, 1, [Att(2, p(1))], [Returns the value of attribute MonitorMax (# 2) of Monitor e1], [Generic_Monitor_GetMonitorMax(c)], 0, [Monitor.atm]);
+DefineFunction([Generic_Monitor_SetMonitorMax], [Atom Parameters], 2, 2, [Att(2, p(1)) := p(2)], [Sets the value of attribute MonitorMax (# 2) of Monitor e1 to e2], [Generic_Monitor_SetMonitorMax(c, 1)], 0, [Monitor.atm]);
+DefineFunction([Generic_Monitor_GetAutomaticSubscript], [Atom Parameters], 1, 1, [Att(30, p(1))], [Returns the value of attribute AutomaticSubscript (# 30) of Monitor e1], [Generic_Monitor_GetAutomaticSubscript(c)], 0, [Monitor.atm]);
+DefineFunction([Generic_Monitor_SetAutomaticSubscript], [Atom Parameters], 2, 2, [Att(30, p(1)) := p(2)], [Sets the value of attribute AutomaticSubscript (# 30) of Monitor e1 to e2], [Generic_Monitor_SetAutomaticSubscript(c, 1)], 0, [Monitor.atm]);
+Set(Icon(a), 
+	RegisterIcon(pDir([Media\Images\atoms\graph.bmp]), [graph]));
+SetMaterial(
+	RegisterMaterial([Default], 8421504, 8421504, 3289650, 0, 0.100000001490116, 0, false, false, 1, 0), 1, a);
+Set(Version(a), 8.2);
+SetTreeIcon(pDir([Media\Icons\Monitor.ico]));
+SetChannels(1, 0);
+SetChannelRanges(1, 10, 0, 0);
+int001(115);
+SetSize(15, 6, 0);
+LockPosition(false);
+LockSize(false);
+DisableIconRotation(false);
+SetProductCode([]);
+CreateAttributes(30);
+SetAttributeName(r(1), [MonitorText]);
+SetAttributeName(r(2), [MonitorMax]);
+SetAttributeName(r(3), [RefreshRate]);
+SetAttributeName(r(4), [GraphShape]);
+SetAttributeName(r(5), [MonHeight]);
+SetAttributeName(r(6), [NrOfIntervals]);
+SetAttributeName(r(7), [Expression]);
+SetAttributeName(r(8), [MaxValue]);
+SetAttributeName(r(9), [AutoAdjust]);
+SetAttributeName(r(10), [NrofDecimals]);
+SetAttributeName(r(11), [ResultValue]);
+SetAttributeName(r(12), [IntervalWidth]);
+SetAttributeName(r(13), [InBetweenSpace]);
+SetAttributeName(r(14), [TextColor]);
+SetAttributeName(r(15), [BorderColor]);
+SetAttributeName(r(16), [TextSizeTitle]);
+SetAttributeName(r(17), [TextSizeScores]);
+SetAttributeName(r(18), [AutomaticScaling]);
+SetAttributeName(r(19), [MonitorVisible]);
+SetAttributeName(r(20), [TitleVisible]);
+SetAttributeName(r(21), [ScoresVisible]);
+SetAttributeName(r(22), [TextSizeYAxis]);
+SetAttributeName(r(23), [YAxisNumberOfValues]);
+SetAttributeName(r(24), [YAxisLinesColor]);
+SetAttributeName(r(25), [YAxisValuesVisible]);
+SetAttributeName(r(26), [YAxisLinesVisible]);
+SetAttributeName(r(27), [FillColor]);
+SetAttributeName(r(28), [YAxisNumberOfDecimals]);
+SetAttributeName(r(29), [Subscript]);
+SetAttributeName(r(30), [AutomaticSubscript]);
+SetTextAtt(r(1), [Bargraph]);
+SetAtt(r(2), 10);
+SetAtt(r(3), 5);
+SetAtt(r(4), 1);
+SetAtt(r(5), 4.28571428571429);
+SetAtt(r(6), 10);
+SetTextAtt(r(7), [{.0|0. None selected.}0]);
+SetAtt(r(9), 1);
+SetAtt(r(12), 1.2);
+SetAtt(r(13), 0.1);
+SetExprAtt(r(14), [ColorBlack]);
+SetExprAtt(r(15), [ColorBlack]);
+SetAtt(r(16), 0.428571428571429);
+SetAtt(r(17), 0.214285714285714);
+SetAtt(r(18), 1);
+SetAtt(r(19), 1);
+SetAtt(r(20), 1);
+SetAtt(r(21), 1);
+SetAtt(r(22), 0.214285714285714);
+SetAtt(r(23), 5);
+SetExprAtt(r(24), [ColorGray]);
+SetAtt(r(25), 1);
+SetAtt(r(26), 1);
+SetExprAtt(r(27), [ColorBlue]);
+SetTextAtt(r(29), [Current value]);
+int024;
+SetTable(30, 1);
+int015(0, 64, [ 
+1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+20
+21
+22
+23
+24
+25
+26
+27
+28
+29
+30
+]);
+int015(1, 64, [1
+]);
+Set(OnEvent, [if(  IcConnected(1, c),  do(    Generic_Monitor_SetResultValue(c, Generic_Monitor_GetExpression(c)),      Generic_Monitor_SetMaxValue(c, max(Generic_Monitor_GetMaxValue(c), Generic_Monitor_GetResultValue(c))),    if(        and(        Generic_Monitor_GetMonitorVisible(c) = 1,        inlist(Generic_Monitor_GetGraphShape(c), 1, 4) > 0      ),      do(              Label([NewestRecord], c) := Label([NewestRecord], c) + 1,        if(          Label([NewestRecord], c) > nRows(c),          Label([NewestRecord], c) := 1        ),        Cell(Label([NewestRecord], c), 1, c) := Generic_Monitor_GetResultValue(c),        Label([LastRefreshMoment], c) := Time                               )    ),    if(      and(        Generic_Monitor_GetMonitorVisible(c) = 1,            Label([nwgrtyp], c) <> Generic_Monitor_GetGraphShape(c)      ),      {**Graph type changed so empty table**}      do(        Label([nwgrtyp], c) := Generic_Monitor_GetGraphShape(c),        SetTable(0, 0, c),        SetTable(Generic_Monitor_GetNrOfIntervals(c), 1, c),        Label([NewestRecord], c) := 0      )    ),    if(      Generic_Monitor_GetAutoAdjust(c) = True,      Generic_Monitor_SetMonitorMax(c, Generic_Monitor_GetMaxValue(c))    ),    createevent(Generic_Monitor_GetRefreshRate(c), c)  ),  do(    Trace(concat([No atom connected to ], name(c))),    DisplayTracer  ))]);
+Set(OnReset, [do( settable(0, 0, c), settable(Generic_Monitor_GetNrOfIntervals(c), 1, c), Generic_Monitor_SetMaxValue(c, 0), Generic_Monitor_SetResultValue(c, 0), Label([OldestRecord], c) := 0, createevent(0, c))]);
+Set(OnUser, [Do( { Delete any current instances of this form.}  GuiDestroy([Generic Monitor]), { Register the GUI-form for this atom.} GuiRegister(PDir([\Atoms\Generic Monitor.gui]), 1), { Show the GUI-form.} Guicreate([Generic Monitor], [Generic Monitor], 0, c, 0, 1))]);
+Set(On2DDraw, [Generic_Monitor_Animate2D(c)]);
+SetStatus(0);
+int018;
+int007;

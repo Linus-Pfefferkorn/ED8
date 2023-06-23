@@ -1,0 +1,154 @@
+
+
+{Preregister functions}
+
+PreregisterFunction([NACs_3DDraw], 1, 1);
+PreregisterFunction([NACs_ShowSensors2D], 1, 1);
+PreregisterFunction([NACs_SetDestinationAndSpeed], 2, 2);
+
+
+{Atom: Advanced Non Accumulating Conveyor Straight}
+
+sets;
+BaseClass;
+CreateAtom(a, s, [], 1, false);
+Set(OnInit, [do(  {**Load Functions Atom if required**}  if(not(AtomExists(AtomByName([General Conveyor Functions]),Library)),  int035([General Conveyor Functions], pDir([General Conveyor Functions.atm]))    ))]);
+int023([Advanced Non Accumulating Conveyor Straight], 13809478, 9458);
+DefineFunction([NACs_3DDraw], [Conveyors], 1, 1, [do(   var([atmC], vbAtom, p(1)),  var([valElevation], vbValue, att([Elevation], atmC)),  var([valBeltColor], vbValue),  var([valSensorHeight], vbValue),  var([valSensorBeamSizeX], vbValue),  var([valSensorBeamSizeZ], vbValue),  var([valPos], vbValue),  var([valNrSensors], vbValue),  var([valLegExtend], vbValue, att([LegExtend], atmC)),  var([valLegSpacing], vbValue, att([LegSpacing], atmC)),    { for backwards compatibility: }  if(   valLegSpacing = 0,   valLegSpacing := 0.5  ),       valSensorBeamSizeX := .02,  valSensorBeamSizeZ := .05,  valSensorHeight := 0.2,      valNrSensors := att([NrSensors], atmC),  valElevation := att([Elevation], atmC),    {**Draw suspensions gerders**}  PointsPlane(0, -0.05, 0, xSize(atmC), 0, valElevation, 0, 0.05, 0, Color),  PointsPlane(0, ySize(atmC), 0, xSize(atmC), 0, valElevation, 0, 0.05, 0, Color),    {**draw belt**}    PopTextureCoords,   if(  Texture(1, atmC) <> 0,   do(  SetMaterialTexture(Texture(1, atmC)),  valBeltColor := ColorWhite,  if(  and(isrunning, Conveyors_IsRunning(atmC)),  Label([LastTextTrans], atmC) := Mod(Time, Conveyors_3DAnimLength_Straight(atmC) / Att([Speed], atmC)) - Label([TextureDifference], atmC),  Label([TextureDifference], atmC) := Mod(Time, Conveyors_3DAnimLength_Straight(atmC) / Att([Speed], atmC)) - Label([LastTextTrans], atmC)   ),  TranslateTextureCoords(-(Label([LastTextTrans], atmC) * Att([Speed], atmC)), 1),  ScaleTextureCoords(Conveyors_3DAnimLength_Straight(atmC), 1)   ),  valBeltColor := Color(atmC)  ),    PointsPlane(0, 0, 0, xSize(atmC), 0, valElevation, 0, ySize(atmC), 0, valBeltColor),  PushTextureCoords,   if(     att([DrawLegs], atmC),     Repeat(xsize(atmC) / valLegSpacing,       Do(        Case(         WhichIsTrue(          valElevation = 0,          valElevation > 0,          valElevation < 0         ),         do(          di3DBox((count - 1) * valLegSpacing, - 0.05, Tan(Conveyors_Angle(atmC)) * (Count - 1) * valLegSpacing, 0.05, 0.05,  valElevation - Tan(Conveyors_Angle(atmC)) * (Count - 1) * valLegSpacing - valLegExtend, ColorGray, 0),          di3DBox((count - 1) * valLegSpacing, ySize(atmC), Tan(Conveyors_Angle(atmC)) * (Count - 1) * valLegSpacing, 0.05, 0.05,  valElevation - Tan(Conveyors_Angle(atmC)) * (Count - 1) * valLegSpacing - valLegExtend, ColorGray)         ),         do(          di3DBox((count - 1) * valLegSpacing, - 0.05, Tan(Conveyors_Angle(atmC)) * (Count - 1) * valLegSpacing, 0.05, 0.05,  valElevation - Tan(Conveyors_Angle(atmC)) * (Count - 1) * valLegSpacing - valLegExtend * 2, ColorGray, 0),          di3DBox((count - 1) * valLegSpacing, ySize(atmC), Tan(Conveyors_Angle(atmC)) * (Count - 1) * valLegSpacing, 0.05, 0.05,  valElevation - Tan(Conveyors_Angle(atmC)) * (Count - 1) * valLegSpacing - valLegExtend * 2, ColorGray)         ),         do(          di3DBox((count - 1) * valLegSpacing, - 0.05, Tan(Conveyors_Angle(atmC)) * (Count - 1) * valLegSpacing, 0.05, 0.05,  valElevation - Tan(Conveyors_Angle(atmC)) * (Count - 1) * valLegSpacing - valLegExtend, ColorGray, 0),          di3DBox((count - 1) * valLegSpacing, ySize(atmC), Tan(Conveyors_Angle(atmC)) * (Count - 1) * valLegSpacing, 0.05, 0.05,  valElevation - Tan(Conveyors_Angle(atmC)) * (Count - 1) * valLegSpacing - valLegExtend, ColorGray, 0)         )        ),                 {if(           valElevation >= 0,           do(             {di3DBox((count - 1) * valLegSpacing, - 0.05, valLegExtend * -1 , 0.05, 0.05,(count - 1) {* 0.5 * Tan(Conveyors_Angle(atmC)) + valLegExtend,  ColorGray, 0),                di3DBox((count - 1) * valLegSpacing, ySize(atmC), valLegExtend * -1 , 0.05, 0.05, (count - 1) {* 0.5 * Tan(Conveyors_Angle(atmC)) + valLegExtend, ColorGray, 0)                          di3DBox((count - 1) * valLegSpacing, - 0.05, Tan(Conveyors_Angle(atmC)) * (Count - 1) * valLegSpacing, 0.05, 0.05,  valElevation - Tan(Conveyors_Angle(atmC)) * (Count - 1) * valLegSpacing - valLegExtend * 2, ColorGray, 0),             di3DBox((count - 1) * valLegSpacing, ySize(atmC), Tan(Conveyors_Angle(atmC)) * (Count - 1) * valLegSpacing, 0.05, 0.05,  valElevation - Tan(Conveyors_Angle(atmC)) * (Count - 1) * valLegSpacing - valLegExtend * 2, ColorGray, 0)           ),           do(             di3DBox((count - 1) * valLegSpacing, - 0.05, Tan(Conveyors_Angle(atmC)) * (Count - 1) * valLegSpacing, 0.05, 0.05,  valElevation - Tan(Conveyors_Angle(atmC)) * (Count - 1) * valLegSpacing - valLegExtend, ColorGray, 0),             di3DBox((count - 1) * valLegSpacing, ySize(atmC), Tan(Conveyors_Angle(atmC)) * (Count - 1) * valLegSpacing, 0.05, 0.05,  valElevation - Tan(Conveyors_Angle(atmC)) * (Count - 1) * valLegSpacing - valLegExtend, ColorGray, 0)           )         ),}                                    {**Cross support**}         if(          and(           valElevation >= 0,           valLegExtend > 0          ),           di3DBox(((Count - 1) * valLegSpacing), 0, -(+(*(*((Count - 1), 0.5), Tan(Conveyors_Angle(atmC))), 0), 0.3), 0.03, ySize(atmC), 0.03, Color(atmC), 0)         )       )     )   ),      repeat( {**for all sensors, if 0 then nothing is drawn**}             valNrSensors,     do(                  {**draw a line at the position of the sensor**}          valPos :=  Conveyors_Scale(cell(Count, 1, atmC), 1, atmC) * Cos(Conveyors_Angle(atmC)),                   if(        valElevation = 0,        di3DBox(valPos, 0, zloc(atmC) + valSensorHeight, valSensorBeamSizeX, ysize(atmC), valSensorBeamSizeZ, ColorRed),        di3DBox(valPos, 0, +((Tan(Conveyors_Angle(atmC)) * valPos), valSensorHeight), valSensorBeamSizeX, ysize(atmC), valSensorBeamSizeZ, ColorRed)       )      )   ),     {**Make sure products are rotated correctly at conveyor**}  if(    Conveyors_Angle(atmC) <> 0,    do(      Repeat(        Content(atmC),        zTrans(rank(Count, atmC)) := -(zLoc(rank(Count, atmC))) + 0.001 + Label([TransZ], rank(Count, atmC))      ),      RotateCoords(-(Conveyors_Angle(atmC)), 0, 1, 0)    )  ))], [Draws the Conveyor in 3D], [NAC_3DDraw(c)], 0, [Advanced Non Accumulating Conveyor Straight.atm]);
+DefineFunction([NACs_ShowSensors2D], [Conveyors], 1, 1, [do(   var([atmC], vbAtom, p(1)),  var([valNrSensors], vbValue),  var([valPos], vbValue, 0),    if(    att([UseSensors], atmC),    do(      valNrSensors := att([NrSensors], atmC),            repeat( {**for all sensors, if 0 then nothing is drawn**}        valNrSensors,        do(                      {**draw a line at the position of the sensor**}             valPos :=  Conveyors_Scale(cell(Count, 1, atmC), 1, atmC) * Cos(Conveyors_Angle(atmC)),            diLine(valPos, 0, 0, ysize(atmC), ColorRed)        )       )      )  )) ], [Enter helptext], [Enter Syntax Example], 0, [Advanced Non Accumulating Conveyor Straight.atm]);
+DefineFunction([NACs_SetDestinationAndSpeed], [Conveyors], 2, 2, [do(  var([atmI], vbAtom, p(1)),  var([atmC], vbAtom, p(2)),  var([valDistance], vbValue, 0),   if(     getrank(atmI) = 1,        {**Atom is first atom on conveyor**}    do(                 {**Possible conveying distance**}      valDistance := Conveyors_GetDistanceDestination(atmI, atmC),      if(         valDistance <= 1e-7,                {**Atom can not be conveyed further*}        do(          if(             att([AtomToEnd], atmC),            do(              CreateEvent(0, atmC, CONVEYORS_REACHED_DESTINATION_EVENT, 0, atmI),              setspeed(Conveyors_Scale(att([HorizontalSpeed], atmC), 1, atmC), 0, Conveyors_Scale(att([VerticalSpeed], atmC), 1, atmC), atmI)            ),               {**Stop the conveyor**}            Conveyors_StopConveyor(atmC)                                                                                  )        ),                {**Distance > 0, Convey atom**}        do(                                                                          setspeed(Conveyors_Scale(att([HorizontalSpeed], atmC), 1, atmC), 0, Conveyors_Scale(att([VerticalSpeed], atmC), 1, atmC), atmI),                                                                 {**Event when atom reaches end, Distance / Speed**}                                    CreateEvent(valDistance / att([Speed], atmC), atmC, CONVEYORS_REACHED_DESTINATION_EVENT, 0, atmI)                                         )       )                ),        {**Other atoms : copy speed from first atom on conveyor**}    do(       setspeed(xSpeed(first(atmC)), ySpeed(first(atmC)), zSpeed(first(atmC)), atmI)    )                     )       )  ], [Creates ReachedDestination Event (for first atom on conveyor only) and sets speed of all the atoms e1 = reference to Atom to be conveyede2 = reference to Non-Accumulating Conveyor], [NACs_SetDestinationAndSpeed(i, c)], 0, [Advanced Non Accumulating Conveyor Straight.atm]);
+Set(Icon(a), 
+	RegisterIcon(pDir([media\images\default.jpg]), [default.jpg]));
+AddModel3D(
+	RegisterModel3D(Model3DDir([\camera.3ds]), [camera.3ds], 0, 0, 0, 2, 2, 2, -90, 0, 0), a);
+SetMaterial(
+	RegisterMaterial([Default], 8421504, 8421504, 3289650, 0, 0.100000001490116, 0, false, false, 1, 0), 1, a);
+AddTexture(
+	RegisterTexture(TexturesDir([\conveyor_belt1.png]), [conveyor_belt1.png], 256, 256, 255, 255, 0, 0, 0, 0), a);
+Set(Version(a), 7.3);
+SetTreeIcon(pDir([Media\Icons\AdvancedNonAccumulatingConveyor.ico]));
+Set(Info, [isConveyor:
+1 - Straight NAC
+2 - Curved NAC
+3 - Straight AC
+4 - Curved AC
+
+Last revision:
+-------------------
+March, 2008
+]);
+Set(DdbRec, [>test:1.]);
+SetChannels(1, 1);
+SetChannelRanges(1, 255, 1, 255);
+int001(63);
+SetLoc(0, 0, 1);
+SetSize(10, 1, 0);
+LockPosition(false);
+LockSize(false);
+DisableIconRotation(false);
+SetProductCode([]);
+CreateAttributes(33);
+SetAttributeName(r(1), [AtomToEnd]);
+SetAttributeName(r(2), [BeginPos]);
+SetAttributeName(r(3), [Capacity]);
+SetAttributeName(r(4), [DelayTime]);
+SetAttributeName(r(5), [EffectOnPredecessor]);
+SetAttributeName(r(6), [Elevation]);
+SetAttributeName(r(7), [EntryTrigger]);
+SetAttributeName(r(8), [ExitTrigger]);
+SetAttributeName(r(9), [Gap]);
+SetAttributeName(r(10), [GapWindow]);
+SetAttributeName(r(11), [HorizontalSpeed]);
+SetAttributeName(r(12), [InputLength]);
+SetAttributeName(r(13), [InStrategy]);
+SetAttributeName(r(14), [IsConveyor]);
+SetAttributeName(r(15), [Length]);
+SetAttributeName(r(16), [LengthFactor]);
+SetAttributeName(r(17), [nrSensors]);
+SetAttributeName(r(18), [SendTo]);
+SetAttributeName(r(19), [SpacingRule]);
+SetAttributeName(r(20), [Speed]);
+SetAttributeName(r(21), [StartStopPredecessor]);
+SetAttributeName(r(22), [StartStopSuccessor]);
+SetAttributeName(r(23), [TempAtomToEnd]);
+SetAttributeName(r(24), [UsePhysicalLength]);
+SetAttributeName(r(25), [UseSensors]);
+SetAttributeName(r(26), [VerticalSpeed]);
+SetAttributeName(r(27), [ResetTrigger]);
+SetAttributeName(r(28), [SmallerThanBag]);
+SetAttributeName(r(29), [LastEntered]);
+SetAttributeName(r(30), [LastIC]);
+SetAttributeName(r(31), [DrawLegs]);
+SetAttributeName(r(32), [LegExtend]);
+SetAttributeName(r(33), [LegSpacing]);
+SetAtt(r(3), 100);
+SetAtt(r(9), 1);
+SetAtt(r(12), 10);
+SetExprAtt(r(13), [{.openallic(c)|Any inputchannel .}openallic(c)]);
+SetAtt(r(14), 1);
+SetAtt(r(15), 10);
+SetAtt(r(16), 1);
+SetAtt(r(18), 1);
+SetAtt(r(19), 1);
+SetAtt(r(20), 1);
+SetAtt(r(24), 1);
+SetAtt(r(31), 1);
+SetExprAtt(r(32), [zLoc(c)]);
+SetExprAtt(r(33), [1]);
+int024;
+Set(OnEvent, [case(  mod(EventCode, CONVEYORS_MAX_NR_OF_EVENTS),  {**Maximum number of events, used to find the sensor number at the CONVEYORS_SENSOR_RELEASE_EVENT**}  {**1: CONVEYORS_ALLOW_NEXT_EVENT**}  {** always use with higher priority than Reached Destination Event 100 now used**}    do(        Conveyors_AllowNextEvent(c, i)  ),    {**2: CONVEYORS_REACHED_DESTINATION_EVENT**}  do(    Conveyors_ReachedDestination(i, c)  ),    {**3: CONVEYORS_START_CONVEYOR_EVENT**}  do(    Conveyors_Start_NAConveyor(c)     ),    {**4: CONVEYORS_STOP_CONVEYOR_EVENT**}  do(       {**Fifth paramater i can be passed as a value with vtp(value)), be aware that this      doesn't work with the number 0**}    Conveyors_StopConveyor(c, i)  ),    {**5: CONVEYORS_SENSOR_EVENT**}  {**Sensor Event, atom i is passing sensor**}  do(    Conveyors_SensorEvent(i, c)  ),    {**6:CONVEYORS_SENSOR_RELEASE_EVENT**}  {**Sensor Free Event, the end of an atom is passing sensor i**}  do(    Conveyors_SensorFree_Event(c, i, (EventCode - CONVEYORS_SENSOR_RELEASE_EVENT) / CONVEYORS_MAX_NR_OF_EVENTS)  ))]);
+Set(OnEntered, [do(  var([valDistance], vbValue),    {**Close all input channels**}  CloseAllIC(c),         if(    and(      ic(c) > 0,      Conveyors_IsConveyor(in(ic(c), c))    ),        EffectOnPredecessor := in(ic(c), c),    EffectOnPredecessor := 0  ),    LastEntered := i,  LastIC := ic(c),    {**Check if any events (allow next or sensor free) on previous conveyors has to be scheduled**}  Conveyors_AtomTableCheck(i, c, BeginPos),       {**Schedule event for moment when atom is on conveyor completely and next atom is allowed**}  {**Until this event the coneyor will have effect on its predecessor conveyor**}  valDistance := Max(0, Conveyors_GetSpacing(c, xSize(i), SpacingRule) - BeginPos),    if(    valDistance <= Length - BeginPos,        {**Create event**}    do(      CreateEvent(valDistance / Speed, c, CONVEYORS_ALLOW_NEXT_EVENT, 100, i),      Conveyors_AtomTableAddEvent(i, valDistance, c, CONVEYORS_ALLOW_NEXT_EVENT, 100, 1)    ),             {**Add event line to atom table**}    Conveyors_AtomTableAddEvent(i, valDistance, c, CONVEYORS_ALLOW_NEXT_EVENT, 100, 0)  ),     if(    xSize(i) > Length,    SmallerThanBag := 1,    SmallerThanBag := 0  ),       {**Re Scale Product**}    if(     not(UsePhysicalLength),    do(       {**Physical length not used: scale product size**}              xsize(i) := Conveyors_Scale(xsize(i), 1, c),      ysize(i) := Conveyors_Scale(ysize(i), 1, c),      zsize(i) := Conveyors_Scale(zsize(i), 1, c)    )      ),       {**Set front of atom at the beginning of the conveyor**}  Conveyors_SetAtomLocation_Straight(i, BeginPos, c),       i.TransZ := zTrans(i), {**Ztrans needed for rotation at ascending or descending conveyor**}          {**Convey the atom**}  Conveyors_ConveyAtom(i, c),        {**EntryTrigger**}  EntryTrigger   )]);
+Set(OnExited, [do(   {**close all output channels**}  CloseAllOC(c),     {**Delete sensor label**}    if(    useSensors,    do(      i.Conveyors_LastSensor := 0,      i.Conveyors_NextSensor := 0    )  ),  if(      Conveyors_IsRunning(c),     {**Conveyor is running**}    do(       if(         Content(c) > 0,                {**Atom on conveyor: Create ReachedDestination Event for the new first Atom**}        NACs_SetDestinationAndSpeed(first(c), c),                           {**No Atom on conveyor: Change Status to Empty**}        Status := 13       )     ),    CreateEvent(0, c, CONVEYORS_START_CONVEYOR_EVENT)     ),     {**remove speed of exiting atom**}  StopAtom(i),       {**ReScale product**}   if(     not(UsePhysicalLength),    do(       {**Physical length not used: scale back product size**}         xsize(i) := Conveyors_Scale(xsize(i), 2, c),      ysize(i) := Conveyors_Scale(ysize(i), 2, c),      zsize(i) := Conveyors_Scale(zsize(i), 2, c)    )      ),        if(      and(Content(c) = Capacity - 1, LastEntered = 0),        {**the conveyor was full and spacing rule is okay: Open input again**}     CreateEvent(0, c, CONVEYORS_ALLOW_NEXT_EVENT, 100)   ),      Conveyors_AtomTableUpdate(i, c),   zTrans(i) := i.TransZ,      {**Execute ExitTrigger**}  ExitTrigger       )]);
+Set(OnCreation, [do(  AutoConnect,  if(    UsePhysicalLength,    do(      Length := Conveyors_3DAnimLength_Straight(c),      InputLength := Length    ),    Length := inputLength  ))]);
+Set(OnReset, [do(
+
+  {**Calculate Length**} 
+  if( 
+    UsePhysicalLength,
+    
+    {**Physical Length**}
+    do(
+      Length := Conveyors_3DAnimLength_Straight(c),
+      InputLength := Length,     
+      LengthFactor := 1
+    ),
+ 
+    {**No Physical Length**}
+    do( 
+      Length := InputLength,                
+      LengthFactor :=  Length / Conveyors_3DAnimLength_Straight(c) 
+    )
+  ), 
+ 
+  {**Calculate Horizontal and Vertical Speed**}
+  HorizontalSpeed := cos(Conveyors_Angle(c)) * Speed,
+  VerticalSpeed := sin(Conveyors_Angle(c)) * Speed,      
+    
+  {**Close channels**}       
+  CloseAllOc(c),     
+  
+  {**Initialize attributes**}      
+  IsConveyor := 1,
+  EffectOnPredecessor := 0,  
+  LastEntered := 0,
+  SmallerThanBag := 0,
+  
+  {**Reset label for 3d drawing**}
+  c.LastTextTrans := 0,
+  
+  {**Change Status to Empty**}
+  Status(c) := 13,
+  
+  Conveyors_SensorUnBlockAll(c),
+
+  {**ResetTrigger**}
+  ResetTrigger
+)
+]);
+Set(OnUser, [Do(  { Delete any current instances of this form.}   GuiDestroy([frmNAC_Straight]),  { Register the GUI-form for this atom.}  GuiRegister(PDir([atoms\frmNAC_Straight.gui]), 1),  { Show the GUI-form.}  GuiCreate([frmNAC_Straight], name(c), 0, c, 0, 1))]);
+Set(OnOcReady, [do(   if(    Conveyors_IsRunning(c),         if( {**Atom on conveyor**}       Content(c) > 0,      if(        AtomToEnd,             {**Conveyor running and product is at end of running**}        {**Them an immediate exit is possible**}            MoveRequest(first(c), sendTo)                                     )    ),    {**Conveyor stopped, triggered if next is not a conveyor**}     {**Start conveyor after start time if event handler is triggered by next destination**}        do(      CloseAllOC(c),              CreateEvent(DelayTime, c, CONVEYORS_START_CONVEYOR_EVENT)    )  ) )]);
+Set(On2DDraw, [do(   {**Show Sensors**}  NACs_ShowSensors2D(c),  DrawArrow(0.15, 0.5 * ySize, 0.2, 0.5 * ySize, 0.15, 0.15, ColorWhite, True, 100, 0))]);
+Set(On3DDraw, [do(  NACs_3Ddraw(c))]);
+SetStatus(0);
+int018;
+int007;

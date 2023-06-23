@@ -1,0 +1,374 @@
+
+
+{Preregister functions}
+
+PreregisterFunction([ExcelOpen], 1, 2);
+PreregisterFunction([ExcelSheet], 1, 1);
+PreregisterFunction([ExcelClose], 0, 0);
+PreregisterFunction([ExcelPrint], 0, 0);
+PreregisterFunction([ExcelSave], 0, 0);
+PreregisterFunction([ExcelName], 1, 1);
+PreregisterFunction([ExcelRead], 2, 2);
+PreregisterFunction([ExcelTxRead], 2, 2);
+PreregisterFunction([ExcelWrite], 3, 3);
+PreregisterFunction([ExcelTxWrite], 3, 3);
+PreregisterFunction([ExcelMacro], 1, 1);
+PreregisterFunction([ExcelConnect], 1, 1);
+
+
+{Atom: Excel}
+
+sets;
+BaseClass;
+CreateAtom(a, s, [], 1, false);
+int023([Excel], 16744448, 224);
+DefineFunction([ExcelOpen], [Office], 1, 2, [Do(
+ Exec(
+  FindApplicationFor([excel.sheet]),
+  p(2)
+ ),
+ DdeOpen([excel],[system]),
+ DdeExecute(concat(sbo,[open("],p(1),[")],sbc)),
+ DdeClose,
+ DdeOpen([excel], p(1))
+)
+  
+], [Opens an Excel workbook named e1. If e2 =1, Excel is visible; if e2 =0, Excel is not visible. The first sheet of the workbook is used. Returns 1 if succesfull, 0 otherwise.], [ExcelOpen([Workbook.xls], 1)], 0, [Excel.atm]);
+DefineFunction([ExcelSheet], [Office], 1, 1, [Do(
+ DdeClose, DdeOpen([excel], p(1))
+)
+], [Makes sheet e1 the active sheet in the current workbook], [ExcelSheet([Workbook.xls:sheet3])], 0, [Excel.atm]);
+DefineFunction([ExcelClose], [Office], 0, 0, [Do(
+ DdeExecute([[quit]]),
+ DdeClose
+)
+], [Closes excel], [ExcelClose], 0, [Excel.atm]);
+DefineFunction([ExcelPrint], [Office], 0, 0, [DdeExecute([[print]])
+], [Prints the current excel worksheet], [ExcelPrint], 0, [Excel.atm]);
+DefineFunction([ExcelSave], [Office], 0, 0, [DdeExecute([[save]])
+], [Saves the current excel worksheet
+], [ExcelSave], 0, [Excel.atm]);
+DefineFunction([ExcelName], [Office], 1, 1, [DdeExecute(
+ Concat(sbo, [currentsheet.name="], p(1), ["], sbc)
+)
+], [Renames the current excel worksheet to e1], [ExcelName([MySheet])], 0, [Excel.atm]);
+DefineFunction([ExcelRead], [Office], 2, 2, [Value( DDERead( ExcelRef( p(1), p(2))))
+], [Reads a value from row e1, column e2 from the current excel worksheet], [ExcelRead(3, 2)], 0, [Excel.atm]);
+DefineFunction([ExcelTxRead], [Office], 2, 2, [DDERead( ExcelRef( p(1), p(2)))
+], [Reads a text from row e1, column e2 from the current excel worksheet], [ExcelTxRead(3, 2)], 0, [Excel.atm]);
+DefineFunction([ExcelWrite], [Office], 3, 3, [DDEWrite(
+ ExcelRef( p(1), p(2)),
+ AutoString( p(3))
+)
+], [Writes value e3 to row e1, column e2 of the current excel worksheet], [ExcelWrite(3, 2, 12.75)], 0, [Excel.atm]);
+DefineFunction([ExcelTxWrite], [Office], 3, 3, [DDEWrite(
+ ExcelRef( p(1), p(2) ), p(3)
+)
+], [Writes string e3 to row e1, column e2 of the current excel worksheet], [ExcelTxWrite(3, 2, [Information])], 0, [Excel.atm]);
+DefineFunction([ExcelMacro], [Office], 1, 1, [DDEExecute(
+ Concat(sbo, [run("], p(1), [")], sbc)
+)
+], [Executes excel macro e1], [ExcelMacro([MyMacro])], 0, [Excel.atm]);
+DefineFunction([ExcelConnect], [Office], 1, 1, [Do(
+
+ var([filename], vbString, 0),
+ var([sheetname], vbString, 0),
+ var([excelvisible], vbValue, 0),
+ var([ExcelAtm], vbAtom, p(1)),
+ 
+ filename := Att([Filename],ExcelAtm),
+ sheetname := Att([SheetName],ExcelAtm),
+ excelvisible := Att([Visible],ExcelAtm),
+ 
+ { Check out if the file is useable... }
+ if(
+  or(
+   comparetext(
+    filename, 
+    [Untitled]
+   ) = true,
+   fileexists(filename) = false
+  ),
+  do(
+   msg([The specified filename isnt' a valid Excel Workbook], 3),
+   return(-1)
+  )
+ ),
+ 
+ {open excel}
+ if(
+  ddeready,
+  excelclose
+ ), 
+  
+ excelopen(filename, excelvisible),
+ excelsheet(sheetname),
+
+ if(
+  not(ddeready),
+  msg(
+   concat(
+    [The Sheetname that you specified is not correct.],
+    cr,
+    lf,
+    cr,
+    lf,
+    [Close Excel and change the Sheetname!]
+   ),
+   3
+  )
+ ),
+
+ repeat(
+  nrows(ExcelAtm),
+  do(
+   setatt([TableCntr],count,ExcelAtm),
+
+   {prepare all the tables}
+   settable(cell(att([TableCntr],ExcelAtm),3,ExcelAtm),cell(att([TableCntr],ExcelAtm),4,ExcelAtm),rank(att([TableCntr],ExcelAtm),ExcelAtm)),
+   settextatt([oldname],textatt([tablename],rank(att([TableCntr],ExcelAtm),ExcelAtm)),rank(att([TableCntr],ExcelAtm),ExcelAtm)),
+   settextatt([tablename],cell(att([TableCntr],ExcelAtm),1,ExcelAtm,2),rank(att([TableCntr],ExcelAtm),ExcelAtm)),
+   do(
+    if(
+     and(
+      functionexists(textatt([tablename],rank(att([TableCntr],ExcelAtm),ExcelAtm))),
+      not(comparetext(textatt([tablename],rank(att([TableCntr],ExcelAtm),ExcelAtm)),textatt([oldname],rank(att([TableCntr],ExcelAtm),ExcelAtm))))
+     ),
+
+     {the function name already exists on a different atom}
+     msg(concat([The table name of table ],string(att([TableCntr],ExcelAtm)),[ already exists!],cr,lf,cr,lf,[The name is not registered. Choose a new one!])),
+     
+     {if the function is unique}     
+     do(
+      set(oninit(rank(att([TableCntr],ExcelAtm),ExcelAtm)),[]),
+      att([createfunctions],rank(att([TableCntr],ExcelAtm),ExcelAtm)),
+      set(name(rank(att([TableCntr],ExcelAtm),ExcelAtm)),textatt([tablename],rank(att([TableCntr],ExcelAtm),ExcelAtm)))
+     )
+    )
+   )
+  )
+ )
+)
+], [Enter helptext
+], [Enter Syntax Example], 0, [Excel.atm]);
+Set(Icon(a), 
+	RegisterIcon(pDir([media\images\default.jpg]), [default.jpg]));
+SetMaterial(
+	RegisterMaterial([Default], 8421504, 8421504, 3289650, 0, 0.100000001490116, 0, false, false, 1, 0), 1, a);
+Set(Version(a), 7.3);
+SetTreeIcon(pDir([Media\Icons\Excel2k.ico]));
+Set(Info, [Communicate with excel
+
+General
+-----------
+If this atom is in your library, it automatically creates a number 
+of 4DScript words that can be used to communicate with excel.
+
+These words are explained in the 4DScript overview in the 
+category Office. 
+
+You can also drag this atom in your model if you want to. In 
+this case you can rightclick the atom to select a spreadsheet file 
+which is then automatically opened.
+
+If you save your model and later open it, the spreadsheet is 
+automatically opened again. When the atom is deleted from 
+your model or the model is deleted, excel automatically closes 
+again. The advantage of having an excel atom in your model is 
+that you can read and write to the spreadsheet from different atoms 
+without having to worry about opening and closing there.
+
+Of course you're supposed to have excel installed on your 
+computer.
+
+Important: you should only have ONE excel atom (or word 
+atom) in your model.
+
+Note:
+-------
+The referencing of cells may differ per language. The 
+dafaults in ED are english. If you use another language on 
+your computer, check the File Preferences menu.
+
+Rightlick: 
+  Select spreadsheet
+
+Last revision:
+-------------------
+February, 2008
+]);
+Set(DdbRec, [>t-excel:1.>t-alloworganize:1.]);
+int001(61);
+SetSize(5, 2, 1);
+LockPosition(false);
+LockSize(false);
+DisableIconRotation(false);
+SetProductCode([]);
+CreateAttributes(11);
+SetAttributeName(r(1), [FileName]);
+SetAttributeName(r(2), [SheetName]);
+SetAttributeName(r(3), [Visible]);
+SetAttributeName(r(4), [NoTables]);
+SetAttributeName(r(5), [StartRow]);
+SetAttributeName(r(6), [StartCol]);
+SetAttributeName(r(7), [RowsToCopy]);
+SetAttributeName(r(8), [ColsToCopy]);
+SetAttributeName(r(9), [TableCntr]);
+SetAttributeName(r(10), [RowCntr]);
+SetAttributeName(r(11), [ColCntr]);
+SetTextAtt(r(1), [untitled]);
+SetTextAtt(r(2), [Sheet1]);
+int024;
+Set(OnEvent, [{****perform on reset****}
+Do(
+ {initialize constants}
+ StartRow:=Cell(EventCode,5,c),
+ StartCol:=Cell(EventCode,6,c),
+ RowsToCopy:=Cell(EventCode,7,c),
+ ColsToCopy:=Cell(EventCode,8,c),
+ {connect to sheet}
+
+ If(Not(DDEReady),
+  ExcelConnect(c)
+ ),
+ ExcelSheet(Cell(EventCode,2,c,2)),
+ {create the copy movement}
+ If(
+  DDEReady,
+  Repeat(
+   RowsToCopy,
+   Do(
+    RowCntr := Count,
+    Repeat(
+     ColsToCopy,
+     Do(
+      ColCntr := Count,
+      {if it is read or write}
+      If(
+       Cell(EventCode,10,c) = 1,
+       SetCell(RowCntr, ColCntr, ExcelTxRead(StartRow + RowCntr - 1, StartCol + ColCntr - 1), Rank(EventCode,c)),
+       ExcelTxWrite(StartRow + RowCntr - 1, StartCol + ColCntr - 1, Cell(RowCntr, ColCntr, Rank(EventCode,c),2))
+      )
+     )
+    )
+   )
+  )
+ )
+)
+]);
+Set(OnCreation, [Do(
+ {check if there already is an other excel atom present in the model}
+ v := 0,
+ ForAtomTreeUnder(model, v := v + Ddb([t-excel])),
+
+ {if no other excel atom is found}
+ If(
+  v = 0,
+  Do(
+   sDdb([t-excel],1,c),
+   Set(
+    OnInit(c),
+[LateInit(
+ [
+  Do(
+   If(DDEReady, ExcelClose),
+   ExcelOpen(FileName, 1),
+   ExcelSheet(SheetName)
+  )
+ ]
+)]
+   )
+  ),
+
+  {if an other excel atom is found}
+  Do(
+   DestroyAtom(c),
+   Msg(
+    Concat(
+     [A model may contain only 1 Excel atom.],cr,lf,cr,lf,
+     [Delete the existing Excel atom or link it to another workbook.]
+     ),
+    1
+   )
+  )
+ )
+)
+]);
+Set(OnDestruction, [Do(
+ If(DDEReady, ExcelClose)
+)
+]);
+Set(OnReset, [{look for every table to perform the action directly or create the event to do so}
+Do(
+ If(Not(DDEReady),
+  ExcelConnect(c)
+ ),
+
+Repeat(
+ nRows(c),
+ Do(
+  TableCntr := Count,
+  SetCs(Rank(TableCntr, c)),
+  If(
+   Cell(TableCntr, 11, c) = 1,
+
+   {****perform on reset****}
+   Do(
+    {initialize constants}
+    StartRow := Cell(TableCntr, 5, c),
+    StartCol := Cell(TableCntr, 6, c),
+    RowsToCopy := Cell(TableCntr, 7, c),
+    ColsToCopy := Cell(TableCntr, 8, c),
+    {connect to sheet}
+    
+    ExcelSheet(Cell(TableCntr, 2, c, 2)),
+    {create the copy movement}
+    If(
+     DDEReady,
+     Repeat(
+      RowsToCopy,
+      Do(
+       RowCntr := Count,
+       Repeat(
+        ColsToCopy,
+        Do(
+         ColCntr := Count,
+         {if it is read or write}
+         If(
+          Cell(TableCntr, 10, c) = 1,
+          SetCell(RowCntr, ColCntr, ExcelTxRead(StartRow + RowCntr - 1, StartCol + ColCntr - 1), cs),
+          ExcelTxWrite(StartRow + RowCntr - 1, StartCol + ColCntr - 1, Cell(RowCntr, ColCntr, cs, 2))
+         )
+        )
+       )
+      )
+     ),
+     Do(
+      Msg(Concat([The sheetname of tableno. ], String(TableCntr), [ is not correct!])),
+      ExcelSheet(TextAtt([SheetName],c))
+     )
+    )
+   ),
+   {****create the events****}
+    createEvent(ExecString(Cell(TableCntr, 9, c, 2)), c, TableCntr)
+  )
+ )
+)
+)
+]);
+Set(OnUser, [Do(
+ { Delete any current instances of this form.} 
+ GuiDestroy([Excel]),
+
+ { Register the GUI-form for this atom.}
+ GuiRegister(PDir([\Atoms\Excel.gui]), 1),
+
+ { Show the GUI-form.}
+ Guicreate([Excel], [Excel], 0, c, 0, 1)
+)
+]);
+Set(On2DDraw, [Draw2DIcon(3, [Excel], FileName)
+]);
+SetStatus(0);
+int018;
+int007;

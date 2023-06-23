@@ -1,0 +1,229 @@
+
+
+{Atom: Stacker}
+
+sets;
+BaseClass;
+CreateAtom(a, s, [], 1, false);
+int023([Stacker], 1282766, 1274);
+Set(Icon(a), 
+	RegisterIcon(IconsDir([bmp\atoms\server.bmp]), [server]));
+SetMaterial(
+	RegisterMaterial([Default], 8421504, 8421504, 3289650, 0, 0.100000001490116, 0, false, false, 1, 0), 1, a);
+Set(Version(a), 7.3);
+SetTreeIcon(pDir([Media\Icons\Stacker.ico]));
+Set(Info, [Last Revision:
+---------------------
+March, 2008
+]);
+SetChannels(1, 1);
+SetChannelRanges(1, 255, 1, 255);
+int001(165);
+SetSize(5, 2, 0);
+LockPosition(false);
+LockSize(false);
+DisableIconRotation(false);
+SetProductCode([]);
+CreateAttributes(24);
+SetAttributeName(r(1), [label]);
+SetAttributeName(r(2), [cycletime]);
+SetAttributeName(r(3), [max_height]);
+SetAttributeName(r(4), [use_labels]);
+SetAttributeName(r(5), [sendto]);
+SetAttributeName(r(6), [entrytrigger]);
+SetAttributeName(r(7), [exittrigger]);
+SetAttributeName(r(8), [state]);
+SetAttributeName(r(9), [timeofentry]);
+SetAttributeName(r(10), [FractionOfTime]);
+SetAttributeName(r(11), [free]);
+SetAttributeName(r(12), [free]);
+SetAttributeName(r(13), [ptvproduct]);
+SetAttributeName(r(14), [ptvcontainer]);
+SetAttributeName(r(15), [rotationstate1]);
+SetAttributeName(r(16), [rotationstate2]);
+SetAttributeName(r(17), [zSize2]);
+SetAttributeName(r(18), [zSize3]);
+SetAttributeName(r(19), [Detailed3D]);
+SetAttributeName(r(20), [instrategy]);
+SetAttributeName(r(21), [LabelType]);
+SetAttributeName(r(22), [xSizeProduct]);
+SetAttributeName(r(23), [ySizeProduct]);
+SetAttributeName(r(24), [zSizeProduct]);
+SetExprAtt(r(2), [10]);
+SetAtt(r(3), 2);
+SetExprAtt(r(5), [1]);
+SetAtt(r(8), 4);
+SetExprAtt(r(20), [{.openallic(c)|1. Any inputchannel .}openallic(c)]);
+SetAtt(r(21), 1);
+SetAtt(r(22), 1);
+SetAtt(r(23), 1);
+SetAtt(r(24), 1);
+int024;
+Set(OnEvent, [Do(
+ 
+ Case(
+  EventCode,
+  {* Event 1: Open the output *}
+  Do(
+   {* Blocked *}
+   Status(c) := 5,
+   OpenAllOc(c)
+  ),
+  
+  {* Event 2: Put the product on the place at the end of the machine *}
+  Do(
+   instrategy
+  ),
+  
+  {* Event 3: Change the status to "Pick up the product and place it on the pile" *}
+  Do(
+   state := 2,
+   {* Create an event after 60% of the cycletime to change the status to "Arms moving back to begin position" *}
+   CreateEvent(0.60 * cycletime, c, 4, 2, i)
+  ),
+  
+  {* Event 4: Change the status to "Moving arms back to begin situation" *}
+  Do(
+   state := 3,
+   {* Create an event after 20 % of the cycletime to change the status back to idle and move the product in the container *}
+   CreateEvent(0.2 * cycletime, c, 5, 2, i)
+  ),
+  
+  {* Event 5: Change the status to "Idle, arms in begin position" and move the product inside the container *}
+  Do(
+   state := 4,
+   MoveAtom(i, First(c)),
+   
+   zLoc(i) := zsizeproduct * (Content(Up(i)) - 1),
+   {* Check whether the pile has reached it maximum height *}
+   If(
+    Content(Up(i)) = max_height,
+    CreateEvent(0, c, 1, 1),
+    Do(
+     {* Waiting for Contents *}
+     Status(c) := 20,
+     CreateEvent(0, c, 2)
+    )
+   )
+  )
+ )
+)
+]);
+Set(OnEntered, [Do(
+
+ {* close the input *}
+ CloseAllIc(c),
+ 
+ {* Busy *}
+ Status(c) := 2,
+ 
+ {* If the atom is the first one a new container is created where the atoms are moved in *}
+ If(
+  Content(c) = 1,
+  Do(
+   var([atmNewContainer], vbAtom),
+   atmNewContainer := CreateAtom(BaseClass, c, [Container]),
+   SetRank(1, atmNewContainer),
+   SetSetting(sa2DOutline,   0, atmNewContainer),
+   SetSetting(sa3DOutline,   0, atmNewContainer),
+   SetSetting(saFillOutline, 0, atmNewContainer),
+   SetSetting(saIconContour, 0, atmNewContainer),
+   xSize(atmNewContainer) := xSize(i),
+   xLoc(atmNewContainer) := xsize(c) - xSize(atmNewContainer),
+   yLoc(atmNewContainer) := ysize(c) / 2 - 0.5,
+   zLoc(atmNewContainer) := zSize(c),
+   OnReset(atmNewContainer) := [DestroyAtom(c)]
+  )
+ ),
+
+ If(
+  And(
+   Detailed3D,
+   cycletime <> 0
+  ),
+  Do(
+
+   {* Set some attributes needed for the 3D draw *}
+   timeofentry := EntryTime(i),
+   rotationstate1,
+
+   {* Set the status of the atom to "Arms moving towards the product" *}
+   state := 1,
+   CreateEvent(0.20 * cycletime, c, 3, 0, i)
+  ),
+
+  {* If no detailed 3D, the state changes are skipped. If the cycletime is 0 they are also skipped *}
+  CreateEvent(cycletime, c, 5, 2, i)
+ ),
+ 
+
+ {* Set the location of the product at the beginning of the machine *}
+ SetLoc(0, (ySize(c) - ySize(i)) / 2, zSize(c), i),
+
+ entrytrigger
+)
+]);
+Set(OnExited, [Do(
+
+ {* Only execute this code if the container leaves the atom. Not if the product is moved in the container *}
+ If(
+  Content(c) = 0,
+  Do(
+
+   {* Close the output *}
+   CloseAllOc(c),
+
+   {* Idle *}
+   Status(c) := 1,
+
+   {* Create an event to execute the input strategy *}
+   CreateEvent(0, c, 2),
+
+   exittrigger 
+  )
+ )
+)
+]);
+Set(OnCreation, [AutoConnect]);
+Set(OnReset, [Do(
+ {* idle *}
+ Status(c) := 1,
+
+ {* Place the machine in the initial position *}
+ state := 4,
+ 
+ CloseAllOC(c)
+)
+]);
+Set(OnUser, [Do( { Delete any current instances of this form.} GuiDestroy([Stacker]),  { Register the GUI-form for this atom.} GuiRegister(PDir([\Atoms\Stacker.gui]), 1),  { Show the GUI-form.} GuiCreate([Stacker], [Stacker], 0, c, 0, 1))]);
+Set(OnOcReady, [Do( {* If there is a product try to send it to the next atom *} If(  Content(c) > 0,  MoveRequest(First(c), sendto) ))]);
+Set(OnIcReady, [Do(
+
+ If(
+  use_labels,
+
+  If(
+   And(
+    Content(c) > 0,
+    If(
+     LabelType = 0,
+     Not(CompareText(Label(TextAtt([label], c), First(In(ic, c))), Label(TextAtt([label], c), First(First(c))))),
+     Label(TextAtt([label], c), First(In(ic, c))) <> Label(TextAtt([label], c), First(First(c)))
+    )
+   ),
+
+   {* If the labels are not the same, don't let the atom enter, but send on the current *}
+   {* stack first *} 
+   Do(
+    CloseAllIc(c),
+    CreateEvent(0, c, 1)
+   )
+  )
+ )
+)
+]);
+Set(On2DDraw, [If(RotationAs(c) = 0, StandardDisplay(Name, [], Icon))]);
+Set(On3DDraw, [Do( {* Draw the sides of the machine *} Di3DBox( xSize( c) - xSizeProduct, 0, zSize( c), xSizeProduct, 0.2, 1.5 * zSizeProduct, Color), Di3DBox( xSize( c) - xSizeProduct, ySize - 0.2, zSize( c), xSizeProduct, 0.2, 1.5 * zSizeProduct, Color), {* Draw the silver plates on the spot where the arms begin *} Box( xSize( c) - 0.5 * xSizeProduct - 0.25, 0.2, 0.5 * zSizeProduct + zSize( c) - 0.25, 0.5,  0.05, 0.5, 0, 0, 0, ColorSilver), Box( xSize( c) - 0.5 * xSizeProduct - 0.25, ySize - 0.25, 0.5 * zSizeProduct + zSize( c) - 0.25, 0.5, 0.05, 0.5, 0, 0, 0, ColorSilver), If(  cycletime > 0,  If(   state = 1,  {* The arms are moving towards the product in 20% of the cycletime *}   Do(    FractionOfTime := /( Time - timeofentry, 0.2 * cycletime),    rotationstate1 := 90 * FractionOfTime,    {* Draw he vertical arms *}    Box(      xSize(c) - 0.5 * xSizeProduct - 0.1, 0.2, 0.5 * zSizeProduct + zSize(c), 0.2, 0.2,      max_height * zSizeProduct - zSizeProduct - ( FractionOfTime * ( max_height * zSizeProduct - zSizeProduct - xSize(c) + xSizeProduct)),      0, rotationstate1, 0, ColorSilver        ),    Box(      xSize(c) - 0.5 * xSizeProduct - 0.1, ySize - 0.4, 0.5 * zSizeProduct + zSize(c), 0.2, 0.2,      max_height * zSizeProduct - zSizeProduct - ( *(FractionOfTime, (max_height * zSizeProduct - zSizeProduct - xSize(c) + xSizeProduct))),      0, rotationstate1, 0, ColorSilver    ),   {* Draw the horizontal side arms at the top of the arms *}    Box(      -(      xSize(c) - 0.5 * xSizeProduct - 0.1,      *(       cos(90 - rotationstate1),        max_height * zSizeProduct - zSizeProduct - (*(FractionOfTime, (max_height * zSizeProduct - zSizeProduct - xSize(c) + xSizeProduct)))      )     ),      0.2,     +(      0.5 * zSizeProduct + zSize(c),        *(       sin(90 - rotationstate1),        max_height * zSizeProduct - zSizeProduct - (*(FractionOfTime, (max_height * zSizeProduct - zSizeProduct - xSize(c) + xSizeProduct)))      )     ),      0.2, Max( 0, 0.5 * (ySize(c) - ySizeProduct) - 0.25), 0.2, 0, 0, 0, ColorSilver      ),    Box(     -(      xSize(c) - 0.5 * xSizeProduct - 0.1,      *(       cos(90 - rotationstate1),        max_height * zSizeProduct - zSizeProduct - (*(FractionOfTime, (max_height * zSizeProduct - zSizeProduct - xSize(c) + xSizeProduct)))      )     ),      ySize - 0.2,     +(      0.5 * zSizeProduct + zSize(c),        *(       sin(90 - rotationstate1),        max_height * zSizeProduct - zSizeProduct - (*(FractionOfTime, (max_height * zSizeProduct - zSizeProduct - xSize(c) + xSizeProduct)))      )     ),      0.2, -1 * Max( 0, 0.5 * (ySize(c) - ySizeProduct) - 0.25), 0.2, 0, 0, 0, ColorSilver   ),    {* Draw the plates at the end of the arms * }    Box(     -(      xSize(c) - 0.5 * xSizeProduct - 0.2,      *(       cos(90 - rotationstate1),        max_height * zSizeProduct - zSizeProduct - (*(FractionOfTime, (max_height * zSizeProduct - zSizeProduct - xSize(c) + xSizeProduct)))      )     ),      0.2 + Max( 0, 0.5 * (ySize(c) - ySizeProduct) - 0.25),     +(      0.5 * zSizeProduct - 0.1 + zSize(c),        *(       sin(90 - rotationstate1),        max_height * zSizeProduct - zSizeProduct - (*(FractionOfTime, (max_height * zSizeProduct - zSizeProduct - xSize(c) + xSizeProduct)))      )     ),      0.4, 0.05, 0.4, 0, 0, 0, ColorSilver    ),    Box(     -(      xSize(c) - 0.5 * xSizeProduct - 0.2,      *(       cos(90 - rotationstate1),        max_height * zSizeProduct -  zSizeProduct - (*(FractionOfTime, (max_height * zSizeProduct - zSizeProduct - xSize(c) + xSizeProduct)))      )     ),      ySize - 0.2 - Max(0, 0.5 * ( ySize(c) - ySizeProduct) - 0.25),     +(      0.5 * zSizeProduct - 0.1 + zSize(c),        *(       sin(90 - rotationstate1),        max_height * zSizeProduct - zSizeProduct - (*(FractionOfTime, (max_height * zSizeProduct - zSizeProduct - xSize(c) + xSizeProduct)))      )     ),      0.4, -0.05, 0.4, 0, 0, 0, ColorSilver    )   ),     {**********************************************************************************************************}   If(    state = 2,     {* The arms are moving moving the product on the stack in 60% of the cycletime *}      Do(      FractionOfTime := /(Time - 0.2 * cycletime - timeofentry , 0.6 * cycletime),      rotationstate2 := (1 - FractionOfTime) * 90,      zSize2 :=              -(        xSize(c) - xSizeProduct,        FractionOfTime * (xSize(c) - xSizeProduct - zSizeProduct * (Content(c) + Content(First(c)) - 2))       ),     {* Draw he vertical arms *}     Box(xSize(c) - 0.5 * xSizeProduct - 0.1, 0.2, 0.5 * zSizeProduct + zSize(c), 0.2, 0.2, zSize2, 0, rotationstate2, 0, ColorSilver),     Box(xSize(c) - 0.5 * xSizeProduct - 0.1, ySize - 0.4, 0.5 * zSizeProduct + zSize(c), 0.2, 0.2, zSize2, 0, rotationstate2, 0, ColorSilver),        {* Draw the horizontal side arms at the top of the arms *}     Box(      -(xSize(c) - 0.5 * xSizeProduct - 0.1, cos(90 - rotationstate2) * zSize2),      0.2,      +(0.5 * zSizeProduct + zSize(c), sin(90 - rotationstate2) * zSize2),      0.2, Max(0, 0.5 * (ySize(c) - ySizeProduct) - 0.25), 0.2, 0, 0, 0, ColorSilver     ),     Box(      -(xSize(c) - 0.5 * xSizeProduct - 0.1, cos(90 - rotationstate2) * zSize2),      ySize( c) - 0.2,      +(0.5 * zSizeProduct + zSize(c), sin(90 - rotationstate2) * zSize2),      0.2, -1 * Max(0, 0.5 * (ySize(c) - ySizeProduct) - 0.25), 0.2, 0, 0, 0, ColorSilver     ),     {* Draw the plates at the end of the arms *}     Box(      -( xSize(c) - 0.5 * xSizeProduct - 0.2, cos(90 - rotationstate2) * zSize2),      0.2 + Max( 0, 0.5 * (ySize(c) - ySizeProduct) - 0.25),      +(0.5 * zSizeProduct + zSize(c) - 0.1, sin(90 - rotationstate2) * zSize2),      0.4, 0.05, 0.4, 0, 0, 0, ColorSilver     ),     Box(      -(xSize(c) - 0.5 * xSizeProduct - 0.2, cos(90 - rotationstate2) * zSize2),      ySize(c) - 0.2 - Max(0, 0.5 * (ySize(c) - ySizeProduct) - 0.25),      +(0.5 * zSizeProduct + zSize(c) - 0.1, sin(90 - rotationstate2) * zSize2),      0.4, -0.05, 0.4, 0, 0, 0, ColorSilver     ),     {* Calculate the location of the product *}     xLoc(Last(c)) := -(xSize( c), cos(90 - rotationstate2) * zSize2, xSizeProduct),     zLoc(Last(c)) := sin(90 - rotationstate2) * zSize2 + zSize(c)    ),    If(     state = 3,     {* The arms are moving to the begin position *}      Do(      FractionOfTime := /(Time - 0.8 * cycletime - timeofentry , 0.2 * cycletime),      zSize3:=        -(        zSizeProduct * (Content(c) + Content( First(c)) - 2),        FractionOfTime * (zSizeProduct * (Content(c) + Content( First(c)) - 2) - Max_Height * zSizeProduct + zSizeProduct)       ),          {* Draw he vertical arms *}      Box(xSize(c) - 0.5 * xSizeProduct - 0.1, 0.2, 0.5 * zSizeProduct + zSize(c), 0.2, 0.2, zSize3, 0, 0, 0, ColorSilver),      Box(xSize(c) - 0.5 * xSizeProduct - 0.1, ySize - 0.4, 0.5 * zSizeProduct + zSize(c), 0.2, 0.2, zSize3, 0, 0, 0, ColorSilver),      {* Draw the horizontal side arms at the top of the arms *}      Box(xSize(c) - 0.5 * xSizeProduct - 0.1, 0.2, 0.5 * zSizeProduct + zSize(c) + zSize3, 0.2, Max(0, 0.5 * (ySize(c) - ySizeProduct) - 0.25), 0.2, 0, 0, 0, ColorSilver),      Box(xSize(c) - 0.5 * xSizeProduct - 0.1, ySize - 0.2, 0.5 * zSizeProduct + zSize(c) + zSize3, 0.2, -1 * Max( 0, 0.5 * (ySize(c) - ySizeProduct) - 0.25), 0.2, 0, 0, 0, ColorSilver),      {* Draw the plates at the end of the arms *}      Box(xSize(c) - 0.5 * xSizeProduct - 0.2, 0.2 + Max(0, 0.5 * (ySize(c) - ySizeProduct) - 0.25), 0.5 * zSizeProduct + zSize(c) + zSize3 - 0.1, 0.4, 0.05, 0.4, 0, 0, 0, ColorSilver),      Box(xSize(c) - 0.5 * xSizeProduct - 0.2, ySize - 0.2 - Max( 0, 0.5 * (ySize(c) - ySizeProduct) - 0.25), 0.5 * zSizeProduct + zSize(c) + zSize3 - 0.1, 0.4, -0.05, 0.4, 0, 0, 0, ColorSilver)     )    )   )  ) ), If(  state = 4,  {* This is the begin position of the machine and the position when it is idle *}  Do(   {* Draw he vertical arms *}   Box(xSize(c) - 0.5 * xSizeProduct - 0.1, 0.2, 0.5 * zSizeProduct + zSize(c), 0.2, 0.2, max_height * zSizeProduct - zSizeProduct, 0, 0, 0, ColorSilver),   Box(xSize(c) - 0.5 * xSizeProduct - 0.1, ySize - 0.4, 0.5 * zSizeProduct + zSize(c), 0.2, 0.2, max_height * zSizeProduct - zSizeProduct, 0, 0, 0, ColorSilver),   {* Draw the horizontal side arms at the top of the arms *}   Box(xSize(c) - 0.5 * xSizeProduct - 0.1, 0.2, max_height * zSizeProduct - 0.5 * zSizeProduct + zSize(c), 0.2, Max( 0, 0.5 * (ySize(c) - ySizeProduct) - 0.25), 0.2, 0, 0, 0, ColorSilver),   Box(xSize(c) - 0.5 * xSizeProduct - 0.1, ySize - 0.2, max_height * zSizeProduct - 0.5 * zSizeProduct + zSize( c), 0.2, -1 * Max( 0, 0.5 * ( ySize(c) - ySizeProduct) - 0.25), 0.2, 0, 0, 0, ColorSilver),   {* Draw the plates at the end of the arms *}   Box(xSize(c) - 0.5 * xSizeProduct - 0.2, 0.2 + Max( 0, 0.5 * (ySize(c) - ySizeProduct) - 0.25), max_height * zSizeProduct - 0.1 - 0.5 * zSizeProduct + zSize(c), 0.4, 0.05, 0.4, 0, 0, 0, ColorSilver),   Box(xSize(c) - 0.5 * xSizeProduct - 0.2, ySize - 0.2 - Max( 0, 0.5 * ( ySize(c) - ySizeProduct) - 0.25), max_height * zSizeProduct - 0.1 - 0.5 * zSizeProduct + zSize(c), 0.4, -0.05, 0.4, 0, 0, 0, ColorSilver)  ) ))]);
+SetStatus(0);
+int018;
+int007;

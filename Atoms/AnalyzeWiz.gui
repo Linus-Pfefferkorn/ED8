@@ -1,0 +1,110 @@
+EDControl(EditForm:
+  BorderIcons = set(SystemMenu,Minimize),
+  BorderStyle = Single,
+  Caption = str('Analyze Experiment Results'),
+  Height = 271,
+  Left = 284,
+  Name = str('frmAnalyzeWiz'),
+  Position = ScreenCenter,
+  ShowHint = True,
+  Top = 345,
+  Visible = False,
+  Width = 395,
+  Controls(
+    EDControl(Panel:
+      Align = Client,
+      Anchors = set(Left,Top,Right,Bottom),
+      Caption = str(''),
+      Height = 231,
+      Left = 0,
+      Name = str('Panel22'),
+      TabOrder = 1,
+      Top = 0,
+      Width = 395,
+      Controls(
+        EDControl(GroupBox:
+          Caption = str('Settings'),
+          Height = 96,
+          Left = 8,
+          Name = str('GroupBox1'),
+          TabOrder = 1,
+          Top = 8,
+          Width = 370,
+          Controls(
+            EDControl(Label:
+              Caption = str('Experimentation results directory:'),
+              Color = -16777208,
+              Height = 13,
+              Hint = str('select the directory containing the experiment results'),
+              Left = 12,
+              Name = str('StaticText1'),
+              Top = 32,
+              Width = 154),
+            EDControl(Edit:
+              Height = 21,
+              Left = 12,
+              Name = str('edOutputDir'),
+              TabOrder = 1,
+              Top = 58,
+              Width = 225,
+              Events(
+                Change = str('do('#13'  label([DirOk],refExperimentSupport) := 0,'#13'  if(FileExists(concat(GuiControl([edOutputDir],GuiGet([Text])) ,[\ExperimentResults.sim])),'#13'    do('#13'    {  GuiControl([tbExperimentResults],GuiLoadTableFromFile(concat(GuiControl([edOutputDir],GuiGet([Text])),[\ExperimentResults.sim]))),}'#13'        label([DirOk],refExperimentSupport) := 1'#13'    ),'#13'    do('#13'        msg([No Experiment Results found in this directory])'#13'     {     '#13'        GuiControl([tbExperimentResults],GuiList([Cells],[Clear])),'#13'        GuiControl([tbExperimentResults],GuiSet([RowCount],1)),'#13'        GuiControl([tbExperimentResults],GuiSet([ColCount],1))'#13'     }        '#13'    )'#13'  ),'#13'  if(label([DirOk],refExperimentSupport),'#13'    do('#13'       if( FileExists(concat(GuiControl([edOutputDir],GuiGet([Text])) ,[\ExperimentGroups.sim])),'#13'         do('#13'        {    GuiControl([tbGroups],GuiLoadTableFromFile(concat(GuiControl([edOutputDir],GuiGet([Text])),[\ExperimentGroups.sim]))),}'#13'            GuiControl([btnNext],GuiSet([Enabled],True))  '#13'         ),'#13'        do('#13'           GuiControl([btnNext],GuiSet([Enabled],False)),'#13'           msg([No Group Definitions found in this directory])'#13'         {'#13'           GuiControl([tbGroups],GuiList([Cells],[Clear])),'#13'           GuiControl([tbGroups],GuiSet([RowCount],1)),'#13'           GuiControl([tbGroups],GuiSet([ColCount],1))  '#13'         }      '#13'        )'#13'       )'#13'    ),'#13#13'   GuiControl([btnNext],GuiSet([Enabled],False))'#13'   ),'#13'   '#13'   label([DirOk],refExperimentSupport) := 0'#13')'#13))),
+            EDControl(Button:
+              Caption = str('&Browse'),
+              Left = 265,
+              Name = str('btnBrowse'),
+              TabOrder = 2,
+              Top = 56,
+              Events(
+                Click = str('GuiControl([edOutputDir],GuiSet([Text], '#13'  SelectFolder([Select Folder containing *.sim Files], ModDir)'#13'))'#13))))),
+        EDControl(RadioGroup:
+          Caption = str('Report Type'),
+          Height = 96,
+          ItemIndex = 0,
+          Items = str('Standard Report'#13#10'Customized Report'#13#10),
+          Left = 8,
+          Name = str('rgReportType'),
+          TabOrder = 2,
+          Top = 120,
+          Width = 370))),
+    EDControl(Panel:
+      Align = Bottom,
+      Anchors = set(Left,Right,Bottom),
+      Caption = str(''),
+      Height = 40,
+      Left = 0,
+      Name = str('Panel3'),
+      TabOrder = 2,
+      Top = 231,
+      Width = 395,
+      Controls(
+        EDControl(Button:
+          Caption = str('&Help'),
+          Left = 12,
+          Name = str('btnHelp2'),
+          TabOrder = 3,
+          Top = 8,
+          Events(
+            Click = str('exec(pdir([Help\Experimentation.PDF]))'#13))),
+        EDControl(Button:
+          Anchors = set(Top,Right,Bottom),
+          Cancel = True,
+          Caption = str('&Cancel'),
+          Left = 232,
+          Name = str('btnCancel'),
+          TabOrder = 2,
+          Top = 8,
+          Events(
+            Click = str('GuiDestroy'))),
+        EDControl(Button:
+          Anchors = set(Top,Right,Bottom),
+          Caption = str('&Next >'),
+          Default = True,
+          Left = 312,
+          Name = str('btnNext'),
+          TabOrder = 1,
+          Top = 8,
+          Events(
+            Click = str('do('#13'  if(GuiControl([rgReportType],GuiGet([ItemIndex]))=1,'#13'    do('#13'        Guicreate([frmStandardReport],[StandardReportForm],0,[],0,1)                    '#13'     ),'#13'     do('#13'       Guicreate([frmCustomReport],[CustomReportForm],0,[],0,1)'#13'      ) '#13'   ),'#13'   GuiDestroy([AnalyzeWizForm])'#13')'#13)))))),
+  Events(
+    Show = str('do('#13#13'   GuiControl([rgReportType],GuiSet([ItemIndex],1)),'#13'   {GuiControl([rgReportType],GuiSet([ItemIndex],2)),}'#13'   '#13'   {Enable Next button, will be overrule by onchange of edOutputDir}'#13'   if( comparetext([],GuiControl([edOutputDir],GuiGet([Text]))),'#13'     GuiControl([btnNext],GuiSet([Enabled],False)),'#13'     GuiControl([btnNext],GuiSet([Enabled],True))    '#13'   ),'#13#13'  label([OutputDirWiz],refExperimentSupport) := extractdir(att([model Name],model)),'#13'     '#13'  if(comparetext([],label([OutputDirWiz],refExperimentSupport)),'#13'      label([OutputDirWiz],refExperimentSupport) := WorkDir'#13'   ),'#13'  '#13'  { GuiControl([edOutputDir],GuiSet([Text],pdir([Work])))}'#13'  GuiControl([edOutputDir],GuiSet([Text],label([OutputDirWiz],refExperimentSupport))),'#13'  '#13'  label([OutputDirWiz],refExperimentSupport) := 0,'#13'  '#13'  ClosemodelView'#13')   '#13)))

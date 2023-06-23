@@ -1,0 +1,49 @@
+
+
+{Preregister functions}
+
+PreregisterFunction([Bitmap_ScaletoDimensions], 1, 1);
+
+
+{Atom: Bitmap}
+
+sets;
+BaseClass;
+CreateAtom(a, s, [], 1, false);
+int023([Bitmap], 15, 2049);
+DefineFunction([Bitmap_ScaletoDimensions], [Various], 1, 1, [do( if((att([scaletoatom]) = true ),   do(    SetSetting(saIcon ,1 ,p(1)),    SetSetting(sa2DDraw ,0 ,p(1)),    SetSetting(saScaleIcon ,1 ,p(1))   ),   do(    SetSetting(saIcon ,0, p(1)),    SetSetting(sa2DDraw ,1 ,p(1)),    SetSetting(saScaleIcon, 0, p(1))   )  ))], [Changes several 2D visualization settings so that the icon is scaled to the atom dimensions.], [Bitmap_ScaletoDimensions(animatom)], 0, [Bitmap.atm]);
+Set(Icon(a), 
+	RegisterIcon(pDir([media\images\default.jpg]), [default.jpg]));
+SetMaterial(
+	RegisterMaterial([Default], 8421504, 8421504, 3289650, 0, 0.100000001490116, 0, false, false, 1, 0), 1, a);
+Set(Version(a), 8.2);
+SetTreeIcon(pDir([Media\Icons\Bitmap.ico]));
+int001(99);
+SetSize(2, 2, 0);
+LockPosition(false);
+LockSize(false);
+DisableIconRotation(false);
+SetProductCode([]);
+CreateAttributes(5);
+SetAttributeName(r(1), [unused]);
+SetAttributeName(r(2), [scalefactor]);
+SetAttributeName(r(3), [displayscale]);
+SetAttributeName(r(4), [scaletoatom]);
+SetAttributeName(r(5), [vector]);
+SetAtt(r(1), 1);
+SetAtt(r(2), 1);
+SetAtt(r(3), 10);
+int024;
+Set(OnUser, [Do(  { Delete any current instances of this form.}   GuiDestroy([Bitmap]),  { Register the GUI-form for this atom.}  GuiRegister(PDir([\Atoms\Bitmap.gui]), 1),  { Show the GUI-form.}   Guicreate([Bitmap], [Bitmap], 0, c, 0, 1))]);
+Set(On2DDraw, [If(
+ scale >= att(3, c),
+ If(
+  =(Att(5,c), 1),
+  DrawIcon(0, 0, Icon(c), att(2,c),att(2,c)),
+  DrawIcon(0, 0, Icon(c), /(*(Scale,att(2,c)),50), /(*(Scale,att(2,c)),50))
+ )
+)
+]);
+SetStatus(0);
+int018;
+int007;

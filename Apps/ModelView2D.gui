@@ -1,0 +1,25 @@
+EDControl(EditForm:
+  Caption = str('ModelView'),
+  Height = 318,
+  InstanceOptions = DestroyOnHide,
+  Name = str('ModelView'),
+  ShowHint = True,
+  Top = 220,
+  Visible = False,
+  Width = 476,
+  Controls(
+    EDControl(Visualization2D:
+      Align = Client,
+      Anchors = set(Left,Top,Right,Bottom),
+      Height = 318,
+      Left = 0,
+      Name = str('Engine2D'),
+      ShowGrid = False,
+      ShowStatusbar = False,
+      TabOrder = 1,
+      Top = 0,
+      ViewOnly = True,
+      Width = 476,
+      Events(
+        AtomRightClick = str('do(AnimAtom, ExecOnUser)'#13),
+        AtomDrop = str('msg([You cannot create atoms to the ''ModelView'' window. Use the ''ModelLayout'' window to add new atoms to your model.])'#13)))))

@@ -1,0 +1,59 @@
+
+
+{Atom: ShowDateTime}
+
+sets;
+BaseClass;
+createAtom(a, s, [], 1, false);
+int023([ShowDateTime], 4230289, 32);
+Set(Icon(a), 
+	RegisterIcon(pDir([media\images\default.jpg]), [default.jpg]));
+SetMaterial(
+	RegisterMaterial([Default], 8421504, 8421504, 3289650, 0, 0.100000001490116, 0, false, false, 1, 0), 1, a);
+Set(Version(a), 7.3);
+SetTreeIcon(pDir([Media\Icons\ShowDateTime.ico]));
+Set(Info, [ShowDateTime
+
+General
+------------
+Shows current date and time (model time!) as full names, for 
+example: Friday 15 May 1998  09:20:18. Notice that the model time 
+depends on the current time in the model plus the BaseTime. The 
+BaseTime is the time at model time 0. By default the BaseTime is set 
+equal to the time at which running starts, but this can be overruled 
+with this atom.
+
+Rightclick:
+  Edit base time
+
+Last Revision:
+---------------------
+February, 2008
+]);
+int001(88);
+SetSize(10, 2, 0.1);
+LockPosition(false);
+LockSize(false);
+DisableIconRotation(false);
+SetProductCode([]);
+createAttributes(1);
+SetAttributeName(r(1), [timebase]);
+int024;
+Set(OnReset, [set(basetime,att(1,c))
+]);
+Set(OnUser, [Do(
+ { Delete any current instances of this form.} 
+ GuiDestroy([ShowDateTime]),
+
+ { Register the GUI-form for this atom.}
+ GuiRegister(PDir([\Atoms\ShowDateTime.gui]), 1),
+
+ { Show the GUI-form.}
+ Guicreate([ShowDateTime], [ShowDateTime], 0, c, 0, 1)
+)
+]);
+Set(On2DDraw, [standarddisplay(datetime(+(basetime,time),[dddd dd mmm yyy]),datetime(+(basetime,time),[hh:mm:ss]))
+]);
+SetStatus(0);
+int018;
+int007;

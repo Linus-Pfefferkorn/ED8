@@ -1,0 +1,79 @@
+
+
+{Atom: VR Cylinder}
+
+sets;
+BaseClass;
+createAtom(a, s, [], 1, false);
+int023([VR Cylinder], 16777215, 1264);
+Set(Icon(a), 
+	RegisterIcon(TexturesDir([\Floor\hexpave1.png]), [hexpave1.png], 1, 0, 0, 255, 255, false, 0));
+SetMaterial(
+	RegisterMaterial([Default], 8421504, 8421504, 3289650, 0, 0.100000001490116, 0, false, false, 1, 0), 1, a);
+Set(Version(a), 7.3);
+SetTreeIcon(pDir([Media\Icons\VRCylinder.ico]));
+int001(95);
+SetSize(5, 2, 0);
+LockPosition(false);
+LockSize(false);
+DisableIconRotation(false);
+SetProductCode([]);
+createAttributes(10);
+SetAttributeName(r(1), [xoffset]);
+SetAttributeName(r(2), [yoffset]);
+SetAttributeName(r(3), [zoffset]);
+SetAttributeName(r(4), [cylxsize]);
+SetAttributeName(r(5), [cylysize]);
+SetAttributeName(r(6), [cylzsize]);
+SetAttributeName(r(7), [iconxrepeat]);
+SetAttributeName(r(8), [iconzrepeat]);
+SetAttributeName(r(9), [rotationxy]);
+SetAttributeName(r(10), [rotationz]);
+SetAtt(r(4), 1);
+SetAtt(r(5), 1);
+SetAtt(r(6), 5);
+SetAtt(r(7), 1);
+SetAtt(r(8), 5);
+int024;
+Set(OnUser, [Do(
+  { Delete any current instances of this form.} 
+  GuiDestroy([VR Cylinder]),
+
+  { Register the GUI-form for this atom.}
+  GuiRegister(PDir([\Atoms\VR Cylinder.gui]), 1),
+
+  { Show the GUI-form.}
+   Guicreate([VR Cylinder], [VR Cylinder], 0, c, 0, 1)
+)
+]);
+Set(On2DDraw, [do(
+ dishape(0,0,xsize,ysize,0.25,colorblack,colorwhite),
+ dishape(0,0,xsize,1,0.25,colorblack,7485496),
+ dionscale(13,
+  do(
+   ditext(0.2,0.1,name(c),colorwhite,7485496,0.5,[Arial],-(xsize,0.3),0.8),
+   ditext(0.2,1.1,concat([size: ],string(att(4,c)),[x],string(att(5,c)),[x],string(att(6,c))),0,colorwhite,0.5,[Arial],-(xsize,0.3),0.8)
+  )
+ )
+)
+]);
+Set(On3DDraw, [do(
+ SetMaterialColor(Color),
+ SetMaterialTexture(IconToTexture(Icon)),
+ ScaleTextureCoords(att(7, c)*2, att(8,c)),
+ SetMaterialColor(Color, EMISSIVE_COLOR),
+ DrawCylinder(
+  att(1, c) + att(4, c) * 0.5,
+  att(2, c) + att(5, c) * 0.5,
+  att(3, c) + att(6, c) * 0.5,
+  att(6, c),
+  att(4, c),
+  att(5, c),
+  360,
+  Z_AXIS
+ )
+)
+]);
+SetStatus(0);
+int018;
+int007;

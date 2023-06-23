@@ -1,0 +1,138 @@
+
+
+{Preregister functions}
+
+PreregisterFunction([UserEvents__SetHeaders], 1, 1);
+PreregisterFunction([UserEvents_ConvertOldAtom], 1, 1);
+
+
+{Atom: User Events}
+
+sets;
+BaseClass;
+CreateAtom(a, s, [], 1, false);
+Set(OnInit, [do( { definition of constants describing the column of the table } dim([USEREVENTS__TIME], vbConstant, 1), dim([USEREVENTS__REPEATTIME], vbConstant, 2), dim([USEREVENTS__EVENT], vbConstant, 3), dim([USEREVENTS__PRIORITY], vbConstant, 4), dim([USEREVENTS__INVOLVEDATOM], vbConstant, 5), dim([USEREVENTS__NUMBEROFCOLUMNS], vbConstant, 7), dim([USEREVENTS__NOTIMESCHEDULE], vbConstant, 6), dim([USEREVENTS__HELPEVENTCREATED], vbConstant, 7),  { this is a general function } registerfunction([getDefaultTime],[Various],0,0, [Do(  Concat(  concat(char(1),[objectstart],char(1),[code:],[0],char(1),[objectend]),  concat(char(1),[objectstart],char(1),[code:],[mins(60)],char(1),[objectend]),  concat(char(1),[objectstart],char(1),[code:],[hr(8)],char(1),[objectend]),  concat(char(1),[objectstart],char(1),[code:],[DateTimeStr([01/01/2020])],char(1),[objectend]),  concat(char(1),[objectstart],char(1),[code:],[DateTimeStr([01/01/2020 17:33:55])],char(1),[objectend])  )  )],  [checks if atom e1 exists, if not it is loaded],[],0,[ED.4ds] ) )  ]);
+int023([User Events], 33023, 1248);
+DefineFunction([UserEvents__SetHeaders], [Various], 1, 1, [do( var([atmTable], vbAtom, p(1)),  Cell(0, USEREVENTS__TIME, atmTable) := [Time [s]], Cell(0, USEREVENTS__REPEATTIME, atmTable) := [Repeat Time [s]], Cell(0, USEREVENTS__EVENT, atmTable) := [Event], Cell(0, USEREVENTS__PRIORITY, atmTable) := [Priority], Cell(0, USEREVENTS__INVOLVEDATOM, atmTable) := [Involved Atom], Cell(0, USEREVENTS__NOTIMESCHEDULE, atmTable) := [No Time Schedule])], [Enter helptext], [Enter Syntax Example], 0, [User Events.atm]);
+DefineFunction([UserEvents_ConvertOldAtom], [Various], 1, 1, [do( { Go through the table } { Convert the value in the cell to a function } Repeat(  nRows(p(1)),  do(   RegisterFunction(    Concat([converted_event], String(Count)),    [Various],    0,    0,    Cell(Count, USEREVENTS__REPEATTIME, p(1), 2),    [],    [],    false   ),      { Create an atribute }   SetAttributes(NrOfAttributes(p(1)) + 1, p(1)),   SetAttributeName(NrOfAttributes(p(1)), Concat([converted_event], String(Count)), p(1)),   SetExprAtt(NrOfAttributes(p(1)), Cell(Count, USEREVENTS__REPEATTIME, p(1), 2), p(1)),     { Write the function name into the cell }   Cell(Count, USEREVENTS__REPEATTIME, p(1), 2) := Cell(Count, USEREVENTS__EVENT, p(1), 2),   Cell(Count, USEREVENTS__EVENT, p(1)) := Concat([converted_event], String(Count))  ) ),  Label([t-NewUserEvents], p(1)) := true, SetTable(nRows(p(1)), USEREVENTS__NUMBEROFCOLUMNS, p(1)))], [Converts the events of the old user events atomp(1) as User Events], [UserEvents_ConvertOldAtom(c)], 0, [User Events.atm]);
+Set(Icon(a), 
+	RegisterIcon(IconsDir([bmp\atoms\tedatom.bmp]), [ed]));
+SetMaterial(
+	RegisterMaterial([Default], 8421504, 8421504, 3289650, 0, 0.100000001490116, 0, false, false, 1, 0), 1, a);
+Set(Version(a), 1);
+SetTreeIcon(pDir([Media\Icons\UserEvents.ico]));
+Set(DdbRec, [>t-userevents:1.>t-alloworganize:1.]);
+SetChannels(1, 0);
+SetChannelRanges(1, 255, 0, 0);
+int001(55);
+SetLoc(8, 0, 0);
+SetSize(7, 2, 1);
+LockPosition(false);
+LockSize(false);
+DisableIconRotation(false);
+SetProductCode([]);
+int024;
+Set(OnEvent, [do(  if(  ExecString(Cell(EventCode, USEREVENTS__NOTIMESCHEDULE, c, 2)) = 1,  if(   Cell(EventCode, USEREVENTS__HELPEVENTCREATED, c ) = 0,   do(    Cell(EventCode, USEREVENTS__HELPEVENTCREATED, c ) := 1,    {now create the help event!}    CreateEvent(     0,     c,     EventCode,     if(      CompareText(Cell(EventCode, USEREVENTS__PRIORITY, c, 2), []),      1000,      ExecString(Cell(EventCode, USEREVENTS__PRIORITY, c, 2))     ),     if(      CompareText(Cell(EventCode, USEREVENTS__INVOLVEDATOM, c, 2), []) = 0,      ExecString(Cell(EventCode, USEREVENTS__INVOLVEDATOM, c, 2))     )              )   ),   do(    Cell(EventCode, USEREVENTS__HELPEVENTCREATED, c ) := 0,    {now create the real event!}    ExecString(Cell(EventCode, USEREVENTS__EVENT, c, 2))   )  ),   do(   ExecString(Cell(EventCode, USEREVENTS__EVENT, c, 2)),   if(    ExecString(Cell(EventCode, USEREVENTS__REPEATTIME, c, 2)) > 0,        CreateEvent(     ExecString(Cell(EventCode, USEREVENTS__REPEATTIME, c, 2)),     c,     EventCode,     if(      CompareText(Cell(EventCode, USEREVENTS__PRIORITY, c, 2), []),      1000,      ExecString(Cell(EventCode, USEREVENTS__PRIORITY, c, 2))     ),     if(      CompareText(Cell(EventCode, USEREVENTS__INVOLVEDATOM, c, 2), []) = 0,      ExecString(Cell(EventCode, USEREVENTS__INVOLVEDATOM, c, 2))     )    )   )  ) ))]);
+Set(OnCreation, [do(
+
+ sddb([t081_v1],0,c),
+ foratomlayerunder(
+  up(c),
+  do(
+   setcs,
+   if(
+    and(
+     atomexists(m(cs)),
+     or(
+      comparetext(name(m(cs)),[T098-Table]),
+      comparetext(name(m(cs)),[T058-Empirical Distribution]),
+      comparetext(name(m(cs)),[T058-a-Empirical Distribution]),
+      comparetext(name(m(cs)),[T058-b-Empirical Distribution]),
+      comparetext(name(m(cs)),[V058-a-Empirical Distribution]),
+      comparetext(name(m(cs)),[T058-Scott-Empirical Distribution]),
+      comparetext(name(m(cs)),[T111-ExcelTableRead]),
+      comparetext(name(m(cs)),[T111-b-ExcelTableRead]),
+      comparetext(name(m(cs)),[V111-ExcelTableRead]),
+      comparetext(name(m(cs)),[V111-a-ExcelTableRead]),
+      comparetext(name(m(cs)),[T112-ExcelTableWrite]),
+      comparetext(name(m(cs)),[B-ExcelTableWrite]),
+      comparetext(name(m(cs)),[Table]),
+      comparetext(name(m(cs)),[Initialize]),
+      comparetext(name(m(cs)),[Empirical Distribution]),
+      comparetext(name(m(cs)),[Excel]),
+      comparetext(name(m(cs)),[ExcelTableRead]),
+      comparetext(name(m(cs)),[ExcelTableWrite]),
+      comparetext(name(m(cs)),[ExcelActiveX])
+     )
+    ),
+    inc(ddb([t081_v1],c))
+   )
+  )
+ ),
+ setrank(ddb([t081_v1],c)+1,c),
+ 
+ set(
+  OnInit(c),
+  ([
+   LateInit([
+    do(
+   
+     {reset vtp's in the attributes} 
+     var([strBegin], vbString),
+     var([strAtt], vbString),
+     var([strPointer], vbString),
+     var([strNewPointer], vbString),
+     var([strNewAtt], vbString),
+    
+     repeat(
+      NrOfAttributes,
+      do(
+       if(
+        cell(count, USEREVENTS__NOTIMESCHEDULE, c) = 1,
+        do(
+         strAtt := textatt(count,c),   
+         strBegin := StringCopy(strAtt , 0, 4 + StringPos([vtp(], strAtt)  ),
+         
+         strPointer:= StringCopy(strAtt , StringLength(strBegin), -1 + StringPos([)], StringCopy(strAtt, StringLength(strBegin), StringLength(strAtt)- StringLength(strBegin)))  ),
+         
+         strNewPointer := string(ptv(c)),
+         strNewAtt := StringReplace(strAtt, strPointer, strNewPointer  ),
+         textatt(count,c) := strNewAtt 
+        )
+       )
+      )
+     ),     
+
+     repeat(
+      NrOfAttributes,
+      Do(
+       RegisterFunction(
+        StringReplace(AttributeName(Count, c),[att_], []), {minus att_!!!}
+        [Various],
+        0,
+        0,
+        textatt(count,c), 
+        [],
+        [],
+        true
+       )
+      )
+     )
+      
+    )
+    ]
+   )
+   ]
+  )  
+ ),
+  
+ Label([t-NewUserEvents], c) := 1
+)
+]);
+Set(OnDestruction, [Repeat( nrOfAttributes(c), UnregisterFunction(StringReplace(AttributeName(Count, c),[att_], [])) {minus att_!!!})]);
+Set(OnReset, [do( if(  Label([t-NewUserEvents], c) = False,  UserEvents_ConvertOldAtom(c) ), Repeat(  nRows(c),  do(   Cell(Count, USEREVENTS__HELPEVENTCREATED, c ) := 0,   if(    =(Cell(Count, USEREVENTS__NOTIMESCHEDULE, c, 1),0),    CreateEvent(     ExecString(Cell(Count, USEREVENTS__TIME, c, 2)),     c,     Count,     if(      CompareText(Cell(Count, USEREVENTS__PRIORITY, c, 2), []),      1000,      ExecString(Cell(Count, USEREVENTS__PRIORITY, c, 2))     ),     if(      CompareText(Cell(Count, USEREVENTS__INVOLVEDATOM, c), []) = 0,      ExecString(Cell(Count, USEREVENTS__INVOLVEDATOM, c, 2))     )    )   )  ) ) )]);
+Set(OnUser, [Do( { Delete any current instances of this form.}  GuiDestroy([frmUserEvents]), { Register the GUI-form for this atom.} GuiRegister(PDir([\Atoms\UserEvents.gui]), 1), { Show the GUI-form.} GuiCreate([frmUserEvents], [frmUserEvents], 0, c, 0, 1))]);
+Set(On2DDraw, [draw2dicon(3, [User Events], name)]);
+SetStatus(0);
+int018;
+int007;

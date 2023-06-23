@@ -1,0 +1,981 @@
+
+
+{Preregister functions}
+
+PreregisterFunction([Attribute_Add], 3, 4);
+PreregisterFunction([Attribute_Insert], 4, 5);
+PreregisterFunction([Attribute_Delete], 2, 2);
+PreregisterFunction([Attribute_Exists], 2, 2);
+PreregisterFunction([Attribute_CreateGetSetFunctions], 5, 5);
+PreregisterFunction([Attribute_CheckForErrors], 5, 5);
+PreregisterFunction([Attribute_UpdateIndicesOfGetSetFunctions], 1, 2);
+PreregisterFunction([Attribute_RemoveGetSetFunctions], 2, 2);
+PreregisterFunction([Attribute_Move], 3, 3);
+PreregisterFunction([Attribute_OpenForm], 1, 1);
+PreregisterFunction([Attribute_Update], 4, 5);
+
+
+{Atom: Attribute}
+
+sets;
+BaseClass;
+CreateAtom(a, s, [], 1, false);
+Set(OnInit, [do(
+  Dim([atmAttribute], vbAtom),
+  Dim([vbExpression], vbConstant, 3),
+  Dim([valAttributeLoopCounter], vbValue, 0)
+)
+]);
+int023([Attribute], 0, 0);
+DefineFunction([Attribute_Add], [Atom Parameters], 3, 4, [do(
+  var([atmC], vbAtom, p(1)),
+  var([strAttName], vbString, p(2)),
+  var([valAttType], vbValue, p(3)),
+  var([strFunctionName], vbString),
+  var([valIndex], vbValue),
+  var([strCode], vbString),
+  var([strHelpText], vbString),
+  var([strExample], vbString),  
+
+  if( 
+    ParamCount = 4,
+    strFunctionName := p(4),
+    strFunctionName := Name(atmC)    
+  ),
+  
+  {**Check for errors**}
+  if(
+    Attribute_CheckForErrors(atmC, strAttName, valAttType, strFunctionName, NrOfAttributes(atmC) + 1) = 0,
+    return(0)
+  ),   
+  
+  {**Add attribute**}
+  SetAttributes(NrOfAttributes(atmC) + 1, atmC),
+  valIndex := NrOfAttributes(atmC),
+  SetAttributeName(valIndex, strAttName, atmC),  
+
+  {**Add Get & Set function**}  
+  Attribute_CreateGetSetFunctions(atmC, strAttName, valAttType, strFunctionName, valIndex),
+
+  {**Add attribute to childs in library and model**}
+  if(
+    ChildCount(atmC) > 0,
+    do(
+      inc(valAttributeLoopCounter),
+      PushAtomPointer(s),
+      ForAtomTreeUnder(
+        Main,
+        do(
+          Sets,
+          if(
+            M(s) = atmC,
+            Attribute_Insert(s, strAttName, valAttType, valIndex, strFunctionName)
+          )
+        )
+      ),
+      s := PopAtomPointer,
+      dec(valAttributeLoopCounter)
+    )
+  ),
+  
+  if(
+    WindowVisible(TreeView),
+    TreeRefresh  
+  ),
+  
+  valIndex
+)
+], [Adds attribute with name e2 and data type e3 to atom e1. Automatically adds Get and Set functions and adds attributes to childs in the model.
+Returns the index of the added attribute in case of succes; 0 otherwise.
+e1 = atom reference
+e2 = name of attribute. Cannot contain spaces.
+e3 = attribute data type: vbValue, vbString, vbAtom, vbExpression, and -1 for no functions
+e4(Optional) = Begin of function name], [Attribute_Add(TreeAtom, [Test], vbString, {[Queue]})], 0, [Attribute.atm]);
+DefineFunction([Attribute_Insert], [Atom Parameters], 4, 5, [do(
+  var([atmC], vbAtom, p(1)),
+  var([strAttName], vbString, p(2)),
+  var([valAttType], vbValue, p(3)),
+  var([valIndex], vbValue, p(4)),
+  var([strFunctionName], vbString),
+  var([strCode], vbString),
+  var([strHelpText], vbString),
+  var([strExample], vbString),  
+  var([valCounter], vbValue),
+
+  if(
+    ParamCount = 5,
+    strFunctionName := p(5),
+    strFunctionName := Name(atmC)
+  ),
+  
+  if(
+    valAttributeLoopCounter = 0,  {**Not in recursive loop of adding attribute to daughters**}
+    do( 
+      {**Check for errors**}
+      if(
+        Attribute_CheckForErrors(atmC, strAttName, valAttType, strFunctionName, valIndex) = 0,
+        return(0)
+      )         
+    )
+  ),
+  
+  {**Insert attribute**}
+  SetAttributes(NrOfAttributes(atmC) + 1, atmC),     
+  valCounter := NrOfAttributes(atmC),  
+  Repeat(
+    NrOfAttributes(atmC) - valIndex,
+    do(
+      SetAttributeName(valCounter, AttributeName(valCounter - 1, atmC), atmC),
+      case(
+        AttInfo(valCounter - 1, atmC) + 1,
+        
+        {**Value**}
+        Att(valCounter, atmC) := Att(valCounter - 1, atmC),
+        
+        {**Text**}
+        TextAtt(valCounter, atmC) := TextAtt(valCounter - 1, atmC),
+        
+        {**Expression**}
+        SetExprAtt(valCounter, TextAtt(valCounter - 1, atmC), atmC),
+        
+        {**Inherit**}
+        DispatchError(Concat([Warning: attribute ], AttributeName(valCounter - 1, atmC), [ of atom (ref): ], Name(atmC), [ (], String(atmC), [) is inherit. Update attribute insertion manually!]))
+      ),            
+      dec(valCounter)
+    )
+  ),  
+  SetAttributeName(valIndex, strAttName, atmC),
+  att(valIndex, atmC) := 0,     
+  
+  {**Update Old Get & Set Functions**}
+  Attribute_UpdateIndicesOfGetSetFunctions(atmC, valIndex), 
+  
+  if(
+    valAttributeLoopCounter = 0,
+    do(              
+         
+      {**Add New Get & Set function**}
+      Attribute_CreateGetSetFunctions(atmC, strAttName, valAttType, strFunctionName, valIndex)   
+    )
+  ),  
+
+  {**Add attribute to childs in library and model**}
+  if(
+    ChildCount(atmC) > 0,
+    do(
+      inc(valAttributeLoopCounter),
+      PushAtomPointer(s),
+      ForAtomTreeUnder(
+        Main,
+        do(
+          Sets,
+          if(
+            M(s) = atmC,
+            Attribute_Insert(s, strAttName, valAttType, valIndex)
+          )
+        )
+      ),
+      s := PopAtomPointer,
+      dec(valAttributeLoopCounter)
+    )
+  ),
+  
+  if(
+    And(
+      WindowVisible(TreeView),
+      valAttributeLoopCounter = 0  {**Not in recursive loop of inserting attribute to daughters**}
+    ),
+    TreeRefresh  
+  ),
+  
+  valIndex
+)
+], [Adds attribute with name e2 and data type e3 to atom e1 at index e4. Automatically adds Get and Set functions and adds attributes to childs in the model.
+Returns the index of the added attribute in case of succes; 0 otherwise.
+e1 = atom reference
+e2 = name of attribute. Cannot contain spaces.
+e3 = attribute data type (vbValue, vbString, vbAtom, vbExpression)
+e4 = Index of new attribute
+e5(Optional) = Begin of function name], [Attribute_Insert(TreeAtom, [Capacity], vbValue, 4, {Queue})], 0, [Attribute.atm]);
+DefineFunction([Attribute_Delete], [Atom Parameters], 2, 2, [do(
+  var([atmC], vbAtom, p(1)),
+  var([strAttName], vbString, p(2)),
+  var([valIndex], vbValue),
+  var([valCounter], vbValue),
+  
+  
+  valIndex := Attribute_Exists(atmC, strAttName),
+
+  if(
+    And(
+      valIndex > 0,
+      or(
+        M(atmC) = BaseClass,
+        Attribute_Exists(M(atmC), strAttName) = 0 {**Cannot delete attribute if it is still on mother**}
+      )
+    ),
+    do(                
+      
+      {**Delete attribute**} 
+      valCounter := valIndex,          
+      Repeat(
+        NrOfAttributes(atmC) - valIndex,
+        do(
+          
+          SetAttributeName(valCounter, AttributeName(valCounter + 1, atmC), atmC),
+          case(
+            AttInfo(valCounter + 1, atmC) + 1,
+            
+            {**Value**}
+            Att(valCounter, atmC) := Att(valCounter + 1, atmC),
+            
+            {**Text**}
+            TextAtt(valCounter, atmC) := TextAtt(valCounter + 1, atmC),
+            
+            {**Expression**}
+            SetExprAtt(valCounter, TextAtt(valCounter + 1, atmC), atmC),
+            
+            {**Inherit**}
+            DispatchError(Concat([Warning: attribute ], AttributeName(valCounter + 1, atmC), [ of atom: ], Name(atmC), [ (id: ], String(AtomID(atmC)), [) is inherit. Update attribute deletion manually!]))
+          ),
+          inc(valCounter)       
+        )
+      ),  
+      SetAttributes(NrOfAttributes(atmC) - 1, atmC),
+      
+      {**Remove function**}
+      if(
+        valAttributeLoopCounter = 0,
+        do(
+          Attribute_RemoveGetSetFunctions(atmC, strAttName)                    
+        )
+      ),
+      
+      {**Update existing get and set functions**}
+      if(
+        valIndex <= NrOfAttributes(atmC),
+        
+        {**Not last one deleted**}
+        Attribute_UpdateIndicesOfGetSetFunctions(atmC, valIndex - 1)
+      ),
+      
+      {**Delete attribute from childs in library and model**}      
+      if(
+        ChildCount(atmC) > 0,
+        do(
+          inc(valAttributeLoopCounter),
+          PushAtomPointer(s),
+          ForAtomTreeUnder(
+            Main,
+            do(
+              Sets,
+              if(
+                M(s) = atmC,
+                Attribute_Delete(s, strAttName)
+              )
+            )
+          ),
+          s := PopAtomPointer,
+          dec(valAttributeLoopCounter)
+        )
+      ),
+      
+      if(
+        And(
+          WindowVisible(TreeView),
+          valAttributeLoopCounter = 0 {**Not in recursive loop**}
+        ),
+        TreeRefresh  
+      )
+    ),
+    valIndex := 0
+  ),
+  
+  valIndex
+)
+], [Removes attibute with name e2 from atom e1. Returns the index of the deleted attribute, 0 if none is deleted.
+], [Attribute_Delete(TreeAtom, [capacity])], 0, [Attribute.atm]);
+DefineFunction([Attribute_Exists], [Atom Parameters], 2, 2, [do(
+  var([atmC], vbAtom, p(1)),
+  var([strAttName], vbString, p(2)),
+  var([valIndex], vbValue, 0),
+
+  LoopUntil(
+    valIndex > 0,
+    if(
+      CompareText(
+        AttributeName(Count, atmC),
+        strAttName
+      ),
+      do(
+        valIndex := Count
+      )
+    ),
+    NrOfAttributes(atmC)  
+  ),  
+ 
+ 
+  valIndex
+)
+], [Checks if an attribute with name e2 exists on atom e1. Returns the index if the attribute exists; 0 otherwise.
+e1 = atom reference
+e2 = name of attribute
+], [Attribute_Exists(TreeAtom, [Test])], 0, [Attribute.atm]);
+DefineFunction([Attribute_CreateGetSetFunctions], [Atom Parameters], 5, 5, [do(
+  var([atmC], vbAtom, p(1)),
+  var([strAttName], vbString, p(2)),
+  var([valAttType], vbValue, p(3)),
+  var([strFunctionName], vbString, p(4)),
+  var([valIndex], vbValue, p(5)),  
+
+  var([strCode], vbString),
+  var([strHelpText], vbString),
+  var([strExample], vbString),
+  
+  {**Add Get function**}  
+  Case(
+    InList(valAttType, vbValue, vbString, vbAtom, vbExpression) + 1,
+    return(0),
+    do(   
+      strCode := Concat([Att(], string(valIndex), [, p(1))]),        
+      strHelpText := Concat([Returns the value of attribute ], strAttName, [ (# ], string(valIndex), [) of ], Name(atmC), [ e1]),
+      strExample := Concat(strFunctionName, [_Get], strAttName, [(c)])
+    ),
+    do(
+      strCode := Concat([TextAtt(], string(valIndex), [, p(1))]),      
+      strHelpText := Concat([Returns the string value of attribute ], strAttName, [ (# ], string(valIndex), [) of ], Name(atmC), [ e1]),
+      strExample := Concat(strFunctionName, [_Get], strAttName, [(c)])
+    ),
+    do(
+      strCode := Concat([vtp(Att(], string(valIndex), [, p(1)))]),
+      strHelpText := Concat([Returns the atom pointer of attribute ], strAttName, [ (# ], string(valIndex), [) of ], Name(atmC), [ e1]),
+      strExample := Concat(strFunctionName, [_Get], strAttName, [(c)])
+    ),
+    do(
+      strCode := Concat([Att(], string(valIndex), [, p(1))]),
+      strHelpText := Concat([Returns the result of the 4D script expression of attribute ], strAttName, [ (# ], string(valIndex), [) of ], Name(atmC), [ e1]),
+      strExample := Concat(strFunctionName, [_Get], strAttName, [(c)])
+    )
+  ),
+  
+
+  a := atmC,
+  DefineFunction(
+    
+    {**Name**}
+    Concat(strFunctionName, [_Get], strAttName),
+    
+    {**Category**}
+    [Atom Parameters],
+    
+    {**Params**}
+    1,
+    1,
+    
+    {**Code**}
+    strCode,
+    
+    {**Help Text**}
+    strHelpText,
+    
+    {**Syntax Example**}
+    strExample,
+    
+    {**Scope**}
+    0,
+    
+    {**Creator**}    
+    Concat(Name(atmC), [.atm])
+  ),
+  
+  {**Add Set function**}  
+  Case(
+    InList(valAttType, vbValue, vbString, vbAtom, vbExpression),
+    do(
+      strCode := Concat([Att(], string(valIndex), [, p(1)) := p(2)]),
+      strHelpText := Concat([Sets the value of attribute ], strAttName, [ (# ], string(valIndex), [) of ], Name(atmC), [ e1 to e2]),
+      strExample := Concat(strFunctionName, [_Set], strAttName, [(c, 1)])
+    ),
+    do(
+      strCode := Concat([TextAtt(], string(valIndex), [, p(1)) := p(2)]),
+      strHelpText := Concat([Sets the string value of attribute ], strAttName, [ (# ], string(valIndex), [) of ], Name(atmC), [ e1 to e2]),
+      strExample := Concat(strFunctionName, [_Set], strAttName, [(c, [TableName])])
+    ),
+    do(
+      strCode := Concat([Att(], string(valIndex), [, p(1)) := ptv(p(2))]),
+      strHelpText := Concat([Sets the atom pointer of attribute ], strAttName, [ (# ], string(valIndex), [) of ], Name(atmC), [ e1 to e2]),
+      strExample := Concat(strFunctionName, [_Set], strAttName, [(c, i)])
+    ),
+    do(
+      strCode := Concat([SetExprAtt(], string(valIndex), [, p(2), p(1))]),
+      strHelpText := Concat([Sets the 4D script expression of attribute ], strAttName, [ (# ], string(valIndex), [) of ], Name(atmC), [ e1 to e2]),
+      strExample := Concat(strFunctionName, [_Set], strAttName, [(c, [NegExp(9)])])
+    )
+  ),
+  
+  DefineFunction(
+    
+    {**Name**}
+    Concat(strFunctionName, [_Set], strAttName),
+    
+    {**Category**}
+    [Atom Parameters],
+    
+    {**Params**}
+    2,
+    2,
+    
+    {**Code**}
+    strCode,
+    
+    {**Help Text**}
+    strHelpText,
+    
+    {**Syntax Example**}
+    strExample,
+    
+    {**Scope**}
+    0,
+    
+    {**Creator**}    
+    Concat(Name(atmC), [.atm])
+  )
+)
+], [Adds get and set functions for a new attribute to atom e1
+e1 = atom reference
+e2 = attribute name
+e3 = attribute type
+e4 = First part of function name
+e5 = Index of attribute], [Attribute_CreateGetSetFunctions(TreeAtom, [Test], vbValue, name(c), 10)], 0, [Attribute.atm]);
+DefineFunction([Attribute_CheckForErrors], [Atom Parameters], 5, 5, [do(
+  var([atmC], vbAtom, p(1)),
+  var([strAttName], vbString, p(2)),
+  var([valAttType], vbValue, p(3)),
+  var([strFunctionName], vbString, p(4)),
+  var([valIndex], vbValue, p(5)),
+  var([strError], vbString),
+  var([valIndexOld], vbValue),
+   
+  
+  {**Check for errors**}
+  valIndexOld := Attribute_Exists(atmC, strAttName),
+  Case(
+    WhichIsTrue(
+      Or(
+        Not(AtomExists(atmC)),
+        Not(AtomExists(up(atmC)))
+      ),
+      StringLength(strAttName) = 0,
+      And(
+        valAttType > -1,
+        SubstrCount(strAttName, [ ]) > 0  
+      ),
+      And(
+        valAttType > -1,
+        SubstrCount(strFunctionName, [ ]) > 0
+      ),
+      And(
+        valIndexOld > 0,
+        valIndexOld <> valIndex {**Not updating**}
+      ),
+      InList(valAttType, -1, vbValue, vbString, vbAtom, vbExpression) = 0,
+      And(       
+        valIndexOld <> valIndex,
+        FunctionExists(Concat(strFunctionName, [_Get], strAttName)) = True
+      ),
+      And(
+        valIndexOld <> valIndex,
+        FunctionExists(Concat(strFunctionName, [_Set], strAttName)) = True
+      ),
+      And(
+        M(atmC) <> BaseClass,
+        valIndex <= NrOfAttributes(M(atmC)),
+        valIndex >= 1,
+        Attribute_Exists(M(atmC), strAttName) <> valIndex
+      ),
+      or(
+        valIndex > NrOfAttributes(atmC) + 1,
+        valIndex < 1
+      )
+    ),  
+    
+    {**Invalid atom**}
+    do(
+      strError := Concat([Invalid atom reference ], String(atmC), [ for setting an attribute with name ], strAttName)
+    ),
+    
+    {**Attribute name must contains at least one character**}
+    do(
+      strError := Concat([At least one character is required in the attribute name on atom ], Name(atmC), [ (ID: ], String(atomID(atmC)),[)])
+    ),
+    
+    {**Attribute name cannot contain spaces**}
+    do(
+      strError := Concat([No spaces allowed in attribute name ], strAttName, [ on atom ], Name(atmC), [ (ID: ], String(atomID(atmC)),[)])
+    ),
+    
+    {**Function Name cannot contain spaces**}
+    do(
+      strError := Concat([No spaces allowed in first part of function name ], strFunctionName, [ on atom ], Name(atmC), [ (ID: ], String(atomID(atmC)),[). Update atom name or use extra parameter.])
+    ),
+    
+    {**Attribute name already exists**}
+    do(
+      strError := Concat([Attribute with name ], strAttName, [ already exists on atom ], Name(atmC), [ (ID: ], String(atomID(atmC)),[)])
+    ),
+    
+    {**Invalid type**}
+    do(
+      strError := Concat([Invalid attribute data type ], String(valAttType), [ for attribute ], strAttName, [ on atom ], Name(atmC), [ (ID: ], String(atomID(atmC)), [). Must be of type: vbValue(=], String(vbValue), [), vbString(=], String(vbString), [), vbAtom(=], 
+       String(vbAtom), [), vbExpression(=], String(vbExpression), [), or -1 for no functions])
+    ), 
+       
+    {**Get function already exists**}
+    do(
+      strError := Concat([Attribute function ], Concat(strFunctionName, [_Get], strAttName), [ already exists on atom ], Name(atmC), [ (ID: ], String(atomID(atmC)), [).], cr, [Function must be unregistered before attribute with name ], strAttName, [ can be added])
+    ),
+    
+    {**Set function already exists**}  
+    do(
+      strError := Concat([Attribute function ], Concat(strFunctionName, [_Set], strAttName), [ already exists on atom], Name(atmC), [ (ID: ], String(atomID(atmC)),[).], cr, [Function must be unregistered before attribute with name ], strAttName, [ can be added])
+    ),
+    
+    {**Index is smaller than number of attributes of mother atom but does not exist on mother atom**}
+    do(
+      strError := Concat([Index ], string(valIndex), [ of the attribute with name], strAttName, [ on atom ], Name(atmC), [ (ID: ], String(atomID(atmC)), [) is not allowed because it does not exist at the mother atom or it has a different index on the mother atom])
+    ),
+    
+    {**Index of attribute invalid**}
+    do(
+      strError := Concat([Index ], string(valIndex), [ of the attribute with name ], strAttName, [ on atom ], Name(atmC), [ (ID: ], String(atomID(atmC)),[ ) is invalid. Must be between 1 and ], string(NrOfAttributes(atmC)))
+    )
+  ),
+  if(
+    StringLength(strError) > 0,
+    do(
+      strError := Concat([Cannot add or update attribute and/or its get and set functions;], cr, strError),
+      if(
+        GuiInstance([frmAttributeControls]) > 0,
+        Msg(strError, 3),
+        DispatchError(strError)
+      ),
+      False
+   ),
+   True
+  )
+)
+], [Returns 1 if no errors are found 0 otherwise.
+e1 = atom reference
+e2 = attribute name
+e3 = attribute type
+e4 = First part of function name
+e5 = Index of attribute], [Attribute_CheckForErrors(c, [Test], vbValue, name(c), 10,)], 0, [Attribute.atm]);
+DefineFunction([Attribute_UpdateIndicesOfGetSetFunctions], [Atom Parameters], 1, 2, [do(
+  var([atmC], vbAtom, p(1)),
+  var([valMinIndex], vbValue),
+  var([valIndex], vbValue), 
+  var([valOldIndex], vbValue),
+  var([valNrFunctions], vbValue, 1), 
+  var([valCounter], vbValue),
+  var([strFunctionName], vbString),
+  var([strCode], vbString),
+  
+  var([valAttType], vbValue),
+  var([strFunctionName], vbString),
+  var([valIndex], vbValue),  
+  var([strAttName], vbString),
+  
+  var([strHelpText], vbString),
+  var([strExample], vbString),
+  var([valMinParam], vbValue),
+  var([valMaxParam], vbValue),
+  
+  if(
+    ParamCount = 2,
+    valMinIndex := p(2),
+    valMinIndex := 0
+  ),
+
+  {**First part of function name can be different, that's why we check by functions and not by attributes**} 
+
+  {**Count number of functions**}
+  While(
+    StringLength(FunctionOnAtomName(atmC, valNrFunctions)) > 0,
+    inc(valNrFunctions)
+  ),
+  
+  dec(valNrFunctions),
+  valCounter := valNrFunctions,
+  Repeat(
+    valNrFunctions,
+    do(
+      
+      strFunctionName := FunctionOnAtomName(atmC, valCounter),
+      valIndex := 0,
+      Case(
+        WhichIsTrue(       
+          StringPos(Lowercase([_get]), Lowercase(strFunctionName)) > 0, 
+          StringPos(Lowercase([_set]), Lowercase(strFunctionName)) > 0
+        ),
+        do(
+          strAttName := StrSeparate(strFunctionName, [_Get], SubstrCount(strFunctionName, [_Get]) + 1), 
+          valIndex := Attribute_Exists(atmC, strAttName),
+          if(
+            valIndex = 0,
+            do(
+              strAttName := StrSeparate(Lowercase(strFunctionName), [_get], SubstrCount(lowercase(strFunctionName), [_get]) + 1), 
+              valIndex := Attribute_Exists(atmC, strAttName)
+            )
+          )
+        ),
+        do(
+          strAttName := StrSeparate(strFunctionName, [_Set], SubstrCount(strFunctionName, [_Set]) + 1),
+          valIndex := Attribute_Exists(atmC, strAttName),
+          if(
+            valIndex = 0,          
+            do(
+              strAttName := StrSeparate(Lowercase(strFunctionName), [_set], SubstrCount(lowercase(strFunctionName), [_set]) + 1), 
+              valIndex := Attribute_Exists(atmC, strAttName)
+            )
+          )
+        )
+      ),      
+      
+      if(    
+        And(  {**Function is get or set function for attribute**}
+          valIndex > 0,
+          valIndex > valMinIndex
+        ),        
+        do(                 
+          strCode := FunctionOnAtomInfo(atmC, valCounter, [code]),
+          valMinParam := FunctionOnAtomInfo(atmC, valCounter, [minparams]),
+          valMaxParam := FunctionOnAtomInfo(atmC, valCounter, [maxparams]),
+          strHelpText := FunctionOnAtomInfo(atmC, valCounter, [helptext]), 
+          strExample := FunctionOnAtomInfo(atmC, valCounter, [syntaxexample]), 
+          
+          
+          {**Replace numbers in code**}
+          valOldIndex := Value(StrSeparate(StrSeparate(strCode, [Att(], 2), [,], 1)), 
+          if(
+            valOldIndex > 0,
+            do(
+              strCode := StringReplace(strCode, Concat([Att(], String(valOldIndex), [,]), Concat([Att(], String(valIndex), [,]), SR_REPLACE_ALL + SR_IGNORE_CASE),
+              strHelpText := StringReplace(strHelpText, Concat([# ], String(valOldIndex), [)]), Concat([# ], String(valIndex), [)]), SR_REPLACE_ALL + SR_IGNORE_CASE)
+            )
+          ),
+          
+          {**In old functions, attribute was used. Also check for this**}
+          strCode := StringReplace(strCode, Concat(sbo, strAttName, sbc), string(valIndex), SR_REPLACE_ALL + SR_IGNORE_CASE),
+          
+          {**Remove old function, make sure active atom is set**}
+          a := atmC,
+          UnDefineFunction(strFunctionName),          
+          
+          {**Define new function**}           
+          DefineFunction(
+            
+            {**Name**}
+            strFunctionName,
+            
+            {**Category**}
+            [Atom Parameters],
+            
+            {**Params**}
+            valMinParam,
+            valMaxParam,
+            
+            {**Code**}
+            strCode,
+            
+            {**Help Text**}
+            strHelpText,
+            
+            {**Syntax Example**}
+            strExample,
+            
+            {**Scope**}
+            0,
+            
+            {**Creator**}    
+            Concat(Name(atmC), [.atm])
+          )
+        )
+      ),
+      dec(valCounter)      
+    )
+  )
+)
+], [Updates the indices of all existing get and set functions on atom e1 after attribute index e2 (optional).], [Attribute_UpdateIndicesOfGetSetFunctions(TreeAtom, {1})], 0, [Attribute.atm]);
+DefineFunction([Attribute_RemoveGetSetFunctions], [Atom Parameters], 2, 2, [do(
+  var([atmC], vbAtom, p(1)),
+  var([strAttName], vbString, p(2)),
+  var([valIndex], vbValue),
+  var([valCounter], vbValue),
+  var([strFunctionName], vbString),
+     
+  {**Remove function. Beginning of name can be different that's why we loop over all functions**}
+  valCounter := 1,
+  While(
+    StringLength(FunctionOnAtomName(atmC, valCounter)) > 0,       
+    Inc(valCounter)
+  ),  
+  
+  dec(valCounter),
+  While(
+    StringLength(FunctionOnAtomName(atmC, valCounter)) > 0,
+    do(
+      strFunctionName := FunctionOnAtomName(atmC, valCounter),
+      if(
+        or(
+          StringPos(Lowercase(Concat([_get], strAttName)), Lowercase(strFunctionName)) > 0, 
+          StringPos(Lowercase(Concat([_set], strAttName)), Lowercase(strFunctionName)) > 0
+        ),
+        UnDefineFunction(strFunctionName)
+      ),
+     
+      dec(valCounter)
+    )
+  )
+)
+], [Removes the get and set functions for attribute with name e2 from atom e1], [Attribute_RemoveGetSetFunctions(TreeAtom, [Test])], 0, [Attribute.atm]);
+DefineFunction([Attribute_Move], [Atom Parameters], 3, 3, [do(
+  var([atmC], vbAtom, p(1)),
+  var([strAttName], vbString, p(2)),
+  var([valNewIndex], vbValue, p(3)),
+  var([valOldIndex], vbValue),
+  var([valInfo], vbValue),
+  
+  valOldIndex := Attribute_Exists(atmC, strAttName),
+  if(
+    And(
+      valOldIndex > 0,
+      valNewIndex > 0,
+      valNewIndex <> valOldIndex,
+      valNewIndex <= NrOfAttributes(atmC)
+    ),
+    
+    {**Attribute can be moved**}
+    do(
+     
+      {**Move attribute name**} 
+      PushString(strAttName),
+      SetAttributeName(valOldIndex, AttributeName(valNewIndex, atmC), atmC),
+      SetAttributeName(valNewIndex, PopString, atmC),
+      
+      {**Move attribute value**}      
+      valInfo := 0,
+      Case(
+        AttInfo(valOldIndex, atmC) + 1,
+        
+        {**Value**}
+        do(
+          PushValue(Att(valOldIndex, atmC)),
+          valInfo := 1
+        ),
+        
+        {**Text**}
+        do(
+          PushString(TextAtt(valOldIndex, atmC)),
+          valInfo := 2
+        ),
+        
+        {**Expression**}
+        do(
+          PushString(TextAtt(valOldIndex, atmC)),
+          valInfo := 3
+        ),
+        
+        {**Inherit**}
+        DispatchError(Concat([Warning: attribute ], strAttName, [ of atom ], Name(atmC), [ (id: ], String(AtomID(atmC)), [) is inherit. Update attribute movement manually!]))
+      ),    
+      
+      Case(
+        AttInfo(valNewIndex, atmC) + 1,
+        
+        {**Value**}
+        Att(valOldIndex, atmC) := Att(valNewIndex, atmC),
+        
+        {**Text**}
+        TextAtt(valOldIndex, atmC) := TextAtt(valNewIndex, atmC),
+        
+        {**Expression**}
+        SetExprAtt(valOldIndex, TextAtt(valNewIndex, atmC), atmC),
+        
+        {**Inherit**}
+        DispatchError(Concat([Warning: attribute ], AttributeName(valNewIndex, atmC), [ of atom: ], Name(atmC), [ (id: ], String(AtomID(atmC)), [) is inherit. Update attribute movement manually!]))
+      ),   
+      
+      Case(
+        valInfo ,
+        
+        {**Value**}
+        Att(valNewIndex, atmC) := PopValue,
+        
+        {**Text**}
+        TextAtt(valNewIndex, atmC) := PopString,
+        
+        {**Expression**}
+        SetExprAtt(valNewIndex, PopString, atmC)
+      ),              
+
+      {**Update functions**}
+      Attribute_UpdateIndicesOfGetSetFunctions(atmC, Min(valNewIndex, valOldIndex) - 1),      
+      
+      {**Add attribute to childs in library and model**}
+      if(
+        ChildCount(atmC) > 0,
+        do(
+          inc(valAttributeLoopCounter),
+          PushAtomPointer(s),
+          ForAtomTreeUnder(
+            Main,
+            do(
+              Sets,
+              if(
+                and(
+                  M(s) <> BaseClass,
+                  M(s) = atmC
+                ),
+                Attribute_Move(s, strAttName, valNewIndex)
+              )
+            )
+          ),
+          s := PopAtomPointer,
+          dec(valAttributeLoopCounter)
+        )
+      ),
+      
+      if(
+        And(
+          WindowVisible(TreeView),
+          valAttributeLoopCounter = 0 {**Not in recursive loop of adding attribute to daughters**}
+        ),
+        TreeRefresh  
+      ),
+      
+      True
+    ),
+    False
+  )
+)
+], [Moves attribute with name e2 to index e3 to atom e1. Returns true if succes; false otherwise
+e1 = atom reference
+e2 = name of attribute
+e3 = New index
+], [Attribute_Move(c, [Test], 1)], 0, [Attribute.atm]);
+DefineFunction([Attribute_OpenForm], [Atom Parameters], 1, 1, [do(  
+  var([atmC], vbAtom),
+  atmC := p(1),
+  if(
+    AtomExists(atmC, main),
+    atmAttribute := atmC,
+    atmAttribute := Library
+  ),
+  
+    
+  { Delete any current instances of this form.} 
+  GuiDestroy([frmAttributeControls]),
+  
+  { Register the GUI-form for this atom.}
+  GuiRegister(PDir([\Atoms\AttributeControlsForm.gui]), 1),
+  
+  { Show the GUI-form.}
+  Guicreate([frmAttributeControls], [frmAttributeControls], 0, AtomByName([Attribute], Library), 0, 1)
+
+)
+], [Open the attribute control GUI for atom e1], [Attribute_OpenForm(TreeAtom)], 0, [Attribute.atm]);
+DefineFunction([Attribute_Update], [Atom Parameters], 4, 5, [do(
+  var([atmC], vbAtom, p(1)),
+  var([valIndex], vbValue, p(2)),
+  var([strAttNameNew], vbString, p(3)),
+  var([valType], vbValue, p(4)),
+  var([strBeginFunctionName], vbString),
+  var([strAttNameOld], vbString),
+  var([valSucces], vbValue, False),
+  
+  if(
+    ParamCount = 5,
+    strBeginFunctionName := p(5),
+    strBeginFunctionName := Name(atmC)    
+  ),  
+  
+  if(  
+    Attribute_CheckForErrors(atmC, strAttNameNew, valType, strBeginFunctionName, valIndex) = True,
+    Do(
+  
+      {**Remove old functions**}      
+      strAttNameOld := AttributeName(valIndex, atmC), 
+      Attribute_RemoveGetSetFunctions(atmC, strAttNameOld), 
+      
+      {**Update name before check**}      
+      if(    
+        valType > - 1,           
+        
+        {**User wants to add new functions: Add new function**}
+        do(            
+          Attribute_CreateGetSetFunctions(atmC, strAttNameNew, valType, strBeginFunctionName, valIndex),  
+          SetAttributeName(valIndex, strAttNameNew, atmC),            
+          valSucces := True   
+        ),
+        do(          
+          SetAttributeName(valIndex, strAttNameNew, atmC), 
+          valSucces := True
+        )
+      ),
+      
+      {**Update attribute to childs in library and model**}
+      if(
+        ChildCount(atmC) > 0,
+        do(
+          PushAtomPointer(s),
+          ForAtomTreeUnder(
+            Main,
+            do(
+              Sets,
+              if(
+                and(
+                  M(s) <> BaseClass,
+                  M(s) = atmC
+                ),
+                SetAttributeName(valIndex, strAttNameNew, s)
+              )
+            )
+          ),
+          s := PopAtomPointer
+        )
+      ),
+      
+      if(
+        WindowVisible(TreeView),
+        TreeRefresh  
+      )
+    )
+  ),
+  
+  valSucces
+)
+], [Updates the attribute name or function type for atom e1. Returns true (succes) or false (failure)
+e1 = atom
+e2 = index of attribute
+e3 = new attribute name
+e4 = attribute type
+e5(optional) = Begin of function name
+], [Attribute_UpdateName(c, 2,  [Test2], vbValue, {Queue})], 0, [Attribute.atm]);
+Set(Icon(a), 
+	RegisterIcon(pDir([media\images\default.jpg]), [default.jpg]));
+SetMaterial(
+	RegisterMaterial([Default], 8421504, 8421504, 3289650, 0, 0.100000001490116, 0, false, false, 1, 0), 1, a);
+Set(Version(a), 7.3);
+SetTreeIcon(pDir([Media\Icons\Tools.ico]));
+Set(DdbRec, [>t-nocreate:1.]);
+int001(22);
+SetSize(1, 1, 1);
+LockPosition(false);
+LockSize(false);
+DisableIconRotation(false);
+SetProductCode([]);
+int024;
+Set(OnUser, [Do(Attribute_OpenForm(TreeAtom))]);
+SetStatus(0);
+int018;
+int007;

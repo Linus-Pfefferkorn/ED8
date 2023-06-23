@@ -1,0 +1,611 @@
+
+
+{Preregister functions}
+
+PreregisterFunction([Conveyors_AddSensors], 1, 1);
+PreregisterFunction([Conveyors_AtomLocation], 2, 2);
+PreregisterFunction([Conveyors_ConveyAtom], 2, 2);
+PreregisterFunction([Conveyors_GetConveyDistance], 2, 2);
+PreregisterFunction([Conveyors_GetDistanceDestination], 2, 2);
+PreregisterFunction([Conveyors_IsConveyor], 1, 1);
+PreregisterFunction([Conveyors_IsRunning], 1, 1);
+PreregisterFunction([Conveyors_LengthUntilNext], 1, 1);
+PreregisterFunction([Conveyors_ReachedDestination], 2, 2);
+PreregisterFunction([Conveyors_RescheduleReachedDestination], 1, 1);
+PreregisterFunction([Conveyors_ScheduleNextSensor], 2, 2);
+PreregisterFunction([Conveyors_StopConveyor], 1, 2);
+PreregisterFunction([Conveyors_3DAnimLength_Straight], 1, 1);
+PreregisterFunction([Conveyors_3DAnimLength_Curved], 1, 1);
+PreregisterFunction([Conveyors_Angle], 1, 1);
+PreregisterFunction([Conveyors_SetAtomLocation_Straight], 3, 3);
+PreregisterFunction([Conveyors_SetAtomLocation_Curved], 3, 3);
+PreregisterFunction([Conveyors_Scale], 3, 3);
+PreregisterFunction([Conveyors_LengthUntilOnConveyor], 1, 1);
+PreregisterFunction([Conveyors_ShowSensors2D_Curved], 1, 1);
+PreregisterFunction([Conveyors_2DDraw_Curved], 1, 1);
+PreregisterFunction([Conveyors_DeleteAllSensorsAtt], 1, 1);
+PreregisterFunction([Conveyors_IsBlocked], 1, 1);
+PreregisterFunction([Conveyors_AllowNextEvent], 2, 2);
+PreregisterFunction([Conveyors_PreliminaryExit], 3, 3);
+PreregisterFunction([Conveyors_SensorEvent], 2, 2);
+PreregisterFunction([Conveyors_RotateAtom], 1, 1);
+PreregisterFunction([Conveyors_SensorFree_Event], 3, 3);
+PreregisterFunction([Conveyors_AtomTableAddEvent], 6, 7);
+PreregisterFunction([Conveyors_AtomTableUpdate], 2, 2);
+PreregisterFunction([Conveyors_GetSpacing], 3, 3);
+PreregisterFunction([Conveyors_AtomTableCheck], 3, 4);
+PreregisterFunction([Conveyors_SensorIsBlocked], 2, 2);
+PreregisterFunction([Conveyors_SensorBlockedByLast], 2, 2);
+PreregisterFunction([Conveyors_SensorUnBlockAll], 1, 1);
+PreregisterFunction([Conveyors_SensorTimeLastBlocked], 2, 2);
+PreregisterFunction([Conveyors_AddNewSensor], 3, 5);
+PreregisterFunction([Conveyors_Start_NAConveyor], 1, 1);
+PreregisterFunction([Conveyors_AtomIsRunning], 1, 1);
+PreregisterFunction([Conveyors_IsWaiting], 1, 1);
+PreregisterFunction([Conveyors_ChangeSpeed], 2, 2);
+PreregisterFunction([Drawconveysegment1], 8, 8);
+PreregisterFunction([Conveyors_TranslateAngles], 3, 3);
+
+
+{Atom: General Conveyor Functions}
+
+sets;
+BaseClass;
+CreateAtom(a, s, [], 1, false);
+Set(OnInit, [do(   {**Constants for EventCodes**}  Dim([CONVEYORS_ALLOW_NEXT_EVENT], vbConstant, 1),  Dim([CONVEYORS_REACHED_DESTINATION_EVENT], vbConstant, 2),  Dim([CONVEYORS_START_CONVEYOR_EVENT], vbConstant, 3),  Dim([CONVEYORS_STOP_CONVEYOR_EVENT], vbConstant, 4),  Dim([CONVEYORS_SENSOR_EVENT], vbConstant, 5),   Dim([CONVEYORS_SENSOR_RELEASE_EVENT], vbConstant, 6),   Dim([CONVEYORS_MAX_NR_OF_EVENTS], vbConstant, 20),  Dim([AC_STOP_ATOM_EVENT], vbConstant, 4),      PreregisterFunction([NACs_SetDestinationAndSpeed], 2, 2),  PreregisterFunction([NACc_SetDestinationAndSpeed], 2, 2),  PreregisterFunction([ACs_SetDestinationAndSpeed], 2, 2),  PreregisterFunction([ACc_SetDestinationAndSpeed], 2, 2),  PreregisterFunction([AC_StopAtom], 2, 2),  PreregisterFunction([NACc_RotationSpeed], 1, 1),    {**Register GUI forms**}  GuiRegister(pDir([Atoms\frmConveyor_Sensors.gui]), 1),  GuiRegister(pDir([Atoms\frmNAC_Sensors.gui]), 1))]);
+int023([General Conveyor Functions], 0, 0);
+DefineFunction([Conveyors_AddSensors], [Conveyors], 1, 1, [do(  var([atmC], vbAtom, p(1)),  var([valNrSensorsNew], vbValue),  var([valNrSensorsOld], vbValue),  var([valNrAtt], vbValue),    valNrSensorsNew := nRows(atmC),        {**remove old attributes**}  Conveyors_DeleteAllSensorsAtt(atmC),    valNrAtt := NrOfAttributes(atmC),    SetAttributes(NrOfAttributes(atmC) + valNrSensorsNew, atmC),    att([NrSensors], atmC) := valNrSensorsNew,     {**Fill table and set attributes**}  if(    valNrSensorsNew > 0,    do(      SortTable(atmC, 1, 1, 1),            cell(0, 0, atmC) := [Nr],      cell(0, 1, atmC) := [Sensor Position],      cell(0, 2, atmC) := [Attribute Nr],      cell(0, 3, atmC) := [Use Release],      cell(0, 4, atmC) := [Release Trigger],      cell(0, 5, atmC) := [Spacing Rule],      cell(0, 6, atmC) := [Time Blocked],      cell(0, 7, atmC) := [Blocking atom],          Repeat(        valNrSensorsNew,        do(          inc(valNrAtt),          cell(count, 0, atmC) := Count,                    SetAttributeName(valNrAtt, concat([Sensor], String(Count))),          SetExprAtt(valNrAtt, Cell(Count, 2, atmC, 2), atmC),          cell(count, 2, atmC) := Concat([Sensor], String(Count)),                    if(            cell(count, 3, atmC),            do(              SetAttributes(NrOfAttributes(atmC) + 1, atmC),              inc(valNrAtt),              SetAttributeName(valNrAtt, concat([Sensor], String(Count), [end])),              SetExprAtt(valNrAtt, Cell(Count, 4, atmC, 2), atmC),              cell(count, 4, atmC) := Concat([Sensor], String(Count), [end])            )          )        )      )    )  ))], [Adds the code of the sensor triggers from the table of the conveyor to the last x attributes, removes the old attributes and updates the references in the table of the conveyore1 = current conveyor], [Conveyors_Add_Sensors(c)], 0, [General Conveyor Functions.atm]);
+DefineFunction([Conveyors_AtomLocation], [Conveyors], 2, 2, [do(  var([atmI], vbAtom, p(1)),  var([atmC], vbAtom, p(2)),  var([valDistance], vbValue, 0),  var([valAngle], vbValue),    case(att([IsConveyor], atmC),      {**1: Straight NAC Conveyor**}    do(                                        {**Pythagoras : Sqrt( (Xloc + Xsize)^2  + ( Zloc - Height)^2  )  **}          valDistance := Sqrt(Sqr(xloc(atmI) + xsize(atmI)) + Sqr(zloc(atmI))),                     {**used min to make sure no location will be returned greater than length of the conveyor**}      min(att([Length], atmC), Conveyors_Scale(valDistance, 2, atmC))      ),        {**2: Curved NAC Conveyor**}    do(          {**Compute distance**}      valAngle := att([Angle], atmC),      valDistance := (RotationAc(atmI) - att([StartAngle], atmC)) * att([Length], atmC) / valAngle,                                              valDistance := Sqrt(Sqr(valDistance) + Sqr(zloc(atmI))),                     {**used min to make sure no location will be returned greater than length of the conveyor**}      min(att([Length], atmC), valDistance)      ),        {**3: Straight Accumulating conveyor**}    do(           {**Pythagoras : Sqrt( (Xloc + Xsize)^2  + ( Zloc - Height)^2  )  **}          valDistance := Sqrt(Sqr(xloc(atmI) + xSize(atmI)) + Sqr(zloc(atmI))),                     {**used min to make sure no location will be returned greater than length of the conveyor**}      min(att([Length], atmC), Conveyors_Scale(valDistance, 2, atmC))      ),        {**4: Curved Accumulating conveyor**}    do(           {**Compute distance**}      valAngle := att([Angle], atmC),      valDistance := (RotationAc(atmI) - att([StartAngle], atmC)) * att([Length], atmC) / valAngle,                                              valDistance := Sqrt(Sqr(valDistance) + Sqr(zloc(atmI))),                     {**used min to make sure no location will be returned greater than length of the conveyor**}      min(att([Length], atmC), valDistance)      )        )         )], [Returns the location of the front of atom e1 on conveyor e2, in metres from the beginning of the conveyore1 = current bage2 = current conveyor], [Conveyors_Atom_Location(i, c)], 0, [General Conveyor Functions.atm]);
+DefineFunction([Conveyors_ConveyAtom], [Conveyors], 2, 2, [do(      var([atmI], vbAtom, p(1)),  var([atmC], vbAtom, p(2)),          if(     getrank(atmI) = 1,        {**Atom is first on conveyor: Change status to conveying**}    Status(atmC) := 26                ),    {**Determine destination and start moving the atom ... or stop the conveyor**}  case(att([IsConveyor], atmC),        {**1: Non-Accumulating Straight**}    NACs_SetDestinationAndSpeed(atmI, atmC),           {**2: Non-Accumulating Curved**}    NACc_SetDestinationAndSpeed(atmI, atmC),        {**3: Accumulating Straight**}    ACs_SetDestinationAndSpeed(atmI, atmC),        {**4: Accumulating Curved**}    ACc_SetDestinationAndSpeed(atmI, atmC)  ),                                         if(      Conveyors_AtomIsRunning(atmI),        {**Conveyor is running: Schedule sensor events**}    Conveyors_ScheduleNextSensor(atmI, atmC)  ) )  ], [Starts moving the atom towards end of conveyor and schedules necessary Events  e1 = reference to Atom to be coneyede2 = reference to Non-Accumulating Conveyor], [Conveyors_ConveyAtom(i, c)], 0, [General Conveyor Functions.atm]);
+DefineFunction([Conveyors_GetConveyDistance], [Conveyors], 2, 2, [do(  var([atmI], vbAtom, p(1)),  var([atmC], vbAtom, p(2)),  var([valTempDistance], vbValue, 0),  var([valMaxOverlap], vbValue, 0),  var([valDistBeforeOnConv], vbValue, 0),  var([atmNext], vbAtom),  {var([valSpeed], vbValue, att([Speed], atmC)), }           {**Distance to End of conveyor = Length Conveyor - Current Location**}  valTempDistance :=  att([Length], atmC) - Conveyors_AtomLocation(atmI, atmC),          {**Determine maximum overlap (excluding spacing) caused by atom on a following conveyor**}  repeat( {**for all output channels**}    nroc(atmC),         if(      OcConnected(Count, atmC),      do(        atmNext := out(count, atmC),             if( {**Atom connected to output channel count is conveyor and has effect on this conveyor and is not running or has a smaller speed**}          and(            Conveyors_IsConveyor(atmNext),                    vtp(att([EffectOnPredecessor], atmNext)) = atmC,            not(Conveyors_IsRunning(atmNext))          ),                    {**Yes, check how much the last product on the successor is overlapping this conveyor**}          do(             valDistBeforeOnConv := Conveyors_LengthUntilOnConveyor(atmNext),             {**Update Maximum overlap**}                                                                              valMaxOverlap := max(valDistBeforeOnConv, valMaxOverlap)                 )                          )       ),      DispatchError(Concat([No atom connect to the output channel of conveyor: ], name(atmC)))    )                            ),               if(     valMaxOverlap > 0,        {**there is an atom overlapping this conveyor**}    do(              {**Reduce TempDistance with MaxOverlap**}      valTempDistance := max(0, valTempDistance - valMaxOverlap),      att([TempAtomToEnd], atmC) := 0                                                                      ),        {**there is no atom overlapping this conveyor**}    do(           {**This atom can be conveyed until the end of the conveyor. Used when scheduling ReachedDestination Event**}      att([TempAtomToEnd], atmC) := 1    )  ),    {**return value**}  valTempDistance                                  )], [Returns the distance the atom can be conveyed from its current positione1 = reference to Atom to get Distance fore2 = reference to Non-Accumulating Conveyor], [Conveyors_GetConveyDistance(i, c)], 0, [General Conveyor Functions.atm]);
+DefineFunction([Conveyors_GetDistanceDestination], [Conveyors], 2, 2, [do(      var([atmI], vbAtom, p(1)),  var([atmC], vbAtom, p(2)),  var([valDestDistance], vbValue),    valDestDistance := Conveyors_GetConveyDistance(atmI, atmC),    if(     att([TempAtomToEnd], atmC),    att([AtomToEnd], atmC) := 1,    att([AtomToEnd], atmC) := 0    ),    {**return Value**}  valDestDistance                  )  ], [Returns the distance the atom can be conveyed from its current position. And sets AtomToEnd attribute.e1 = reference to Atom to get Distance fore2 = reference to Non-Accumulating Conveyor], [Conveyors_GetDistanceDestination(i, c)], 0, [General Conveyor Functions.atm]);
+DefineFunction([Conveyors_IsConveyor], [Conveyors], 1, 1, [if(
+  InList(att([IsConveyor], p(1)), 1, 2, 3, 4) > 0,
+  {**1: Non Accumulating Conveyor Straight**}
+  {**2: Non Accumulating Conveyor Curved**}
+  {**3: Accumulating Conveyor Straight**}
+  {**4: Accumulating Conveyor Curved**}
+  True,
+  False 
+)
+], [Checks if an atom belongs to the category advanced conveyors
+Returns True or False
+e1 = reference to atom
+], [Conveyors_IsConveyor(c)], 0, [General Conveyor Functions.atm]);
+DefineFunction([Conveyors_IsRunning], [Conveyors], 1, 1, [do(    
+  var([atmC], vbAtom, p(1)),
+  case(
+    att([IsConveyor], atmC),
+    
+    {**Non-Accumulating Straight**}
+    if( {**Status is Conveying or Empty**}
+      or(Status(atmC) = 26, Status(atmC) = 13),
+      True,
+      False 
+    ), 
+    
+    {**Non-Accumulating Curved**}
+    if( {**Status is Conveying or Empty**}
+      or(Status(atmC) = 26, Status(atmC) = 13),
+      True,
+      False 
+    ), 
+    
+    {**Accumulating Straight**}
+    if( {**Status is Conveying or Empty or (Blocked but still allowing additional products**}
+      or(
+        Status(atmC) = 26, 
+        Status(atmC) = 13, 
+        and(Status(atmC) = 5, or(att([LastEntered], atmC) = 0, and(Content(atmC) > 0, Conveyors_AtomIsRunning(last(atmC)))))
+      ),
+      True,
+      False 
+    ),
+    
+    {**Accumulating Curved**}
+    if( {**Status is Conveying or Empty or (Blocked but still allowing additional products**}
+      or(
+        Status(atmC) = 26, 
+        Status(atmC) = 13, 
+        and(Status(atmC) = 5, or(att([LastEntered], atmC) = 0, and(Content(atmC) > 0, Conveyors_AtomIsRunning(last(atmC)))))
+      ),
+      True,
+      False 
+    )
+  )
+)
+    
+], [Checks if conveyor e1 is running
+], [Conveyors_IsRunning(c)], 0, [General Conveyor Functions.atm]);
+DefineFunction([Conveyors_LengthUntilNext], [Conveyors], 1, 1, [do(  var([atmC], vbAtom, p(1)),  var([valLastEntered], vbValue, 0),  var([atmLast], vbAtom),  var([valCounter], vbValue, 1),      valLastEntered := att([LastEntered], atmC),  if(    and(      valLastEntered > 0,      AtomExists(vtp(valLastEntered)),      Conveyors_IsConveyor(up(vtp(valLastEntered)))    ),    do(      atmLast := vtp(valLastEntered),            {**Find row in atom table**}      LoopUntil(        and(          vtp(cell(Count, 2, atmLast)) = atmC,          cell(Count, 3, atmLast) = CONVEYORS_ALLOW_NEXT_EVENT        ),        inc(valCounter),        nRows(atmLast)      ),         if(        valCounter <= nRows(atmLast),        Max(0, cell(valCounter, 1, atmLast) - Conveyors_AtomLocation(atmLast, up(atmLast))),                {**Allowed to move until end**}        do(          0        )      )    ),        {**Allowed to move until end**}    0  )       )  ], [Returns the distance that the last atom on / that was one conveyor e1 has to be conveyed before next atom can arrive.A negative value means the last atom is already far enough], [Conveyors_LengthUntilNext(c)], 0, [General Conveyor Functions.atm]);
+DefineFunction([Conveyors_ReachedDestination], [Conveyors], 2, 2, [do(
+  var([atmI], vbAtom, p(1)),
+  var([atmC], vbAtom, p(2)),  
+      
+  if( 
+    att([AtomToEnd], atmC),
+    
+    {**Atom has been conveyed to the end of conveyor**}        
+    do( 
+    
+      {**Open output channels**}      
+      OpenAllOC(atmC),
+      
+      if(
+        AtomExists(atmI, atmC),
+        
+        {**Product is still on conveyor --> so it couldn't exit --> stop conveyor**}
+        case(att([IsConveyor], atmC),
+          Conveyors_StopConveyor(atmC),
+          Conveyors_StopConveyor(atmC),
+          AC_StopAtom(atmI, atmC),
+          AC_StopAtom(atmI, atmC)
+        )
+      )       
+    ), 
+    
+    {**Atom not at end of conveyor, Convey the atom further**}          
+    Conveyors_ConveyAtom(first(atmC), atmC) 
+  )
+)
+], [Execute the reached destination event of the conveyor
+e1 = involved bag
+e2 = current conveyor
+], [Conveyors_ReachedDestination(i, c)], 0, [General Conveyor Functions.atm]);
+DefineFunction([Conveyors_RescheduleReachedDestination], [Conveyors], 1, 1, [do(    
+  var([atmC], vbAtom, p(1)),
+
+  if(     
+    not(
+      or(
+        Conveyors_IsBlocked(atmC),
+        Conveyors_IsWaiting(atmC)
+      )
+    ),
+    
+    {**there is an atom on the conveyor and conveyor is not stopped**}
+    if(
+      Content(atmC) > 0,
+      do(        
+      
+        {**first remove the old event**}
+        DestroyEventsOfAtom(atmC, CONVEYORS_REACHED_DESTINATION_EVENT),
+        
+        {**then reschedule this event**}
+        case(att([IsConveyor], atmC),
+        
+          {**1: NAC straight**}
+          NACs_SetDestinationAndSpeed(first(atmC), atmC),
+          
+          {**2: NAC Curved**}
+          NACc_SetDestinationAndSpeed(first(atmC), atmC),
+  
+          {**3: AC straight**} 
+          ACs_SetDestinationAndSpeed(first(atmC), atmC),
+          
+          {**4: AC curved**} 
+          ACc_SetDestinationAndSpeed(first(atmC), atmC)
+        )
+      )
+    )
+  )  
+)  
+ 
+], [Reschedules the reached destination event for the first atom on conveyor e1
+], [Conveyors_RescheduleReachedDestination(c)], 0, [General Conveyor Functions.atm]);
+DefineFunction([Conveyors_ScheduleNextSensor], [Conveyors], 2, 2, [do(  var([atmI], vbAtom, p(1)),  var([atmC], vbAtom, p(2)),  var([valRow], vbValue, 0),  var([valLocation], vbValue, 0),  var([valTime], vbValue, 0),    if(    att([UseSensors], atmC),        {**using sensors on this conveyor**}    do(      if(        GetRank(atmI) = 1,                {**first atom on conveyor**}          do(          valRow := label([Conveyors_LastSensor], atmI) + 1,          if(            and(valRow <= Att([NrSensors], atmC), valRow > label([Conveyors_NextSensor], atmI)),                        {**Next sensor exists is not yet scheduled**}            do(              label([Conveyors_NextSensor], atmI) := valRow,               valLocation := Conveyors_AtomLocation(atmI, atmC),                          {**Sensor Event: Distance to Sensor / Speed**}                 valLocation := max(0, cell(valRow, 1, atmC) - valLocation),                                   valTime := valLocation / att([Speed], atmC),              CreateEvent(valTime, atmC, CONVEYORS_SENSOR_EVENT, 50, atmI)            )          )        ),                {**Other Atoms**}         do(          valRow := label([Conveyors_LastSensor], atmI) + 1,          if(            and(valRow <= label([Conveyors_LastSensor], prev(atmI)), valRow > label([Conveyors_NextSensor], atmI)),                       {**Previous bag already passed this sensors and sensor is not yet scheduled**}            {**If not this bag will be scheduled to this sensor as soon as the previous bag passed this sensor**}            do(              label([Conveyors_NextSensor], atmI) := valRow,               valLocation := Conveyors_AtomLocation(atmI, atmC),                            {**Sensor Event: Distance to Sensor / Speed**}              valLocation := max(0, cell(valRow, 1, atmC) - valLocation),              valTime := valLocation / att([Speed], atmC),              CreateEvent(valTime, atmC, CONVEYORS_SENSOR_EVENT, 50, atmI)            )          )        )                )     )  ))], [Schedules the next sensor for the involved bag if this bag is the first one to pass this sensorThe last sensor it has passed can be found on label([Conveyors_LastSensor]),e1 = reference to Atom to schedule events fore2 = reference to Non-Accumulating Conveyor], [Conveyors_ScheduleNextSensor(i, c)], 0, [General Conveyor Functions.atm]);
+DefineFunction([Conveyors_StopConveyor], [Conveyors], 1, 2, [do(
+  var([atmC], vbAtom, p(1)),
+  var([valType], vbValue, p(2)), 
+  var([atmPred], vbAtom),
+  var([valLength], vbValue),
+   
+  if(  
+    Conveyors_IsRunning(atmC),
+    
+    {**running at this moment**}
+    do(  
+      {**Reset Atom to End**}
+      att([AtomToEnd], atmC) := 0, 
+    
+      if(
+        valType,
+        
+        {**Set Status to waiting**}
+        do(
+          Status(atmC) := 4,
+          CloseAllOC(atmC) 
+        ),
+        
+        {**Set Status to Blocked**}
+        Status(atmC) := 5
+      ), 
+      
+      {**Close all IC**}
+      CloseallIC(atmC),
+         
+      if(
+        Content(atmC) > 0, 
+        
+        {**Destroy current events concerning atoms on conveyor**}
+        do(  
+  
+          {**Stop the atoms**}
+          PushAtomPointer(s),
+          case(att([IsConveyor], atmC),
+          
+            {**1: NAC straight**}
+            ForAtomLayerUnder(
+              atmC,
+              do(
+                Sets,
+                StopAtom(s),
+                label([Conveyors_NextSensor], s) := 0  
+              )
+            ),
+            
+            {**2: NAC curved**}
+            ForAtomLayerUnder(
+              atmC,
+              do(
+                Sets,
+                do(
+                  StopAtom(s),
+                  RotationSpeedAc(s) := 0,
+                  label([Conveyors_NextSensor], s) := 0 
+                )
+              )
+            ),
+            
+            {**3: AC straight**}
+            do(
+              ForAtomLayerUnder(
+                atmC,
+                do(
+                  Sets,
+                  StopAtom(s),
+                  label([Conveyors_NextSensor], s) := 0  
+                )
+              ),
+              DestroyEventsOfAtom(atmC, AC_STOP_ATOM_EVENT)
+            ),
+            
+            {**4: AC curved**}
+            do(
+              ForAtomLayerUnder(
+                atmC,
+                do(
+                  Sets,
+                  StopAtom(s),
+                  label([Conveyors_NextSensor], s) := 0  
+                )
+              ),
+              DestroyEventsOfAtom(atmC, AC_STOP_ATOM_EVENT)
+            )
+          ),  
+        
+          DestroyEventsOfAtom(atmC, CONVEYORS_REACHED_DESTINATION_EVENT), 
+          
+          
+          {**Destroy sensor release and allow next events on other conveyors**}
+          ForAtomLayerUnder(
+            atmC,
+            do(
+              Sets,
+              Repeat(
+                nRows(s),
+                if(
+                  Cell(Count, 5, s) = 1, {**Event created**}
+                  do(
+                    DestroyEventsOfAtom(vtp(cell(Count, 2, s)), Cell(Count, 3, s), s),
+                    Cell(Count, 5, s) := 2
+                  )
+                )
+              )
+            )
+          ),
+          
+          
+          {**Delete Sensor Events**}
+          if(
+            att([UseSensors], atmC),
+            DestroyEventsOfAtom(atmC, CONVEYORS_SENSOR_EVENT)
+          ),
+          
+          s := PopAtomPointer
+        )
+      ),
+                       
+        
+      {**Take care of other predecessor conveyors**}
+      if( {**predecessors have to be stopped automatically?**}                   
+        att([StartStopPredecessor], atmC) = 1,
+        
+        {**Yes, Stop predecessors**}
+        do( 
+          repeat( {**for all inputchannels**}
+            nrIC(atmC),
+            if(
+              IcConnected(Count, atmC),
+              do(
+                if( {**atom connected to inputchannel count is a NAC conveyor**}
+                  Conveyors_IsConveyor(in(Count, atmC)),
+                  
+                  {**Stop the predecessor**}
+                  do(
+                    Conveyors_StopConveyor(in(count, atmC), 1),
+                    
+                    {**Trigger listen to event code (can be used in Timewindow); create event with eventcode 0**}
+                    ExecEvent(OnEvent, in(Count, atmC), in(Count, atmC), 0)
+                  )
+                ) 
+              )   
+            )                       
+          )                                             
+        ),
+        
+        {**No, don't stop predecessors automatically, reschedule reached destination events**} 
+        {**Necessary for handling overlap**}
+        do(
+          if(
+            att([EffectOnPredecessor], atmC) > 0,
+            
+            {**Yes, Stopping this conveyor has effect on a predecessor**}
+            do(
+              atmPred := vtp(att([EffectOnPredecessor], atmC)),
+  
+              if( {**previous atom is a conveyor**}
+                not(
+                  or(
+                    Conveyors_IsBlocked(atmPred),
+                    Conveyors_IsWaiting(atmPred)
+                  )
+                ),
+                do(   
+                  if(
+                    Conveyors_LengthUntilOnConveyor(atmC) > 0, 
+                    if(
+                      or(
+                        att([IsConveyor], atmPred) <= 2,
+                        and(
+                          Content(atmPred) = 0,
+                          Conveyors_LengthUntilOnConveyor(atmPred) > 0
+                        )
+                      ),
+                    
+                      {**Bag still partly on pred conveyor which is non-accumulating, stop this conveyor too**}
+                      do(
+                        Conveyors_StopConveyor(atmPred),
+                        
+                        {**Trigger listen to event code (can be used in Timewindow); create event with eventcode 0**}
+                        ExecEvent(OnEvent, atmPred, atmPred, 0)
+                      ),
+                    
+                      {**Else, Reschedule reached destination event for predecessor**}
+                      Conveyors_RescheduleReachedDestination(atmPred)
+                    )
+                  )
+                )
+              )
+            )
+          )  
+        )
+      )                                               
+    ),
+    
+    {**Conveyor stopped already**}
+    if(
+      and(
+        Conveyors_IsBlocked(atmC),
+        att([DelayTime], atmC) > 0
+      ),
+      do( 
+        {**If conveyor is already/still stopped then remove any existing StartConveyor Events**}
+        {**This can only occur if the conveyor is stopped again before the start time is over**}
+        
+        DestroyEventsOfAtom(atmC, CONVEYORS_START_CONVEYOR_EVENT)     
+      )  
+    )             
+  )
+) 
+], [Stops conveyor e1 and takes care of the predecessors
+e1 = current conveyor
+e2 = StopType: 0-dieback/create enough distance, 1-other (e.g. manual stop, breakdown, etc. )], [Conveyors_StopConveyor(c)], 0, [General Conveyor Functions.atm]);
+DefineFunction([Conveyors_3DAnimLength_Straight], [Conveyors], 1, 1, [do(      var([atmC], vbAtom, p(1)),          {Pythagoras : Sqrt ( XSize^2 + Elevation^2)}   Sqrt(Sqr(xsize(atmC)) + Sqr(att([Elevation], atmC)))   ) ], [Return the actual length of the belt of conveyor e1], [Conveyors_3DAnimLength_Straight(c)], 0, [General Conveyor Functions.atm]);
+DefineFunction([Conveyors_3DAnimLength_Curved], [Conveyors], 1, 1, [do(  var([atmC], vbAtom, p(1)),  var([valLength], vbValue),    {**Length circle**}  valLength := Sqr(att([Radius], atmC) * pi * abs(att([Angle], atmC)) / 180),    {**Total lenght, including elevation**}  valLength := Sqrt(ValLength + sqr(att([Elevation], atmC))))], [Calculates 3D Animation length for curved conveyor e1e1 = current conveyor], [Conveyors_3DAnimLength_Curved(c)], 0, [General Conveyor Functions.atm]);
+DefineFunction([Conveyors_Angle], [Conveyors], 1, 1, [do(      var([atmC], vbAtom, p(1)),      if(    Att([Length], atmC) > 0,    ArcSin(att([Elevation], atmC) / att([Length], atmC)),    0  )             ) ], [e1 = Current belt floorfeyorCalculates 3D Angle for conveyor e1], [Conveyors_Angle(c)], 0, [General Conveyor Functions.atm]);
+DefineFunction([Conveyors_SetAtomLocation_Straight], [Conveyors], 3, 3, [do(  var([atmI], vbAtom, p(1)),  var([valDist], vbValue, p(2)),  var([atmC], vbAtom, p(3)),  var([valLocX], vbValue),  var([valLocY], vbValue),  var([valLocZ], vbValue),                      RotationAs(atmI) := 0,    {**Set location of the atom**}       valLocX := Conveyors_Scale(valDist, 1, atmC) * cos(Conveyors_Angle(atmC)) - xSize(atmI),  valLocY := (ySize(atmC) - ySize(atmI)) / 2,  valLocZ := Conveyors_Scale(valDist, 1, atmC) * sin(Conveyors_Angle(atmC)),     setLoc(valLocX, valLocY, valLocZ, atmI)          ) ], [Places the front of the involved atom, e2 metres from the beginning of current conveyore1 =  involved atome2 =  new locatione3 =  reference to Conveyor], [Conveyors_SetAtomLocation_Straight(i, 0, c)], 0, [General Conveyor Functions.atm]);
+DefineFunction([Conveyors_SetAtomLocation_Curved], [Conveyors], 3, 3, [do(  var([atmI], vbAtom, p(1)),  var([valDist], vbValue, p(2)),  var([atmC], vbAtom, p(3)),  var([valLocX], vbValue),  var([valLocY], vbValue),  var([valLocZ], vbValue),  var([valRotation], vbValue),    {**Compute rotation**}  valRotation := valDist * att([angle], atmC) / att([Length], atmC) + att([StartAngle], atmC),    {**Set on right position of curve**}    RotationAs(atmI) := 0,                    {**Set location of the atom**}    if(    att([Angle], atmC) > 0,        {**Right curved**}    do(       valLocX := -(XSize(atmI)),      valLocY := - (att([Radius], atmC) + ySize(atmI) / 2),      RotationAc(atmI) := valRotation          ),        {**Left curved**}    do(      valLocX := -(XSize(atmI)),      valLocY := (att([Radius], atmC) - ySize(atmI) / 2),      RotationAc(atmI) := valRotation    )  ),  valLocZ := valDist * sin(Conveyors_Angle(atmC)),  setLoc(valLocX, valLocY, valLocZ, atmI)) ], [Places the front of the involved atom, e2 metres from the beginning of current conveyore1 =  involved atome2 =  new locatione3 =  reference to Conveyor], [Conveyors_SetAtomLocation_Curved(i, 0, c)], 0, [General Conveyor Functions.atm]);
+DefineFunction([Conveyors_Scale], [Conveyors], 3, 3, [do(    var([valScale], vbValue, p(1)),  var([valBool], vbValue, p(2)),  var([atmC], vbAtom, p(3)),                 case(     valBool,             {**1 :  scale value for conveyor**}    valScale / att([LengthFactor], atmC),               {**2 :  scale back scaled value of conveyor**}    valScale * att([LengthFactor], atmC),                  {**Else: Error message**}    DispatchError(Concat(ValueToString(valBool), [ is not a valid second parameter for scale function]))  ))  {**Not that this function is only valid for straight conveyors, curved conveyors cannot be scaled!**}], [e1 = number to scalee2 = 1 or 2, 1 scales number for straight conveyor, 2 scales number backe3 = reference to conveyorIf e2=1, value e1 will be scaled for conveyor e3. If e2=2, scaled value e1 (as used on conveyor e3) will be scaled back], [Conveyors_Scale(10, 1, c)], 0, [General Conveyor Functions.atm]);
+DefineFunction([Conveyors_LengthUntilOnConveyor], [Conveyors], 1, 1, [do(  var([atmC], vbAtom, p(1)),  var([valLastEntered], vbValue, 0),  var([atmLast], vbAtom),  var([valCounter], vbValue, 1),  var([valXSize], vbValue),    valLastEntered := att([LastEntered], atmC),  if(    and(      valLastEntered > 0,      or(        Content(atmC) > 0,        att([SmallerThanBag])      ),                  AtomExists(vtp(valLastEntered)),      Conveyors_IsConveyor(up(vtp(valLastEntered)))    ),        {**Product is on a downstream conveyor is larger than the current conveyor**}    do(      atmLast := vtp(valLastEntered),            {**Find row in atom table**}      LoopUntil(        and(          vtp(cell(Count, 2, atmLast)) = atmC,          cell(Count, 3, atmLast) = CONVEYORS_ALLOW_NEXT_EVENT        ),        inc(valCounter),        nRows(atmLast)      ),            if(        valCounter <= nRows(atmLast),        do(          if(            att([UsePhysicalLength], atmC) = 0,            valXSize := Conveyors_Scale(xSize(atmLast), 2, atmC),                valXSize := xSize(atmLast)          ),          Max(0, cell(valCounter, 1, atmLast) - Conveyors_AtomLocation(atmLast, up(atmLast)) - Conveyors_GetSpacing(atmC, valXSize, att([SpacingRule], atmC)) + valXSize)        ),                {**Allowed to move until end**}        do(          0        )      )    ),        {**Last product that entered has completely gone over the conveyor**}    0  ))], [Computes the length until the last atom is completely on conveyor e1], [Conveyors_LengthUntilOnConveyor(c)], 0, [General Conveyor Functions.atm]);
+DefineFunction([Conveyors_ShowSensors2D_Curved], [Conveyors], 1, 1, [do(   var([atmC], vbAtom, p(1)),  var([valNrSensors], vbValue),  var([valPosX], vbValue, 0),  var([valPosY], vbValue, 0),  var([valRotation], vbValue, 0),  var([valStartAngle], vbValue, att([StartAngle], atmC)),    if(    att([UseSensors], atmC),    do(      if(        att([Angle], atmC) < 0,        valStartAngle := valStartAngle + 180      ),              valNrSensors := att([NrSensors], atmC),            repeat( {**for all sensors**}        valNrSensors,        do(                      {**draw a line at the position of the sensor**}             valPosX :=  cell(Count, 1, atmC) * Cos(Conveyors_Angle(atmC)),           valRotation := valPosX * att([angle], atmC) / att([Length], atmC) + valStartAngle,           valPosX := sin(valRotation) * (att([Radius], atmC) - 0.5 * Ysize(atmC)),                     valPosY := - (att([Radius], atmC) - 0.5 * Ysize(atmC)) * cos(valRotation),           diLine(valPosX, valPosY, ySize(atmC) * sin(valRotation), -(ysize(atmC) * cos(valRotation)), ColorRed)        )       )      )  )) ], [Show the sensors on curved conveyor e1], [Conveyors_ShowSensors2D_Curved(c)], 0, [General Conveyor Functions.atm]);
+DefineFunction([Conveyors_2DDraw_Curved], [Conveyors], 1, 1, [do(  var([atmC], vbAtom,p(1)),    if(    att([Angle], atmC) < 0,        {**Left Curved**}    do(      diarc(0, 0, att([Radius], atmC) + 0.5 * ySize(atmC), 180 + att([StartAngle], atmC) + att([Angle], atmC), abs(att([Angle], atmC)), color(atmC)),      diarc(0, 0, att([Radius], atmC) - 0.5 * ySize(atmC), 180 + att([StartAngle], atmC) + att([Angle], atmC), abs(att([Angle], atmC)), color(atmC)),            PushCoords,      RotateCoords(Att([StartAngle], atmC)),      RotateCoords(-(180), 1, 0, 0),            DrawArrow(0.15,   - (att([radius], c)) {* ysize(c)}, 0.65, -(att([radius], c)) {* ysize(c)}, 0.5, 0.4, Color(c), True, 100, 0),            PopCoords     ),        {**Right Curved**}    do(      diarc(0, 0, att([Radius], atmC) + 0.5 * ySize(atmC), att([StartAngle], atmC), att([Angle], atmC), color(atmC)),      diarc(0, 0, att([Radius], atmC) - 0.5 * ySize(atmC), att([StartAngle], atmC), att([Angle], atmC), color(atmC)),            PushCoords,      RotateCoords(Att([StartAngle], atmC)),            DrawArrow(0.15,   -(att([radius], c)) {* ysize(atmC)}, 0.25, - (att([radius], c)) {* ysize(c)}, 0.15, 0.15, Color(c), True, 100, 0),            PopCoords    )  ))], [Draws curved conveyor e1 in 2D], [Conveyors_2DDraw_Curved(c)], 0, [General Conveyor Functions.atm]);
+DefineFunction([Conveyors_DeleteAllSensorsAtt], [Conveyors], 1, 1, [do(  var([atmC], vbAtom, p(1)),  var([strName], vbString),  var([atmM], vbAtom),  var([valAttribute], vbValue),  var([valAttID], vbValue),   var([valCounter], vbValue),   var([valNrSensors], vbValue),    valNrSensors := att([NrSensors], atmC),     Repeat(    valNrSensors,    do(      strName := Concat([Sensor], ValueToString(Count)),      valAttID := 0,        for(valAttribute := 1, and(valAttID = 0, valAttribute <= NrOfAttributes(atmC)), Inc(valAttribute),        if(           CompareText(AttributeName(valAttribute, atmC), strName),          valAttID := valAttribute        )        ),            if(        and(valAttID > 0, valAttID <= NrOfAttributes(atmC)),                {**Attribute Exists**}        do(          valCounter := valAttID,          Repeat(            NrOfAttributes(atmC) - valAttID,            do(              SetAttributeName(valCounter, AttributeName(valCounter + 1, atmC), atmC),              case(                AttInfo(valCounter + 1, atmC) + 1,                                {**Value**}                att(valCounter, atmC) := att(valCounter + 1, atmC),                                {**Text**}                textatt(valCounter, atmC) := textatt(valCounter + 1, atmC),                                {**Expression**}                SetExprAtt(valCounter, textatt(valCounter + 1, atmC), atmC)              ),                                       inc(valCounter)            )          ),                    SetAttributes(NrOfAttributes(atmC) - 1, atmC),          valAttID        ),        -1      ),            {**Delete code for release sensors**}       strName := Concat([Sensor], String(Count), [end]),      valAttID := 0,        for(valAttribute := 1, and(valAttID = 0, valAttribute <= NrOfAttributes(atmC)), Inc(valAttribute),        if(           CompareText(AttributeName(valAttribute, atmC), strName),          valAttID := valAttribute        )        ),            if(        and(valAttID > 0, valAttID <= NrOfAttributes(atmC)),                {**Attribute Exists**}        do(          valCounter := valAttID,          Repeat(            NrOfAttributes(atmC) - valAttID,            do(              SetAttributeName(valCounter, AttributeName(valCounter + 1, atmC), atmC),              case(                AttInfo(valCounter + 1, atmC) + 1,                                {**Value**}                att(valCounter, atmC) := att(valCounter + 1, atmC),                                {**Text**}                textatt(valCounter, atmC) := textatt(valCounter + 1, atmC),                                {**Expression**}                SetExprAtt(valCounter, textatt(valCounter + 1, atmC), atmC)              ),                                       inc(valCounter)            )          ),                    SetAttributes(NrOfAttributes(atmC) - 1, atmC),          valAttID        ),        -1      )    )  ),  att([NrSensors], atmC) := 0)], [Removes all sensors attributes from atom e1], [Conveyors_DeleteAllSensorsAtt(c)], 0, [General Conveyor Functions.atm]);
+DefineFunction([Conveyors_IsBlocked], [Conveyors], 1, 1, [   if( {**Status is Blocked**}  Status(p(1)) = 5,   True,  False )             ], [Returns true if e1 is blocked], [Conveyors_IsBlocked(c)], 0, [General Conveyor Functions.atm]);
+DefineFunction([Conveyors_AllowNextEvent], [Conveyors], 2, 2, [do(  var([atmC], vbAtom, p(1)),  var([atmI], vbAtom),   var([atmPred], vbAtom),  var([valCounter], vbValue, 1),  var([valLastEntered], vbValue),  atmI := p(2),  valLastEntered := att([LastEntered], atmC),  if(    And(       AtomExists(atmI),        AtomExists(up(atmI)),      Conveyors_IsConveyor(up(atmI))    ),    {**Find and delete row in atom table**}    do(      LoopUntil(        and(          vtp(cell(Count, 2, atmI)) = atmC,          cell(Count, 3, atmI) = CONVEYORS_ALLOW_NEXT_EVENT        ),        inc(valCounter),        nRows(atmI)      ),            if(        valCounter <= nRows(atmI),        do(         DeleteRow(valCounter, atmI),         if(          nrows(atmI)=0,          settable(0,0,atmI)         )        )       )    )  ),    {**Last entered atom does not affect this conveyor anymore**}  if(    and(      valLastEntered  > 0,      valLastEntered = atmI    ),    att([LastEntered], atmC) := 0  ),    if(    and(      Conveyors_IsRunning(atmC),      or(        att([LastEntered], atmC) = 0,        not(AtomExists(vtp(valLastEntered)))      )            ),    do(             {**Next atom is allowed so no more Effect on Predecessor**}      att([EffectOnPredecessor], atmC) := 0,      If( {**Max capacity not yet reached and running**}        Content(atmC) < att([Capacity], atmC),         att([InStrategy], atmC)       )    )  ))], [Allow next event of conveyor e1e2 (optional) = open only a specific input channel e2. If not specified all input channels will be opened.], [Conveyors_AllowNextEvent(c),  Conveyors_AllowNextEvent(c, 1)], 0, [General Conveyor Functions.atm]);
+DefineFunction([Conveyors_PreliminaryExit], [Conveyors], 3, 3, [do(  var([atmI], vbAtom, p(1)),  var([atmC], vbAtom, p(2)),  var([valOC], vbValue, p(3)),    var([valExitChannel], vbValue),        {**execute sendTo statement**}  valExitChannel := att([SendTo], atmC),    if(    valOC = valExitChannel,    do(           {**Reset atom to end, so the OCReady does nothing**}      att([AtomToEnd], atmC) := 0,       OpenOC(valOC, atmC),            if(        OCReady(valOC, atmC),        do(                   {**REACHED_DESTINATION_EVENT will be rescheduled on the on exit if there is another atom**}          DestroyEventsOfAtom(atmC, CONVEYORS_REACHED_DESTINATION_EVENT),                    if(            label([Conveyors_LastSensor], atmI) < label([Conveyors_NextSensor], atmI),            DestroyEventsOfAtom(atmC, CONVEYORS_SENSOR_EVENT, atmI)          ),          label([Conveyors_LastSensor], atmI) := att([NrSensors], atmC),                      if(            att([LastEntered], atmC) = atmI,            do(              DestroyEventsOfAtom(atmC, CONVEYORS_ALLOW_NEXT_EVENT)            )          ),                     MoveRequest(atmI, valOC)        ),        do(          {**Make sure this sensor is scheduled again when the conveyors is started again**}          dec(label([Conveyors_LastSensor], atmI)),                    Conveyors_StopConveyor(atmC)                         )      )    )  ))], [Checks if product e1 has a preliminary Exit on conveyor e2, if true the bag exits e2. This function must be called on a sensor.Warning: Do not use the Preliminary Exit if the sendTo statements contains randomness; only use it with a fixed routing (product has to exit here in all situations) !e1 = current bag (i)e2 = current conveyore3 = output channel that the product has to be send to], [Conveyors_PreliminaryExit(i, c, 1)], 0, [General Conveyor Functions.atm]);
+DefineFunction([Conveyors_SensorEvent], [Conveyors], 2, 2, [do(  var([atmI], vbAtom, p(1)),  var([atmC], vbAtom, p(2)),  var([valSensorNumber], vbValue),  var([valSizeX], vbValue),  var([valGap], vbValue),  var([atmNext], vbAtom),  var([valDistance], vbValue),  var([valCurLoc], vbValue),    if(    up(atmI) = atmC,    do(        {**Update label: bag i passed this sensor**}      Inc(label([Conveyors_LastSensor], atmI)),      valSensorNumber := label([Conveyors_LastSensor], atmI),            valCurLoc := Conveyors_AtomLocation(atmI, atmC),            if( {**Set here because atom can divert**}        Content(atmC) > GetRank(atmI),        atmNext := Next(atmI),        atmNext := 0       ),                {**Execute SensorTrigger.**}      {**could contain code that changes sensor events and labels**}      att(cell(valSensorNumber, 2, atmC), atmC),            {**Schedule event at this sensor for the next atom**}      if(         and(          atmNext > 0,          label([Conveyors_LastSensor], atmNext) = valSensorNumber - 1,          Conveyors_AtomIsRunning(atmNext)        ),                {**Next atom exists and already passed the previous sensor**}             Conveyors_ScheduleNextSensor(atmNext, atmC)      ),             {**Schedule next sensor for this bag**}      if(        And(          up(atmI) = atmC, {**Not diverted**}                    label([Conveyors_LastSensor], atmI) < att([NrSensors], atmC),          Conveyors_AtomIsRunning(atmI)        ),                {**not yet passed last sensor**}        Conveyors_ScheduleNextSensor(atmI, atmC)      ),       {**Schedule sensor free event if sensor blocking is used and add line to sensor table**}       if(        cell(valSensorNumber, 3, atmC),        do(          cell(valSensorNumber, 6, atmC) := Time,          cell(valSensorNumber, 7, atmC) := atmI,                    if( {**Check is needed because curved conveyors cannot be scaled**}               att([UsePhysicalLength], atmC),            valSizeX := xSize(atmI),            valSizeX := Conveyors_Scale(xsize(atmI), 2, atmC)              ),                    valGap := Max(0, Conveyors_GetSpacing(atmC, valSizeX, cell(valSensorNumber, 5, atmC)) - (valCurLoc - cell(valSensorNumber, 1, atmC))),                    if(            up(atmI) = atmC,            valDistance := cell(valSensorNumber, 1, atmC) + valGap,            valDistance := valGap          ),                    if(            Conveyors_IsConveyor(up(atmI)),            if(              and(                valDistance <= att([Length], up(atmI)),                Conveyors_AtomIsRunning(atmI)              ),              do(                CreateEvent(valGap / att([Speed], atmC), atmC, CONVEYORS_MAX_NR_OF_EVENTS * valSensorNumber + CONVEYORS_SENSOR_RELEASE_EVENT, 150, atmI),                                {*Add event line to atom table*}                Conveyors_AtomTableAddEvent(atmI, valDistance, atmC, CONVEYORS_SENSOR_RELEASE_EVENT, 150, 1, valSensorNumber)              ),                            {*Add event line to atom table*}              Conveyors_AtomTableAddEvent(atmI, valDistance, atmC, CONVEYORS_SENSOR_RELEASE_EVENT, 150, 0, valSensorNumber)            ),            CreateEvent(valGap / att([Speed], atmC), atmC, valSensorNumber, 150, atmI)          )        )      )    )  ))], [Execute the sensor trigger event and schedule the next onese1 = involved bage2 = current conveyor], [Conveyors_SensorEvent(i, c)], 0, [General Conveyor Functions.atm]);
+DefineFunction([Conveyors_RotateAtom], [Conveyors], 1, 1, [do(  var([atmC], vbAtom, p(1)),  var([atmI], vbAtom),  var([valY], vbValue),  {**Rotate**}  valY := ySize(atmC),  ySize(atmC) := xSize(atmC),  xSize(atmC) := valY,    Repeat(    Content(atmC),    do(      atmI := rank(Count, atmC),            valY := ySize(atmI),      ySize(atmI) := xSize(atmI),      xSize(atmI) := valY,      valY  := yLoc(atmI),      yLoc(atmI) := ySize(atmC) - xLoc(atmI) - ySize(atmI),      xLoc(atmI) := valY    )  ))], [Rotates the involved atom by 90 degrees (exchanges xsize and ysize).This function can be called on the onexit trigger of a conveyor so it seems the product moves sidewards (goes from a horizontal speed to of vertical or visa versa) to the next conveyor.e1 = current atom], [Conveyors_RotateAtom(i)], 0, [General Conveyor Functions.atm]);
+DefineFunction([Conveyors_SensorFree_Event], [Conveyors], 3, 3, [do(  var([atmC], vbAtom, p(1)),  var([atmI], vbAtom, p(2)),  var([valSensorNumber], vbValue, p(3)),  var([valCounter], vbValue, 1),    {**Find row number in product table and delete row if i still exists**}    if(    and(      AtomExists(atmI),        Conveyors_IsConveyor(up(atmI)),      Time - age(atmI) <= Conveyors_SensorTimeLastBlocked(atmC, valSensorNumber) {**In case atom has been destroyed and recreated**}    ),        {**i still exists and the row not deleted yet**}    do(            LoopUntil(        and(          vtp(cell(Count, 2, atmI)) = atmC,          EventCode = Cell(Count, 3, atmI)        ),        inc(valCounter),        nRows(atmI)      ),      if(        valCounter <= nRows(atmI),        do(         DeleteRow(valCounter, atmI),         if(          nrows(atmI)=0,          settable(0,0,atmI)         )        )      )    )  ),    {**Set sensor to free and Execute Trigger**}    if(    Conveyors_SensorBlockedByLast(atmC, valSensorNumber) = atmI,    do(      cell(valSensorNumber, 6, atmC) := 0,      cell(valSensorNumber, 7, atmC) := 0    )  ),  att(cell(valSensorNumber, 4, atmC), atmC))], [Execute the release trigger of a sensor (end of product, incl. spacing, passes the sensor) e1 = current conveyore2 = involved bage3 = Sensor NumberWarning: Be carefull using i in the execution code because it can be deleted!], [Conveyors_SensorFree_Event(c, i, 1)], 0, [General Conveyor Functions.atm]);
+DefineFunction([Conveyors_AtomTableAddEvent], [Conveyors], 6, 7, [do(  var([atmI], vbAtom, p(1)),  var([valRows], vbValue),  SetTable(nRows(atmI) + 1, 5, atmI),    valRows := nRows(atmI),    {**Distance to go**}  cell(valRows, 1, atmI) := p(2),    {**Involved VI_Conveyor**}  cell(valRows, 2, atmI) := p(3),    {**Priority of event**}  cell(valRows, 4, atmI) := p(5),    {**Event Code + Extra eventcode to execute a Sensor number**}  cell(valRows, 3, atmI) := CONVEYORS_MAX_NR_OF_EVENTS * p(7) + p(4),  {**Column 5: 0 = no event created, 1 = event is created, 2 = event was created, but current conveyor is stopped**}  if(    p(6),    cell(valRows, 5, atmI) := 1,    cell(valRows, 5, atmI) := 0  ))], [e1 = involved atome2 = Distance to goe3 = involved conveyore4 = Event code to exectuee5 = Priority of evente6 = 0 = no event created, 1 = event is created e7(optional) = sensor number ], [Conveyors_AtomTableAddEvent(i, 10, c, CONVEYORS_ALLOW_NEXT_EVENT,  200)], 0, [General Conveyor Functions.atm]);
+DefineFunction([Conveyors_AtomTableUpdate], [Conveyors], 2, 2, [do(
+  var([atmI], vbAtom, p(1)),
+  var([atmC], vbAtom, p(2)),
+  var([valRows], vbValue, nRows(atmI)),
+  if(
+    and(
+      valRows > 0,
+      oc(atmC) > 0
+    ),
+    do(
+      var([valDistance], vbValue, Conveyors_AtomLocation(atmI, atmC)),
+      var([valSpeed], vbValue),
+      
+      if(
+        Conveyors_IsConveyor(out(oc(atmC), atmC)),
+        
+        {**Update distances in atom event table**}
+        Repeat(
+          valRows,
+          cell(Count, 1, atmI) := cell(Count, 1, atmI) - valDistance
+        ),
+         
+        {**Next is not a VI_Conveyor, Schedule all remaining events of the event table**}
+        do(
+          valSpeed := att([Speed], atmC),
+
+          Repeat(
+            valRows,
+              CreateEvent((cell(Count, 1, atmI) - valDistance) / valSpeed, vtp(cell(Count, 2, atmI)), cell(Count, 3, atmI), cell(Count, 4, atmI), atmI)
+          ),
+          
+          {**Remove table**}
+          SetTable(0, 0, atmI)
+         
+        )
+      )
+    )
+  )
+)
+], [Updates the distance in the Event AtomTable
+e1 = involved atom
+e2 = current conveyor], [Conveyors_AtomTableUpdate(i, c)], 0, [General Conveyor Functions.atm]);
+DefineFunction([Conveyors_GetSpacing], [Conveyors], 3, 3, [do(  var([atmC], vbAtom, p(1)),  var([valXSize], vbValue, p(2)),  var([valSpacingRule], vbValue, p(3)),    case(valSpacingRule + 1,       {**0: No gap**}    valXSize,        {**1: Back to Front**}          valXSize + att([Gap], atmC),        {**2: Front to Front**}    max(att([GapWindow], atmC), valXSize),      {**3: Maximum of 1 and 2**}    max(att([GapWindow], atmC), valXSize + att([Gap], atmC))  ))], [e1 = conveyore2 = xSize of involved atome3 = spacingRule], [Conveyors_GetSpacing(c, xSize(i), 1)], 0, [General Conveyor Functions.atm]);
+DefineFunction([Conveyors_AtomTableCheck], [Conveyors], 3, 4, [do(  var([atmI], vbAtom, p(1)),  var([atmC], vbAtom, p(2)),  var([valDistanceDone], vbValue, p(3)),  var([valLength], vbValue, att([Length], atmC)),  var([valDistanceToGo], vbValue),    if(    p(4),    Repeat(      nRows(atmI),      if(        cell(Count, 5, atmI) = 2,        do(          valDistanceToGo := Max(cell(Count, 1, atmI) - valDistanceDone, 0),          cell(Count, 5, atmI) := 1,          CreateEvent(valDistanceToGo / att([Speed], atmC), vtp(cell(Count, 2, atmI)), cell(Count, 3, atmI), cell(Count, 4, atmI), atmI)         )      )    ),        Repeat(      nRows(atmI),      do(        valDistanceToGo := Max(cell(Count, 1, atmI) - valDistanceDone, 0),        if(          cell(Count, 1, atmI) <= valLength,                      {**Create events**}          do(            Cell(Count, 5, atmI) := 1,            CreateEvent(valDistanceToGo / att([Speed], atmC), vtp(cell(Count, 2, atmI)), cell(Count, 3, atmI), cell(Count, 4, atmI), atmI)          ),          Cell(Count, 5, atmI) := 0        )      )    )  ))], [Checks if an event (allow next or sensor free) from the AtomTable needs to be schedulede1 = involved atome2 = current conveyore3 = Distance already conveyede4 (optional) = Is set in the stopconveyor function and use in the startconveyor function (restarting) to indicate that these events were in use], [Conveyors_AtomTableCheck(i, c, Conveyors_AtomLocation(i, c))], 0, [General Conveyor Functions.atm]);
+DefineFunction([Conveyors_SensorIsBlocked], [Conveyors], 2, 2, [if(  cell(p(2), 7, p(1)) > 0,  True,  False)], [Checks if sensor e2 (sensor are numbered ascending on the positions of the sensors) on conveyor e1 is blocked.Note that a sensor can only be blocked if the checkbox is checked in the sensor gui], [Conveyors_SensorIsBlocked(c, 1)], 0, [General Conveyor Functions.atm]);
+DefineFunction([Conveyors_SensorBlockedByLast], [Conveyors], 2, 2, [vtp(cell(p(2), 7, p(1)))], [Returns the atom that last blocked sensor e2 (sensor are numbered ascending on the positions of the sensors) on Conveyor e1.Note that a sensor can only be BlockedBy if the checkbox is checked in the sensor gui], [Conveyors_SensorBlockedByLast(c, 1)], 0, [General Conveyor Functions.atm]);
+DefineFunction([Conveyors_SensorUnBlockAll], [Conveyors], 1, 1, [Repeat(   nRows(p(1)),  do(    cell(Count, 6, p(1)) := 0,    cell(Count, 7, p(1)) := 0  ))], [Unblocks all Sensors of conveyor e1], [Conveyors_SensorUnBlockAll(c)], 0, [General Conveyor Functions.atm]);
+DefineFunction([Conveyors_SensorTimeLastBlocked], [Conveyors], 2, 2, [cell(p(2), 6, p(1))], [Returns the time at which sensor e2 (sensor are numbered ascending on the positions of the sensors) on Conveyor e1 is last blocked (incl. spacing);0 if not blocked at all.Note that a sensor can only be blocked if the checkbox is checked in the sensor gui], [Conveyors_SensorTimeLastBlocked(c, 1)], 0, [General Conveyor Functions.atm]);
+DefineFunction([Conveyors_AddNewSensor], [Conveyors], 3, 5, [do(  var([atmC], vbAtom, p(1)),  var([strCode], vbString, p(2)),  var([valPos], vbValue, p(3)),  var([strCodeEnd], vbString, p(4)),  var([valStrategy], vbValue, p(5)),  var([valCounter], vbValue, 1),    if(    nRows(atmC) > 0,    do(           {**Set old sensors in table**}      Repeat(        nRows(atmC),        do(          cell(count, 2, atmC) := textatt(cell(count, 2, atmC), atmC),          if(            cell(count, 3, atmC),            cell(count, 4, atmC) := textatt(cell(count, 4, atmC), atmC)          )        )          ),      SetTable(nRows(atmC) + 1, 7, atmC),      cell(1, 1, atmC) := valPos,      cell(1, 2, atmC) := strCode,      if(        ParamCount = 3,        do(          cell(1, 3, atmC) := 0,          cell(1, 4, atmC) := 0,          cell(1, 5, atmC) := 0        ),        do(          cell(1, 3, atmC) := 1,          cell(1, 4, atmC) := strCodeEnd,          cell(1, 5, atmC) := valStrategy        )      ),      cell(1, 6, atmC) := 0,      cell(1, 7, atmC) := 1    ),    do(      SetTable(1, 7, atmC),      cell(1, 1, atmC) := valPos,      cell(1, 2, atmC) := strCode,      if(        ParamCount = 3,        do(          cell(1, 3, atmC) := 0,          cell(1, 4, atmC) := 0,          cell(1, 5, atmC) := 0        ),        do(          cell(1, 3, atmC) := 1,          cell(1, 4, atmC) := strCodeEnd,          cell(1, 5, atmC) := valStrategy        )      ),      cell(1, 6, atmC) := 0,      cell(1, 7, atmC) := 1    )  ),    att([UseSensors], atmC) := 1,  Conveyors_AddSensors(atmC),    LoopUntil(    and(      cell(Count, 1, atmC) = valPos,      cell(Count, 7, atmC) = 1    ),    Inc(valCounter),    nRows(atmC)  ),  cell(Count, 7, atmC) := 0,  valCounter  )], [Add a new sensor to conveyor e1 with code e2 at position e3e4 (optional) = code that has to be executed when the end of the bag passes the sensore5 (optional) = spacing rule for end triggerreturns the row number at which the sensor was added in the table], [Conveyors_AddNewSensor(c, [test], 2)], 0, [JB]);
+DefineFunction([Conveyors_Start_NAConveyor], [Conveyors], 1, 1, [do(
+  var([atmC], vbAtom, p(1)),
+  var([atmPred], vbAtom),
+  var([atmI], vbAtom),
+  
+  if( 
+    not(Conveyors_IsRunning(atmC)),
+    
+    {**Conveyor is stopped**}
+    do(
+    
+      {**change status to Conveying**}
+      Status(atmC) := 26,      
+      CloseAllOC(atmC),        
+      
+      {**start conveying all the atoms on the conveyor**}
+      repeat( 
+        content(atmC),
+          
+          {**important to start with first atom on conveyor because the other atoms will get the same speed as the first one**}
+          {**This will create ReachedDestination Event and SensorEvents**}                  
+        Conveyors_ConveyAtom(rank(count,atmC), atmC)                              
+      ),
+      
+      
+      {**Conveyor is running now**}
+      if( 
+        Conveyors_IsRunning(atmC),
+        do(
+          if(
+            att([LastEntered], atmC) = 0,
+            
+            {**Allow next**}
+            CreateEvent(0, atmC, CONVEYORS_ALLOW_NEXT_EVENT, 100)
+          ),
+
+          if( 
+            content(atmC) > 0,
+            
+            {**atoms on this conveyor**}
+            do(       
+              
+              {**Check if events on other conveyors / or a sensor release events on this one have to be created**}
+              Repeat(
+                Content(atmC),
+                do(
+                  atmI := rank(Count, atmC),
+                  Conveyors_AtomTableCheck(atmI, atmC, Conveyors_AtomLocation(atmI, atmC), 1)
+                )
+              )                  
+            ),
+            
+            {**Conveyor empty**}  
+            do(
+              Status := 13
+            )
+          ),  
+              
+          if(
+            att([StartStopPredecessor], atmC) = 1,
+            
+            {**check all inputchannels for conveyors and create event to start predecessor**}               
+            repeat( {**All input channels**}
+              nrIC(atmC), 
+              if(
+                IcConnected(Count, atmC),
+                do(
+                  atmPred := in(count, atmC),
+                  
+                  if( {**Atom on input count is conveyor**} 
+                    Conveyors_IsConveyor(atmPred), 
+                     
+                    {**Event to StartPredecessor after a delay time**}     
+                    CreateEvent(0, atmPred, CONVEYORS_START_CONVEYOR_EVENT)               
+                  )                   
+                )    
+              )                     
+            ),
+                
+            do(
+              if(
+                att([EffectOnPredecessor], atmC) > 0,
+                
+                {**Start conveyor it has effect on**}
+                do(
+                  atmPred := vtp(att([EffectOnPredecessor], atmC)), 
+                  if(
+                    and(
+                      Conveyors_IsBlocked(atmPred),
+                      Not(OCOpen(IcOcNo(att([LastIC], atmC), atmPred)))
+                    ),
+                    
+                    {**Previous conveyor stopped in stop conveyor event**}
+                    CreateEvent(0, atmPred, CONVEYORS_START_CONVEYOR_EVENT)
+                  )
+                )
+              )
+            )                     
+          )     
+        )               
+      )                                                                                                                                                                                                  
+    )
+  )         
+)
+], [(re)Starts NAC conveyor e1
+], [Conveyors_Start_NAConveyor(c)], 0, [General Conveyor Functions.atm]);
+DefineFunction([Conveyors_AtomIsRunning], [Conveyors], 1, 1, [do(      var([atmI], vbAtom, p(1)),           if( {**Conveyor is straight or curve**}    Or(xSpeed(atmI) <> 0, RotationSpeedAc(atmI) <> 0, zSpeed(atmI) <> 0),    True,    False   )             )  ], [Checks if atom e1 is running], [Conveyors_AtomIsRunning(i)], 0, [Advanced Accumulating Conveyor Straight.atm]);
+DefineFunction([Conveyors_IsWaiting], [Conveyors], 1, 1, [if( {**Status is waiting **}  Status(p(1)) = 4,  True,  False )              ], [Checks if belt e1 is Waiting], [Conveyors_IsWaiting(c)], 0, [General Conveyor Functions.atm]);
+DefineFunction([Conveyors_ChangeSpeed], [Conveyors], 2, 2, [do(  var([atmC], vbAtom, p(1)),  var([valSpeedNew], vbValue, p(2)),  var([valSpeedOld], vbValue),  var([valLength], vbValue),  var([valDistance], vbValue),  var([valLoc], vbValue, 0),  var([atmPred], vbAtom),    if(    and(      valSpeedNew > 0,      valSpeedNew <> att([Speed], atmC)    ),    do(      valSpeedOld := att([Speed], atmC),            {**Set New Speeds**}      if(        att([Radius], atmC) = 0,        do(          att([Speed], atmC) := valSpeedNew,            att([HorizontalSpeed], atmC) := cos(Conveyors_Angle(atmC)) * valSpeedNew,          att([VerticalSpeed], atmC) := sin(Conveyors_Angle(atmC)) * valSpeedNew        ),        do(          att([Speed], atmC) := valSpeedNew,            att([RotationSpeed], atmC) := NACc_RotationSpeed(atmC),          att([VerticalSpeed], atmC) := sin(Conveyors_Angle(atmC)) * valSpeedNew        )      ),            {**Re-calculate events**}       if(        Content(atmC) > 0,        do(                    PushAtomPointer(s),                    valLength := att([Length], atmC),          ForAtomLayerUnder(            atmC,            do(              Sets,              Repeat(                nRows(s),                if(                  Cell(Count, 5, s) = 1,                  do(                                        {**Destroy old events**}                    DestroyEventsOfAtom(vtp(cell(Count, 2, s)), Cell(Count, 3, s), s),                    Cell(Count, 5, s) := 2                                      )                )              ),                            {**Create new events**}              Conveyors_AtomTableCheck(s, atmC, Conveyors_AtomLocation(s, atmC), 1)            )          ),                    s := PopAtomPointer,                if(            att([UseSensors], atmC),                        {**Delete sensor event and reset label for next sensor, this event will be re-computed again in Conveyors_ConveyAtom**}            do(              DestroyEventsOfAtom(atmC, CONVEYORS_SENSOR_EVENT),              repeat(                 content(atmC),                label([Conveyors_NextSensor], rank(Count, atmC)) := 0                )            )          ),                         DestroyEventsOfAtom(atmC, CONVEYORS_REACHED_DESTINATION_EVENT),          repeat(             content(atmC),                        {**This will create ReachedDestination Event and SensorEvents**}                              Conveyors_ConveyAtom(rank(count,atmC), atmC)                                         )        )      )            )  ))], [changes the speed of conveyor e1 to e2 ( > 0)], [Conveyors_ChangeSpeed(c, 1)], 0, [General Conveyor Functions.atm]);
+DefineFunction([Drawconveysegment1], [Visualization], 8, 8, [do( case(  p(1),  di3DBox(p(2),p(3),p(4),p(5),p(6),p(7),color,p(8)),  do(   di3DBox(p(2),p(3),p(4),0.04,0.04,p(7),color,p(8)),   di3DBox(p(2),-(p(3),p(6)),p(4),0.04,0.04,p(7),color,p(8)),   di3DBox(p(2),p(3),p(7),p(5),p(6),0.01,color,p(8))  ) ))], [draws a conveyorsection. Drawing depends on e1, e2 is radius, e3 is level, e4,5,6: length, width, height, e8:angle], [Enter Syntax Example], 0, [General Conveyor Functions.atm]);
+DefineFunction([Conveyors_TranslateAngles], [Conveyors], 3, 3, [do( var([atmConveyor], vbAtom, p(1)), var([valAngle], vbValue, p(2)), var([valOption], vbValue, p(3)),  if(  valOption = 1,  do(   { If the start angle is smaller than 0, then add 360 as long as it is negative }   LoopUntil(    valAngle >= 0,    valAngle := valAngle + 360,    10   ),      if(    valAngle > 360,    do(     valAngle := Mod(valAngle, 360)    )   ),      return(valAngle)  ) ),  if(  valOption = 2,  return(abs(valAngle)) ))], [This function translate angles. If the user added a negative value for rotation(start angle), it is converted to the positive value. The same is true for 'angle'. The values are written in the correct format into the attributes.p1 as conveyorp2 as Anglep3 as Option], [Conveyors_TranslateAngles(c, -45, 1)], 0, [General Conveyor Functions.atm]);
+Set(Icon(a), 
+	RegisterIcon(pDir([media\images\default.jpg]), [default.jpg]));
+SetMaterial(
+	RegisterMaterial([Default], 8421504, 8421504, 3289650, 0, 0.100000001490116, 0, false, false, 1, 0), 1, a);
+Set(Version(a), 7.3);
+SetTreeIcon(pDir([Media\Icons\Function.ico]));
+Set(Info, [Last revision:
+--------------------
+March, 2008
+]);
+Set(DdbRec, [>t-nocreate:1.]);
+int001(50);
+SetSize(1, 1, 1);
+LockPosition(false);
+LockSize(false);
+DisableIconRotation(false);
+SetProductCode([]);
+int024;
+SetStatus(0);
+int018;
+int007;

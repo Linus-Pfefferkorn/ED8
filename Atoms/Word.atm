@@ -1,0 +1,191 @@
+
+
+{Preregister functions}
+
+PreregisterFunction([WordOpen], 1, 2);
+PreregisterFunction([WordClose], 0, 0);
+PreregisterFunction([WordPrint], 0, 0);
+PreregisterFunction([WordSave], 0, 0);
+PreregisterFunction([WordSaveAs], 1, 1);
+PreregisterFunction([WordWrite], 1, 1);
+PreregisterFunction([WordWriteLn], 1, 1);
+PreregisterFunction([WordMacro], 1, 1);
+PreregisterFunction([WordConnect], 1, 1);
+
+
+{Atom: Word}
+
+sets;
+BaseClass;
+createAtom(a, s, [], 1, false);
+int023([Word], 16744448, 1256);
+DefineFunction([WordOpen], [Office], 1, 2, [Do(
+ Dim([WordFileName], vbString, p(1)),
+ Exec(
+  FindApplicationFor([word.document]),
+  p(2)
+ ),
+ DdeOpen([winword], [system]),
+ DdeExecute(concat(sbo,[fileopen("],WordFileName,[")],sbc)),
+ DdeClose,
+ DdeOpen([winword], WordFileName)
+)
+], [Opens a word document named e1. Word is started in the background, click the program icon on the taskbar to show Word. Returns 1 if succesfull, 0 otherwise.], [WordOpen([MyDoc.doc])], 0, [Word.atm]);
+DefineFunction([WordClose], [Office], 0, 0, [Do(
+ DDEExecute([[filequit]]),
+ DDEClose
+)
+], [Closes word], [WordClose], 0, [Word.atm]);
+DefineFunction([WordPrint], [Office], 0, 0, [DDEExecute([[fileprint]])
+], [Prints the current word document
+], [WordPrint], 0, [Word.atm]);
+DefineFunction([WordSave], [Office], 0, 0, [DDEExecute([[filesave]])
+], [Saves the current word document], [WordSave], 0, [Word.atm]);
+DefineFunction([WordSaveAs], [Office], 1, 1, [DDEExecute(Concat(sbo, [filesaveas "], p(1), ["], sbc))
+], [Saves the current word document as e1], [WordSaveAs([MyDoc])], 0, [Word.atm]);
+DefineFunction([WordWrite], [Office], 1, 1, [Do(
+ DDEExecute(Concat([[endofdocument]], sbo, [insert "], p(1), ["], sbc)),
+ DDEClose,
+ DdeOpen([winword], WordFileName)
+)
+], [Writes string e1 to the end of the current word document], [WordWrite([My sentence])], 0, [Word.atm]);
+DefineFunction([WordWriteLn], [Office], 1, 1, [Do(
+ DDEExecute(Concat([[endofdocument]], sbo, [insert "], p(1), cr, ["], sbc)),
+ DDEClose,
+ DdeOpen([winword], WordFileName)
+)
+], [Writes string e1 to the end of the current word document and jumps to the next line.], [WordWriteLn([My sentence])], 0, [Word.atm]);
+DefineFunction([WordMacro], [Office], 1, 1, [DDEExecute(Concat(sbo, p(1), [()], sbc))
+], [Executes word macro e1
+], [WordMacro([MyMacro])], 0, [Word.atm]);
+DefineFunction([WordConnect], [Office], 1, 1, [do(
+ { First apply the changes }
+ 
+ var([WordAtm], vbAtom, p(1)),
+ var([wordvisible], vbValue, 0),
+
+ WordFileName:= Att([filename], WordAtm),
+ wordvisible := Att([visible], WordAtm),
+ 
+ { Check out if the file is useable... }
+ if(
+  or(
+   comparetext(
+    WordFileName, 
+    [Untitled]
+   ) = true,
+   fileexists(WordFileName) = false
+  ),
+  do(
+   msg([The specified filename isnt' a valid Word document.], 3),
+   return(-1)
+  )
+ ),
+ 
+ if(
+  ddeready,
+  wordclose
+ ),
+ 
+ sddb([Mustloadword],1,model),
+ 
+ if(
+  stringlength(textatt(1,WordAtm)) > 0,
+  do(
+   if(
+    wordopen(
+     textatt(1, WordAtm),
+     att(2, WordAtm)
+    ) = true,
+    msg([The connection with Word was created succesfully.], 1),
+    msg([The connection with Word couldn't be created.], 3)
+   ),
+   sddb([Mustloadword],0,model)
+  )  
+ )
+)
+], [Enter helptext
+], [Enter Syntax Example], 0, [Word.atm]);
+Set(Icon(a), 
+	RegisterIcon(pDir([media\images\default.jpg]), [default.jpg]));
+SetMaterial(
+	RegisterMaterial([Default], 8421504, 8421504, 3289650, 0, 0.100000001490116, 0, false, false, 1, 0), 1, a);
+Set(Version(a), 7.3);
+SetTreeIcon(pDir([Media\Icons\Word2k.ico]));
+Set(Info, [Communicate with Word
+
+General
+------------
+If this atom is in your library, it automatically creates a number of 
+4DScript words that can be used to communicate with word.
+
+These words are explained in the 4D Script overview in the 
+category Office. 
+
+You can also drag this atom in your model if you want to. In this 
+case you can rightclick the atom to select a word file which is then 
+automatically opened.
+
+If you save your model and later open it, the word document is 
+automatically opened again. When the atom is deleted from your 
+model or the model is deleted, word automatically closes again. 
+Of course you're supposed to have word installed on your 
+computer.
+
+Important:
+--------------
+you should only have ONE word atom (or excel atom) in your model.
+
+Rightlick:
+  Open the GUI
+  
+Last revision:
+--------------------
+February, 2008
+]);
+Set(DdbRec, [>t-alloworganize:1.]);
+int001(44);
+SetSize(5, 2, 1);
+LockPosition(false);
+LockSize(false);
+DisableIconRotation(false);
+SetProductCode([]);
+createAttributes(3);
+SetAttributeName(r(1), [filename]);
+SetAttributeName(r(2), [visible]);
+SetAttributeName(r(3), [loader]);
+SetTextAtt(r(1), [untitled]);
+SetAtt(r(2), 1);
+SetExprAtt(r(3), [If(
+ Ddb([Mustloadword],model),
+ If(
+  Not(CompareText(Att(1, c), [untitled])),
+  Do(
+   WordOpen(TextAtt(1, c), Att(2, c)),
+   sDdb([Mustloadword], 0, model)
+  )
+ )
+)]);
+int024;
+Set(OnCreation, [sDdb([Mustloadword], 1, model)
+]);
+Set(OnDestruction, [If(DDEReady, WordClose)
+]);
+Set(OnReset, [Att(3, c)
+]);
+Set(OnUser, [Do(
+ { Delete any current instances of this form.} 
+ GuiDestroy([Word]),
+
+ { Register the GUI-form for this atom.}
+ GuiRegister(PDir([\Atoms\Word.gui]), 1),
+
+ { Show the GUI-form.}
+ Guicreate([Word], [Word], 0, c, 0, 1)
+)
+]);
+Set(On2DDraw, [Draw2Dicon(3, [Word], Name)
+]);
+SetStatus(0);
+int018;
+int007;

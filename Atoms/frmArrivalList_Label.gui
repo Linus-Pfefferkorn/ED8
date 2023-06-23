@@ -1,0 +1,97 @@
+EDControl(EditForm:
+  BorderIcons = set(SystemMenu),
+  BorderStyle = Single,
+  Caption = str('Label'),
+  Height = 156,
+  Name = str('frmArrivalList_Label'),
+  Position = ScreenCenter,
+  ShowHint = True,
+  Top = 151,
+  Visible = False,
+  Width = 395,
+  Controls(
+    EDControl(Panel:
+      Align = Client,
+      Anchors = set(Left,Top,Right,Bottom),
+      Caption = str(''),
+      Height = 116,
+      Left = 0,
+      Name = str('Panel1'),
+      TabOrder = 1,
+      Top = 0,
+      Width = 395,
+      Controls(
+        EDControl(GroupBox:
+          Caption = str('Settings'),
+          Height = 92,
+          Left = 8,
+          Name = str('GroupBox1'),
+          TabOrder = 1,
+          Top = 8,
+          Width = 380,
+          Controls(
+            EDControl(Label:
+              Caption = str('Name:'),
+              Color = -16777208,
+              Height = 13,
+              Left = 12,
+              Name = str('stName'),
+              Top = 32,
+              Width = 31),
+            EDControl(Edit:
+              Height = 21,
+              Left = 132,
+              Name = str('LabelName'),
+              TabOrder = 1,
+              Top = 26,
+              Width = 225),
+            EDControl(Label:
+              Caption = str('Expression:'),
+              Color = -16777208,
+              Height = 13,
+              Left = 12,
+              Name = str('stExpression'),
+              Top = 64,
+              Width = 54),
+            EDControl(ScriptEdit:
+              Left = 132,
+              Name = str('seExpression'),
+              TabOrder = 2,
+              Top = 56,
+              Width = 225))))),
+    EDControl(Panel:
+      Align = Bottom,
+      Anchors = set(Left,Right,Bottom),
+      BevelOuter = None,
+      Caption = str(''),
+      Height = 40,
+      Left = 0,
+      Name = str('Panel2'),
+      TabOrder = 2,
+      Top = 116,
+      Width = 395,
+      Controls(
+        EDControl(Button:
+          Anchors = set(Right,Bottom),
+          Caption = str('&Ok'),
+          Default = True,
+          Left = 230,
+          Name = str('btnOK'),
+          TabOrder = 1,
+          Top = 8,
+          Events(
+            Click = str('do('#13' if('#13'  Value(Guiselect([ArrivalList], [Status], GuiGet([Caption]))) = 1,'#13'  '#13'  { Adding a label from the ArrivalList form.....}'#13'  do('#13'    var([valNrLabels], vbValue),'#13'    var([txtLabelname], vbString, 0),'#13'    var([valCheck], vbValue, 0),'#13'    var([valActiveRow], vbValue),'#13'    '#13'    txtLabelname := GuiControl([LabelName], GuiGet([Text])),'#13'    valNrLabels :=  Value(GuiSelect([ArrivalList], [nrLabels], GuiGet([Caption]))),'#13'       '#13'    valActiveRow := GuiSelect([ArrivalList], [LabelTable], GuiGet([ActiveRow])),'#13'      '#13'    if( '#13'      Value(GuiSelect([ArrivalList], [AddOrEdit], GuiGet([Caption]))) = 1,'#13'      '#13'      {**Add a new label**}'#13'      do( '#13'       GuiSelect([arrivalList], [LabelTable], GuiSet([rowcount], valNrLabels + 2)),'#13'          '#13'       {**Set label nrLabels**}'#13'       inc(valNrLabels),'#13'          '#13'       GuiSelect([ArrivalList], [nrLabels], GuiSet([Caption], ValuetoString(valNrLabels))), '#13'               '#13'       {**Copy label to the new row in the table of the arrival list tabel*}'#13'       GuiSelect([ArrivalList], [LabelTable], GuiSet([Cells], valNrLabels, 1, string(txtLabelName)))'#13'      ),  '#13'           '#13'      {**Edit Label**}'#13'      do('#13'               '#13'       {**Copy label name to the new row in the table on the arrival list tabel**}'#13'       GuiSelect([ArrivalList], [LabelTable], GuiSet([Cells], GuiGet([ActiveRow]), 1, string(txtLabelname)))          '#13'      )'#13'     ),'#13'     '#13'         '#13'    if( '#13'      Value(GuiSelect([ArrivalList], [AddOrEdit], GuiGet([Caption]))) = 1,'#13'      '#13'      Do('#13'       SetTable(nrows(GuiAtom),nCols(GuiAtom)+ 1,GuiAtom),'#13'     '#13'       att([nrLabels], GuiAtom) := valNrLabels,      '#13'       '#13'       var([valNrArrivals], vbValue),'#13'         '#13'       valNrArrivals := Att([nrArrivals], GuiAtom),'#13'   '#13'       Cell(0, nCols(GuiAtom)) := txtLabelname,'#13'        '#13'       Repeat('#13'        valNrLabels,'#13'        GuiSelect([ArrivalList], [LabelTable], GuiSet([cells], count, 0, valuetostring(count)))'#13'       ),'#13'       '#13'       GuiSelect('#13'        [ArrivalList], [ArrivalTable], '#13'        do('#13'         GuiSet([RowCount], Max(2, valNrArrivals + 1)),'#13'         GuiSet([colCount], ncols(GuiAtom)+1),'#13'         GuiSet([FixedRows], 1),'#13'         GuiSet([ColWidths], 0, 30),'#13'         GuiSet([ColWidths], 1, 60),'#13'         GuiSet([ColWidths], 2, 60),'#13'         GuiSet([ColWidths], 3, 60),'#13'         GuiSet([ColWidths], 4, 60),'#13'         GuiSet([Cells], 0, 0, [nr]),'#13'         Guiset([Cells], 0, 1, [Arrival Time]),'#13'         Guiset([Cells], 0, 2, [Atom Name]),'#13'         Guiset([Cells], 0, 3, [Quantity]),'#13'         Guiset([Cells], 0, 4, [Channel])'#13'        )'#13'       )'#13'      ),'#13'      '#13'      Cell(0, GuiSelect([ArrivalList], [LabelTable], GuiGet([ActiveRow])) + 4, GuiAtom) := txtLabelname'#13'    ),'#13'  '#13'   GUISelect([ArrivalList], [ArrivalTable], GUIList([Cells],[Load],GuiAtom))'#13'  ),'#13'  '#13'  { Editing a label from the arrivals form....}'#13'  do('#13'   var([valActiveRow], vbValue, 0),'#13'   var([strCode], vbString, 0),'#13'   '#13'   valActiveRow := GuiSelect([ArrivalList_Arrival_Form], [tbLabels], GuiGet([ActiveRow])),'#13'   strCode:= GuiSelect([ArrivalList_Label_Form], [seExpression], GuiGet([Code])),'#13'   '#13'   { super strip this string to form one line, this is for ''saving'' purposes }'#13'   strCode:= StringReplace(strCode, [ ], [], SR_IGNORE_CASE + SR_REPLACE_ALL),'#13'   strCode:= StringReplace(strCode, cr, [], SR_IGNORE_CASE + SR_REPLACE_ALL),'#13'   strCode:= StringReplace(strCode, tab, [], SR_IGNORE_CASE + SR_REPLACE_ALL),'#13'   '#13'   GuiSelect([ArrivalList_Arrival_Form], [tbLabels], GuiSet([Cells], valActiveRow, 1, concat([=], strCode)))   '#13'  )'#13' ),'#13'       '#13' GuiDestroy  '#13')'#13))),
+        EDControl(Button:
+          Anchors = set(Right,Bottom),
+          Cancel = True,
+          Caption = str('&Cancel'),
+          Left = 312,
+          ModalResult = Cancel,
+          Name = str('btnCancel'),
+          TabOrder = 2,
+          Top = 8,
+          Events(
+            Click = str('GuiDestroy'#13)))))),
+  Events(
+    Show = str('do( '#13' var([strCode],vbString),'#13' var([valStringLength],vbValue),'#13#13' {**Set Name of the label**}'#13' if(    '#13'   Value(GuiSelect([ArrivalList], [AddOrEdit], GuiGet([Caption]))) = 1,'#13'   '#13'   {**Add a new Label**}'#13'   do( '#13'     GuiControl([LabelName], GuiSet([Text], [Edit]))'#13'   ),'#13'   '#13'   {**Edit**}'#13'   do('#13'     GuiControl([LabelName], GuiSet([Text],  '#13'     GuiSelect([ArrivalList], [LabelTable], GuiGet([Cells], GuiGet([ActiveRow]), 1))))'#13'   )'#13' ),'#13' '#13' if('#13'  Value(GuiSelect([ArrivalList], [Status], GuiGet([Caption]))) = 1,'#13'  '#13'  { In this mode we''re just adding a label definition from the ArrivalList form }'#13'  do('#13'   GuiControl([stExpression], GuiSet([Enabled], False)),'#13'   GuiControl([seExpression], GuiSet([Enabled], False))'#13'  ),'#13'  '#13'  { In this mode we''re editing a label value from the ArrivalList_Arrival form }'#13'  do('#13'   GuiControl([stName], GuiSet([Enabled], False)),'#13'   GuiControl([LabelName], GuiSet([Enabled], False)),'#13'   '#13'   strCode := GuiSelect([ArrivalList_Arrival_Form], [tbLabels], GuiGet([Cells], GuiSelect([ArrivalList_Arrival_Form], [tbLabels], GuiGet([ActiveRow])), 1)),'#13'   valStringLength := StringLength(strCode),'#13'   strCode := stringcopy(strCode,2,valStringLength),'#13'   '#13'   GuiControl([seExpression], GuiSet([Code],strCode  ))'#13'   {GuiControl([seExpression], GuiSet([Code], GuiSelect([ArrivalList_Arrival_Form], [tbLabels], GuiGet([Cells], GuiSelect([ArrivalList_Arrival_Form], [tbLabels], GuiGet([ActiveRow])), 1))))}'#13'  )'#13' )'#13')'#13#13)))
+

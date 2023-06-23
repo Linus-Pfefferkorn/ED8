@@ -1,0 +1,158 @@
+
+
+{Preregister functions}
+
+PreregisterFunction([Node_Manipulator_t-connectnodes], 2, 2);
+
+
+{Atom: Node Manipulator}
+
+sets;
+BaseClass;
+CreateAtom(a, s, [], 1, false);
+Set(OnInit, [att([CurrentAtom], c) := 0]);
+int023([Node Manipulator], 32768, 3106);
+DefineFunction([Node_Manipulator_t-connectnodes], [Transport], 2, 2, [Do(
+ {// p(1) = atom reference to the atom to connect (Output channels)  //}
+ {// p(2) = atom reference to the atom to connect to (input channels) //}
+ If(
+ And(
+   Ddb([t-node], p(1)), <> (AtomID(p(1)), AtomID(p(2))), 
+   Or( <> (AtomID(p(2)), AtomID(c)), ddb([t-node], c))
+  ), 
+  Do(
+   {// Store all Outputs from p(1) except the one going to p(2) //}
+   {// Store the capacity, content and speed limit table of the node p(1) too //}
+   SetTable(0, 0, c),
+   Repeat(
+    NrOC(p(1)),
+    If(
+     And(
+      AtomExists(Out(Count, p(1))),
+      <> (AtomID(Out(Count, p(1))), AtomID(p(2)))
+     ),
+     Do(
+      SetTable(+(nRows(c), 1), 5, c),
+      SetCell(nRows(c), 1, ptv(Out(Count, p(1))), c),
+      SetCell(nRows(c), 2, Cell(Count, 1, p(1)), c),
+      SetCell(nRows(c), 3, Cell(Count, 2, p(1)), c),
+      SetCell(nRows(c), 4, Cell(Count, 3, p(1)), c),
+      SetCell(nRows(c), 5, Cell(Count, 4, p(1)), c)
+     )
+    )
+   ),
+
+   {// Restore all remaining Outputs and capacity, content and speed limit table of p(1) //}
+   {// First do this for all nodes, then for atoms. This will          //}
+   {// increase the simulation speed of the transporter              //}
+   SetChannels(NrIC(p(1)), 0, p(1)),
+   SetTable(nRows(c), 4, p(1)),
+   Repeat(
+    2,
+    Do(
+     If(Count = 1, c.nodes := True, c.nodes := False),
+     Repeat(
+      nRows(c),
+      If(
+       =(Ddb([t-node], vtp(Cell(Count, 1, c))), c.nodes),
+       Do(
+        SetChannels(0, +(NrOC(p(1)), 1), p(1)),
+        Connect(NrOC(p(1)), p(1), 0, vtp(Cell(Count, 1, c))),
+        SetCell(NrOC(p(1)), 1, Cell(Count, 2, c), p(1)),
+        SetCell(NrOC(p(1)), 2, Cell(Count, 3, c), p(1)),
+        SetCell(NrOC(p(1)), 3, Cell(Count, 4, c), p(1)),
+        SetCell(NrOC(p(1)), 4, Cell(Count, 5, c), p(1))
+       )
+      )
+     ),
+     
+     
+     {// If necessary connect p(1) to p(2) //}
+     If(
+      And(
+       Att(1, c),
+       =(Ddb([t-node], p(2)), c.nodes)
+      ),
+      If(
+       Ddb([t-transporter], p(2)),
+       Connect(2, p(2), 0, p(1)),
+       Do(
+        SetChannels(NrIC(p(1)), +(NrOC(p(1)), 1), p(1)),
+        SetTable(+(nRows(p(1)), 1), 4, p(1)),
+        Connect(NrOC(p(1)), p(1), 0, p(2)),
+        SetCell(NrOC(p(1)), 1, 1000000, p(1)),
+        SetCell(NrOC(p(1)), 2, 0, p(1))
+       )
+      )
+     )
+    )
+   ),
+   SetTable(0, 0, c)
+  )
+ )
+)
+], [Enter helptext
+], [Enter Syntax Example], 0, [Node Manipulator.atm]);
+Set(Icon(a), 
+	RegisterIcon(IconsDir([bmp\atoms\tedatom.bmp]), [ed]));
+SetMaterial(
+	RegisterMaterial([Default], 8421504, 8421504, 3289650, 0, 0.100000001490116, 0, false, false, 1, 0), 1, a);
+Set(Version(a), 6);
+SetTreeIcon(pDir([Media\Icons\NodeManipulator.ico]));
+Set(Info, [Node Manipulator
+
+General
+------------
+(Dis)connects network nodes and atoms.
+
+Double click to change connection and display options. Green 
+connects, red disconnects.
+
+Place the manipulator on top of a node/atom and right click to 
+connect nodes/atoms. The first selection must always be a node.
+
+Note:
+--------
+Do not place the manipulator on top of a node/atom and right click 
+to popup a selector.
+
+Last Revision:
+---------------------
+September 29, 2003
+]);
+SetChannels(1, 1);
+SetChannelRanges(1, 1, 1, 1);
+int001(93);
+SetSize(2, 2, 0);
+LockPosition(false);
+LockSize(true);
+DisableIconRotation(false);
+SetProductCode([]);
+CreateAttributes(12);
+SetAttributeName(r(1), [connecting]);
+SetAttributeName(r(2), [selectatom]);
+SetAttributeName(r(3), [atomfound]);
+SetAttributeName(r(4), [displaymode]);
+SetAttributeName(r(5), [displaytext]);
+SetAttributeName(r(6), [unselectatom]);
+SetAttributeName(r(7), [twoway]);
+SetAttributeName(r(8), [ShowPaths]);
+SetAttributeName(r(9), [ShowNodes]);
+SetAttributeName(r(10), [ShowNodeNames]);
+SetAttributeName(r(11), [ShowConnectionsToatoms]);
+SetAttributeName(r(12), [CurrentAtom]);
+SetAtt(r(1), 1);
+SetExprAtt(r(2), [do( setatt(3,0,c), var([atmLP], vbAtom), ForAtomTreeUnder(  Model,  do(   atmLP := a,   if(    and(     >(max(xAbsLoc(atmLP, Model), +(xabsloc(atmLP, Model), xsize(atmLP))), xabsloc(c, Model)),     >(max(yabsloc(atmLP, Model), +(yabsloc(atmLP, Model), ysize(atmLP))), yabsloc(c, Model)),     <(min(xabsloc(atmLP, Model), +(xabsloc(atmLP, Model), xsize(atmLP))), +(xabsloc(c, Model), xsize(c))),     <(min(yabsloc(atmLP, Model), +(yabsloc(atmLP, Model), ysize(atmLP))), +(yabsloc(c, Model),ysize(c))),     <>(atomid(atmLP),atomid(c)),     not(ddb([t999-hidenodes],atmLP))    ),    do(     setatt(3,1,c),     att([CurrentAtom], c) := ptv(atmLP)    )   )  ) ))]);
+SetAtt(r(4), 1);
+SetExprAtt(r(6), [if( atomexists(in(1, c)), connect(0, c, 1, c))]);
+SetAtt(r(7), 1);
+SetAtt(r(8), 1);
+SetAtt(r(9), 1);
+SetAtt(r(11), 1);
+int024;
+Set(OnReset, [do( att(6,c), CurrentAtom := 0)]);
+Set(OnUser, [if( doubleclick, Do(  { Delete any current instances of this form.}   GuiDestroy([NodeManipulator]),   { Register the GUI-form for this atom.}  GuiRegister(PDir([\Atoms\NodeManipulator.gui]), 1),   { Show the GUI-form.}  GuiCreate([NodeManipulator], [NodeManipulator], 0, c, 0, 1) ),  { Right Click }  do(  {// Search this atom layer for an atom on the same location // }  att(2,c),  if(   or(    not(atomfound),    and(     atomfound,     not(atomexists(in(1,c))),     not(ddb([t-node],vtp(CurrentAtom)))    )   ),   {// No atom found on this location // }   if(    selectatom(model,first(up(c)),[Select a network node]),    do(     att([CurrentAtom], c) := ptv(a),     atomfound:=true    )   )  ),  if(   att(3, c),   if(    atomexists(in(1,c)),    {// The atom to connect TO has been selected //}    do(     Node_Manipulator_t-connectnodes(in(1,c), vtp(CurrentAtom)),     if(      twoway,      Node_Manipulator_t-connectnodes(vtp(CurrentAtom), in(1,c))     ),     connect(0, c, 1, c)    ),    if(     {// The atom to connect FROM has been selected //}     ddb([t-node], vtp(CurrentAtom)),     connect(0, vtp(CurrentAtom), 1, c),     msg([First select a node!],1)    )   ),   connect(0, c, 1, c)  ) ))]);
+Set(On2DDraw, [do( if(  and(   atomexists(animatom),   =(atomid(c),atomid(animatom))  ),  setrank(content(up(c)),c) ), dishape(0,0,2,2,10,color(c),color(c)), diline(1,0,0,2,colorwhite), diline(0,1,2,0,colorwhite), dishape(0.5,0.5,1,1,10,color,colorwhite), ditext(0.85,0.65,string(att(7,c)+1),color(c),colorwhite,0.5,[arial bold]), if(  atomexists(in(1,c)),  do(   setcs(in(1,c)),   diline(1,1,-(xabsloc(cs,model),xabsloc(c,model),1),-(yabsloc(cs,model),yabsloc(c,model),1),color(c)),   dishape(-(xabsloc(cs,model),xabsloc(c,model),1),-(yabsloc(cs,model),yabsloc(c,model),1),2,2,1,color(c),color(c))  ) ))]);
+SetStatus(0);
+int018;
+int007;

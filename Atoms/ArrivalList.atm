@@ -1,0 +1,207 @@
+
+
+{Atom: ArrivalList}
+
+sets;
+BaseClass;
+createAtom(a, s, [], 1, false);
+int023([ArrivalList], 7168771, 1256);
+Set(Icon(a), 
+	RegisterIcon(pDir([Media\Images\atoms\source.bmp]), [source]));
+SetMaterial(
+	RegisterMaterial([Default], 8421504, 8421504, 3289650, 0, 0.100000001490116, 0, false, false, 1, 0), 1, a);
+Set(Version(a), 7.3);
+SetTreeIcon(pDir([Media\Icons\ArrivalList.ico]));
+Set(Info, [Generates atoms based on a list.
+
+General
+------------
+In the list one can specify N records. The list can be repeated 
+continually or with a specified repetitive time.
+
+Each record contains an arrival time, a name, an arrival quantity, 
+an output channel number, and up to 20 user-defined labels. 
+At the specified arrival time the specified number of atoms are 
+created and given the specified name, and the specified labels.
+
+Use the reference 'i' to refer to atoms that are sent through the 
+trigger on exit. This triggerfield can for instance be used to assign 
+a label: "setlabel([batch],label([t-curqty],c),i)".
+
+IMPORTANT:
+---------------------
+The arrival times in the table must be listed in chronological order 
+from top to bottom!!
+
+Problems can occur if a repeat time has been specified which is 
+smaller than the last arrival time value in the list.
+
+Channel column can only contain integer values.
+The user can enter values as well as expressions for the arrival 
+time and quantity.
+
+If an expression is used to define a label value, then use an = sign 
+in front of the 4dScript expression you want evaluated.
+
+Non-integer values for quantity will be rounded.
+
+The following two labels on the arrival list atom record key 
+information about the current arrival:
+
+       t-curline : the line in the arrivallist currently active
+       t-curqty  : the value for the quantity evaluated in the current line
+
+These labels will be useful for assigning a "lot number" and "batch 
+size" to each product in a specific arrival record.
+
+For instance, if you named two labels: lotno and batchsize, you 
+would put the following two statements in the table for each label 
+respectively:
+
+      =ddb([t-curline],c)
+      =ddb([t-curqty],c)
+
+Doubleclick: 
+  Edit arrival list table. Rightclick: edit parameters, name 
+  the labels, clear the list, autofill the list, edit the list.
+
+Last Revision:
+---------------------
+February, 2008
+]);
+SetChannels(1, 1);
+SetChannelRanges(1, 1, 1, 255);
+int001(82);
+SetSize(5, 2, 0.1);
+LockPosition(false);
+LockSize(false);
+DisableIconRotation(false);
+SetProductCode([]);
+createAttributes(11);
+SetAttributeName(r(1), [counter]);
+SetAttributeName(r(2), [fillexpr]);
+SetAttributeName(r(3), [runcounter]);
+SetAttributeName(r(4), [repeatfactor]);
+SetAttributeName(r(5), [basetime]);
+SetAttributeName(r(6), [curqty]);
+SetAttributeName(r(7), [exittrigger]);
+SetAttributeName(r(8), [nrlabels]);
+SetAttributeName(r(9), [nrarrivals]);
+SetAttributeName(r(10), [UseLabels]);
+SetAttributeName(r(11), [DefineArrivals]);
+SetExprAtt(r(2), [negexp(10)]);
+SetExprAtt(r(4), [{.0|1. No repeat .}0]);
+int024;
+Set(OnEvent, [case(
+ eventcode,
+ {event 1: entering the new line creating atoms with the right amount}
+ do(
+  setlabel([t-curline],att(3,c),c),
+  setatt(6,round(execstring(cell(att(3,c),3,c,2)))),
+  setlabel([t-curqty],att(6,c),c),
+  repeat(att(6,c),
+   do(
+    createatom(in(1,c),c,cell(att(3,c),2,c,2)),
+    setcs,
+    repeat(
+     att(8,c),
+     if(>(stringlength(cell(att(3,c),+(4,count),c,2)),0),if(comparetext(stringcopy(cell(att(3,c),+(4,count),c,2),1,1),[=]),sddb(cell(0,+(4,count),c,2),execstring(stringcopy(cell(att(3,c),+(4,count),c,2),2,100)),cs),sddb(cell(0,+(4,count),c,2),cell(att(3,c),+(4,count),c),cs)))
+    ),
+    setsetting(sahidechannels,1,cs)
+   )
+  ),
+  if(>(content(c),0),createevent(0,c,3),createevent(0,c,4))
+ ),
+ {event 2: this event is executed if the list has to be repeated}
+ do(
+  setatt(5,time,c),
+  {if there is no continuous repeat create the next repeat time}
+  if(>(att(4,c),0),createevent(att(4,c),c,2)),
+  setatt(3,1,c),
+  setlabel([t-curline],1,c),
+  createevent(max(0,-(+(att(5,c),execstring(cell(att(3,c),1,c,2))),time)),c,1),
+  setstatus(2,c)
+ ),
+ {event 3: open channel again to send on}
+ do(
+  setstatus(5,c),
+  openoc(cell(att(3,c),4,c),c)
+ ),
+ {event 4: new line to be started}
+ do(
+  inc(att(3,c)),
+  setstatus(2,c),
+  {check if the program encounters the end of the list}
+  if(
+   <=(att(3,c),nrows(c)),
+   createevent(max(0,-(+(att(5,c),execstring(cell(att(3,c),1,c,2))),time)),c,1),
+   do(if(<(att(4,c),0),createevent(0,c,2)),if(=(att(4,c),0),setstatus(1,c))) {continuous repeat}
+  )
+ )
+)
+]);
+Set(OnExited, [do(
+ closealloc(c),
+ if(>(content(c),0),
+  { still product to send on from current line }
+  createevent(0,c,3),
+  { otherwise new line to be started }
+  createevent(0,c,4)
+ ),
+ att(7,c)
+)
+]);
+Set(OnCreation, [settable(1, 4, c)
+]);
+Set(OnReset, [do(
+ closealloc(c),
+ if(
+  and(
+   atomexists(in(1,c)),
+   not(ddb([t-nodestroy],in(1,c)))
+  ),
+  do(
+   msg(concat(name(c),[ is not connected to a valid atom from the products group!]),2),
+   connect(0,c,1,c)
+  )
+ ),
+ if(
+  not(atomexists(in(1,c))),
+  do(
+   createatomcopy(atombyname([Product], Library),up(c),[Product]),
+   setcs,
+   connect(0,cs,1,c),
+   setloc(-(xloc(c),2),+(yloc(c),1),0,cs),
+   setrank(getrank(c),cs)
+  )
+ ),
+ setlabel([t-curqty],0,c),
+ setlabel([t-curline],0,c),
+ setatt(3,1,c),
+ setatt(5,0,c),
+ createevent(execstring(cell(1,1,c,2)),c,1),
+ setstatus(2,c),
+ if(>(att(4,c),0),createevent(att(4,c),c,2))
+)
+]);
+Set(OnUser, [Do(
+  { Delete any current instances of this form.} 
+  GuiDestroy([ArrivalList]),
+
+  { Register the GUI-form for this atom.}
+  GuiRegister(PDir([\Atoms\ArrivalList.gui]), 1),
+
+  { Show the GUI-form.}
+   Guicreate([ArrivalList], [ArrivalList], 0, c, 0, 1)
+)
+]);
+Set(OnOcReady, [if(
+ >(content(c),0),
+ moverequest(first(c),cell(att(3,c),4,c))
+)
+]);
+Set(On2DDraw, [standarddisplay(name,concat([Out: ],string(output),if(>(avgcontent,0),[ !!!],[])),icon)
+]);
+SetStatus(0);
+int018;
+int007;

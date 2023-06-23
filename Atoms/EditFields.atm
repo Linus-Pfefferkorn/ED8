@@ -1,0 +1,1058 @@
+
+
+{Preregister functions}
+
+PreregisterFunction([EditFields_RegisterAll], 0, 0);
+
+
+{Atom: EditFields}
+
+sets;
+BaseClass;
+CreateAtom(a, s, [], 1, false);
+int023([EditFields], 0, 524288);
+DefineFunction([EditFields_RegisterAll], [Various], 0, 0, [Do(
+ Repeat(nrows,
+  Do(
+   RegisterEditField(Cell(Count,1), Cell(Count,2), Cell(Count,3), Cell(Count,4), ExecString(Cell(Count,5)), Cell(Count,6), Cell(Count,7))
+  )
+ )
+)
+], [Registers all editfields from the table of this atom], [EditFields_RegisterAll], 0, [EditFields]);
+Set(Icon(a), 
+	RegisterIcon(pDir([media\images\default.jpg]), [default.jpg]));
+SetMaterial(
+	RegisterMaterial([Default], 8421504, 8421504, 3289650, 0, 0.100000001490116, 0, false, false, 1, 0), 1, a);
+Set(Version(a), 7.3);
+SetTreeIcon(pDir([Media\icons\Tools.ico]));
+Set(DdbRec, [>t-nocreate:1.]);
+int001(13);
+SetSize(1, 1, 1);
+LockPosition(false);
+LockSize(false);
+DisableIconRotation(false);
+SetProductCode([]);
+int024;
+SetTable(143, 7);
+int015(0, 0, [ 
+1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+20
+21
+22
+23
+24
+25
+26
+27
+28
+29
+30
+31
+32
+33
+34
+35
+36
+37
+38
+39
+40
+41
+42
+43
+44
+45
+46
+47
+48
+49
+50
+51
+52
+53
+54
+55
+56
+57
+58
+59
+60
+61
+62
+63
+64
+65
+66
+67
+68
+69
+70
+71
+72
+73
+74
+75
+76
+77
+78
+79
+80
+81
+82
+83
+84
+85
+86
+87
+88
+89
+90
+91
+92
+93
+94
+95
+96
+97
+98
+99
+100
+101
+102
+103
+104
+105
+106
+107
+108
+109
+110
+111
+112
+113
+114
+115
+116
+117
+118
+119
+120
+121
+122
+123
+124
+125
+126
+127
+128
+129
+130
+131
+132
+133
+134
+135
+136
+137
+138
+139
+140
+141
+142
+143
+]);
+int015(1, 0, [`Name`
+`3Dappearance`
+`3DRep`
+`A010-fastnonacc`
+`A010-hordist`
+`analyseduration`
+`analysemaxdata`
+`analysestart`
+`AtomColor`
+`AtomIcon`
+`AtomInfo`
+`atomlength`
+`AtomLocX`
+`AtomLocY`
+`AtomLocZ`
+`AtomName`
+`AtomRotAc`
+`AtomRotAs`
+`AtomRSpAc`
+`AtomRSpAs`
+`AtomSizeX`
+`AtomSizeY`
+`AtomSizeZ`
+`AtomSpeedX`
+`AtomSpeedY`
+`AtomSpeedZ`
+`AtomVRIcon`
+`AtomVRSound`
+`AttBool`
+`AttColor`
+`AttExp`
+`AttName`
+`attputcol`
+`attputrow`
+`attsyntlist`
+`AttTex`
+`atttrigger`
+`AttVal`
+`capacity`
+`Craneappearance`
+`cycletime`
+`DdbBool`
+`DdbTex`
+`DdbVal`
+`degreebox`
+`entrytrigger`
+`exittrigger`
+`firstdown`
+`Graphtype`
+`heightcentimeters`
+`Label`
+`movement`
+`movement2`
+`movingwindow`
+`mtbf`
+`mttf`
+`mttr`
+`On2DDraw`
+`On3DDraw`
+`OnCreation`
+`OnDestruction`
+`OnEntered`
+`OnEntering`
+`OnEntry`
+`OnEvent`
+`OnExit`
+`OnExited`
+`OnExiting`
+`OnIcReady`
+`OnMessage`
+`OnOcReady`
+`OnReset`
+`OnUser`
+`placing`
+`productspacing`
+`productspacingbax`
+`queuediscipline`
+`RowBool`
+`RowTex`
+`RowVal`
+`sa2DDraw`
+`sa2DOutline`
+`sa3DDraw`
+`sa3DOutline`
+`sa3DShape`
+`sa3DUser`
+`saContents`
+`saContour`
+`saFillOutline`
+`saFillShape`
+`saHideChannels`
+`saIcon`
+`saIconContour`
+`saName`
+`saOverride`
+`saOverrule`
+`saShape`
+`saShowContents`
+`saSnapToGrid`
+`saUser`
+`SendTo`
+`sendtoTransporter`
+`Skip`
+`speed`
+`startbufferrule`
+`stopbufferrule`
+`t-100_hordist`
+`t-101_hordist`
+`t-below_max`
+`t-below_min`
+`t-check`
+`t-destinate`
+`t-elevatorappearance`
+`t-inputstrategy`
+`t-loadrestriction`
+`t-manipulatecs`
+`t-multiservice`
+`t-offset`
+`t-opselection`
+`T-ProductIcon`
+`t-queuediscipline`
+`t-reach_max`
+`t-reach_min`
+`t-reservoir`
+`t-reservoir2`
+`t-send`
+`t-setuptime`
+`T-Show2DIcon`
+`t-sizelist`
+`t-sizelistx`
+`t-sizelisty`
+`t-sizelistz`
+`t-sortload`
+`t-transformcolor`
+`t-transformfilter`
+`t-transformicon`
+`t-transformlabel`
+`t-transporticon`
+`t-turnmode`
+`t-unloadsequence`
+`T102-icon`
+`TurnTableAngles`
+`warehousecolumns`
+`warehouserows`
+]);
+int015(2, 0, [`Caption`
+`3D icon`
+`3D Icon`
+`Display contents`
+`Length (m)`
+`Duration`
+`Maximumdata`
+`StartTime`
+`Color`
+`Icon`
+`Remarks`
+`AtomLength`
+`LocationX`
+`LocationY`
+`LocationZ`
+`AtomName`
+`Rotatearoundcont`
+`Rotatearoundself`
+`Rotationspeedcont`
+`Rotationspeedself`
+`SizeX`
+`SizeY`
+`SizeZ`
+`SpeedX`
+`SpeedY`
+`SpeedZ`
+`VRIcon`
+`VRSound`
+`Attribute`
+`Attribute`
+`Attribute`
+`AttributeName`
+`Put in column`
+`Put in row`
+`Attribute`
+`Attribute`
+`Attribute`
+`Attribute`
+`Capacity`
+`3D icon`
+`Cycletime`
+`DynamicDatabase`
+`DynamicDatabase`
+`DynamicDatabase`
+`Rotation`
+`Trigger on entry`
+`Trigger on exit`
+`Firstdown`
+`Graph Type`
+`Height(cm)`
+`Label`
+`Movement`
+`Movement`
+`Buffer window rule`
+`MTBF`
+`MTTF`
+`MTTR`
+`On2DDraw`
+`On3DDraw`
+`OnCreation`
+`OnDestruction`
+`OnBeingEntered`
+`OnEntering`
+`OnEntry`
+`OnEvent`
+`OnExit`
+`OnBeingExited`
+`OnExiting`
+`OnICReady`
+`OnMessage`
+`OnOCReady`
+`OnReset`
+`OnUser`
+`Placing in destination`
+`Productspacing`
+`Product spacing`
+`QueueDiscipline`
+`Table`
+`Table`
+`Table`
+`Show2DDraw`
+`Show2DOutline`
+`Show3DDraw`
+`Show3DOutline`
+`Show3DOutline`
+`Show3DDraw`
+`ShowContents`
+`IconContour`
+`FillOutline`
+`FillOutline`
+`HideChannels`
+`ShowIcon`
+`IconContour`
+`ShowName`
+`Overrule`
+`Overrule`
+`Show2DOutline`
+`ShowContents`
+`Snaptogrid`
+`Show2DDraw`
+`Sendto`
+`Send to`
+ 
+`Speed(m/s)`
+`'Start buffering' rule`
+`'Stop buffering' rule`
+`Length (m)`
+`Length (m)`
+`Down to upper level`
+`Down to lower level`
+`Check before entering`
+`Send to`
+`3D Icon`
+`Inputstrategy`
+`Load restriction`
+`Manipulate`
+`Content display`
+`Offset`
+`Operator rule`
+`3D Icon`
+`QueueDiscipline`
+`Up to upper level`
+`Up to lower level`
+`Measuring unit`
+`Measuring unit on exit`
+`Send products`
+`SetupTime`
+`Show 2D icon`
+`Size(m)`
+`Xsize`
+`Ysize`
+`Zsize`
+`Unload sequence`
+`Newcolor`
+`Atomselectionrule`
+`Newicon`
+`Newlabel`
+`3DIcon`
+`Turn mode`
+`Unload sequence`
+`3D Icon`
+`Edit angle variables`
+`Nr of columns`
+`Nr of rows`
+]);
+int015(3, 0, [`Initial 4DS`
+`Att([3Dappearance])`
+`Att([3DIcon])`
+`Att(10,c)`
+`if(Att(16),String(xsize,0,3),String(Att(17),0,3))`
+`TextAtt([analyseduration])`
+`Att([analysemaxdata])`
+`TextAtt([analysestart])`
+`Color`
+`Icon`
+`Info`
+`String(xSize(c), 0, 3)`
+`xLoc`
+`yLoc`
+`zLoc`
+`Name`
+`RotationAc`
+`RotationAs`
+`RotationSpeedAc`
+`RotationSpeedAs`
+`xSize`
+`ySize`
+`zSize`
+`xSpeed`
+`ySpeed`
+`zSpeed`
+`vrIcon`
+`vrSound`
+`Att(CurField)`
+`Att(CurField)`
+`TextAtt(CurField)`
+`AttributeName(CurField)`
+`TextAtt(8)`
+`TextAtt(7)`
+`TextAtt(curfield)`
+`TextAtt(CurField)`
+`TextAtt(curfield)`
+`Att(CurField)`
+`Att([capacity])`
+`Att([Craneappearance])`
+`TextAtt([cycletime])`
+`Ddb(CurFieldName, a, 1)`
+`Ddb(CurFieldName, a, 2)`
+`Ddb(CurFieldName, a, 1)`
+`String(rotationas,0,1)`
+`TextAtt([entrytrigger])`
+`TextAtt([exittrigger])`
+`TextAtt([firstdown])`
+`Att(1)`
+`*(zsize,100)`
+ 
+`Att(curfield)`
+`TextAtt(curfield)`
+`Att([spacingrule])`
+`TextAtt([mtbf])`
+`TextAtt([mttf])`
+`TextAtt([mttr])`
+`On2DDraw`
+`On3DDraw`
+`OnCreation`
+`OnDestruction`
+`OnEntered`
+`OnEntering`
+`OnEntry`
+`OnEvent`
+`OnExit`
+`OnExited`
+`OnExiting`
+`OnIcReady`
+`OnMessage`
+`OnOcReady`
+`OnReset`
+`OnUser`
+`TextAtt(curfield)`
+`Att([spacingrule])`
+`Att([spacingrule])`
+`TextAtt([queuediscipline])`
+`Cell(CurField, IndexMatch(nCols, CurFieldName, Cell(0, Count, a, 2)), a, 1)`
+`Cell(CurField, IndexMatch(nCols, CurFieldName, Cell(0, Count, a, 2)), a, 2)`
+`Cell(CurField, IndexMatch(nCols, CurFieldName, Cell(0, Count, a, 2)), a, 1)`
+`GetSetting(sa2DDraw)`
+`GetSetting(sa2DOutline)`
+`GetSetting(sa3DDraw)`
+`GetSetting(sa3DOutline)`
+`GetSetting(sa3DShape)`
+`GetSetting(sa3DUser)`
+`GetSetting(saContents)`
+`GetSetting(saContour)`
+`GetSetting(saFillOutline)`
+`GetSetting(saFillShape)`
+`GetSetting(saHideChannels)`
+`GetSetting(saIcon)`
+`GetSetting(saIconContour)`
+`GetSetting(saName)`
+`GetSetting(saOverride)`
+`GetSetting(saOverrule)`
+`GetSetting(saShape)`
+`GetSetting(saShowContents)`
+`GetSetting(saSnapToGrid)`
+`GetSetting(saUser)`
+`TextAtt([SendTo])`
+`TextAtt([sendto])`
+ 
+`Att([speed])`
+`Att([startbufferrule])`
+`Att([stopbufferrule])`
+`If(Att(10), String(xSize, 0, 3), String(Att(11), 0, 3))`
+`If(Att(17), String(xSize, 0, 3), String(Att(18), 0, 3))`
+`Att([max-down])`
+`Att([min-down])`
+`TextAtt([check])`
+`TextAtt([sendto])`
+`Att(9)`
+`TextAtt([instrategy])`
+`Att([loadrestriction])`
+`TextAtt([manipulatecs])`
+`Att([multi-service])`
+`TextAtt(curfield)`
+`TextAtt( [opselection])`
+`Att([Icon3D], c)`
+`TextAtt([queuediscipline])`
+`Att([max-up])`
+`Att([min-up])`
+`TextAtt([variable])`
+`TextAtt([out])`
+`Att([send])`
+`TextAtt([setuptime])`
+`Att( [Hide2DIcon], c)`
+`TextAtt(curfield)`
+`String(xsize,0,3)`
+`String(ysize,0,3)`
+`String(zsize,0,3)`
+`TextAtt(11)`
+`Att(13)`
+`TextAtt(1)`
+`Att(12)`
+`TextAtt(17)`
+`Att([3dicon])`
+`Att([turnmode],c)`
+`Att(11)`
+`Att([3diconcode])`
+ 
+`Att(2)`
+`Att(1)`
+]);
+int015(4, 0, [`New 4DS`
+`SetAtt([3Dappearance],&)`
+`SetAtt([3DIcon], &)`
+`do(SetAtt(10,&,c),setsetting(sashowcontents,&,c),setsetting(sahide3dcontents,not(&),c))`
+`if(Att(16),SetSize(execString(&),ysize,zsize),SetExprAtt(17,&))`
+`SetExprAtt([analyseduration],&)`
+`SetAtt([analysemaxdata],&)`
+`SetExprAtt([analysestart],&)`
+`Set(Color, &)`
+`Set(Icon, &)`
+`Set(Info[&])`
+`do(SetSize( ExecString(&), ySize, zSize), SetExprAtt([Length], &) )`
+`SetLoc(&, yLoc, zLoc)`
+`SetLoc(xLoc, &, zLoc)`
+`SetLoc(xLoc, yLoc, &)`
+`Set(Name, &)`
+`Set(RotationAc, &)`
+`Set(RotationAs, &)`
+`Set(RotationSpeedAc, &)`
+`Set(RotationSpeedAs, &)`
+`SetSize(&, ySize, zSize)`
+`SetSize(xSize, &, zSize)`
+`SetSize(xSize, ySize, &)`
+`SetSpeed(&, ySpeed, zSpeed)`
+`SetSpeed(xSpeed, &, zSpeed)`
+`SetSpeed(xSpeed, ySpeed, &)`
+`vrIcon := &`
+`vrSound := &`
+`SetAtt(CurField, &)`
+`SetAtt(CurField, &)`
+`SetExprAtt(CurField, &)`
+`SetAttributeName(CurField, &)`
+`SetExprAtt(8,&)`
+`SetExprAtt(7,&)`
+`SetExprAtt(curfield,&)`
+`SetTextAtt(CurField, &)`
+`SetExprAtt(curfield,&)`
+`SetAtt(CurField, &)`
+`SetAtt([capacity],&)`
+`SetAtt([Craneappearance],&)`
+`SetExprAtt([cycletime],&)`
+`sDdb(CurFieldName, &)`
+`sDdb(CurFieldName, &)`
+`sDdb(CurFieldName, &)`
+`set(rotationas,value(&))`
+`SetExprAtt([entrytrigger],&)`
+`SetExprAtt([exittrigger],&)`
+`SetExprAtt([firstdown],&)`
+`SetAtt(1,&)`
+`SetSize(xsize,ysize,cm(&))`
+ 
+`SetAtt(curfield,&)`
+`do(setTextAtt(curfield,&),execString(Att(curfield)))`
+`SetAtt([spacingrule],&)`
+`SetExprAtt([mtbf],&)`
+`SetExprAtt([mttf],&)`
+`SetExprAtt([mttr],&)`
+`Set(On2DDraw, &)`
+`Set(On3DDraw, &)`
+`Set(OnCreation, &)`
+`Set(OnDestruction, &)`
+`Set(OnEntered, &)`
+`Set(OnEntering, &)`
+`Set(OnEntry, &)`
+`Set(OnEvent, &)`
+`Set(OnExit, &)`
+`Set(OnExited, &)`
+`Set(OnExiting, &)`
+`Set(OnIcReady, &)`
+`Set(OnMessage, &)`
+`Set(OnOcReady, &)`
+`Set(OnReset, &)`
+`Set(OnUser, &)`
+`do(setTextAtt(curfield,&),execString(Att(curfield)))`
+`SetAtt([spacingrule],&)`
+`SetAtt([spacingrule],&)`
+`SetExprAtt([queuediscipline],&)`
+`SetCell(CurField,indexmatch(ncols, CurFieldName, Cell(0, Count)), &)`
+`SetCell(CurField,indexmatch(ncols, CurFieldName, Cell(0, Count)), &)`
+`SetCell(CurField,indexmatch(ncols, CurFieldName, Cell(0, Count)), &)`
+`SetSetting(sa2DDraw, &)`
+`SetSetting(sa2DOutline, &)`
+`SetSetting(sa3DDraw, &)`
+`SetSetting(sa3DOutline, &)`
+`SetSetting(sa3DShape, &)`
+`SetSetting(sa3DUser, &)`
+`SetSetting(saContents, &)`
+`SetSetting(saContour, &)`
+`SetSetting(saFillOutline, &)`
+`SetSetting(saFillShape, &)`
+`SetSetting(saHideChannels, &)`
+`SetSetting(saIcon, &)`
+`SetSetting(saIconContour, &)`
+`SetSetting(saName, &)`
+`SetSetting(saOverride, &)`
+`SetSetting(saOverrule, &)`
+`SetSetting(saShape, &)`
+`SetSetting(saShowContents, &)`
+`SetSetting(saSnapToGrid, &)`
+`SetSetting(saUser, &)`
+`SetExprAtt([SendTo],&)`
+`SetExprAtt([sendto],&)`
+ 
+`SetAtt([speed],&)`
+`SetAtt([startbufferrule],&)`
+`SetAtt([stopbufferrule],&)`
+`If(Att(10), SetSize(ExecString(&), ySize, zSize), SetExprAtt(11, &))`
+`If(Att(17), SetSize(ExecString(&), ySize, zSize), SetExprAtt(18, &))`
+`SetAtt([max-down],&)`
+`SetAtt([min-down],&)`
+`SetTextAtt([check],&)`
+`SetExprAtt([sendto],&)`
+`SetAtt(9,&)`
+`SetExprAtt([instrategy],&)`
+`SetAtt([loadrestriction],&)`
+`SetExprAtt([manipulatecs],&)`
+`SetAtt([multi-service],&)`
+`SetExprAtt(curfield,&)`
+`SetExprAtt( [opselection], &)`
+`SetAtt(1,&)`
+`SetExprAtt([queuediscipline],&)`
+`SetAtt([max-up],&)`
+`SetAtt([min-up],&)`
+`SetTextAtt([variable],&)`
+`SetTextAtt([out],&)`
+`SetExprAtt([send],case(&,[do([nothing])],[setrank(1,last(c))]))`
+`SetExprAtt([setuptime],&)`
+`Do( SetAtt( 2, &), SetSetting( saIcon,  &), SetSetting( saShape, Not( &)), SetSetting( saFillShape, Not( &)) )`
+`SetExprAtt(curfield,&)`
+`SetSize(execString(&),ysize,zsize)`
+`SetSize(xsize,execString(&),zsize)`
+`SetSize(xsize,ysize,execString(&))`
+`SetExprAtt(11,&)`
+`SetAtt(13,&)`
+`SetExprAtt(1,&)`
+`SetAtt(12,&)`
+`SetExprAtt(17,&)`
+`SetAtt([3dicon],&)`
+`SetAtt([turnmode],&,c)`
+`SetAtt(11,&)`
+`SetAtt([3diconcode],&)`
+`EditTable(c)`
+`Do(SetAtt(2,&), SetTable(Att(1),Att(2)))`
+`SetAtt(1,&)`
+]);
+int015(5, 0, [`Type`
+`FieldListBox( 2, concat( [1.  Portal traveling crane/], [2.  Rail traveling crane   ]))`
+`FieldListBox( 3, [Simple/Basket/Table])`
+`FieldCheckBox`
+`FieldListBoxSyntax(5,[mm(1000)/cm(100)/inch(36)/feet(3)/yard(1)])`
+`FieldListBoxSyntax(4,[time{currenttime}/60{seconds}/mins(60){minutes}/hr(8){hours}])`
+`FieldValue(2,10000,0)`
+`FieldListBoxSyntax(4,[0/60{seconds}/mins(60){minutes}/hr(8){hours}])`
+`FieldColor`
+`FieldIcon`
+`FieldMemo`
+`FieldListBoxSyntax(5, [mm(1000)/cm(100)/Inch(36)/Feet(3)/Yard(1)])`
+`FieldValue(-10000, 10000, 3)`
+`FieldValue(-10000, 10000, 3)`
+`FieldValue(-10000, 10000, 3)`
+`FieldText(1, 100)`
+`FieldValue(-360, 360, 1)`
+`FieldValue(-360, 360, 1)`
+`FieldValue(-1000000, 1000000, 3)`
+`FieldValue(-1000000, 1000000, 3)`
+`FieldValue(-10000, 10000, 3)`
+`FieldValue(-10000, 10000, 3)`
+`FieldValue(-10000, 10000, 3)`
+`FieldValue(-50, 50, 3)`
+`FieldValue(-50, 50, 3)`
+`FieldValue(-50, 50, 3)`
+`FieldValue(1, 1000, 0)`
+`FieldValue(0, 1000, 0)`
+`FieldCheckBox`
+`FieldColor`
+`FieldScript(-2000000000, 2000000000)`
+`FieldText(1, 100)`
+`FieldListBoxSyntax(4, [duniform(1,ncols(c))/label([?],i)/if(=(?,?),?,?)/cell(?,?,?)])`
+`FieldListBoxSyntax(4, [duniform(1,nrows(c))/label([?],i)/if(=(?,?),?,?)/cell(?,?,?)])`
+`FieldListBoxSyntax(4,[negexp(?)/if(=(?,?),?,?)/label([?],?)/cell(?,?,?)])`
+`FieldText(0, 1000)`
+`FieldSyntax`
+`FieldValue(0, 1000000000)`
+`FieldValue(1,1000000000,0)`
+`FieldListBox( 2, concat( [1.  Cylinder/], [2.  Grab ]))`
+`FieldListBoxSyntax(15,[NegExp(10)/Erlang(10,2)/LogNormal(10,2)/Bernoulli(50,5,15)/Max(0,Normal(10,1))/Beta(10,1,1)/Gamma(10,2)/Max(0,Logistic(10,1))/LogNormal(10,1)/Uniform(5,15)/Triangular(10,5,15)/Weibull(10,2)/Label([?],First(c))/Label([?],c)/If(=(?,?),?,?)])`
+`FieldCheckBox`
+`FieldText(0, 1000)`
+`FieldValue(0, 1000000000)`
+`FieldListBoxedit(10,[0/90/180/270/15/30/45/60/75/90])`
+`FieldListBoxSyntax(11,[setlabel([?],?,i)/set(name(i),[?])/set(icon(i),?)/set(icon(i),iconbyname([?]))/set(color(i),coloryellow)/SetSize(?,?,?,i)/setloc(?,?,?,i)/calloperators(atombyname([Team],model),1)/if(=(?,?),?,?)/if(=(label([?],i),?),?,?)/if(comparetext(name(i),[?]),?,?)])`
+`FieldListBoxSyntax(11,[setlabel([?],?,i)/set(name(i),[?])/set(icon(i),?)/set(icon(i),iconbyname([?]))/set(color(i),coloryellow)/SetSize(?,?,?,i)/setloc(?,?,?,i)/freeoperators(atombyname([Team],model),i)/if(=(?,?),?,?)/if(=(label([?],i),?),?,?)/if(comparetext(name(i),[?]),?,?)])`
+`FieldListBoxSyntax(14,[negexp(10)/erlang(10,2)/lognormal(10,2)/bernoulli(50,5,15)/max(0,normal(10,1))/beta(10,1,1)/gamma(10,2)/max(0,logistic(10,1))/lognormal(10,1)/uniform(5,15)/triangular(10,5,15)/weibull(10,2)/if(=(?,?),?,?)/label([ALabel],c)])`
+`FieldListBox(5,[Queue Graph/Queue Histogram/Status Pie/Status Bar/Wait Histogram])`
+`FieldValue(0.1,10000,1)`
+`FieldLabel`
+`FieldListBox(9,[Nothing/Up/Down/X Direction/Y Direction/XY Direction/XYZ Direction/Fixed X Value/Fixed Y Value])`
+`FieldSmartList( 4, concat( [do(SetAtt(26,7,c),SetAtt(33,7,c),repeat(6,SetAtt(+(count,26),1,c)),repeat(6,SetAtt(+(count,33),1,c)))|1. All directions together/], [do(SetAtt(26,2,c),SetAtt(27,6,c),SetAtt(28,3,c),SetAtt(33,2,c),SetAtt(34,6,c),SetAtt(35,3,c),repeat(4,SetAtt(+(count,28),1,c)),repeat(4,SetAtt(+(count,35),1,c)))|2. x,y together with transportheight/], [do(SetAtt(26,4,c),SetAtt(27,5,c),SetAtt(28,3,c),SetAtt(33,4,c),SetAtt(34,5,c),SetAtt(35,3,c),repeat(4,SetAtt(+(count,28),1,c)),repeat(4,SetAtt(+(count,35),1,c)))|3. in sequence: x,y,z/], [do(SetAtt(26,2,c),SetAtt(27,4,c),SetAtt(28,5,c),SetAtt(29,3,c),SetAtt(33,2,c),SetAtt(34,4,c),SetAtt(35,5,c),SetAtt(36,3,c),repeat(3,SetAtt(+(count,29),1,c)),repeat(3,SetAtt(+(count,36),1,c)))|4. in sequence x,y with transportheight]))`
+`FieldListBox(3,[Length/Length+Window Size/Window size])`
+`FieldListBoxSyntax(14,[negexp(10)/erlang(10,2)/lognormal(10,2)/bernoulli(50,5,15)/max(0,normal(10,1))/beta(10,1,1)/gamma(10,2)/max(0,logistic(10,1))/lognormal(10,1)/uniform(5,15)/triangular(10,5,15)/weibull(10,2)/if(=(?,?),?,?)/label([ALabel],c)])`
+`FieldListBoxSyntax(14,[negexp(10)/erlang(10,2)/lognormal(10,2)/bernoulli(50,5,15)/max(0,normal(10,1))/beta(10,1,1)/gamma(10,2)/max(0,logistic(10,1))/lognormal(10,1)/uniform(5,15)/triangular(10,5,15)/weibull(10,2)/if(=(?,?),?,?)/label([ALabel],c)])`
+`FieldListBoxSyntax(14,[negexp(10)/erlang(10,2)/lognormal(10,2)/bernoulli(50,5,15)/max(0,normal(10,1))/beta(10,1,1)/gamma(10,2)/max(0,logistic(10,1))/lognormal(10,1)/uniform(5,15)/triangular(10,5,15)/weibull(10,2)/if(=(?,?),?,?)/label([ALabel],c)])`
+`FieldSyntax(1)`
+`FieldSyntax(1)`
+`FieldSyntax(1)`
+`FieldSyntax(1)`
+`FieldSyntax(1)`
+`FieldSyntax(1)`
+`FieldSyntax(1)`
+`FieldSyntax(1)`
+`FieldSyntax(1)`
+`FieldSyntax(1)`
+`FieldSyntax(1)`
+`FieldSyntax(1)`
+`FieldSyntax(1)`
+`FieldSyntax(1)`
+`FieldSyntax(1)`
+`FieldSyntax(1)`
+`FieldSmartList( 1, [place(~1,~2,~3)|PLace product on relative location ~1~,~2~,~3~])`
+`FieldListBox(5,[Length/Length+Spacing/FixedSpacing/MinimumofLengthandSpacing/MaximumofLengthandSpacing])`
+`FieldListBox(2,[Length/Length+Gap])`
+`FieldListBoxSyntax(3,[{Infront}1/{Atend}/fixed()/random/sortddb([])])`
+`FieldCheckBox`
+`FieldText(0, 1000)`
+`FieldValue(0, 1000000000)`
+`FieldCheckBox`
+`FieldCheckBox`
+`FieldCheckBox`
+`FieldCheckBox`
+`FieldCheckBox`
+`FieldCheckBox`
+`FieldCheckBox`
+`FieldCheckBox`
+`FieldCheckBox`
+`FieldCheckBox`
+`FieldCheckBox`
+`FieldCheckBox`
+`FieldCheckBox`
+`FieldCheckBox`
+`FieldCheckBox`
+`FieldCheckBox`
+`FieldCheckBox`
+`FieldCheckBox`
+`FieldCheckBox`
+`FieldCheckBox`
+`FieldSmartList( 20, Concat( [~1|1. Specific channel: always send to channel ~1~/], [min(nroc(c),-(+(nroc(c),1),indexmatch(nroc(c),1,ocready(-(+(nroc(c),1),count),c))))|2. An open channel (First channel first): search, starting from the first channel, and send to the first open channel found./], [max(1,indexmatch(nroc(c),1,ocready(count,c)))|3. An open channel (Last channel first): search, starting from the last channel, and send to the first open channel found./], [indexmax(nroc(c),*(ocready(count,c),random(100000)))|4. A random open channel: choose a random channel from all the open output channels./], [bernoulli(~1,~2,~3)|5. By percentage: ~90~% of products go to channel ~1~, the remaining percentage go to channel ~2~/], [if(comparetext(name(rank(~1,c)),[~2]),~3,~4)|6. By atom name: if the atom name of the ~1~st atom in the queue matches ~AtomName~ then send to channel ~1~ else ~2~./], [if(ddb([~1],rank(~2,c))<=0,~3,min(ddb([~1],rank(~2,c)),nroc(c)))|7. By label value (direct): the channel number is written directly on the label named ~LabelName~ of the ~1~st atom in the queue. If the label value is 0 then send to channel ~1~./], [if(~3(ddb([~1],rank(~2,c)),~4),~5,~6)|8. By label value (conditional): if the value on the label named ~LabelName~ of the ~1~st atom in the queue is ~<~ the value ~1~ then send to channel ~1~ else ~2~./], [if(comparetext(ddb([~1],rank(~2,c)),[~3]),~4,~5)|9. By label text: if the text on the label named ~LabelName~ of the ~1~st atom in the queue matches ~text~ then send to channel ~1~ else ~2~./], [if(~2(~1,~3),~4,~5)|10. Conditional statement: If ~1~ is ~>~ than ~0~ then send to channel ~1~ else send to channel ~2~/], [if(=(icon(rank(~1,c)),iconbyname([~2])),~3,~4)|11. By icon name: if the icon name of the ~1~st atom in the queue matches ~IconName~ then send to channel ~1~ else ~2~./], [if(~2(icon(rank(~1,c)),~3),~4,~5)|12. By icon number: if the icon number of the ~1~st atom in the queue is ~=~ the value ~1~ then send to channel ~1~ else ~2~./], [indexmatchrank(nroc(c),atomexists(out(count,c)),true,+(mod(output(c),countmatch(nroc(c),atomexists(out(count,c)),true)),1))|13. Round robin: all outputchannels are used in rotation.  If channel is closed, then wait till open./], [indexmin(nroc(c),content(out(count,c)))|14: Smallest queue: Send to the channel connected to the atom with the smallest queue/], [indexmax(nroc(c),content(out(count,c)))|15: Largest queue: Send to the channel connected to the atom with the largest queue/], [~3(~1,~2)|16: Lookup table: Send to the channel specified in row ~1~ column ~2~ of global table named ~table1~/], [do(inc(ddb([t_rr],c)),if(ddb([t_rr],c)>nroc(c),sddb([t_rr],1,c)),loopuntil(ocready(ddb([t_rr],c),c),do(inc(ddb([t_rr],c)),if(ddb([t_rr],c)=nroc(c)+1,sddb([t_rr],1,c))),nroc(c)),ddb([t_rr],c))|17. Round robin if available: all outputchannels are used in rotation if channel is available.  If channel is closed, then next available channel is chosen./], [indexmatch(nroc(c),1,or(content(out(count,c))=0,icon(first(c))=icon(last(out(count,c)))))|18. Matching icon number or empty: Sends to a queue containing products of same icon. If no icons match, then sends to first empty queue starting with last output channel./], [indexmin(nroc(c),content(out(count,c))+content(out(1,out(count,c))))|19. Lowest queue of next two atoms: Sends to the output channel connected to the lowest queue, where lowest queue takes into account the next TWO atoms/], [~1|20. By user: enter your own 4DScript expression resulting in a value between 1 and the number of channels: ~1~. You can press the small button for the 4DScript editor./], [duniform(1,nroc(c))|21. Random channel: randomly choose a channel. If the channel is open then send to it, otherwise choose again when any channel opens.] ) )`
+`FieldSmartList( 21, concat( [~1|1. Specific channel: always send to channel ~1~/], [min(nroc(out(1,c)),-(+(nroc(out(1,c)),1),indexmatch(nroc(out(1,c)),1,ocready(-(+(nroc(out(1,c)),1),count),out(1,c)))))|2. An open channel (First channel first): search, starting from the first channel, and send to the first open channel found./], [max(1,indexmatch(nroc(out(1,c)),1,ocready(count,out(1,c))))|3. An open channel (Last channel first): search, starting from the last channel, and send to the first open channel found./], [indexmax(nroc(out(1,c)),*(ocready(count,out(1,c)),random(100000)))|4. A random open channel: choose a random channel from all the open output channels./], [bernoulli(~1,~2,~3)|5. By percentage: ~90~% of products go to channel ~1~, the remaining percentage go to channel ~2~/], [if(comparetext(name(rank(~1,c)),[~2]),~3,~4)|6. By atom name: if the atom name of the ~1~st atom in the queue matches ~AtomName~ then send to channel ~1~ else ~2~./], [if(ddb([~1],rank(~2,c))<=0,~3,min(ddb([~1],rank(~2,c)),nroc(c)))|7. By label value (direct): the channel number is written directly on the label named ~LabelName~ of the ~1~st atom in the queue. If the label value is 0 then send to channel ~1~./], [if(~3(ddb([~1],rank(~2,c)),~4),~5,~6)|8. By label value (conditional): if the value on the label named ~LabelName~ of the ~1~st atom in the queue is ~<~ the value ~1~ then send to channel ~1~ else ~2~./], [if(comparetext(ddb([~1],rank(~2,c)),[~3]),~4,~5)|9. By label text: if the text on the label named ~LabelName~ of the ~1~st atom in the queue matches ~text~ then send to channel ~1~ else ~2~./], [if(~2(~1,~3),~4,~5)|10. Conditional statement: If ~1~ is ~>~ than ~0~ then send to channel ~1~ else send to channel ~2~/], [if(=(icon(rank(~1,c)),iconbyname([~2])),~3,~4)|11. By icon name: if the icon name of the ~1~st atom in the queue matches ~IconName~ then send to channel ~1~ else ~2~./], [if(~2(icon(rank(~1,c)),~3),~4,~5)|12. By icon number: if the icon number of the ~1~st atom in the queue is ~=~ the value ~1~ then send to channel ~1~ else ~2~./], [indexmatchrank(nroc(out(1,c)),atomexists(out(count,out(1,c))),true,1 + mod(output(out(1,c)),countmatch(nroc(out(1,c)),atomexists(out(count,out(1,c))),true)))|13. Round robin: all outputchannels are used in rotation.  If channel is closed, then wait till open./], [indexmin(nroc(out(1,c)),content(out(count,out(1,c))))|14: Lowest queue: Send to the channel connected to the atom with the lowest queue/], [indexmax(nroc(out(1,c)),content(out(count,out(1,c))))|15: Largest queue: Send to the channel connected to the atom with the largest queue/], [~3(~1,~2)|16: Lookup table: Send to the channel specified in row ~1~ column ~2~ of global table named ~table1~/], [do(inc(ddb([t_rr],c)),if(ddb([t_rr],c)=nroc(c)+1,sddb([t_rr],1,c)),loopuntil(ocready(ddb([t_rr],c),c),do(inc(ddb([t_rr],c)),if(ddb([t_rr],c)=nroc(c)+1,sddb([t_rr],1,c))),nroc(c)),ddb([t_rr],c))|17. Round robin if available: all outputchannels are used in rotation if channel is available.  If channel is closed, then next available channel is chosen./], [indexmatch(nroc(out(1,c)),1,or(content(out(count,out(1,c)))=0,icon(first(c))=icon(last(out(count,out(1,c))))))|18. Matching icon number or empty: Sends to a queue containing products of same icon. If no icons match, then sends to first empty queue starting with last output channel./], [indexmin(nroc(out(1,c)),content(out(count,out(1,c)))+content(out(1,out(count,out(1,c)))))|19. Lowest queue of next two atoms: Sends to the output channel connected to the lowest queue, where lowest queue takes into account the next TWO atoms/], [~1|20. By user: enter your own 4DScript expression resulting in a value between 1 and the number of channels: ~1~. You can press the small button for the 4DScript editor./], [c.NextOutputChannel|22. Defined by warehouse: The Pick Order Generator has ordered the warehouse where to place the product]))`
+`FieldLabel`
+`FieldValue(0.001,1000,3)`
+`FieldListBox(3,[Direct on message/After message and empty conveyor/Always on empty conveyor])`
+`FieldListBox(4,[On message/When conveyer is full/When conveyer is full and emptied/After batch size and the conveyer is emptied])`
+`FieldListBoxSyntax(5, [mm(1000)/cm(100)/Inch(36)/Feet(3)/Yard(1)])`
+`FieldListBoxSyntax(5, [mm(1000)/cm(100)/Inch(36)/Feet(3)/Yard(1)])`
+`FieldListBox( 4, [1. Open input and open output/2. Open input and close output/3. Close input and open output/4. Do nothing])`
+`FieldListBox( 4, [1. Open input and open output/2. Open input and close output/3. Close input and open output/4. Do nothing])`
+`FieldSmartList( 4, concat( [1|1. Amount of products/], [ddb([~1],first(i))|2. By Label Value : The value of the unit is on ~Labelname~/], [xsize(first(i))|3. x-size of products/], [ysize(first(i))|4. y-size of products/], [~1|5. By user: enter your own 4DScript expression: ~1~. Refer to product with "first(i)" or "last(i)"/], [0|6. Nothing]))`
+`FieldSmartList( 11, concat( [~1|1. Specific channel --> Always send to channel ~1~/], [min(nroc(out(1,c)),-(+(nroc(out(1,c)),1),indexmatch(nroc(out(1,c)),1,ocready(-(+(nroc(out(1,c)),1),count),out(1,c)))))|2. An open channel (first channel first) --> Look for an open channel, starting from the first one/], [max(1,indexmatch(nroc(out(1,c)),1,ocready(count,out(1,c))))|3. An open channel (last channel first) --> Look for an open channel, starting from the last one./], [indexmin(nroc(out(1,c)),content(out(count,out(1,c))))|4. Shortest queue --> Send to the atom that contains the smallest number of atoms./], [indexmax(nroc(out(1,c)),content(out(count,out(1,c))))|5. Longest queue --> Send to the atom that contains the largest number of atoms./], [duniform(1,nroc(out(1,c)))|6. Random channel --> randomly choose a channel./], [bernoulli(~1,~2,~3)|7. By percentage --> ~90~% of products goes to channel ~1~, rest goes to channel ~2~/], [if(comparetext(name(i),[~1]),~2,~3)|8. By atom name --> if the atom name of the picked atom equals ~AtomName~ then send to channel ~1~ else to channel ~2~./], [min(max(1,label([~1],i)),nroc(out(1,c)))|9. By label value (a) --> the output channel equals the value on label ~LabelName~ of the picked atom./], [if(~2(ddb([~1],i),~3),~4,~5)|10. By label value (b) --> if the value on label ~LabelName~ of the picked atom ~=~ the value ~1~ then send to channel ~1~ else to channel ~2~./], [if(comparetext(ddb([~1],i),[~2]),~3,~4)|11. By label text --> if the text on label ~LabelName~ of the picked atom equals ~Text~ then send to channel ~1~ else to channel ~2~./]))`
+`FieldListBox(2,[1. Platform elevator/2. Caged elevator])`
+`FieldSmartList( 5, concat( [openallic(c)|1. Any inputchannel/], [if(=(sum(nric(c),if(atomexists(in(count,c)),*(ocopen(icocno(count,c),in(count,c)),content(in(count,c))),0)),0),openallic(c),openic(indexmax(nric(c),if(atomexists(in(count,c)),*(ocopen(icocno(count,c),in(count,c)),content(in(count,c))),0)),c))|2. Largest queue: Accept product from the atom with the largest queue (if all queues are empty then open all channels and wait)/], [if(=(sum(nric(c),if(atomexists(in(count,c)),*(ocopen(icocno(count,c),in(count,c)),content(in(count,c))),0)),0),openallic(c),openic(indexmax(nric(c),if(atomexists(in(count,c)),*(ocopen(icocno(count,c),in(count,c)),if(>(content(in(count,c)),0),-(time,entrytime(first(in(count,c)))),0)),0)),c))|3. Longest waiting: Accept product from the atom whose first product entered earliest (if all queues are empty then open all channels and wait)/], [openic(+(mod(input(c),nric(c)),1),c)|4. Round robin/], [openic(~1,c)|5. Channel ~1~] ) )`
+`FieldListBox(6,[No restriction/Same name/Same label value/Same label text/Same container/Same mother])`
+`FieldSmartList(10, concat( [|/], [sddb([~1],~2,cs)|1. Assign label: products are assigned a label named ~LabelName~ with a value of ~1~/], [set(name(cs),concat(name(cs),[-],String(+(output(c),1))))|2. Auto Name: a counter is added to the end of each product's name/], [set(icon(cs),duniform(~1,~2))|3. Random icons: products are assigned a random icon number between ~2~ and ~6~/], [SetSize(cm(~1),cm(~2),cm(~3),cs)|4. Set Size: product dimensions are set to: X=~50~cm, Y=~40~cm, Z=~30~cm/], [SetSize(cm(duniform(~1,~2)),cm(duniform(~3,~4)),cm(duniform(~5,~6)),cs)|5. Random Size: product dimensions are randomly set within the following ranges: X=~50~to~100~cm, Y=~50~to~100~cm, Z=~50~to~100~cm/], [set(color(cs),~1)|6. Set Color: products are set to the ~colorpurple~/], [set(color(cs),duniform(1,10000000))|7. Random color: products are assigned a random color/], [do(SetSize(cm(duniform(~1,~2)),cm(duniform(~3,~4)),cm(duniform(~5,~6)),cs),set(color(cs),duniform(1,1000000)))|8. Random Size and Color: products are assigned a random color and its dimensions are randomly set within the following ranges: X=~50~to~100~cm, Y=~50~to~100~cm, Z=~50~to~100~cm/], [do(setsetting(sauser,0,cs),setsetting(sashape,1,cs)) |9. Display the products as a simple outline, not its icon/], [0|10. Do Nothing] ) )`
+`FieldListBox(3,[Left-right movement/Right-left movement/No movement])`
+`FieldSmartList( 3, concat( [~1|1. Fixed --> always apply an offset of ~0~ meter./], [label([~1],i)|2. Atom label --> the offset is found on label ~LabelName~ of the atom to be picked or placed./], [yabsloc(c,model)-yabsloc(in(2,c),model)|4. Horizontal line --> the transporter travels in a horizontal line. ~Only use this option to define the Y offsets!~/], [xabsloc(c,model)-xabsloc(in(2,c),model)|5. Vertical line --> the transporter in a vertical line. ~Only use this option to define the X offsets!~/], [+(~1(in(2,c)),~2)|6. Destination size --> apply an offset equal to the ~xsize~ of the destination plus ~0~ meter./], [label([~1],in(2,c))|7. Destination label --> the offset is found on label ~LabelName~ of the destination./], [if(comparetext(name(in(2,c)),[~1]),~2,~3)|8. Destination name --> if the name of the destination equals ~AtomName~ then ~1~ else ~0~ meter./], [~1(label([~2],i),label([~3],i))|9. Lookup table --> look for the offset in table ~TableName~. The row is set by label ~LabelName~ and the column by label ~LabelName~ of the atom to be picked/placed.]))`
+`FieldSmartList( 4, Concat( [~1|1. Specific row --> Always use the settings of row ~1~ in the operator lookup table./], [indexmatch(nrows(c),cell(count,1,c),name(i))|2. By atom name --> Use the atom name to lookup the operator data./], [indexmatch(nrows(c),cell(count,1,c),ddb([~1],i))|3. By label text --> Use the text on label ~LabelName~ to lookup the operator data./], [ddb([~1],i)|4. By label value --> The value of label ~LabelName~ indicates the correct row in the lookup table.]))`
+`FieldListBox(10, [Cube/Picture Cube/Cylinder Horizontal/Cylinder Vertical/Sphere/Cone/Barrel Horizontal/Barrel Vertical/Pallet/Person] )`
+`FieldSmartList( 6, concat( [content(c)|1. Fifo (First In First Out)/], [1|2. Lifo (Last In First Out)/], [duniform(1,content(c))|3. Random/], [t-findqueuepos([~1],2)|4. Sort by Label Ascending: The atoms with the lowest value of the label named ~LabelName~ are put in front/], [t-findqueuepos([~1],1)|5. Sort by Label Descending: The atoms with the highest value of the label named ~LabelName~ are put in front/], [~1|6. User defined: put the incoming product at location ~1~] ) )`
+`FieldListBox( 4, [1. Open input and open output/2. Open input and close output/3. Close input and open output/4. Do nothing])`
+`FieldListBox( 4, [1. Open input and open output/2. Open input and close output/3. Close input and open output/4. Do nothing])`
+`FieldSmartList( 4, concat( [1|1. Amount of products/], [ddb([~1],cs)|2. By Label Value : The value of the unit is on ~Labelname~/], [xsize(cs)|3. x-size of products/], [ysize(cs)|4. y-size of products/], [~1|5. By user: enter your own 4DScript expression: ~1~. Refer to product with "cs"/]))`
+`FieldSmartList( 4, concat( [1|1. Amount of products/], [ddb([~1],cs)|2. By Label Value : The value of the unit is on ~Labelname~/], [xsize(cs)|3. x-size of products/], [ysize(cs)|4. y-size of products/], [~1|5. By user: enter your own 4DScript expression: ~1~. Refer to product with "cs"/]))`
+`FieldListBox( 2, [1. First products first/2. Last products first])`
+`FieldSmartList( 20, concat( [0|1. No setup time/], [~1|2. Fixed setup time: every product has a setup time of ~10~/], [if(mod(output(c),~1),~2,0)|3. Fixed intervals: every ~10~ th product has a setup time of ~10~/], [if(=(ddb([~1],first(c)),~2),~3,~4)|4. Depending on label: if the product label value named ~Labelname~ equals ~1~ then the setup time is ~10~ else the setup time is ~0~/], [if(<>(t-getsetupcode(label([~1],first(c)),0),ddb([t-oldsetupcode],c)),~2,0)|5. Cur-Prev Label: if the value of the label named ~LabelName~ of the current and previous atom are different, the setuptime is ~10~/], [if(<>(t-getsetupcode(color(first(c)),0),ddb([t-oldsetupcode],c)),~1,0)|6. Cur-Prev Color: if the color of the current and previous atom are different, the setuptime is ~10~/], [do(t-getsetupcode(name(first(c)),0),if(comparetext(ddb([t-setupcode],c),ddb([t-oldsetupcode],c)),0,~1))|7. Cur-Prev Name: if the name of the current and previous atom are different, the setuptime is ~10~/], [if(<>(t-getsetupcode(icon(first(c)),0),ddb([t-oldsetupcode],c)),~1,0)|8. Cur-Prev Icon: if the icon of the current and previous atom are different, the setuptime is ~10~/], [if(<>(t-getsetupcode(*(xsize(first(c)),ysize(first(c)),zsize(first(c))),0),ddb([t-oldsetupcode],c)),~1,0)|9. Cur-Prev Volume: if the volume (LxWxH) of the current and previous atom are different, the setuptime is ~10~/], [do(t-getsetupcode(label([~2],first(c)),~3),~1(ddb([t-oldsetupcode],c),ddb([t-setupcode],c)))|10. Global Table Alias: the setuptime is found in table ~TableName~. The row-column indicator is stored in the label named ~LabelName~. The value is in row(previous product),column(current product). The startvalue of the indicator is ~1~/], [do(t-getsetupcode(label([~2],first(c)),~3),cell(ddb([t-oldsetupcode],c),ddb([t-setupcode],c),in(~1,c)))|11. Setup Table: the setuptime is found in the setup table connected to inputchannel ~2~. The row-column indicator is stored in the label named ~LabelName~. The value is in row(previous product),column(current product). The startvalue of the indicator is ~1~] ) )`
+`FieldCheckBox`
+`FieldListBoxSyntax(5,[mm(1000)/cm(100)/inch(36)/feet(3)/yard(1)])`
+`FieldListBoxSyntax(5,[mm(1000)/cm(100)/inch(36)/feet(3)/yard(1)])`
+`FieldListBoxSyntax(5,[mm(1000)/cm(100)/inch(36)/feet(3)/yard(1)])`
+`FieldListBoxSyntax(5,[mm(1000)/cm(100)/inch(36)/feet(3)/yard(1)])`
+`FieldSmartList( 7, concat( [t-sortby(<(entrytime(next(cs)),entrytime(cs)),c)|1. FIFO --> First In First Out/], [[no sort required]|2. LIFO --> Last In First Out/], [t-sortby(<(ddb([t-dest],next(cs)),ddb([t-dest],cs)),c)|3. OC minimum --> Lowest output channel of destinator first./], [t-sortby(>(ddb([t-dest],next(cs)),ddb([t-dest],cs)),c)|4. OC maximum --> Highest output channel of destinator first./], [t-sortby(>(ddb([~1],next(cs)),ddb([~1],cs)),c)|5. Label maximum --> Maximum value of label ~LabelName~ first/], [t-sortby(<(ddb([~1],next(cs)),ddb([~1],cs)),c)|6. Label minimum --> Minimum value of label ~LabelName~ first/], [t-sortby(<(icon(next(cs)),icon(cs)),c)|7. Icon minimum --> Minimum icon number first/], [t-sortby(>(icon(next(cs)),icon(cs)),c)|8. Icon maximum --> Maximum icon number first]))`
+`FieldColor`
+`FieldSmartList(8,concat( [false|1. do not transform/], [true|2. transform all atoms/], [comparetext(name(i),[~1])|3. by atom name --> transform the atom if its name equals ~AtomName~./], [comparetext(label([~1],i),[~2])|4. by label text --> transform the atom if its label ~LabelName~ equals the text ~LabelText~./], [~2(label([~1],i),~3)|5. by label value --> transform the atom if its label ~LabelName~ is ~=~ the value ~1~./], [=(icon(i),iconbyname([~1]))|6. by icon --> transform the atom if its icon equals the icon by name ~IconName~./], [bernoulli(~1,true,false)|7. by percentage --> at random ~50~% of the atoms will be transformed./], [=(mod(input(c),~1),0)|8. by cycle --> every ~10~-th atom will be transformed./], [~1|9. by user logic --> if ~true~ is true the atom will be transformed.] ))`
+`FieldIcon`
+`FieldSmartList(2,concat( [setlabel([~1],[~2],i)|1. Text label --> set the label ~LabelName~ equal to ~LabelText~./], [setlabel([~1],~2,i)|2. Value label --> set the label ~LabelName~ equal to ~1~.] ))`
+`FieldListBox(7,[Simple/ForkliftTruck/PalletJack/PalletWagon/RollContainertypeA/RollContainertypeB/WalkyRider])`
+`FieldListBox(3,[Do not turn/Instant turn/Smooth turn])`
+`FieldListBox(6,[First In First Out (FIFO)/Last In First Out (LIFO)/Minimum Label Value First/Maximum Label Value First/Minimum Output Channel First/Maximum Output Channel First])`
+`FieldListBox(3,[Simple/Standard/Rolling])`
+`FieldButton`
+`FieldValue(1,200,0)`
+`FieldValue(1,100,0)`
+]);
+int015(6, 0, [`Hint`
+`Change the cranes' 3D appearance`
+`Queue 3D representation`
+`Tick on if you want to display the contents`
+`Enter a positive value`
+`Enter analysis duration`
+`Maximum no of data (may affect Until if too many data)`
+`Enter time at which to start analysing`
+`Click to select a color`
+`Double click to edit`
+`Space to enter a description`
+`Enter a positive value`
+`X location in meters`
+`Y location in meters`
+`Z location in meters`
+`Change name`
+`Rotation angle around container in degrees`
+`Rotation angle around itself in degrees`
+`Rotation speed around container in degrees/sec`
+`Rotation speed around container in degrees/sec`
+`X size in meters`
+`Y size in meters`
+`Z size in meters`
+`Speed in X direction in m/s`
+`Speed in Y direction in m/s`
+`Speed in Z direction in m/s`
+`VR Icon code`
+`VR Sound code`
+`Edit an attribute switch`
+`Edit an attribute color value`
+`Edit an attribute expression`
+`Edit an attribute name`
+`Expression to warehouse column`
+`Expression to determine warehouse row`
+`Edit an attribute expression`
+`Edit an attribute text`
+`Edit an attribute expression`
+`Edit an attribute value`
+`Maximum contents allowed`
+`Change the cranes' 3D appearance`
+`Enter cycletime for this process`
+`Edit an dynamic database switch`
+`Edit an dynamic database text`
+`Edit an dynamic database value`
+`select or enter degrees`
+`Enter 4DScript code to be executed when this atom is entered. Listbox contains examples.`
+`Enter 4DScript code to be executed when this atom is exited. Listbox contains examples.`
+`Enter first down moment`
+`Select a graph type`
+`Height in centimeters`
+ 
+`Select the direction where the point has to move to`
+`Select the direction where the point has to move to`
+`Select how products are spaced, refers to distance from front of first bag to front of second bag`
+`Enter Mean Time Between Failure`
+`Enter Mean Time To Failure`
+`Enter Mean Time To Repair`
+`Describes the actions taken when atom is drawn in 2d mode`
+`Describes the actions taken when atom is drawn in 3d mode`
+`Describes the actions taken when this atom is created`
+`Describes the actions taken when this atom is destroyed`
+`Describes the actions taken when another atom enters this atom`
+`Describes the actions taken when this atom enters into another atom`
+`Describes the actions taken when this atom enters into another atom`
+`Describes the actions taken when event takes place`
+`Describes the actions taken when this atoms exits from another atom`
+`Describes the actions taken when another atom exits this atom`
+`Describes the actions taken when this atoms exits from another atom`
+`Describes the actions taken when a channel is opened resulting in an open input connection`
+`Describes the actions taken when a message is received`
+`Describes the actions taken when a channel is opened resulting in an open output connection`
+`Describes the actions taken when simulation is reSet`
+`Describes the actions taken when the user clicks this atom`
+`Select the position where the product should be placed in the destination`
+`Select how products are spaced`
+`Select how products are spaced, refers to distance from front of first bag to front of second bag`
+`Select a queue position`
+`Edit a table cell`
+`Edit a table cell`
+`Edit a table cell`
+`Check to activate 2D Draw eventhandler`
+`Show 2D outline`
+`Check to activate 3D Draw eventhandler `
+`Check to show outline in 3D`
+`Check to show outline in 3D`
+`Check to activate 3D Draw eventhandler `
+`Check to show atom's contents in 2D`
+`Check to show icon's contour transparent`
+`Check to fill 2D outlines`
+`Check to fill 2D outlines`
+`Check to hide display of atom's channels`
+`Check to show 2D icon`
+`Check to show icon's contour transparent`
+`Check to show name in 2D`
+`Check to apply atom's Visualization Settings to its contents`
+`Check to apply atom's Visualization Settings to its contents`
+`Show 2D outline`
+`Check to show atom's contents in 2D`
+`Check to snap atom to grid when moved or resized`
+`Check to activate 2D Draw eventhandler`
+`Select the next destination`
+`Select the next destination`
+ 
+`Speed in m/s`
+`Select what rule to use to start the buffering mode`
+`Select what rule to use to stop the buffering mode`
+`Enter a positive value`
+`Enter a positive value`
+`Reaching maximum level from upper level`
+`Reaching minimum level from upper level`
+`Measuring unit which will be checked before product enters`
+ 
+`Change the elevator appearance`
+`Strategies for how this atom accepts product from multiple sources`
+ 
+`Manipulates the atom identified by the current value of cs`
+`Defines how the content of the server is displayed.`
+ 
+ 
+`Important! Icons are ordered by increasing complexity. Complex icons slow down your animation.`
+`Define a queue discipline`
+`Reaching maximum level from lower level`
+`Reaching minimum level from lower level`
+`Units that define content`
+`Units that define output`
+`Specify the way products leave the reservoir`
+`Define a setup time`
+`If switched on the 2D icon is displayed in 2D animation, otherwise the outline is shown and filled.`
+`Select an option from the dropdown list`
+`Atom X-size in meters.`
+`Atom Y-size in meters.`
+`Atom Z-size in meters.`
+`Sequence for placing atoms`
+`Double click and pick a color from the color selector`
+`Select a rule from the menu. If the result is true then the passing atom will be transformed.`
+`Double click and drag an icon from the iconselector`
+`Select an option from the menu`
+`Transporter 3 drepresentation`
+`Turns the transporter along the direction in which it drivers.`
+ 
+`Select a 3D representation`
+`Maximum contents allowed`
+`Number of columns`
+`Number of rows`
+]);
+int015(7, 0, [`Error`
+]);
+Set(OnCreation, [EditFields_RegisterAll
+]);
+SetStatus(0);
+int018;
+int007;

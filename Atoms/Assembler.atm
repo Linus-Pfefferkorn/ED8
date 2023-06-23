@@ -1,0 +1,250 @@
+
+
+{Atom: Assembler}
+
+sets;
+BaseClass;
+createAtom(a, s, [], 1, false);
+int023([Assembler], 4194432, 1264);
+Set(Icon(a), 
+	RegisterIcon(pDir([Media\Images\Machines\mach1001.bmp]), [mach1001], 1, 0, 0, 255, 255, false, 0));
+Addmodel3D(
+	Registermodel3D(model3DDir([\assembler.wrl]), [assembler.wrl], 0, 0, 0, 1, 1, -1, -90, 0, 0), a);
+SetMaterial(
+	RegisterMaterial([Default], 8421504, 8421504, 3289650, 0, 0.100000001490116, 0, false, false, 1, 0), 1, a);
+Set(Version(a), 7.3);
+SetTreeIcon(pDir([Media\Icons\Assembler.ico]));
+Set(Info, [Assembler
+
+General
+------------
+The Assembler joins a number of atoms into a single atom.  It 
+can model assembly operations, packing operations, order 
+pulling schemes, mixing operations, and many other joining 
+operations.
+
+The atoms entering input channel 1 of the Assembler typically 
+represent the container, package, main assembly component, 
+order, or the main ingredient.  The atoms entering input 
+channels 2 and higher typically represent the contents of a 
+package or the sub-components of an assembly.  These 
+atoms can either be destroyed or moved inside the first atom that 
+entered input channel 1 of the Assembler.  The user-specified 
+number of atoms entering through input channel 1 must all 
+enter before any atoms are allowed to enter input channels 2 and 
+higher.  After all atoms have entered which are necessary for 
+the join operation, the cycletime starts.
+
+The Assembler references its bill-of-material table to define 
+the quantities of atoms to be joined from each of its input 
+channels.  
+
+The bill-of-material table has one row for each input channel, 
+and as many columns as you specify.  The number of columns 
+should match the number of assembly types you are modeling.  
+Each column of the bill-of-material table needs to list the 
+quantities of atoms required from each input channel for that 
+assembly type.  If all assemblies are the same, then it is only 
+necessary to have one column.  If you have defined more than 
+one column, then the first atom entering input channel 1 for 
+each join operation will need a label with a value.  The value of 
+the label references the respective column number in the bill-
+of-material table that will be used to define the assembly 
+quantities for that join operation.
+
+Rightclick:
+  Edit general parameters
+
+Doubleclick:
+  Edit bill-of-material table
+
+Channels:
+--------------
+Input channel 1: The container, order, or main assembly atom.
+Input channels 2..n: The contents of a container or sub-
+components of an assembly
+
+Statuses:
+-------------
+   1- Idle
+   2 - Busy
+   5 - Blocked
+  22 - Collecting
+
+Last Revision:
+---------------------
+February, 2008
+]);
+SetChannels(2, 1);
+SetChannelRanges(2, 255, 1, 255);
+int001(61);
+int013(1, 0, false, false, 5, 0, [container/order/main product], []);
+int013(2, 0, false, false, 0, 0, [], []);
+SetSize(5, 5, 1);
+LockPosition(false);
+LockSize(false);
+DisableIconRotation(false);
+SetProductCode([]);
+createAttributes(12);
+SetAttributeName(r(1), [cycletime]);
+SetAttributeName(r(2), [entrytrigger]);
+SetAttributeName(r(3), [exittrigger]);
+SetAttributeName(r(4), [sendto]);
+SetAttributeName(r(5), [curcolref]);
+SetAttributeName(r(6), [4Dscript]);
+SetAttributeName(r(7), [finishquant]);
+SetAttributeName(r(8), [showcontents]);
+SetAttributeName(r(9), [pack]);
+SetAttributeName(r(10), [In2Trigger]);
+SetAttributeName(r(11), [columns]);
+SetAttributeName(r(12), [3DIcon]);
+SetExprAtt(r(1), [lognormal(10,2)]);
+SetExprAtt(r(4), [1]);
+SetExprAtt(r(6), [1]);
+SetAtt(r(7), 1);
+SetAtt(r(8), 1);
+SetAtt(r(9), 1);
+SetAtt(r(11), 1);
+SetAtt(r(12), 2);
+int024;
+SetTable(2, 1);
+int015(0, 0, [ 
+`Input ch1`
+`Input ch2`
+]);
+int015(1, 0, [`Product 1`
+1
+4
+]);
+Set(OnEvent, [case(
+ eventcode,
+ {Case 1: change to other channel input mode}
+ do(
+  repeat(
+   -(nrows(c),1),
+   if(
+    >(cell(+(count,1),att(5,c),c),0),
+    openic(+(count,1),c)
+   )
+  )
+ ),
+ {Case 2: cycletime is finished,
+          and it's ready to exit}
+ do(
+  setstatus(5,c),
+  if(not(pack),
+   repeat(-(content(c),cell(1,att(5,c),c)),destroyatom(last(c)))
+  ),
+  setstatus(24,c),
+  openalloc(c)
+ )
+)
+]);
+Set(OnEntered, [do(
+ if(ic(c),att(2,c),att(10,c)),
+ setstatus(22,c),
+ inc(ddb(concat([t-],string(ic(c))),c)),
+ if(ic(c) = 1,{coming from channel 1}
+   do(
+    if(=(content(c),1),{first atom comes in,
+                     and it's from channel 1}
+     do(
+      curcolref := att(6,c),
+      if(or(>(curcolref,ncols(c)),<=(curcolref,0)),
+       msg(concat(name(c),[: A non valid product code has been specified]))
+      ),
+      finishquant := +(content(i),sum(nrows(c),cell(count,curcolref,c))),
+      setloc(0,0,zsize(c),i)
+     )
+    ),
+    if(showcontents,
+     setloc(1,+(ddb(concat([t-],string(ic(c))),c),1),1,i)
+    ),
+    if(content(c) >= cell(1,curcolref),
+     do(
+      closeic(1,c),
+      createevent(0,c,1)
+     )
+    )
+   ),
+   
+   {else: coming from a channel to pack}
+   do(
+    if(>=(ddb(concat([t-],string(ic(c))),c),cell(ic(c),curcolref,c)),
+      closeic(ic(c),c)
+    ),
+    if(pack,
+     moveatom(i,first(c)),
+     if(showcontents,
+      setloc(ic(c),+(ddb(concat([t-],string(ic(c))),c),1),1,i)
+     )
+    )
+   )
+ ),
+ {check for all products}
+ if(or(>=(content(c),finishquant),>=(+(content(first(c)),content(c)),finishquant)),
+  do(
+   setstatus(2,c),
+   createevent(att(1,c),c,2)
+  )
+ )
+)
+]);
+Set(OnExited, [if(oc(c)>0,
+ do(
+  closealloc(c),
+  att(3,c),
+  repeat(nrows(c),
+   sddb(concat([t-],string(count)),0,c)
+  ),
+  if(=(content(c),0),
+   do(
+    openic(1,c),
+    setstatus(1,c)
+   ),
+   openalloc(c)
+  )
+ ) 
+)
+]);
+Set(OnCreation, [AutoConnect
+]);
+Set(OnReset, [do(
+ setstatus(1,c),
+ repeat(-(nric(c),1),closeic(+(count,1),c)),
+ closealloc(c),
+ repeat(nrows(c),sddb(concat([t-],string(count)),0,c))
+)
+]);
+Set(OnUser, [Do(
+  { Delete any current instances of this form.} 
+  GuiDestroy([Assembler]),
+
+  { Register the GUI-form for this atom.}
+  GuiRegister(PDir([\Atoms\Assembler.gui]), 1),
+
+  { Show the GUI-form.}
+   Guicreate([Assembler], [Assembler], 0, c, 0, 1)
+ )
+]);
+Set(OnOcReady, [do(
+ if(content(c)>0,
+  moverequest(first(c),att(4,c))
+ )
+)
+]);
+Set(On2DDraw, [StandardDisplay(name(c))
+]);
+Set(On3DDraw, [Case(
+ 3DIcon,
+  {** Simple Box **}
+  Do(
+    DrawCube(xSize / 2, ySize / 2, 0.5, xSize, ySize, 1)
+  ),
+ { Assembler 1 }
+ Drawmodel3D(model3D(1, c), 0, 0, 0, 1, 1, 1)
+)
+]);
+SetStatus(0);
+int018;
+int007;

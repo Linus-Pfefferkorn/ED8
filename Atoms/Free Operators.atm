@@ -1,0 +1,61 @@
+
+
+{Atom: Free Operators}
+
+sets;
+BaseClass;
+CreateAtom(a, s, [], 1, false);
+int023([Free Operators], 12615808, 1248);
+Set(Icon(a), 
+	RegisterIcon(pDir([media\images\default.jpg]), [default.jpg]));
+SetMaterial(
+	RegisterMaterial([Default], 8421504, 8421504, 3289650, 0, 0.100000001490116, 0, false, false, 1, 0), 1, a);
+Set(Version(a), 7.3);
+SetTreeIcon(pDir([Media\Icons\FreeOperators.ico]));
+Set(Info, [Last Revision:
+---------------------
+March, 2008
+]);
+SetChannels(2, 1);
+SetChannelRanges(1, 255, 1, 255);
+int001(140);
+SetSize(1, 1, 0);
+LockPosition(false);
+LockSize(false);
+DisableIconRotation(false);
+SetProductCode([]);
+CreateAttributes(6);
+SetAttributeName(r(1), [sendto]);
+SetAttributeName(r(2), [opselection]);
+SetAttributeName(r(3), [oprow]);
+SetAttributeName(r(4), [lookrows]);
+SetAttributeName(r(5), [entrytrigger]);
+SetAttributeName(r(6), [exittrigger]);
+SetExprAtt(r(1), [1]);
+SetExprAtt(r(2), [{.~1|1. Specific row --> Always use the settings of row ~1~ in the operator lookup table.  .}1]);
+SetExprAtt(r(3), [0]);
+SetAtt(r(4), 1);
+int024;
+SetTable(1, 3);
+int015(0, 0, [ 
+1
+]);
+int015(1, 0, [`Lookup Match`
+`Product`
+]);
+int015(2, 0, [`Team Reference`
+`in(2,c)`
+]);
+int015(3, 0, [`Atom Reference`
+`i`
+]);
+Set(OnEvent, [Case( EventCode, {* 1: Free operators *} Do(  FreeOperators(    ExecString( Cell( oprow, 2, c, 2)),    Execstring( Cell( oprow, 3, c, 2))  ),  OpenAllOc( c) ), {* 2: Open the inputchannels again *}  OpenAllIc( c))]);
+Set(OnEntered, [Do( CloseAllIc( c), oprow := opselection, If(  oprow > 0,  CreateEvent( 0, c, 1, 0, i) ), entrytrigger)]);
+Set(OnExited, [Do( CloseAllOc( c), CreateEvent( 0, c, 2), exittrigger)]);
+Set(OnCreation, [AutoConnect]);
+Set(OnUser, [Do(  { Delete any current instances of this form.}   GuiDestroy([FreeOperators]),  { Register the GUI-form for this atom.}  GuiRegister(PDir([\Atoms\FreeOperators.gui]), 1),  { Show the GUI-form.}   GuiCreate([FreeOperators], [FreeOperators], 0, c, 0, 1))]);
+Set(OnOcReady, [If( Content( c) > 0, MoveRequest( First( c), sendto))]);
+Set(On2DDraw, [Draw2DIcon( 2, [F])]);
+SetStatus(0);
+int018;
+int007;

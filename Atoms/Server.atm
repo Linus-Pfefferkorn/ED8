@@ -1,0 +1,297 @@
+
+
+{Preregister functions}
+
+PreregisterFunction([Server_2_Draw3d], 1, 1);
+PreregisterFunction([Server_2_Draw3d_Resized], 1, 1);
+PreregisterFunction([Server_1_Draw3d], 1, 1);
+PreregisterFunction([Server_1_Draw3d_Resized], 1, 1);
+
+
+{Atom: Server}
+
+sets;
+BaseClass;
+CreateAtom(a, s, [], 1, false);
+int023([Server], 292315, 263408);
+DefineFunction([Server_2_Draw3d], [Various], 1, 1, [Do(
+  var([atmC], vbAtom, p(1)) ,
+  
+  var([CurCycle], vbValue, Att([CurCycle], atmC)),
+  var([BeginBusy], vbValue, Att([BeginBusy], atmC)),
+  var([EndBusy], vbValue, Att([EndBusy], atmC)),
+
+  { Display the machine. The machine is a VRML object and needs some repositioning and scaling. }
+  
+  DrawModel3DMesh(Model3D(2, atmC), 1, 0, 0, 0, 1,1,1),
+  DrawModel3DMesh(Model3D(2, atmC), 3, 0, 0, 0, 1,1,1),
+
+  var([valInter], vbValue),
+  if(
+    CurCycle = 0,
+    valInter := 0,
+    valInter := Min(1, (Time - BeginBusy) / CurCycle)
+  ),
+  if(
+    AtomExists(First(atmC)),
+    SetLoc(
+      (xsize(atmC) * -0.15 + (xsize(First(atmC)) * 0.5)  + 
+      valInter * (xsize(atmC) * 0.75 - (xSize(First(atmC))) * 0.5)), 
+      -0.10, 
+      1.25, 
+      First(atmC)
+    )
+  ),
+  if(
+    Status(atmC) <> 2,
+    if(
+      CurCycle = 0,
+      valInter := 0,
+      valInter := Max(0, -1 * (Time - EndBusy) / CurCycle + 1)
+    )
+  ),
+  DrawModel3DMesh(
+    Model3D(2, atmC), 
+    2, 
+    0 + valInter * xsize(atmC) * 0.75, 
+    0, 
+    0,
+    1,1,1
+  )
+)
+], [Animates the Server 2
+], [Server_2_Draw3d(c)], 0, [Server.atm]);
+DefineFunction([Server_2_Draw3d_Resized], [Various], 1, 1, [Do(  var([atmC], vbAtom, p(1)) ,    var([CurCycle], vbValue, Att([CurCycle], atmC)),  var([BeginBusy], vbValue, Att([BeginBusy], atmC)),  var([EndBusy], vbValue, Att([EndBusy], atmC)),  { Display the machine. The machine is a VRML object and needs some repositioning and scaling. }    DrawModel3DMesh(Model3D(4, atmC), 1, 0, 0, 0, xSize(atmC), ySize(atmC), zSize(atmC)),  DrawModel3DMesh(Model3D(4, atmC), 3, 0, 0, 0, xSize(atmC), ySize(atmC), zSize(atmC)),  var([valInter], vbValue),  if(    CurCycle = 0,    valInter := 0,    valInter := Min(1, (Time - BeginBusy) / CurCycle)  ),  if(    AtomExists(First(atmC)),    SetLoc(      xSize(atmC) * 0.15 - 0.5 * xSize(First(atmC)) + valInter * (xsize(atmC) * 0.7),      0.5 * ySize(atmC) - 0.5 * ySize(First(atmC)),      0.5 * zSize(atmC),      First(atmC)    )  ),  if(    Status(atmC) <> 2,    if(      CurCycle = 0,      valInter := 0,      valInter := Max(0, -1 * (Time - EndBusy) / CurCycle + 1)    )  ),  DrawModel3DMesh(    Model3D(4, atmC),     2,     0.05 * xSize(atmC) + valInter * xsize(atmC) * 0.7,     0,     0,     xSize(atmC),     ySize(atmC),    zSize(atmC)  )) ], [Animates the Resized Server], [Enter Syntax Example], 0, [Server.atm]);
+DefineFunction([Server_1_Draw3d], [Various], 1, 1, [{ Machine }
+Do(
+  var([atmC], vbAtom, p(1)) ,
+  
+  var([CurCycle], vbValue, Att([CurCycle], atmC)),
+  var([BeginBusy], vbValue, Att([BeginBusy], atmC)),
+  var([EndBusy], vbValue, Att([EndBusy], atmC)),
+  {Display the machine. The machine is a VRML object and needs some repositioning and scaling. }
+
+  DrawModel3DMesh(Model3D(1, atmC), 1, 0, 0, 0, xSize(atmC), ySize(atmC), zSize(atmC)),
+  DrawModel3DMesh(Model3D(1, atmC), 3, 0, 0, 0, xSize(atmC), ySize(atmC), zSize(atmC)),
+  
+  var([valOffset], vbValue, xsize(atmC) * -0.19),
+  var([valInter], vbValue),
+  if(
+    CurCycle = 0,
+    valInter := 0,
+    valInter := Min(1, (Time - BeginBusy) / CurCycle)
+  ),
+  if(
+   AtomExists(First(atmC)),
+   SetLoc(
+    (xsize(atmC) * -0.15 + (xsize(First(atmC)) * 0.5)  + 
+    valInter * (xsize(atmC) * 0.35 - (xSize(First(atmC))) * 0.5)), 
+    yLoc(First(atmC)), 
+    zLoc(First(atmC)), 
+    First(atmC)
+   )
+  ),
+  if(
+    Status(atmC) <> 2,
+    if(
+      CurCycle = 0,
+      valInter := 0,
+      valInter := Max(0, -1 * (Time - EndBusy) / CurCycle + 1)
+    )
+  ),
+  Drawmodel3DMesh(
+    model3D(1, atmC), 
+    2, 
+    valOffset + valInter * xsize(atmC) * 0.35, 
+    0.05*ySize(atmC),
+    0, 
+    xSize(atmC), 
+    ySize(atmC), 
+    zSize(atmC)
+  )
+)
+], [Animates the Server
+], [Server_1_Draw3d(c)], 0, [Server.atm]);
+DefineFunction([Server_1_Draw3d_Resized], [Various], 1, 1, [{ Machine }Do(  var([atmC], vbAtom, p(1)) ,  var([CurCycle], vbValue, Att([CurCycle], atmC)),  var([BeginBusy], vbValue, Att([BeginBusy], atmC)),  var([EndBusy], vbValue, Att([EndBusy], atmC)),    var([valInter], vbValue),  var([valOffset], vbValue),  { Display the machine. The machine is a VRML object and needs some     repositioning and scaling. }    Drawmodel3DMesh(model3D(3, atmC), 1, 0,0,0, xSize(atmC), ySize(atmC), zSize(atmC)),  Drawmodel3DMesh(model3D(3, atmC), 3, 0,0,0, xSize(atmC), ySize(atmC), zSize(atmC)),  var([valOffset], vbValue, xsize(atmC) * -0.19),  var([valInter], vbValue),  if(    CurCycle = 0,    valInter := 0,    valInter := Min(1, (Time - BeginBusy) / CurCycle)  ),    if(   AtomExists(First(atmC)),   SetLoc(    0.325*xSize(atmC) + valOffset - 0.5*xSize(First(atmC)) + valInter * 0.38 * xSize(atmC),    yLoc(First(atmC)),     zSize(atmC) * 0.26,     First(atmC)   )  ),  if(    Status(atmC) <> 2,    if(      CurCycle = 0,      valInter := 0,      valInter := Max(0, -1 * (Time - EndBusy) / CurCycle + 1)    )  ),  Drawmodel3DMesh(    model3D(3, atmC),     2,     valOffset + valInter * 0.38 * xSize(atmC),     0,     0,    xSize(atmC),     ySize(atmC),     zSize(atmC)  ))], [Animates the Resized Server], [Enter Syntax Example], 0, [Server.atm]);
+Set(Icon(a), 
+	RegisterIcon(IconsDir([bmp\atoms\server.bmp]), [server]));
+AddModel3D(
+	RegisterModel3D(Model3DDir([\Server.wrl]), [Server.wrl], 0, 0, 0, 1, 1, -1, -90, 0, 0), a);
+AddModel3D(
+	RegisterModel3D(Model3DDir([\server2.wrl]), [server2.wrl], 0, 0, 0, 1, 1, -1, -90, 0, 0), a);
+AddModel3D(
+	RegisterModel3D(Model3DDir([\Server_Resized.wrl]), [Server_Resized.wrl], 0, 0, 0, 1, 1, -1, -90, 0, 0), a);
+AddModel3D(
+	RegisterModel3D(Model3DDir([\Server2_Resized.wrl]), [Server2_Resized.wrl], 0, 0, 0, 1, 1, -1, -90, 0, 0), a);
+SetMaterial(
+	RegisterMaterial([Default], 8421504, 8421504, 3289650, 0, 0.100000001490116, 0, false, false, 1, 0), 1, a);
+Set(Version(a), 7.3);
+SetTreeIcon(pDir([Media\Icons\Server.ico]));
+Set(Info, [General Server
+
+General
+------------
+This atom is used to model any type of opration or processing 
+time.
+
+The Setup and/or Cycletime starts after the entire Batch has 
+arrived. Both apply to the whole batch, not to each product.
+
+The statistics for the entire process are measured in the number 
+of units of which the Batch consists. 
+
+MTBF is the mean time between failures. If the "Busy time?" 
+box is checked, the MTBF will be based on the time the server 
+is busy, and breakdowns will only occur during the cycletime. 
+
+MCBF is the mean cycles between failure. After the last cycle 
+has been completed and the atom is empty, the MTTR 
+starts.There are three batching rules to choose from: Batch 
+In/1 Out, Batch In/Batch Out, and 1 In/Batch Out. The batch 
+"B" is user-defined.
+
+Channels:
+--------------
+N inputchannel, N outputchannel
+
+Statuses:
+-------------
+   1 - Idle
+   2 - Busy
+  27 - Setup
+   5 - Blocked
+  22 - Collecting
+   3 - Down
+
+Last revision:
+-------------------
+February, 2008
+]);
+SetChannels(1, 1);
+SetChannelRanges(1, 255, 1, 255);
+int001(28);
+SetSize(5, 2, 2);
+LockPosition(false);
+LockSize(false);
+DisableIconRotation(false);
+SetProductCode([]);
+CreateAttributes(34);
+SetAttributeName(r(1), [CycleTime]);
+SetAttributeName(r(2), [SendTo]);
+SetAttributeName(r(3), [BatchQty]);
+SetAttributeName(r(4), [BatchRule]);
+SetAttributeName(r(5), [CurIn]);
+SetAttributeName(r(6), [CurOut]);
+SetAttributeName(r(7), [SetUpTime]);
+SetAttributeName(r(8), [EntryTrigger]);
+SetAttributeName(r(9), [ExitTrigger]);
+SetAttributeName(r(10), [mttf]);
+SetAttributeName(r(11), [mttr]);
+SetAttributeName(r(12), [TotalBusy]);
+SetAttributeName(r(13), [Utilization]);
+SetAttributeName(r(14), [CurCycle]);
+SetAttributeName(r(15), [EndBusy]);
+SetAttributeName(r(16), [NextDown]);
+SetAttributeName(r(17), [CurRepairTime]);
+SetAttributeName(r(18), [InStrategy]);
+SetAttributeName(r(19), [3DIcon]);
+SetAttributeName(r(20), [BusyFlag]);
+SetAttributeName(r(21), [mcbf]);
+SetAttributeName(r(22), [nextmcbf]);
+SetAttributeName(r(23), [mttr2]);
+SetAttributeName(r(24), [curmttr2]);
+SetAttributeName(r(25), [LastStatus1]);
+SetAttributeName(r(26), [LastStatus2]);
+SetAttributeName(r(27), [CyclesCounter]);
+SetAttributeName(r(28), [LastDown]);
+SetAttributeName(r(29), [SecondColor]);
+SetAttributeName(r(30), [mtbf]);
+SetAttributeName(r(31), [BeginBusy]);
+SetAttributeName(r(32), [EndOfSetupTrigger]);
+SetAttributeName(r(33), [BreakdownTrigger]);
+SetAttributeName(r(34), [RepairTrigger]);
+SetExprAtt(r(1), [negexp(9)]);
+SetExprAtt(r(2), [1]);
+SetExprAtt(r(3), [1]);
+SetAtt(r(4), 1);
+SetExprAtt(r(7), [{.~1|~0~ .}0]);
+SetExprAtt(r(13), [If( Time > 0, Concat( [Util: ], String ( *( 100, /( -( TotalBusy, Max( 0, EndBusy - Time)), Time)), 0, 1), [ %]), [Util: 0 %])]);
+SetExprAtt(r(18), [{.openallic(c)|Any inputchannel .}openallic(c)]);
+SetAtt(r(19), 5);
+SetAtt(r(29), 677797);
+SetExprAtt(r(30), [mttf]);
+int024;
+Set(OnEvent, [Case(  EventCode, {* Event 1: after set-up Time start cycle Time *} Do(  {* Execute the end of setup trigger *}  EndOfSetupTrigger,    {* Busy *}  Status( c) := 2,  CurCycle := CycleTime,  TotalBusy := TotalBusy + CurCycle,  BeginBusy := Time,  EndBusy := CurCycle + Time,  {* If the next breakdown is sooner than the end of the current cycleTime, create an event to go down *}  If(   BusyFlag,   If(    NextDown < TotalBusy,    createEvent(-( NextDown,-(TotalBusy, CurCycle)), c, 4)   )  ),  createEvent(CurCycle, c, 2),  {* Increase the cycles counter for the down option with cycles *}  Inc(CyclesCounter) ), {* Event 2: Batching determined on entry or exit, therefore empty event *} createEvent(0, c, 6), {* Event 3: inputstrategy *} InStrategy, {* Event 4: at breakdown, start repair Time (busy Time option) *} Do(  {* Execute Breakdown Trigger }  BreakdownTrigger,    {* Down *}  Status(c) := 3,  CurRepairTime := mttr,  {* Delay all current running events and create an event to start again *}  DelayEvents(CurRepairTime, c),  createEvent(CurRepairTime, c, 5) ), {* Event 5: after repairTime (busy Time option) *} Do(  {* Execute Repair Trigger *}  RepairTrigger,    {* Busy *}  Status(c) := 2,  CurRepairTime := 0,  LastDown := NextDown,  NextDown := NextDown + mttf,  {* If the machine goes down again before the current cycleTime is over *}  {* create an event to go down again *}  If(   NextDown < TotalBusy,   createEvent(NextDown - LastDown, c, 4)  ) ), {* Event 6: send on the products *} Do(  {* Blocked *}  Status(c) := 5,  OpenAllOc(c) ), {* Event 7: at breakdown, start repair Time (total Time option) *} Do(  {* Execute Breakdown Trigger }  BreakdownTrigger,    {* register time to be able to destroy next event and create new event on availability control *}  c.OnUp:=0,  c.OnDown:=Time,  LastStatus1 := Status(c),  {* Down *}  Status(c) := 3,  CurRepairTime := mttr,  CloseAllIc(c),  CloseAllOc(c),    {* Delay all the current events and create an event for after repairTime *}  DelayEvents(CurRepairTime, c),  CreateEvent(CurRepairTime, c, 8) ), {* Event 8: after repairTime (total Time option) *} Do(  {* Execute Repair Trigger *}  RepairTrigger,    Status(c) := lastStatus1,  CurRepairTime :=0,  NextDown := mttf,  {* register time to be able to destroy next event and create new event on availability control *}  c.OnDown:=0,  c.OnUp := Time,  createEvent(NextDown, c, 7),  {* If the Status is idle or Collecting an event is created to define the inputstrategy *}  If(   Or(    Status(c) = 1,    Status(c) = 22   ),   createEvent(0, c, 3)  ),   {* If the Status is blocked, an event is created to send on the products *}  If(   Status(c) = 5,   createEvent(0, c, 6)  ) ), {* Event 9: after repairTime (cycles option) *} Do(  {* Execute Repair Trigger *}  RepairTrigger,    {* idle *}  Status(c) := 1,   curmttr2 := 0,  createEvent(0, c, 3),  nextmcbf := nextmcbf + mcbf ))]);
+Set(OnEntered, [Do( {* Collecting *}  Status(c) := 22, {* Use the batchrule to determine the number of products entering or exiting *} If(  Content(c) = 1,  Do(   CurIn := 1,   CurOut := 1,   {* Rule 3: 1 in B out *}   If(    BatchRule = 3,    do(     CurOut := Max(1, BatchQty),     Repeat(      CurOut - 1,       Do(        createAtomCopy(First(c), c, Concat(Name(First(c)), Content(c))),        SetLoc(         0.75 * xSize(c) - xSize(Last(c)) - 0.1,         0.5 * ( ySize(c) - ySize(Last(c))),          zSize(c),         Last(c)        )       )     )    ),    CurIn := Max(1, BatchQty)   )  ) ), If(  Content(c) >= CurIn,  Do(   CloseAllIc(c),   {* setup *}   Status(c) := 27,   createEvent(SetUpTime, c, 1)  ),  Do(   CloseAllIc(c),   createEvent(0, c, 3)  ) ), {* Define the location of the entered product *} SetLoc(  0.75 * xSize(c) - xSize(i) - 0.1,  0.5 * ( ySize(c) - ySize(i)),   zSize(c),  i ), EntryTrigger)]);
+Set(OnExited, [Do( CloseAllOc(c), {* Batch rule 1: B in 1 out*} If(  BatchRule=1,  do(   Repeat(    CurIn - 1,    DestroyAtom(Last(c))   ),   Output(c) := Output(c) + CurIn - 1  ) ), If(  Content(c) = 0,  If(   CyclesCounter = Round(nextmcbf),   {* MTTR cycle *}    Do(     Status(c) := 3,    curmttr2 := mttr2,    createEvent(curmttr2, c, 9),        {* Execute Breakdown Trigger *}    BreakdownTrigger   ),   {* open the input again *}   Do(       {* Idle *}    Status(c) := 1,    createEvent(0, c, 3)   )   ),  {* just open the channels again *}  createEvent(0, c, 6) ), ExitTrigger)]);
+Set(OnCreation, [Do(  AutoConnect,  {* Implemented for backwards compatability *}  Case(    WhichIsTrue(      And(        Model3D(3, c)>0,        CompareText(Model3DName(Model3D(3, c)), [Server_Resized.wrl])      ),      And(        Model3D(4, c)>0,        CompareText(Model3DName(Model3D(4, c)), [Server2_Resized.wrl])      )    ),          Att([3DIcon], c) := 7,    Att([3DIcon], c) := 8  ))      ]);
+Set(OnReset, [Do( CloseAllOc(c), {* Idle *} Status(c) := 1,  {* utilization registration *} TotalBusy := 0, EndBusy := 0,  {* registration up/down time *} c.OnUp:=0, c.OnDown:=0,  {* breakdown per time *} NextDown := mttf, CurRepairTime := 0, LastDown := 0, If(  NextDown = 0,  NextDown  := 10e39,  If(   Not(BusyFlag),   do(    c.OnUp:=Time,    createEvent(NextDown, c, 7)   )  ) ), {* breakdown per cycles *} nextmcbf := mcbf, curmttr2 := 0, CyclesCounter := 0)]);
+Set(OnUser, [Do(  { Delete any current instances of this form.}   GuiDestroy([Server]),  { Register the GUI-form for this atom.}  GuiRegister(PDir([\Atoms\Server.gui]), 1),  { Show the GUI-form.}   Guicreate([Server], [Server], 0, c, 0, 1)  )]);
+Set(OnOcReady, [MoveRequest(First(c), SendTo)]);
+Set(On2DDraw, [StandardDisplay( Name,  Utilization, Icon, If(  Status(c) = 3,  {* If the status is blocked, the name is placed in a red text box *}  ColorRed,  ColorTransparent ))]);
+Set(On3DDraw, [Case(
+  3DIcon,
+  {* Draw Simble box *}
+  If(
+   Status( c) = 3,
+   di3DBox(0, 0, 0, xSize, ySize, zSize, ColorRed),
+   di3DBox(0, 0, 0, xSize, ySize, zSize, Color)
+  ),
+  {* Draw Box with icon *}
+  di3DBox(0, 0, 0, xSize, ySize, zSize, Color, 0, 0, Icon, 0, 45, 20),
+  {* Draw a CNC mill *}
+  Do(
+   di3DBox(0, 0, 0, xSize, 0.2, zSize(c) + 2, Color),
+   di3DBox(0, 0.2, zSize(c) + 1.7, xSize, ySize(c) - 0.21, 0.3, SecondColor),
+   di3DBox(0.15 * xSize(c), 0.2, 0, 0.7 * xsize, 0.75 * ySize(c), zSize(c) - 0.2, SecondColor),
+   di3DBox(0, 0.2, zSize(c) - 0.2, xSize, ySize(c) - 0.2, 0.2, Color),
+   di3DBox(0.75 * xSize - 1, 0.5 * ( ySize(c) - 1), zSize(c) + 1.2, 1, 1, 0.5, colordarkgray),
+   di3DBox(0.75 * xSize - 0.67, 0.5 * ( ySize(c) - 1) + 0.35, zSize(c) + 1, 0.35, 0.35, 0.2, ColorSilver)
+  ),
+  {* Draw a CNC Lathe *}
+  Do(
+   di3DBox(0, 0.2 * ySize(c), 0, xSize(c), 0.8 * ySize(c), zSize(c), SecondColor),
+   di3DBox(0, 0, 0, xSize(c), 0.2 * ySize(c), zSize(c) + 2, SecondColor), 
+   di3DBox(0.75 * xSize(c), 0.2 * ySize(c),  zSize(c), 0.25 * xSize(c), 0.8 * ySize (c), 2, Color),
+   di3DBox(0.1 , 0.3 * ySize(c), zSize(c), 0.25 * xSize(c) - 0.1, 0.5 * ySize(c), 1.8, colordarkgray),
+   di3DBox(0.25 * xSize(c) , 0.3 * ySize(c), zSize(c) + 0.3, 0.5, 0.5 * ySize(c), 1.2, colordarkgray),
+   di3DBox(0.25 * xSize(c) + 0.5, 0.55 * ySize(c) - 0.25, zSize(c) + 0.6, 0.08,  0.5, 0.5, Color),    
+   di3DBox(0.25 * xSize(c) + 0.58, 0.55 * ySize(c) - 0.1, zSize(c) + 0.8, 0.1, 0.2 , 0.2, colordarkgray),
+   di3DBox(0.75 * xSize(c) - 0.1, 0.3 * ySize(c), zSize(c) + 0.25 , 0.1, 0.5 * ySize(c), 1, colordarkgray),
+   di3DBox(0, 0.2 * ySize(c), zSize(c), 0.1, 0.8 * ySize(c), 2, ColorLightGray),
+   di3DBox(0, ySize(c) - 0.1, zSize(c), 0.25 * xSize(c), 0.1, 2, ColorLightGray),
+   di3DBox(0, 0.2 * ySize(c), zSize(c) + 1.9, 0.75 * xSize(c), 0.8 * ySize(c), 0.1, ColorLightGray),
+   di3DBox(0.8 * xSize(c), ySize(c), zSize(c) + 0.8, 0.15 * xSize(c), 0.1 , 0.6, ColorBlack),
+   If(
+    Content(c) = 0,
+    Do(
+     Glass(0.5),
+     di3DBox(- 0.25 * xSize(c), ySize(c) - 0.1, zSize(c), 0.5 * xSize(c), 0.1, 2, ColorLightGray),
+     Glass(1)
+    ),
+    Do(
+     Glass(0.5),
+     di3DBox(0.25 * xSize(c), ySize(c) - 0.1, zSize(c), 0.5 * xSize(c), 0.1, 2, ColorLightGray),
+     Glass(1)
+    )
+   ),
+   di3DBox(0.25 * xSize(c), ySize(c) - 0.05, zSize(c), 0.5 * xSize(c), 0.05, 0.1, ColorSilver)
+  ),
+ 
+ 
+  { Machine }
+  Server_1_Draw3d(c),
+  
+  { Machine 2 }
+  Server_2_Draw3d(c),
+  
+  { Machine Resized}
+  Server_1_Draw3d_Resized(c),
+  
+  { Machine 2 Resized}
+  Server_2_Draw3d_Resized(c)
+)
+]);
+SetStatus(0);
+int018;
+int007;

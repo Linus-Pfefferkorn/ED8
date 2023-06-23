@@ -1,0 +1,216 @@
+
+
+{Preregister functions}
+
+PreregisterFunction([ExcelTableRead_CopyData], 1, 1);
+
+
+{Atom: ExcelTableRead}
+
+sets;
+BaseClass;
+CreateAtom(a, s, [], 1, false);
+int023([ExcelTableRead], 16512, 32);
+DefineFunction([ExcelTableRead_CopyData], [Office], 1, 1, [Do(
+ WaitCursor,
+ 
+ var([atmReference], vbAtom, 0),
+ 
+ atmReference := att(18, p(1)),
+
+ var([valFrames], vbValue),
+ If(
+  Or(CompareText(Att(8, p(1)),[untitled]),Not(FileExists(Att(8, p(1))))),
+  Msg([Must specIfy an Excel wOrkbook first], 2),
+  Do(
+   valFrames := FramesPerSecond,
+   SetFramesPerSecond(0),
+   SetAtt(9, -(Att(9, p(1)), 1), p(1)),
+   SetAtt(10, -(Att(10, p(1)),1), p(1)),
+   If(DDEReady, DDEClose),
+   If(Not(And(ExcelOpen(TextAtt(8, p(1)), Att(14,p(1))),ExcelSheet(TextAtt(11, p(1))))),
+    If(Confirm(Concat([Either sheet- Or bookname is wrong, Or excel is Not open.], cr, lf,
+     [Do you want to re-open '], ExtractName(TextAtt(8, p(1))),[' book again ?])),
+     Do(ExcelOpen(TextAtt(8, p(1)),Att(14,p(1))), ExcelSheet(TextAtt(11, p(1))))
+    ),
+    do(
+     nrows(atmReference) := Att(12, p(1)),
+     ncols(atmReference) := Att(13, p(1)),
+     Repeat(Att(12, p(1)),
+      Do(
+       Set(v,Count),
+       Repeat(Att(13, p(1)),
+        If(Att(16, p(1)),
+         SetCell(v,Count,ExcelTxRead(+(v,Att(9, p(1))),+(Count,Att(10, p(1)))),atmReference),
+         SetCell(v,Count,ExcelRead(+(v,Att(9, p(1))),+(Count,Att(10, p(1)))),atmReference)
+        )
+       )
+      )
+     )
+    )
+   ),
+   NormalCursor,
+   Inc(Att(9, p(1))), Inc(Att(10, p(1))),
+   FramesPerSecond := valFrames
+  )
+ )
+)
+], [p(1) as ExcelTableRead
+Result: Boolean. Copies the data from the Excel worksheet into the table of the specified atom.
+], [Enter Syntax Example], 0, [ExcelTableRead.atm]);
+Set(Icon(a), 
+	RegisterIcon(pDir([media\images\default.jpg]), [default.jpg]));
+SetMaterial(
+	RegisterMaterial([Default], 8421504, 8421504, 3289650, 0, 0.100000001490116, 0, false, false, 1, 0), 1, a);
+Set(Version(a), 7.3);
+SetTreeIcon(pDir([Media\Icons\ExcelRead2k.ico]));
+Set(Info, [Copy data from excel in to a table
+
+General
+------------
+This atom has all the functionality of the Table atom, 
+PLUS the ability to copy in data from a sheet in an Excel Workbook.
+
+The data can be copied to a table on this atom, or any other atom.
+The copying of the data can be done on reset or by request.
+
+Rightclick:
+Open the GUI.
+
+Last revision:
+-------------------
+February, 2008
+]);
+Set(DdbRec, [>t-alloworganize:1.]);
+SetChannels(0, 1);
+SetChannelRanges(0, 0, 1, 255);
+int001(40);
+SetSize(8, 2, 1);
+LockPosition(false);
+LockSize(false);
+DisableIconRotation(false);
+SetProductCode([]);
+CreateAttributes(18);
+SetAttributeName(r(1), [tablename]);
+SetAttributeName(r(2), [createfunctions]);
+SetAttributeName(r(3), [oldname]);
+SetAttributeName(r(4), [createalias]);
+SetAttributeName(r(5), [nrows]);
+SetAttributeName(r(6), [ncols]);
+SetAttributeName(r(7), [link]);
+SetAttributeName(r(8), [bookname]);
+SetAttributeName(r(9), [startrow]);
+SetAttributeName(r(10), [startcolumn]);
+SetAttributeName(r(11), [sheetname]);
+SetAttributeName(r(12), [readrows]);
+SetAttributeName(r(13), [readcols]);
+SetAttributeName(r(14), [viewexcel]);
+SetAttributeName(r(15), [onreset]);
+SetAttributeName(r(16), [copyastext]);
+SetAttributeName(r(17), [NOTUSED]);
+SetAttributeName(r(18), [atomref]);
+SetTextAtt(r(1), [untitled]);
+SetExprAtt(r(2), [set(
+ oninit,
+ concat(
+  [
+  do(
+   registerfunction(   
+    ],
+    sbo,textatt(1),sbc,
+    [,
+    [Basic],
+    2,
+    2,
+    concat([cell(p(1),p(2),vtp(],string(ptv),[))]),
+    [returns table value e1,e2],
+    [No example],
+    true,[ExcelTableRead.atm]
+   ),
+   registerfunction(
+    ],
+    sbo,concat([set],textatt(1)),sbc,
+    [,
+    [Basic],
+    3,
+    3,
+    concat([setcell(p(1),p(2),p(3),vtp(],string(ptv),[))]),
+    [sets table e1,e2 to e3],
+    [No example],
+    true,[ExcelTableRead.atm]
+   ),
+
+   registerfunction(
+    ],
+    sbo,concat([ref],textatt(1)),sbc,
+    [,
+    [Basic],
+    0,
+    0,
+    concat([vtp(],string(ptv),[)]),
+    [reference to the table with an alias],
+    [No example],
+    true,[ExcelTableRead.atm]
+   )
+
+  )
+  ]
+ )
+)]);
+SetAtt(r(4), 1);
+SetAtt(r(5), 5);
+SetAtt(r(6), 5);
+SetAtt(r(7), 1);
+SetTextAtt(r(8), [untitled]);
+SetAtt(r(9), 1);
+SetAtt(r(10), 1);
+SetTextAtt(r(11), [Sheet1]);
+SetAtt(r(12), 5);
+SetAtt(r(13), 5);
+SetAtt(r(14), 1);
+SetAtt(r(16), 1);
+SetTextAtt(r(18), [c]);
+int024;
+Set(OnCreation, [SetRank(1, c)
+]);
+Set(OnDestruction, [Do(
+ InvalidateFunction(TextAtt(1, c)),
+ InvalidateFunction(Concat([set],TextAtt(1, c))),
+ InvalidateFunction(Concat([ref],TextAtt(1, c))),
+ If(DDEReady, ExcelClose)
+)
+]);
+Set(OnReset, [Do(
+ Set(Name(c), TextAtt(1, c)),
+ If(
+  Att(15, c),
+  If(
+   Or(CompareText(Att(8, c), [untitled]), Not(FileExists(Att(8, c)))),
+   Msg([Must specify an Excel workbook and worksheet first], 2),
+   ExcelTableRead_CopyData(c)
+  )
+ )
+)
+]);
+Set(OnUser, [Do(
+ { Delete any current instances of this form.} 
+ GuiDestroy([ExcelTableRead]),
+
+ { Register the GUI-form for this atom.}
+ GuiRegister(PDir([\Atoms\ExcelTableRead.gui]), 1),
+
+ { Show the GUI-form.}
+ Guicreate([ExcelTableRead], [ExcelTableRead], 0, c, 0, 1)
+)
+]);
+Set(On2DDraw, [Draw2Dicon(3, [ExcelTableRead], TextAtt(1,c))
+]);
+Set(OnMessage, [case(
+ message,
+ ExcelTableRead_CopyData(c),
+ edittable(att(18, c))
+)
+]);
+SetStatus(0);
+int018;
+int007;

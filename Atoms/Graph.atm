@@ -1,0 +1,101 @@
+
+
+{Atom: Graph}
+
+sets;
+BaseClass;
+createAtom(a, s, [], 1, false);
+Set(OnInit, [
+]);
+int023([Graph], 4230289, 32);
+Set(Icon(a), 
+	RegisterIcon(pDir([Media\Images\atoms\graph.bmp]), [graph]));
+SetMaterial(
+	RegisterMaterial([Default], 8421504, 8421504, 3289650, 0, 0.100000001490116, 0, false, false, 1, 0), 1, a);
+Set(Version(a), 7.3);
+SetTreeIcon(pDir([Media\Icons\Graph.ico]));
+Set(Info, [Define your own graphs.
+
+General
+------------
+User defined graph. Provides an editing window where the user 
+can specify a graph (title, footer and left text, number of data 
+points, number of data series, data values and labels (4DScript 
+expressions), graphtype (like bar graph, pie chart, etc) and display 
+ranges. By double clicking the atom the specified graph shows. 
+
+To facilitate easy display of data of other atoms the atom has N 
+inputchannels. These can be connected to the central channels of 
+any atom that one wants to query data from.
+
+Last Revision:
+---------------------
+February, 2008
+]);
+Set(DdbRec, [>t-alloworganize:1.]);
+SetChannels(1, 0);
+SetChannelRanges(0, 255, 0, 0);
+int001(73);
+SetSize(5, 2, 0);
+LockPosition(false);
+LockSize(false);
+DisableIconRotation(false);
+SetProductCode([]);
+createAttributes(13);
+SetAttributeName(r(1), [Title]);
+SetAttributeName(r(2), [Left]);
+SetAttributeName(r(3), [Bottom]);
+SetAttributeName(r(4), [Nseries]);
+SetAttributeName(r(5), [Npoints]);
+SetAttributeName(r(6), [ValueExpr]);
+SetAttributeName(r(7), [LabelExpr]);
+SetAttributeName(r(8), [GrType]);
+SetAttributeName(r(9), [Xmin]);
+SetAttributeName(r(10), [Xmax]);
+SetAttributeName(r(11), [Ymin]);
+SetAttributeName(r(12), [Ymax]);
+SetAttributeName(r(13), [AutoY]);
+SetTextAtt(r(1), [Graph Title]);
+SetTextAtt(r(2), [Left Information]);
+SetTextAtt(r(3), [Bottom Information]);
+SetExprAtt(r(4), [1]);
+SetExprAtt(r(5), [100]);
+SetExprAtt(r(6), [gp]);
+SetExprAtt(r(7), [string(gp)]);
+SetAtt(r(8), 1);
+SetExprAtt(r(9), [1]);
+SetExprAtt(r(10), [100]);
+SetExprAtt(r(11), [0]);
+SetExprAtt(r(12), [100]);
+SetExprAtt(r(13), [1]);
+int024;
+Set(OnUser, [if(
+ DoubleClick,
+
+ Do(
+  { Delete any current instances of this form.} 
+  GuiDestroy([Graph]),
+ 
+  { Register the GUI-form for this atom.}
+  GuiRegister(PDir([\Atoms\Graph.gui]), 1),
+ 
+  { Show the GUI-form.}
+  Guicreate([Graph], [Graph], 0, c, 0, 1)
+ ),
+ 
+ do(
+  initgraph(
+   setgraphtitles(textatt(1, c),textatt(3, c),textatt(2, c)),
+   setgraphtype(att(8, c)),
+   setgraphdata(att(4, c),att(5, c),att(6, c),att(7, c)),
+   if(=(att(13, c),0),setgraphyaxis(att(11, c),att(12, c))),
+   displaygraph
+  )
+ )
+)
+]);
+Set(On2DDraw, [Draw2DIcon(3, [Graph], Name)
+]);
+SetStatus(0);
+int018;
+int007;

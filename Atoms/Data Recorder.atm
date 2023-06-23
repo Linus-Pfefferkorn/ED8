@@ -1,0 +1,341 @@
+
+
+{Preregister functions}
+
+PreregisterFunction([DataRecorder_MaybeDeleteAliases], 1, 1);
+PreregisterFunction([DataRecorder_MaybeCreateAliases], 1, 1);
+PreregisterFunction([DataRecorder_CreateAliases], 1, 1);
+PreregisterFunction([DataRecorder_DeleteAliases], 1, 1);
+PreregisterFunction([DataRecorder_Init], 1, 1);
+PreregisterFunction([DataRecorder_UpgradeAtom], 1, 1);
+PreregisterFunction([DataRecorder_OnCreation], 1, 1);
+PreregisterFunction([DataRecorder_Disconnect], 1, 1);
+PreregisterFunction([DataRecorder_SetRefWorkbookName], 2, 2);
+PreregisterFunction([DataRecorder_GetRefWorkbookName], 1, 1);
+PreregisterFunction([DataRecorder_SetRefWorkbook], 2, 2);
+PreregisterFunction([DataRecorder_GetRefWorkbook], 1, 1);
+PreregisterFunction([DataRecorder_SetCreateAlias], 2, 2);
+PreregisterFunction([DataRecorder_GetCreateAlias], 1, 1);
+PreregisterFunction([DataRecorder_SetAliasesCreated], 2, 2);
+PreregisterFunction([DataRecorder_GetAliasesCreated], 1, 1);
+PreregisterFunction([DataRecorder_SetAliasName], 2, 2);
+PreregisterFunction([DataRecorder_GetAliasName], 1, 1);
+PreregisterFunction([DataRecorder_GetExcelEnabled], 1, 1);
+PreregisterFunction([DataRecorder_SetExcelEnabled], 2, 2);
+PreregisterFunction([DataRecorder_GetStartColumnExcel], 1, 1);
+PreregisterFunction([DataRecorder_SetStartColumnExcel], 2, 2);
+PreregisterFunction([DataRecorder_GetExcelName], 1, 1);
+PreregisterFunction([DataRecorder_SetExcelName], 2, 2);
+PreregisterFunction([DataRecorder_GetCurrentRowExcel], 1, 1);
+PreregisterFunction([DataRecorder_SetCurrentRowExcel], 2, 2);
+PreregisterFunction([DataRecorder_GetExcelSheet], 1, 1);
+PreregisterFunction([DataRecorder_SetExcelSheet], 2, 2);
+PreregisterFunction([DataRecorder_GetStartRowExcel], 1, 1);
+PreregisterFunction([DataRecorder_SetStartRowExcel], 2, 2);
+PreregisterFunction([DataRecorder_GetViewExcel], 1, 1);
+PreregisterFunction([DataRecorder_SetViewExcel], 2, 2);
+PreregisterFunction([DataRecorder_GetTableEnabled], 1, 1);
+PreregisterFunction([DataRecorder_SetTableEnabled], 2, 2);
+PreregisterFunction([DataRecorder_GetFlag], 1, 1);
+PreregisterFunction([DataRecorder_SetFlag], 2, 2);
+PreregisterFunction([DataRecorder_GetTimeInterval], 1, 1);
+PreregisterFunction([DataRecorder_SetTimeInterval], 2, 2);
+PreregisterFunction([DataRecorder_GetCriteria], 1, 1);
+PreregisterFunction([DataRecorder_SetCriteria], 2, 2);
+PreregisterFunction([DataRecorder_GetAnalyseStart], 1, 1);
+PreregisterFunction([DataRecorder_SetAnalyseStart], 2, 2);
+PreregisterFunction([DataRecorder_GetAnalyseDuration], 1, 1);
+PreregisterFunction([DataRecorder_SetAnalyseDuration], 2, 2);
+PreregisterFunction([DataRecorder_GetNRVariables], 1, 1);
+PreregisterFunction([DataRecorder_SetNRVariables], 2, 2);
+PreregisterFunction([DataRecorder_RepairAliasOnPaste], 1, 1);
+PreregisterFunction([DataRecorder_NeedsUpgrade81], 1, 1);
+PreregisterFunction([DataRecorder_IsConnected], 1, 1);
+PreregisterFunction([DataRecorder_ExcelOpen], 3, 3);
+PreregisterFunction([DataRecorder_ExcelNew], 3, 3);
+
+
+{Atom: Data Recorder}
+
+sets;
+BaseClass;
+CreateAtom(a, s, [], 1, false);
+Set(OnInit, [Do(   {**Load Table atom if required**} if(not(AtomExists(AtomByName([table]),Library)), int035([table], pDir([Atoms\table.atm]))   ), {**Load ExcelActiveX atom if required**} if(not(AtomExists(AtomByName([ExcelActiveX]),Library)), int035([ExcelActiveX], pDir([Atoms\ExcelActiveX.atm]))   ),  { variables for the datarecorder } dim([DATA_RECORDER_NR_ATTRIBUTES], vbValue, 22))]);
+int023([Data Recorder], 16512, 32);
+DefineFunction([DataRecorder_MaybeDeleteAliases], [Tables], 1, 1, [do( var([atmTable], vbAtom, p(1)), { if necessary, delete the aliases } if(  DataRecorder_GetAliasesCreated(atmTable),  DataRecorder_DeleteAliases(atmTable) ))], [Internal function of the DataRecorder atom to test if the aliasses need to be deleted for the table of the DataRecorder.], [DataRecorder_MaybeDeleteAliases(c)], 0, [Data Recorder.atm]);
+DefineFunction([DataRecorder_MaybeCreateAliases], [Tables], 1, 1, [do( var([atmTable], vbAtom, p(1)),  { will be overridden by DataRecorder_CreateAliases, if that function is run } DataRecorder_SetAliasesCreated(atmTable, 0),  if(  DataRecorder_GetCreateAlias(atmTable),  { Aliases must be created }  if(   Table_CheckAliasFit(DataRecorder_GetAliasName(atmTable), atmTable),   DataRecorder_CreateAliases(atmTable)  ) ))], [Internal function of the DataRecorder atom to test if aliasses can and need to be created for the table of the DataRecorder.], [DataRecorder_MaybeCreateAliases(c)], 0, [Data Recorder.atm]);
+DefineFunction([DataRecorder_CreateAliases], [Tables], 1, 1, [do( var([atmTable], vbAtom, p(1)),  var([strCodeGetvalue], vbString),  var([strCodeSetvalue], vbString),  var([strCodeRef], vbString),    strCodeGetvalue := { cell(p(1), p(2), vtp(ptv(atmTable))) }  Concat(   [cell(p(1),p(2),vtp(],   String(ptv(atmTable)),   [))]  ),  DefineFunction(     Table_GetAliasName(atmTable),            { Name }  [Basic],                                 { Category }              2, 2,                                    { Parameters Min, Max }  strCodeGetvalue,                         { Code }  [Returns the value of cell(e1, e2)],     { Help Text }  [No example],                            { Syntax Example }  True,                                    { Scope }   [Table.atm]                              { Creator }  ),    strCodeSetvalue :=  { setcell(p(1), p(2), p(3), vtp(ptv(atmTable))) }  Concat(                                         [setcell(p(1),p(2),p(3),vtp(],   string(ptv(atmTable)),   [))]  ),   DefineFunction(     Concat([Set], Table_GetAliasName(atmTable)),   { Name }    [Basic],                                       { Category }              3, 3,                                          { Parameters Min, Max }  strCodeSetvalue,                               { Code }  [Sets cell(e1, e2) to value e3],               { Help Text }  [No example],                                  { Syntax Example }  True,                                          { Scope }   [Table.atm]                                    { Creator }   ), strCodeRef :=  { vtp(ptv(atmTable))) }  Concat(                                         [vtp(],   String(ptv(atmTable)),   [)]  ), DefineFunction(     Concat([Ref], Table_GetAliasName(atmTable)),   { Name }    [Basic],                                       { Category }              0, 0,                                          { Parameters Min, Max }  strCodeRef,                                    { Code }  [An atom reference to the table with an alias],{ Help Text }  Concat([Ref], Table_GetAliasName(atmTable)),   { Syntax Example }  True,                                          { Scope }   [Table.atm]                                    { Creator }   ),      { Set attribute AliasesCreated to show that the functions have been created } DataRecorder_SetAliasesCreated(atmTable,1))], [Defines 3 function on the atom To Read Write and Reference to the Table of the DataRecorder], [DataRecorder_CreateAliases(c)], 0, [Data Recorder.atm]);
+DefineFunction([DataRecorder_DeleteAliases], [Tables], 1, 1, [Do( var([atmTable], vbAtom, p(1)),   if(  IndexMatch(   NrFunctionsOnAtom(atmTable),   FunctionOnAtomName(atmTable, Count),   DataRecorder_GetAliasName(atmTable)  ) > 0,    { then undefine the functions }  Do(   if(FunctionExists(DataRecorder_GetAliasName(atmTable)), UnDefineFunction(DataRecorder_GetAliasName(atmTable))),   if(FunctionExists(Concat([ref],DataRecorder_GetAliasName(atmTable))), UnDefineFunction(Concat([ref],DataRecorder_GetAliasName(atmTable)))),   if(FunctionExists(Concat([set],DataRecorder_GetAliasName(atmTable))), UnDefineFunction(Concat([set],DataRecorder_GetAliasName(atmTable))))  ),    { else unregister the functions }  Do(   {ckeck if the function are from this DataRecorder and not from an original that has been copied}   var([strRef], vbString, Concat([ref], DataRecorder_GetAliasName(atmTable))),   if(    And(FunctionExists(strRef), AtomID(ExecString(strRef)) = AtomID(atmTable)),    Do(      if(FunctionExists(DataRecorder_GetAliasName(atmTable)), UnregisterFunction(DataRecorder_GetAliasName(atmTable))),     if(FunctionExists(Concat([ref],DataRecorder_GetAliasName(atmTable))), UnregisterFunction(Concat([ref],DataRecorder_GetAliasName(atmTable)))),     if(FunctionExists(Concat([set],DataRecorder_GetAliasName(atmTable))), UnregisterFunction(Concat([set],DataRecorder_GetAliasName(atmTable))))    )   )  ) ), DataRecorder_SetAliasesCreated(atmTable, 0) { to show the functions are not there anymore })], [Undefines or unregister the aliases for the table of the DataRecorder], [DataRecorder_DeleteAliases(c)], 0, [Data Recorder.atm]);
+DefineFunction([DataRecorder_Init], [Various], 1, 1, [do(
+ 
+ LateInit(
+  [
+   Do(
+    DataRecorder_MaybeDeleteAliases(c),
+    DataRecorder_MaybeCreateAliases(c),
+    If(Content(c) > 0, ExcelActiveX_Init(Last(c)))
+   )
+  ]
+ )
+
+)
+
+], [To initialize the DataRecorder. To redefine the aliasses of the DataRecorder
+], [DataRecorder_Init(c)], 0, [Data Recorder.atm]);
+DefineFunction([DataRecorder_UpgradeAtom], [Various], 1, 1, [{ This function is to upgrade the data recorder atom.  From ED8.0 to ED 8.1 The Registered functions are replaced by DefineFunction  Also other changes were made.}Do( var([atmTable], vbAtom, p(1)),   { old versions of the DataRecorder atom have a string in the AliasesCreated attribute if they had an alias } if(  DataRecorder_NeedsUpgrade81(atmTable),  DataRecorder_SetAliasesCreated(atmTable, 1) ),   DataRecorder_MaybeDeleteAliases(atmTable),  { the old version checked for untitled every time it tried to create aliases,   the new version doesn't. Here we do it once and for all. } if(  CompareText(DataRecorder_GetAliasName(atmTable), [untitled]),  DataRecorder_SetCreateAlias(atmTable, 0) ),  DataRecorder_OnCreation(atmTable))], [Ugrade DataRecorder to ED8.1], [DataRecorder_UpgradeAtom(c)], 0, [Data Recorder.atm]);
+DefineFunction([DataRecorder_OnCreation], [Various], 1, 1, [do( var([atmTable], vbAtom, p(1)),  { Suppress OnCreation calls while loading from file } if(StringLength(Name(atmTable)) = 0, return(0)),  DataRecorder_MaybeCreateAliases(atmTable), Set(OnInit, [DataRecorder_Init(c)]) )], [Internal function of the DataRecorder atom containing the OnCreation actions.], [DataRecorder_OnCreation(c)], 0, [Data Recorder.atm]);
+DefineFunction([DataRecorder_Disconnect], [Office], 1, 1, [do(
+ var([atmDataRec], vbAtom, p(1)), 
+
+ if(
+  DataRecorder_IsConnected(atmDataRec),
+  Do(
+   var([atmExcel], vbAtom, Last(c)),
+   DestroyAtom(atmExcel)
+  )
+ )
+)
+], [Disconnect the excel connection of Data Recorder atom e1.], [DataRecorder_Disconnect(c)], 0, [Data Recorder.atm]);
+DefineFunction([DataRecorder_SetRefWorkbookName], [Atom Parameters], 2, 2, [TextAtt(22, p(1)) := p(2)], [Sets the string value of attribute RefWorkbookName (# 22) of Data Recorder e1 to e2], [DataRecorder_SetRefWorkbookName(c, [TableName])], 0, [Data Recorder.atm]);
+DefineFunction([DataRecorder_GetRefWorkbookName], [Atom Parameters], 1, 1, [TextAtt(22, p(1))], [Returns the string value of attribute RefWorkbookName (# 22) of Data Recorder e1], [DataRecorder_GetRefWorkbookName(c)], 0, [Data Recorder.atm]);
+DefineFunction([DataRecorder_SetRefWorkbook], [Atom Parameters], 2, 2, [Att(21, p(1)) := p(2)], [Sets the value of attribute RefWorkbook (# 21) of Data Recorder e1 to e2], [DataRecorder_SetRefWorkbook(c, 1)], 0, [Data Recorder.atm]);
+DefineFunction([DataRecorder_GetRefWorkbook], [Atom Parameters], 1, 1, [Att(21, p(1))], [Returns the value of attribute RefWorkbook (# 21) of Data Recorder e1], [DataRecorder_GetRefWorkbook(c)], 0, [Data Recorder.atm]);
+DefineFunction([DataRecorder_SetCreateAlias], [Atom Parameters], 2, 2, [Att(4, p(1)) := p(2)], [Sets the value of attribute CreateAlias (# 4) of Data Recorder e1 to e2], [DataRecorder_SetCreateAlias(c, 1)], 0, [Data Recorder.atm]);
+DefineFunction([DataRecorder_GetCreateAlias], [Atom Parameters], 1, 1, [Att(4, p(1))], [Returns the value of attribute CreateAlias (# 4) of Data Recorder e1], [DataRecorder_GetCreateAlias(c)], 0, [Data Recorder.atm]);
+DefineFunction([DataRecorder_SetAliasesCreated], [Atom Parameters], 2, 2, [Att(3, p(1)) := p(2)], [Sets the value of attribute AliasesCreated (# 3) of Data Recorder e1 to e2], [DataRecorder_SetAliasesCreated(c, 1)], 0, [Data Recorder.atm]);
+DefineFunction([DataRecorder_GetAliasesCreated], [Atom Parameters], 1, 1, [Att(3, p(1))], [Returns the value of attribute AliasesCreated (# 3) of Data Recorder e1], [DataRecorder_GetAliasesCreated(c)], 0, [Data Recorder.atm]);
+DefineFunction([DataRecorder_SetAliasName], [Atom Parameters], 2, 2, [TextAtt(1, p(1)) := p(2)], [Sets the string value of attribute AliasName (# 1) of Data Recorder e1 to e2], [DataRecorder_SetAliasName(c, [TableName])], 0, [Data Recorder.atm]);
+DefineFunction([DataRecorder_GetAliasName], [Atom Parameters], 1, 1, [TextAtt(1, p(1))], [Returns the string value of attribute AliasName (# 1) of Data Recorder e1], [DataRecorder_GetAliasName(c)], 0, [Data Recorder.atm]);
+DefineFunction([DataRecorder_GetExcelEnabled], [Atom Parameters], 1, 1, [Att(7, p(1))], [Returns the value of attribute ExcelEnabled (# 7) of Data Recorder e1], [DataRecorder_GetExcelEnabled(c)], 0, [Data Recorder.atm]);
+DefineFunction([DataRecorder_SetExcelEnabled], [Atom Parameters], 2, 2, [Att(7, p(1)) := p(2)], [Sets the value of attribute ExcelEnabled (# 7) of Data Recorder e1 to e2], [DataRecorder_SetExcelEnabled(c, 1)], 0, [Data Recorder.atm]);
+DefineFunction([DataRecorder_GetStartColumnExcel], [Atom Parameters], 1, 1, [Att(16, p(1))], [Returns the value of attribute StartColumnExcel (# 16) of Data Recorder e1], [DataRecorder_GetStartColumnExcel(c)], 0, [Data Recorder.atm]);
+DefineFunction([DataRecorder_SetStartColumnExcel], [Atom Parameters], 2, 2, [Att(16, p(1)) := p(2)], [Sets the value of attribute StartColumnExcel (# 16) of Data Recorder e1 to e2], [DataRecorder_SetStartColumnExcel(c, 1)], 0, [Data Recorder.atm]);
+DefineFunction([DataRecorder_GetExcelName], [Atom Parameters], 1, 1, [TextAtt(8, p(1))], [Returns the string value of attribute ExcelName (# 8) of Data Recorder e1], [DataRecorder_GetExcelName(c)], 0, [Data Recorder.atm]);
+DefineFunction([DataRecorder_SetExcelName], [Atom Parameters], 2, 2, [TextAtt(8, p(1)) := p(2)], [Sets the string value of attribute ExcelName (# 8) of Data Recorder e1 to e2], [DataRecorder_SetExcelName(c, [TableName])], 0, [Data Recorder.atm]);
+DefineFunction([DataRecorder_GetCurrentRowExcel], [Atom Parameters], 1, 1, [Att(11, p(1))], [Returns the value of attribute CurrentRowExcel (# 11) of Data Recorder e1], [DataRecorder_GetCurrentRowExcel(c)], 0, [Data Recorder.atm]);
+DefineFunction([DataRecorder_SetCurrentRowExcel], [Atom Parameters], 2, 2, [Att(11, p(1)) := p(2)], [Sets the value of attribute CurrentRowExcel (# 11) of Data Recorder e1 to e2], [DataRecorder_SetCurrentRowExcel(c, 1)], 0, [Data Recorder.atm]);
+DefineFunction([DataRecorder_GetExcelSheet], [Atom Parameters], 1, 1, [TextAtt(9, p(1))], [Returns the string value of attribute ExcelSheet (# 9) of Data Recorder e1], [DataRecorder_GetExcelSheet(c)], 0, [Data Recorder.atm]);
+DefineFunction([DataRecorder_SetExcelSheet], [Atom Parameters], 2, 2, [TextAtt(9, p(1)) := p(2)], [Sets the string value of attribute ExcelSheet (# 9) of Data Recorder e1 to e2], [DataRecorder_SetExcelSheet(c, [TableName])], 0, [Data Recorder.atm]);
+DefineFunction([DataRecorder_GetStartRowExcel], [Atom Parameters], 1, 1, [Att(10, p(1))], [Returns the value of attribute StartRowExcel (# 10) of Data Recorder e1], [DataRecorder_GetStartRowExcel(c)], 0, [Data Recorder.atm]);
+DefineFunction([DataRecorder_SetStartRowExcel], [Atom Parameters], 2, 2, [Att(10, p(1)) := p(2)], [Sets the value of attribute StartRowExcel (# 10) of Data Recorder e1 to e2], [DataRecorder_SetStartRowExcel(c, 1)], 0, [Data Recorder.atm]);
+DefineFunction([DataRecorder_GetViewExcel], [Atom Parameters], 1, 1, [Att(13, p(1))], [Returns the value of attribute ViewExcel (# 13) of Data Recorder e1], [DataRecorder_GetViewExcel(c)], 0, [Data Recorder.atm]);
+DefineFunction([DataRecorder_SetViewExcel], [Atom Parameters], 2, 2, [Att(13, p(1)) := p(2)], [Sets the value of attribute ViewExcel (# 13) of Data Recorder e1 to e2], [DataRecorder_SetViewExcel(c, 1)], 0, [Data Recorder.atm]);
+DefineFunction([DataRecorder_GetTableEnabled], [Atom Parameters], 1, 1, [Att(14, p(1))], [Returns the value of attribute TableEnabled (# 14) of Data Recorder e1], [DataRecorder_GetTableEnabled(c)], 0, [Data Recorder.atm]);
+DefineFunction([DataRecorder_SetTableEnabled], [Atom Parameters], 2, 2, [Att(14, p(1)) := p(2)], [Sets the value of attribute TableEnabled (# 14) of Data Recorder e1 to e2], [DataRecorder_SetTableEnabled(c, 1)], 0, [Data Recorder.atm]);
+DefineFunction([DataRecorder_GetFlag], [Atom Parameters], 1, 1, [Att(20, p(1))], [Returns the value of attribute Flag (# 20) of Data Recorder e1], [DataRecorder_GetFlag(c)], 0, [Data Recorder.atm]);
+DefineFunction([DataRecorder_SetFlag], [Atom Parameters], 2, 2, [Att(20, p(1)) := p(2)], [Sets the value of attribute Flag (# 20) of Data Recorder e1 to e2], [DataRecorder_SetFlag(c, 1)], 0, [Data Recorder.atm]);
+DefineFunction([DataRecorder_GetTimeInterval], [Atom Parameters], 1, 1, [Att(12, p(1))], [Returns the result of the 4D script expression of attribute TimeInterval (# 12) of Data Recorder e1], [DataRecorder_GetTimeInterval(c)], 0, [Data Recorder.atm]);
+DefineFunction([DataRecorder_SetTimeInterval], [Atom Parameters], 2, 2, [SetExprAtt(12, p(2), p(1))], [Sets the 4D script expression of attribute TimeInterval (# 12) of Data Recorder e1 to e2], [DataRecorder_SetTimeInterval(c, [NegExp(9)])], 0, [Data Recorder.atm]);
+DefineFunction([DataRecorder_GetCriteria], [Atom Parameters], 1, 1, [Att(17, p(1))], [Returns the result of the 4D script expression of attribute Criteria (# 17) of Data Recorder e1], [DataRecorder_GetCriteria(c)], 0, [Data Recorder.atm]);
+DefineFunction([DataRecorder_SetCriteria], [Atom Parameters], 2, 2, [SetExprAtt(17, p(2), p(1))], [Sets the 4D script expression of attribute Criteria (# 17) of Data Recorder e1 to e2], [DataRecorder_SetCriteria(c, [NegExp(9)])], 0, [Data Recorder.atm]);
+DefineFunction([DataRecorder_GetAnalyseStart], [Atom Parameters], 1, 1, [Att(18, p(1))], [Returns the result of the 4D script expression of attribute AnalyseStart (# 18) of Data Recorder e1], [DataRecorder_GetAnalyseStart(c)], 0, [Data Recorder.atm]);
+DefineFunction([DataRecorder_SetAnalyseStart], [Atom Parameters], 2, 2, [SetExprAtt(18, p(2), p(1))], [Sets the 4D script expression of attribute AnalyseStart (# 18) of Data Recorder e1 to e2], [DataRecorder_SetAnalyseStart(c, [NegExp(9)])], 0, [Data Recorder.atm]);
+DefineFunction([DataRecorder_GetAnalyseDuration], [Atom Parameters], 1, 1, [Att(19, p(1))], [Returns the result of the 4D script expression of attribute AnalyseDuration (# 19) of Data Recorder e1], [DataRecorder_GetAnalyseDuration(c)], 0, [Data Recorder.atm]);
+DefineFunction([DataRecorder_SetAnalyseDuration], [Atom Parameters], 2, 2, [SetExprAtt(19, p(2), p(1))], [Sets the 4D script expression of attribute AnalyseDuration (# 19) of Data Recorder e1 to e2], [DataRecorder_SetAnalyseDuration(c, [NegExp(9)])], 0, [Data Recorder.atm]);
+DefineFunction([DataRecorder_GetNRVariables], [Atom Parameters], 1, 1, [Att(15, p(1))], [Returns the value of attribute NRVariables (# 15) of Data Recorder e1], [DataRecorder_GetNRVariables(c)], 0, [Data Recorder.atm]);
+DefineFunction([DataRecorder_SetNRVariables], [Atom Parameters], 2, 2, [Att(15, p(1)) := p(2)], [Sets the value of attribute NRVariables (# 15) of Data Recorder e1 to e2], [DataRecorder_SetNRVariables(c, 1)], 0, [Data Recorder.atm]);
+DefineFunction([DataRecorder_RepairAliasOnPaste], [Various], 1, 1, [do( var([atmDataRecorder], vbAtom, p(1)),  If(  DataRecorder_GetCreateAlias(atmDataRecorder) = 1,  Do(   var([strRef], vbString, Concat([ref], DataRecorder_GetAliasName(atmDataRecorder))),      if(    And(FunctionExists(strRef), AtomID(ExecString(strRef)) <> AtomID(atmDataRecorder)),    Do(     {this atom is a copy and the original has aliases}          {Aliasses have not been created for the copy thus should be 0}     DataRecorder_SetAliasesCreated(atmDataRecorder, 0),          {Remove the global variable declaration on the oninit event }     OnInit(atmDataRecorder) := [],          {Also set CreateAlias of atmDataRecorder to zero}     DataRecorder_SetCreateAlias(atmDataRecorder, 0)    )   )  ) ) )], [For internal use. Necessary to make sure that when a table is copied, its aliases still belong to the right atom and not to the copy.], [DataRecorder_RepairAliasOnPaste(c)], 0, [DataRecorder.atm]);
+DefineFunction([DataRecorder_NeedsUpgrade81], [Various], 1, 1, [not(IsNumeric(String(DataRecorder_GetAliasesCreated(p(1)))))], [Returns 1 if this is an old style data recorder atom], [DataRecorder_NeedsUpgrade81(c)], 0, [DataRecorder.atm]);
+DefineFunction([DataRecorder_IsConnected], [Office], 1, 1, [do( var([atmDataRecorder], vbAtom, p(1)), var([valIsConnected], vbValue, 0),  if(  Content(atmDataRecorder) > 0,  Do(   var([atmExcelAtom], vbAtom, Last(atmDataRecorder)),   valIsConnected := ExcelActiveX_IsConnected(atmExcelAtom)  ) ), valIsConnected)], [Checks if the Data Recorder atom e1 is still connected to the workbook, i.e., it checks if the workbook reference of atom e1 still holds a valid ole reference.], [DataRecorder_IsConnected(c)], 0, [DataRecorder.atm]);
+DefineFunction([DataRecorder_ExcelOpen], [Office], 3, 3, [do( var([strPath], vbString, p(1)), var([valVisible], vbValue, p(2)), var([atmDataRec], vbAtom, p(3)),  var([atmExcel], vbAtom), var([oleWorkbook], vbOle),  {if no ExcelActiveX child atom exist create it to hold the Excel connection.} if(  content(atmDataRec) = 0,  atmExcel := CreateAtom(AtomByName([ExcelActiveX], Library), atmDataRec, [innerExcelAtomA]),  If(    CompareText(Name(m(Last(atmDataRec))), [ExcelActiveX]),   atmExcel := Last(atmDataRec),   atmExcel := CreateAtom(AtomByName([ExcelActiveX], Library), atmDataRec, [innerExcelAtomB])  ) ), oleWorkBook := ExcelActiveX_GetRefWorkbook(atmExcel),  if(  OleExists(oleWorkbook) = 0,  oleWorkbook := ExcelActiveX_Open(   strPath,   valVisible,   atmExcel) ),  { Excel may have changed the filename. } DataRecorder_SetExcelName(atmDataRec, ExcelActiveX_GetFileName(atmExcel)),  DataRecorder_SetViewExcel(atmExcel, valVisible), oleWorkbook)    ], [Open Excel workbook e1 and connect it to the DataRecorder e3. If e2 equals 1 Excel will be made visible.], [DataRecorder_ExcelOpen([c:\temp\MyWorkbook.xls], 1, c)], 0, [Data Recorder.atm]);
+DefineFunction([DataRecorder_ExcelNew], [Office], 3, 3, [do( var([strPath], vbString, p(1)), var([valVisible], vbValue, p(2)), var([atmDataRec], vbAtom, p(3)),  var([atmExcel], vbAtom), var([oleWorkbook], vbOle),  {if no ExcelActiveX child atom exist create it to hold the Excel connection.} if(  content(atmDataRec) = 0,  atmExcel := CreateAtom(AtomByName([ExcelActiveX], Library), atmDataRec, [innerExcelAtomA]),  If(    CompareText(Name(m(Last(atmDataRec))), [ExcelActiveX]),   atmExcel := Last(atmDataRec),   atmExcel := CreateAtom(AtomByName([ExcelActiveX], Library), atmDataRec, [innerExcelAtomB])  ) ), oleWorkbook := ExcelActiveX_New(strPath, valVisible, atmExcel),  { Excel may have changed the filename. } DataRecorder_SetExcelName(atmDataRec, ExcelActiveX_GetFileName(atmExcel)),  DataRecorder_SetViewExcel(atmExcel, valVisible), oleWorkbook)], [Create a new workbook named e1 and connect it with Data Recorder atom e3. If e2 equals 1 Excel will be made visible.], [DataRecorder_ExcelNew([c:\temp\MyWorkbook.xls], 1, c)], 0, [Data Recorder.atm]);
+Set(Icon(a), 
+	RegisterIcon(pDir([media\images\default.jpg]), [default.jpg]));
+SetMaterial(
+	RegisterMaterial([Default], 8421504, 8421504, 3289650, 0, 0.100000001490116, 0, false, false, 1, 0), 1, a);
+Set(Version(a), 8.3);
+SetTreeIcon(pDir([Media\Icons\DataRecorder.ico]));
+Set(Info, [Write data from passing atoms to a table or to Excel.
+
+General
+------------
+This atom is used to collect results from products that pass this atom, 
+therefore this atom should be part of the flow.
+
+The user can define for which products data should be collected and 
+what data will be collected.
+Depending on checkboxes, the data will be written in the table of this 
+atom or in the defined Excel-sheet.
+Each variable will be written in a new column and for each product in 
+a new row.
+
+Channels:
+---------------
+N inputchannel, N outputchannel
+
+Last Revision:
+---------------------
+February, 2008
+]);
+Set(DdbRec, [>t-alloworganize:1.]);
+SetChannels(1, 1);
+SetChannelRanges(1, 255, 1, 1);
+int001(181);
+SetSize(8, 2, 1);
+LockPosition(false);
+LockSize(false);
+DisableIconRotation(false);
+SetProductCode([]);
+CreateAttributes(22);
+SetAttributeName(r(1), [AliasName]);
+SetAttributeName(r(2), [createfunctions]);
+SetAttributeName(r(3), [AliasesCreated]);
+SetAttributeName(r(4), [CreateAlias]);
+SetAttributeName(r(5), [nrows]);
+SetAttributeName(r(6), [ncols]);
+SetAttributeName(r(7), [ExcelEnabled]);
+SetAttributeName(r(8), [ExcelName]);
+SetAttributeName(r(9), [ExcelSheet]);
+SetAttributeName(r(10), [StartRowExcel]);
+SetAttributeName(r(11), [CurrentRowExcel]);
+SetAttributeName(r(12), [TimeInterval]);
+SetAttributeName(r(13), [ViewExcel]);
+SetAttributeName(r(14), [TableEnabled]);
+SetAttributeName(r(15), [NRVariables]);
+SetAttributeName(r(16), [StartColumnExcel]);
+SetAttributeName(r(17), [Criteria]);
+SetAttributeName(r(18), [AnalyseStart]);
+SetAttributeName(r(19), [AnalyseDuration]);
+SetAttributeName(r(20), [Flag]);
+SetAttributeName(r(21), [RefWorkbook]);
+SetAttributeName(r(22), [RefWorkbookName]);
+SetTextAtt(r(1), [untitled]);
+SetAtt(r(5), 1);
+SetAtt(r(6), 5);
+SetTextAtt(r(8), [untitled]);
+SetTextAtt(r(9), [Sheet1]);
+SetAtt(r(10), 1);
+SetAtt(r(11), 1);
+SetExprAtt(r(12), [hr(1)]);
+SetAtt(r(13), 1);
+SetAtt(r(14), 1);
+SetAtt(r(16), 1);
+SetTextAtt(r(17), [{.1|1. measure for all atoms .}1]);
+SetExprAtt(r(18), [0]);
+SetExprAtt(r(19), [hr(8)]);
+int024;
+SetTable(1, 1);
+int015(0, 64, [ 
+1
+]);
+int015(1, 64, [1
+]);
+Set(OnEvent, [case(
+ EventCode,
+
+ {Case-1: On Reset check the connection to Excel and create if necessary.}
+  if(
+  DataRecorder_GetExcelEnabled(c),
+  do(
+   DataRecorder_ExcelOpen(DataRecorder_GetExcelName(c), DataRecorder_GetViewExcel(c), c),
+   if(
+    not(DataRecorder_IsConnected(c)),
+    Do(
+     Stop,
+     Msg([DataRecorder: Could not connect to Excel])
+    )
+   )
+  )
+ ),
+ 
+ {Case-2: Write data for the product. }
+ do(
+  
+ {Write to Table if enabled}
+  if(
+   DataRecorder_GetTableEnabled(c),
+   do(
+    SetTable(DataRecorder_GetCurrentRowExcel(c), DataRecorder_GetNRVariables(c), c),
+    Repeat(
+     DataRecorder_GetNRVariables(c),
+     SetCell(
+      DataRecorder_GetCurrentRowExcel(c), 
+      Count, 
+      {ExecString(att(Count + DATA_RECORDER_NR_ATTRIBUTES, c)),}
+      att(Count + DATA_RECORDER_NR_ATTRIBUTES, c),
+      c
+     )
+    )
+   )
+  ),
+  
+ {Write to Excel if enabled}
+  if(
+   DataRecorder_GetExcelEnabled(c),
+   do(
+    var([atmExcel], vbAtom, Last(c)),
+   
+    if(
+     OleExists(ExcelActiveX_GetRefWorkbook(atmExcel)) = 0,
+     do(
+      Stop, 
+      msg([Excel is not available anymore. Run is stopped !]),
+      return(0)
+      )
+    ),
+     
+    Repeat(
+     DataRecorder_GetNRVariables(c),
+     ExcelActiveX_Write(
+      DataRecorder_GetCurrentRowExcel(c), Count + DataRecorder_GetStartColumnExcel(c) - 1, 
+      {ExecString(att(Count + DATA_RECORDER_NR_ATTRIBUTES, c)),}
+      att(Count + DATA_RECORDER_NR_ATTRIBUTES, c),
+      DataRecorder_GetExcelSheet(c), atmExcel
+     )  
+    )
+    
+   )
+  ),
+  inc(att(11,c)), {CurrentRowExcel}
+  
+  {Data is collected channels can be opened. }
+  CreateEvent(0,c,3)
+ ),
+ 
+{Case-3}
+ OpenAllOC(c),
+ 
+{Case-4}
+ OpenAllIC(c)
+)
+]);
+Set(OnEntered, [do( CloseAllIC(c),  {Make sure that the product atom is before a possible ExcelActiveX atom} SetRank(1, Last(c)),   if(  and(    Time >= DataRecorder_GetAnalyseStart(c),   DataRecorder_GetCurrentRowExcel(c) = DataRecorder_GetStartRowExcel(c)     ),  DataRecorder_SetFlag(c, Input(c) - 1) ),  if(  { Check if product has entered between start en stop time of analysis. }  and(   Time >= DataRecorder_GetAnalyseStart(c),    Time <= DataRecorder_GetAnalyseDuration(c)   ),  { Check if product fullfills criteria for analysis. }  if(   DataRecorder_GetCriteria(c),   { Take measurement. }   CreateEvent(0,c,2),   { No measurment required, Open the output channels. }   CreateEvent(0,c,3)  ),    { No measurment required, Open the output channels. }  CreateEvent(0,c,3) ))]);
+Set(OnExited, [do( CloseAllOC(c), CreateEvent(0,c,4))]);
+Set(OnCreation, [Do( AutoConnect, SetRank(1,c), DataRecorder_OnCreation(c))]);
+Set(OnDestruction, [do( {Only necessary for old DataRecorder atoms} if(DataRecorder_NeedsUpgrade81(c), DataRecorder_DeleteAliases(c)),  DataRecorder_Disconnect(c))]);
+Set(OnReset, [do(
+ DataRecorder_RepairAliasOnPaste(c),
+ DataRecorder_SetCurrentRowExcel(c, DataRecorder_GetStartRowExcel(c)),
+ DataRecorder_SetFlag(c, 0),
+ 
+ CloseAllOC(c),
+ 
+ { if Excel enabled setup connection this should not happen on save therefore use event at time = 0. }
+ CreateEvent(0,c,1),
+ 
+ 
+
+ {The variables to be measured have been added to the standard attribute list}
+ SetTable(1, NrOfAttributes(c) - DATA_RECORDER_NR_ATTRIBUTES, c),
+ ClearTable(c), 
+  
+ {if DataRecorder Atom is old style ED8.0 or older then upgrade the DataRecorder atom}
+ if(
+  StringPos([DataRecorder_Init], OnInit(c)) = 0, 
+  DataRecorder_UpGradeAtom(c)
+ ),
+ 
+ { Early versions of the DataRecorder used TextAtt rather than ExprAtt. }
+ Repeat(
+  DataRecorder_GetNRVariables(c),
+  SetExprAtt(Count + DATA_RECORDER_NR_ATTRIBUTES, TextAtt(Count + DATA_RECORDER_NR_ATTRIBUTES, c), c)
+ )
+)
+]);
+Set(OnUser, [if( DoubleClick, Do(  { Delete any current instances of this form.}   GuiDestroy([DataRecorder]),   { Register the GUI-form for this atom.}  GuiRegister(PDir([\Atoms\DataRecorder.gui]), 1),  { Show the GUI-form.}  Guicreate([DataRecorder], [DataRecorder], 0, c, 0, 1) ),  EditTable(c))]);
+Set(OnOcReady, [if( AtomExists(First(c)), MoveRequest(First(c),1), do(  CloseAllOC(c),  OpenAllIC(c) ))]);
+Set(OnIcReady, [if( not(ICOpen(OcIcNo(1,c),out(1,c))), do(  CloseAllIC(c),  OpenAllOC(c) ))]);
+Set(On2DDraw, [standarddisplay(name(c), textatt(1,c))]);
+SetStatus(0);
+int018;
+int007;

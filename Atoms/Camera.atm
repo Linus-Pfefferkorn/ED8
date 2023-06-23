@@ -1,0 +1,453 @@
+
+
+{Preregister functions}
+
+PreregisterFunction([Camera_GetFollowMoveTrigger], 1, 1);
+PreregisterFunction([Camera_GetFollowRotateTrigger], 1, 1);
+PreregisterFunction([Camera_GetTargetMoveTrigger], 1, 1);
+PreregisterFunction([Camera_GetShow3DIcon], 1, 1);
+PreregisterFunction([Camera_GetFollowRotation], 1, 1);
+PreregisterFunction([Camera_GetTargetAtom], 1, 1);
+PreregisterFunction([Camera_GetFollowAtom], 1, 1);
+PreregisterFunction([Camera_GetTarget], 2, 2);
+PreregisterFunction([Camera_GetCameraType], 1, 1);
+PreregisterFunction([Camera_GetHotKey], 1, 1);
+PreregisterFunction([Camera_GetNearPlane], 1, 1);
+PreregisterFunction([Camera_GetFarPlane], 1, 1);
+PreregisterFunction([Camera_GetFOV], 1, 1);
+PreregisterFunction([Camera_GetPitch], 1, 1);
+PreregisterFunction([Camera_GetYaw], 1, 1);
+PreregisterFunction([Camera_GetRoll], 1, 1);
+PreregisterFunction([Camera_SetNearPlane], 2, 2);
+PreregisterFunction([Camera_SetFarPlane], 2, 2);
+PreregisterFunction([Camera_SetFOV], 2, 2);
+PreregisterFunction([Camera_SetPitch], 2, 2);
+PreregisterFunction([Camera_SetYaw], 2, 2);
+PreregisterFunction([Camera_SetRoll], 2, 2);
+PreregisterFunction([Camera_SetCameraType], 2, 2);
+PreregisterFunction([Camera_SetHotkey], 2, 2);
+PreregisterFunction([Camera_SetTarget], 4, 4);
+PreregisterFunction([Camera_SetTargetAtom], 2, 2);
+PreregisterFunction([Camera_SetFollowAtom], 2, 3);
+PreregisterFunction([Camera_SetFollowRotation], 2, 2);
+PreregisterFunction([Camera_SetShow3DIcon], 2, 2);
+PreregisterFunction([Camera_SetFollowMoveTrigger], 2, 2);
+PreregisterFunction([Camera_SetFollowRotateTrigger], 2, 2);
+PreregisterFunction([Camera_SetTargetMoveTrigger], 2, 2);
+PreregisterFunction([Camera_UpdateTarget], 1, 1);
+PreregisterFunction([Camera_UpdateRotation], 1, 1);
+PreregisterFunction([Camera_UpdateTargetByAtom], 2, 2);
+PreregisterFunction([Camera_UpdateLocationByAtom], 2, 2);
+PreregisterFunction([Camera_UpdateRotationByAtom], 2, 2);
+PreregisterFunction([Camera_create], 2, 2);
+PreregisterFunction([Camera_Destroy], 1, 1);
+PreregisterFunction([Camera_MakeCurrent], 1, 2);
+PreregisterFunction([Camera_BindEvents], 1, 1);
+PreregisterFunction([Camera_UnBindEvents], 1, 1);
+PreregisterFunction([Camera_ClosePropertiesWindow], 1, 1);
+PreregisterFunction([Camera_OpenPropertiesWindow], 1, 1);
+PreregisterFunction([Camera_OpenMotionPropertiesWindow], 1, 1);
+PreregisterFunction([Camera_CloseMotionPropertiesWindow], 1, 1);
+PreregisterFunction([Camera_Trace], 1, 1);
+PreregisterFunction([Camera_DrawFocusCone], 5, 6);
+PreregisterFunction([Camera_GetProjectionType], 1, 1);
+PreregisterFunction([Camera_SetProjectionType], 2, 2);
+PreregisterFunction([GUICamera_Apply], 0, 0);
+PreregisterFunction([GUICamera_SetHotKey], 1, 1);
+PreregisterFunction([GUICameraMotion_Apply], 0, 0);
+
+
+{Atom: Camera}
+
+sets;
+BaseClass;
+CreateAtom(a, s, [], 1, false);
+Set(OnInit, [do( dim([Camera_TARGET_ATOM_MOVED], vbConstant, 10), dim([Camera_FOLLOW_ATOM_MOVED], vbConstant, 11), dim([Camera_FOLLOW_ATOM_ROTATED], vbConstant, 12), dim([Camera_FOLLOW_CHANNEL], vbConstant, 1), dim([Camera_TARGET_CHANNEL], vbConstant, 2))]);
+int023([Camera], 15780518, 1581104);
+DefineFunction([Camera_GetFollowMoveTrigger], [Visualization], 1, 1, [TextAtt([FollowMoveTrigger], p(1)) ], [Gets the follow move trigger boolean e1 = the Camera atom ], [Camera_GetFollowMoveTrigger(AtomByName([Camera1], model))], 0, [Camera.atm]);
+DefineFunction([Camera_GetFollowRotateTrigger], [Visualization], 1, 1, [TextAtt([FollowRotateTrigger], p(1)) ], [Gets the follow rotate trigger boolean e1 = the Camera atom ], [Camera_GetFollowRotateTrigger(AtomByName([Camera1], model))], 0, [Camera.atm]);
+DefineFunction([Camera_GetTargetMoveTrigger], [Visualization], 1, 1, [TextAtt([TargetMoveTrigger], p(1)) ], [Gets the target move trigger boolean e1 = the Camera atom], [Camera_GetTargetMoveTrigger(AtomByName([Camera1], model))], 0, [Camera.atm]);
+DefineFunction([Camera_GetShow3DIcon], [Visualization], 1, 1, [att([Show3DIcon], p(1)) ], [Gets the show3Dicon boolean e1 = the Camera atom], [Camera_GetShow3DIcon(AtomByName([Camera1], model))], 0, [Camera.atm]);
+DefineFunction([Camera_GetFollowRotation], [Visualization], 1, 1, [if(IcConnected(Camera_FOLLOW_CHANNEL, p(1)), att([FollowRotation], p(1)), 0) ], [Gets the follow rotation boolean e1 = the Camera atom], [Camera_GetFollowRotation(AtomByName([Camera1], model))], 0, [Camera.atm]);
+DefineFunction([Camera_GetTargetAtom], [Visualization], 1, 1, [if(IcConnected(Camera_TARGET_CHANNEL, p(1)), in(Camera_TARGET_CHANNEL, p(1)), 0) ], [Gets the camera target atom.e1 = the Camera atom], [Camera_GetTargetAtom(AtomByName([Camera1], model))], 0, [Camera.atm]);
+DefineFunction([Camera_GetFollowAtom], [Visualization], 1, 1, [if(IcConnected(Camera_FOLLOW_CHANNEL, p(1)), in(Camera_FOLLOW_CHANNEL, p(1)), 0) ], [Gets the camera follow atom.e1 = the Camera atom ], [Camera_GetFollowAtom(AtomByName([Camera1], model))], 0, [Camera.atm]);
+DefineFunction([Camera_GetTarget], [Visualization], 2, 2, [CameraTarget(p(2), Label([CameraID], p(2))) ], [Gets the camera target.e1 = the Camera atome2 =the axis of the target (either X_AXIS, Y_AXIS or Z_AXIS)], [Camera_GetTarget(AtomByName([Camera1], model), Y_AXIS)], 0, [Camera.atm]);
+DefineFunction([Camera_GetCameraType], [Visualization], 1, 1, [do(  { update cam type according to camera }  SetAtt([CamType], CameraType(label([CameraID], p(1))), p(1)),  Att([CamType], p(1))) ], [Gets the camera type of the camera atom specified in parameter 1. This is either CT_FREEHAND or CT_TARGET.e1 = the Camera atom ], [Camera_GetCamType(AtomByName([Camera1], model))], 0, [Camera.atm]);
+DefineFunction([Camera_GetHotKey], [Visualization], 1, 1, [Att([HotKey], p(1))], [Gets the hotkey of the camera atom specified in parameter 1. This is a string in the form of <prefix>+<postfix> e.g.[CTRL+A]e1 = the Camera atom], [Camera_GetCamHotkey(AtomByName([Camera1], model))], 0, [Camera.atm]);
+DefineFunction([Camera_GetNearPlane], [Visualization], 1, 1, [do(  { update near plane according to camera }  SetAtt([NearPlane], CameraNearPlane(label([CameraID], p(1))), p(1)),  Att([NearPlane], p(1)))], [Gets the current near plane of the camera atom specified in parameter 1. e1 = the Camera atom], [Camera_GetNearPlane(AtomByName([Camera1], model))], 0, [Camera.atm]);
+DefineFunction([Camera_GetFarPlane], [Visualization], 1, 1, [do(  { update near plane according to camera }  SetAtt([FarPlane], CameraFarPlane(label([CameraID], p(1))), p(1)),  Att([FarPlane], p(1)))], [Gets the current far plane of the camera atom specified in parameter 1. e1 = the Camera atom], [Camera_GetFarPlane(AtomByName([Camera1], model))], 0, [Camera.atm]);
+DefineFunction([Camera_GetFOV], [Visualization], 1, 1, [do(  { update FOV according to camera }  SetAtt([FieldOfView], CameraFOV(label([CameraID], p(1))), p(1)),  Att([FieldOfView], p(1)))], [Gets the current FOV (Field Of View) of the camera atom specified in   parameter 1. e1 = the Camera atom], [Camera_GetFOV(AtomByName([Camera1], model))], 0, [Camera.atm]);
+DefineFunction([Camera_GetPitch], [Visualization], 1, 1, [do(  { update pitch according to camera }  SetAtt([Pitch], CameraPitch(label([CameraID], p(1))), p(1)),  Att([Pitch], p(1)))], [Gets the current pitch of the camera atom specified in   parameter 1. e1 = the Camera atom], [Camera_GetPitch(AtomByName([Camera1], model))], 0, [Camera.atm]);
+DefineFunction([Camera_GetYaw], [Visualization], 1, 1, [do(  { update Yaw according to camera }  SetAtt([Yaw], CameraYaw(label([CameraID], p(1))), p(1)),  RotationAs(p(1)) := CameraYaw(label([CameraID], p(1))),  Att([Yaw], p(1)))], [Gets the current Yaw of the camera atom specified in   parameter 1. e1 = the Camera atom], [Camera_GetYaw(AtomByName([Camera1], model))], 0, [Camera.atm]);
+DefineFunction([Camera_GetRoll], [Visualization], 1, 1, [do(  { update Roll according to camera }  SetAtt([Roll], CameraRoll(label([CameraID], p(1))), p(1)),  Att([Roll], p(1)))], [Gets the current Roll of the camera atom specified in   parameter 1. e1 = the Camera atom], [Camera_GetRoll(AtomByName([Camera1], model))], 0, [Camera.atm]);
+DefineFunction([Camera_SetNearPlane], [Visualization], 2, 2, [do(  { update nearplane according to camera }  SetAtt([NearPlane], p(2), p(1)),  SetCameraNearPlane(p(2), label([CameraID], p(1))))], [Sets the current near plane of the camera atom specified in parameter 1.e1 = the Camera atome2 =the near plane in meters], [Camera_SetRoll(AtomByName([Camera1], model), 90)], 0, [Camera.atm]);
+DefineFunction([Camera_SetFarPlane], [Visualization], 2, 2, [do( { update nearplane according to camera } SetAtt([FarPlane], p(2), p(1)), SetCameraFarPlane(p(2), label([CameraID], p(1))))], [Sets the current far plane of the camera atom specified in parameter 1.e1 = the Camera atome2 =the far plane in meters], [Camera_SetFarPlane(AtomByName([Camera1], model), 90)], 0, [Camera.atm]);
+DefineFunction([Camera_SetFOV], [Visualization], 2, 2, [do(  { update FOV according to camera }  SetAtt([FieldOfView], p(2), p(1)),  SetCameraFOV(p(2), label([CameraID], p(1))))], [Sets the current FOV (Field Of View) of the camera atom specified in parameter 1.e1 = the Camera atome2 =the new FOV], [Camera_SetFOV(AtomByName([Camera1], model), 90)], 0, [Camera.atm]);
+DefineFunction([Camera_SetPitch], [Visualization], 2, 2, [do(  { update Pitch according to camera }  SetAtt([Pitch], p(2), p(1)),  SetCameraPitch(p(2), label([CameraID], p(1))))], [Sets the current Pitch of the camera atom specified in parameter 1.e1 = the Camera atome2 =the new Pitch], [Camera_SetPitch(AtomByName([Camera1], model), 90)], 0, [Camera.atm]);
+DefineFunction([Camera_SetYaw], [Visualization], 2, 2, [do(  { update Yaw according to camera }  SetAtt([Yaw], p(2), p(1)),  SetCameraYaw(p(2), label([CameraID], p(1))),  RotationAs(p(1)) := p(2))], [Sets the current Yaw of the camera atom specified in parameter 1.e1 = the Camera atome2 =the new Yaw], [Camera_SetYaw(AtomByName([Camera1], model), 90)], 0, [Camera.atm]);
+DefineFunction([Camera_SetRoll], [Visualization], 2, 2, [do(  { update Roll according to camera }  SetAtt([Roll], p(2), p(1)),  SetCameraRoll(p(2), label([CameraID], p(1))))], [Sets the current Roll of the camera atom specified in parameter 1.e1 = the Camera atome2 =the new Roll], [Camera_SetRoll(AtomByName([Camera1], model), 90)], 0, [Camera.atm]);
+DefineFunction([Camera_SetCameraType], [Visualization], 2, 2, [do( if(label([CameraID], p(1)) = 0,  { no camera preset, create one }    Camera_create(p(1), p(2)),  { else change its type }   SetCameraType(p(2), label([CameraID], p(1))) ), SetAtt([CamType], p(2), p(1)), { rebind events } Camera_UnbindEvents(p(1)), Camera_BindEvents(p(1)), { make sure we have no target atom if the camera is not a target camera} if(p(2) <> CT_TARGET,      Camera_SetTargetAtom(p(1), 0) ), { update rotation according to new camera type } Camera_UpdateRotation(p(1)))], [Sets the camera type. If no camera is present a camera will becreated.e1 = the Camera atome2 =the Camera type (either CT_FREEHAND or CT_TARGET)], [Camera_SetCameraType(AtomByName([Camera1], model), CT_TARGET)], 0, [Camera.atm]);
+DefineFunction([Camera_SetHotkey], [Visualization], 2, 2, [if(CompareText(TextAtt([HotKey], p(1)), p(2)) = 0, do (  { save current GUIInstance }  PushValue( GUIInstance ),  SetTextAtt([Hotkey], p(2), p(1)),  ForAll3DmodelViews([UpdateCameraMenuItems]),  GUIInstance( PopValue ) ))], [Sets the hotkey of the camera atom specified in parameter 1.   e1 = the Camera atome2 = the new hotkey (string in the form of <prefix>+<postfix>)], [Camera_SetHotkey(AtomByName([Camera1], model), [CTRL+A])], 0, [Camera.atm]);
+DefineFunction([Camera_SetTarget], [Visualization], 4, 4, [do( SetAtt([TargetX], p(2), p(1)), SetAtt([TargetY], p(3), p(1)), SetAtt([TargetZ], p(4), p(1)), SetCameraTarget(p(2), p(3), p(4), Label([CameraID], p(1))))], [Sets the target of the camera atom. e1 = the Camera atome2 =the Target X offsete3 = the Target Y offsete4 = the Target Z offset], [Camera_SetTarget(AtomByName([Camera1], model), 0, 0, 0)], 0, [Camera.atm]);
+DefineFunction([Camera_SetTargetAtom], [Visualization], 2, 2, [do( { if the camera atom is supposed to be the camera atom self   then we don't do anything } if(p(2) = p(1),  return ), { make sure the old target atom does not give us events anymore }     if(Camera_GetTargetAtom(p(1)) <> 0,  UnbindEvent(   Camera_GetTargetAtom(p(1)),   EVENT_ATOM_LOCATION_CHANGED,   Camera_TARGET_ATOM_MOVED,   p(1)  ) ), if(p(2) <> 0,  do(   { we need a target camera for this, so check      if this is one and if not make it so }   if(Camera_GetCameraType(p(1)) = CT_FREEHAND,    Camera_SetCameraType(p(1), CT_TARGET)   ),      { connect the second input channel with the central     channel of the selected target atom }   Connect(0, p(2), Camera_TARGET_CHANNEL, p(1)),      { make sure we receive notification if the target atom moves }   BindEvent(    p(2),    EVENT_ATOM_LOCATION_CHANGED,    Camera_TARGET_ATOM_MOVED,    p(1)   ),      { update the target }   Camera_UpdateTargetByAtom(p(1), p(2))  ),  do(   { disconnect second input channel }   Connect(0, p(1), Camera_TARGET_CHANNEL, p(1))  ) )) ], [Sets the target of the camera atom to an atom. e1 = the Camera atome2 = the Camera's target atom ( set to zero to set no target atom ) ], [Camera_SetTargetAtom(AtomByName([Camera1], model), AtomByName([Product1], model))], 0, [Camera.atm]);
+DefineFunction([Camera_SetFollowAtom], [Visualization], 2, 3, [do( { if the camera atom is supposed to be the camera atom self   then we don't do anything } if(p(2) = p(1),  return ), { make sure the old target atom does not give us events anymore }     if(Camera_GetFollowAtom(p(1)) <> 0,  UnbindEvent(   Camera_GetFollowAtom(p(1)),   EVENT_ATOM_LOCATION_CHANGED,   Camera_FOLLOW_ATOM_MOVED,   p(1)  ) ), if(p(2) <> 0,  do(   { connect the second input channel with the central     channel of the selected target atom }   Connect(0, p(2), Camera_FOLLOW_CHANNEL, p(1)),      SetLabel([oldXLoc], xAbsMid(p(2), model), p(1)),   SetLabel([oldYLoc], yAbsMid(p(2), model), p(1)),   SetLabel([oldZLoc], zAbsMid(p(2), model), p(1)),   { make sure we receive notification if the target atom moves }   BindEvent(    p(2),    EVENT_ATOM_LOCATION_CHANGED,    Camera_FOLLOW_ATOM_MOVED,    p(1)   ),      Camera_SetFollowRotation(p(1), p(3))  ),  do(   { disconnect second input channel }   Connect(0, p(1), Camera_FOLLOW_CHANNEL, p(1)),      { set follow rotation to false }   Camera_SetFollowRotation(p(1), False)  ) )) ], [Sets the location of the camera atom to an atom. e1 = the Camera atome2 = the Camera's follow atom ( set to zero to set no follow atom )e3 = True if you want the camera to follow the follow atoms rotation (default is false) ], [Camera_SetFollowAtom(AtomByName([Camera1], model), AtomByName([Product1], model))], 0, [Camera.atm]);
+DefineFunction([Camera_SetFollowRotation], [Visualization], 2, 2, [if( and(  Camera_GetFollowAtom(p(1)) <> 0,  p(2) ), do (  SetAtt([FollowRotation], p(2), p(1)),    SetLabel(    [oldRot],     RotationAc(Camera_GetFollowAtom(p(1))) + RotationAs(Camera_GetFollowAtom(p(1))),    p(1)  ),     { bind rotation event of follow atom to this atom }  BindEvent(   Camera_GetFollowAtom(p(1)),   EVENT_ATOM_ROTATION_CHANGED,   Camera_FOLLOW_ATOM_ROTATED,   p(1)  ) ), do (  if(Camera_GetFollowAtom(p(1)) <> 0,   UnBindEvent(    Camera_GetFollowAtom(p(1)),    EVENT_ATOM_ROTATION_CHANGED,    Camera_FOLLOW_ATOM_ROTATED,    p(1)   )  ),    SetAtt([FollowRotation], False, p(1)) )) ], [Sets the location of the camera atom to an atom. e1 = the Camera atome2 = True if you want the camera to follow the follow atoms rotation ], [Camera_SetFollowRotation(AtomByName([Camera1], model), true)], 0, [Camera.atm]);
+DefineFunction([Camera_SetShow3DIcon], [Visualization], 2, 2, [SetAtt([Show3DIcon], p(2), p(1)) ], [Sets the show3Dicon boolean e1 = the Camera atome2 = new value ], [Camera_SetShow3DIcon(AtomByName([Camera1], model), False)], 0, [Camera.atm]);
+DefineFunction([Camera_SetFollowMoveTrigger], [Visualization], 2, 2, [SetExprAtt([FollowMoveTrigger], p(2), p(1)) ], [Sets the follow move triggere1 = the Camera atome2 = new value], [Camera_SetFollowMoveTrigger(AtomByName([Camera1], model), [Trace([Follow atom moved])])], 0, [Camera.atm]);
+DefineFunction([Camera_SetFollowRotateTrigger], [Visualization], 2, 2, [SetExprAtt([FollowRotateTrigger], p(2), p(1)) ], [Sets the follow rotate triggere1 = the Camera atome2 = new value], [Camera_SetFollowRotateTrigger(AtomByName([Camera1], model), [Trace([Follow atom rotated])])], 0, [Camera.atm]);
+DefineFunction([Camera_SetTargetMoveTrigger], [Visualization], 2, 2, [SetExprAtt([TargetMoveTrigger], p(2), p(1)) ], [Sets the follow rotate triggere1 = the Camera atome2 = new value ], [Camera_SetMoveTargetTrigger(AtomByName([Camera1], model), [Trace([Target atom moved])])], 0, [Camera.atm]);
+DefineFunction([Camera_UpdateTarget], [Visualization], 1, 1, [do(  SetAtt([TargetX], CameraTarget(X_AXIS, label([CameraID], p(1))), p(1)),  SetAtt([TargetY], CameraTarget(Y_AXIS, label([CameraID], p(1))), p(1)),  SetAtt([TargetZ], CameraTarget(Z_AXIS, label([CameraID], p(1))), p(1))) ], [Updates the camera atom target attributes according to the real camera.e1 = the Camera atom ], [Camera_UpdateTarget(AtomByName([Camera1], model))], 0, [Camera.atm]);
+DefineFunction([Camera_UpdateRotation], [Visualization], 1, 1, [do( { update attributes according to new rotation } SetAtt([Roll],  CameraRoll(Label([CameraID], p(1))),  p(1)), SetAtt([Pitch], CameraPitch(Label([CameraID], p(1))), p(1)), SetAtt([Yaw],   CameraYaw(Label([CameraID], p(1))),   p(1)),  { update target if this is a target camera } if(Camera_GetCameraType(p(1)),  Camera_UpdateTarget(p(1)) ),  { update RotationAs according to (new) yaw } RotationAs(p(1)) := Att([Yaw], p(1))) ], [Updates the camera atom rotation attributes according to the camera.e1 = the Camera atom ], [Camera_UpdateRotation(AtomByName([Camera1], model))], 0, [Camera.atm]);
+DefineFunction([Camera_UpdateTargetByAtom], [Visualization], 2, 2, [Camera_SetTarget( p(1),  xAbsMid(p(2), model), yAbsMid(p(2), model), zAbsMid(p(2), model)) ], [Updates the camera atom's target to the mid of the atom e2.e1 = the Camera atome2 = the targeted atom ], [Camera_UpdateTargetAtom(AtomByName([Camera1], model), AtomByName([Product1], model))], 0, [Camera.atm]);
+DefineFunction([Camera_UpdateLocationByAtom], [Visualization], 2, 2, [do( SetLabel([nXLoc], xAbsMid(p(2), model), p(1)), SetLabel([nYLoc], yAbsMid(p(2), model), p(1)), SetLabel([nZLoc], zAbsMid(p(2), model), p(1)), { move along with atom }  ShiftLoc(  Label([nXLoc], p(1)) - Label([oldXLoc], p(1)),  Label([nYLoc], p(1)) - Label([oldYLoc], p(1)),  Label([nZLoc], p(1)) - Label([oldZLoc], p(1)),  p(1) ),  { remember old location of atom } SetLabel([oldXLoc], Label([nXLoc], p(1)), p(1)), SetLabel([oldYLoc], Label([nYLoc], p(1)), p(1)), SetLabel([oldZLoc], Label([nZLoc], p(1)), p(1))) ], [Updates the camera atom's location to the relative movement of atom e2.e1 = the Camera atome2 = the atom ], [Camera_UpdateLocationAtom(AtomByName([Camera1], model), AtomByName([Product1], model))], 0, [Camera.atm]);
+DefineFunction([Camera_UpdateRotationByAtom], [Visualization], 2, 2, [do( SetLabel([nRot], RotationAc(p(2)) + RotationAs(p(2)), p(1)), RotationAs(p(1)) := RotationAs(p(1)) + Label([nRot], p(1)) - Label([oldRot], p(1)), SetLabel([oldRot], Label([nRot], p(1)), p(1))) ], [Updates the camera atom's rotation (yaw) to the relative rotation of atom e2.e1 = the Camera atome2 = the atom ], [Camera_UpdateRotationAtom(AtomByName([Camera1], model), AtomByName([Product1], model))], 0, [Camera.atm]);
+DefineFunction([Camera_create], [Visualization], 2, 2, [do( if(Label([CameraID], p(1)) <> 0,   Camera_Destroy(p(1)) ), SetLabel([CameraID], createCamera(p(2)), p(1)), Camera_BindEvents(p(1)), SetAtt([CamType], p(2), p(1))  ) ], [creates the camera for the camera atom specified by e1.e1 = the camera atom.e2 = the camera type (either CT_FREEHAND OR CT_TARGET) ], [Camera_create(AtomByName([Camera1], model))], 0, [Camera.atm]);
+DefineFunction([Camera_Destroy], [Visualization], 1, 1, [if(Label([CameraID], p(1)) <> 0, do(  DestroyCamera(Label([CameraID], p(1))),  SetLabel([CameraID], 0, p(1)) )) ], [Destroys the camera for the camera atom specified by e1.e1 = the camera atom. ], [Camera_Destroy(AtomByName([Camera1], model))], 0, [Camera.atm]);
+DefineFunction([Camera_MakeCurrent], [Visualization], 1, 2, [do( if(ParamCount = 2,  SetCurrentCamera(Label([CameraID], p(1)), p(2)),  SetCurrentCamera(Label([CameraID], p(1))) )) ], [Makes the camera atom the current camera for the active 3D engine or the 3D engine specified in paramter e2.e1 = the camera atom.e2 = the id of the 3D engine you want to make camera e1 active in (default is Active3d) ], [Camera_MakeCurrent(atombyname([Camera1], model))], 0, [Camera.atm]);
+DefineFunction([Camera_BindEvents], [Visualization], 1, 1, [do( BindEvent(p(1), EVENT_ATOM_LOCATION_CHANGED, EVENT_ATOM_LOCATION_CHANGED), BindEvent(p(1), EVENT_ATOM_ROTATION_CHANGED, EVENT_ATOM_ROTATION_CHANGED), BindEvent(  p(1),   EVENT_CAMERA_POSITION_CHANGED,   EVENT_CAMERA_POSITION_CHANGED,   p(1),   label([CameraID], p(1)) ), BindEvent(  p(1),   EVENT_CAMERA_ROTATION_CHANGED,   EVENT_CAMERA_ROTATION_CHANGED,   p(1),   label([CameraID], p(1)) ), if(Camera_GetCameraType(p(1)) = CT_TARGET,  BindEvent(   p(1),    EVENT_CAMERA_TARGET_CHANGED,    EVENT_CAMERA_TARGET_CHANGED,    p(1),   label([CameraID], p(1))  ) )      ) ], [Binds needed events to the camera atom.e1 = the camera atom.], [Camera_BindEvents(atombyname([Camera1], model))], 0, [Camera.atm]);
+DefineFunction([Camera_UnBindEvents], [Visualization], 1, 1, [do( UnBindEvent(p(1), EVENT_ATOM_LOCATION_CHANGED), UnBindEvent(p(1), EVENT_ATOM_ROTATION_CHANGED), UnBindEvent(p(1), EVENT_CAMERA_POSITION_CHANGED), UnBindEvent(p(1), EVENT_CAMERA_ROTATION_CHANGED), if(Camera_GetCameraType(p(1)) = CT_TARGET,  UnBindEvent(p(1), EVENT_CAMERA_TARGET_CHANGED) )) ], [Unbinds needed events to the camera atom.e1 = the camera atom. ], [Camera_UnBindEvents(atombyname([Camera1], model))], 0, [Camera.atm]);
+DefineFunction([Camera_ClosePropertiesWindow], [Visualization], 1, 1, [if(GUIInstance(Concat([CameraProperties], name(p(1)))) <> 0,  GUIDestroy) ], [This function closes the camera's properties window.e1 = the camera atom ], [Camera_ClosePropertiesWindow(AtomByName([Camera1]))], 0, [Camera.atm]);
+DefineFunction([Camera_OpenPropertiesWindow], [Visualization], 1, 1, [do(   GuiRegister(pdir([Atoms\Camera.GUI]), 2), Guicreate([CameraPropertiesForm], Concat([CameraProperties], name(p(1))), 0, p(1)),     { and finally show the form } GUIShow) ], [This function opens the camera's properties window.   e1 = the camera atom], [Camera_OpenPropertiesWindow(AtomByName([Camera1], model))], 0, [Camera.atm]);
+DefineFunction([Camera_OpenMotionPropertiesWindow], [Visualization], 1, 1, [do(   GuiRegister(pdir([Atoms\CameraMotion.GUI]), 2), Guicreate([CameraMotionForm], Concat([CameraMotion], name(p(1))), 0, p(1)),     { and finally show the form modal } GUIShow(GUIInstance, 1)) ], [This function opens the camera's motion properties window.   e1 = the camera atom], [Camera_OpenMotionPropertiesWindow(AtomByName([Camera1], model))], 0, [Camera.atm]);
+DefineFunction([Camera_CloseMotionPropertiesWindow], [Visualization], 1, 1, [if(GUIInstance(Concat([CameraMotionProperties], name(p(1)))) <> 0,  GUIDestroy) ], [This function closes the camera's motion properties window.e1 = the camera atom ], [Camera_CloseMotionPropertiesWindow(AtomByName([Camera1]))], 0, [Camera.atm]);
+DefineFunction([Camera_Trace], [Visualization], 1, 1, [do( Trace(Concat([----- Camera: ], Name(p(1)), [-----])), Trace(Concat([FieldOfView = ], string(att(1, p(1)), 2, 3))), Trace(Concat([Yaw = ], string(att(2, p(1)), 2, 3))), Trace(Concat([Pitch = ], string(att(3, p(1)), 2, 3))), Trace(Concat([Roll = ], string(att(4, p(1)), 2, 3))), Trace(Concat([Near plane = ], string(att(5, p(1)), 2, 3))), Trace(Concat([Far plane = ], string(att(6, p(1)), 2, 3))), Trace(Concat([Cam type = ], string(att(7, p(1))))), Trace(Concat([Hotkey = ], att(8, p(1)))), Trace(Concat([Target X = ], string(att(9, p(1)), 2, 3))), Trace(Concat([Target Y = ], string(att(10, p(1)), 2, 3))), Trace(Concat([Target Z = ], string(att(11, p(1)), 2, 3))), Trace(Concat([Follow Rotation = ], string(att(12, p(1)), 2, 3))), Trace(Concat([Show3DIcon = ], string(att(13, p(1))))), Trace([------])) ], [Outputs all attributes to tracer. For debug purposes. ], [Camera_Trace(AtomByName([Camera1], model))], 0, [Camera.atm]);
+DefineFunction([Camera_DrawFocusCone], [Visualization], 5, 6, [do( var([cam_TanFOV], vbValue, tan(p(5) * 0.5)), var([cam_XF1], vbValue, p(4)*cam_TanFOV), var([cam_XF2], vbValue, 0 - cam_XF1 + p(1)), var([cam_YF], vbValue, p(4) + p(2)), var([cam_XN1], vbValue, p(3)*cam_TanFOV), var([cam_XN2], vbValue, 0 - cam_XN1 + p(1)), var([cam_YN], vbValue, p(3) + p(2)), cam_XF1 := cam_XF1 + p(1), cam_XN1 := cam_XN1 + p(1), { draw focus cone } DrawLine(  cam_XN1, cam_YN,   cam_XF1, cam_YF,  p(6) ), DrawLine(  cam_XN2, cam_YN,  cam_XF2, cam_YF,  p(6) ), DrawLine(  cam_XF1, cam_YF,  cam_XF2, cam_YF,  p(6) ), DrawLine(  cam_XN1, cam_YN,  cam_XN2, cam_YN,  p(6) ),  { draw complementary arc at 5 meters } DrawArc(  5  * cam_TanFOV + p(1), 5 + p(2),  -5 * cam_TanFOV + p(1), 5 + p(2),   p(6) )) ], [Draws a camera focus cone.e1 = x offsete2 = y offsete3 = Near planee4 = Far planee5 = Field of viewe6 = Color ], [Camera_DrawFocusCone(0, 0, 0.5, 2000, 90, ColorBlack)], 0, [Camera.atm]);
+DefineFunction([Camera_GetProjectionType], [Visualization], 1, 1, [att([ProjectionType], p(1))], [Gets the projection type of the camera.e1 = the camera atom], [Camera_GetProjectionType(AtomByName([Camera1], model))], 0, [Camera.atm]);
+DefineFunction([Camera_SetProjectionType], [Visualization], 2, 2, [do( SetCameraProjectionType(p(2), Label([CameraID], p(1))), SetAtt([ProjectionType], CameraProjectionType(Label([CameraID], p(1))), p(1)))], [Set the projection type of the camera.e1 = the camera atome2 = the projection type], [Camera_SetProjectionType(AtomByName([CameraID], model), CPT_PARALLEL)], 0, [Camera.atm]);
+DefineFunction([GUICamera_Apply], [Various], 0, 0, [do(
+ { check input values }
+ v := value(GUIControl([edFOV], GUIGet([Text]))),
+ if (or(v < 10, v > 180),
+  do(
+   msg([Field Of View must be a floating point value between 10 and 180], 3),
+   return(1)
+  )
+ ),
+
+ { check input values }
+ v := value(GUIControl([edNearPlane], GUIGet([Text]))),
+ if (v < 0,
+  do(
+   msg([Near plane must be a floating point value above zero.], 3),
+   return(1)
+  )
+ ),
+
+ { check input values }
+ v := value(GUIControl([edFarPlane], GUIGet([Text]))),
+ if (or(v < 0, v <= value(GUIControl([edNearPlane], GUIGet([Text]))) ),
+  do(
+   msg([Far plane must be a floating point value above the near plane value.], 3),
+   return(1)
+  )
+ ),
+ 
+ { set values }
+ Name(GUIAtom) := GUIControl([edName], GUIGet([Text])),
+ Color(GUIAtom) := GUIControl([cpColor], GUIGet([Color])),
+ Camera_SetFOV(GUIAtom, value(GUIControl([edFOV], GUIGet([Text])))),
+ Camera_SetRoll(GUIAtom, value(GUIControl([edRoll], GUIGet([Text])))),
+ Camera_SetNearPlane(GUIAtom, value(GUIControl([edNearPlane], GUIGet([Text])))),
+ Camera_SetFarPlane(GUIAtom, value(GUIControl([edFarPlane], GUIGet([Text])))),
+ SetLoc(
+  value(GuiControl([edXOffset], GUIGet([Text]))),
+  value(GuiControl([edYOffset], GUIGet([Text]))),
+  value(GuiControl([edZOffset], GUIGet([Text]))),
+  GUIAtom
+ ),
+ Camera_SetCameraType(GUIAtom, GUIControl([cbCameraType], GUIGet([ItemIndex]) - 1)),
+ case(GUIControl([cbCameraType], GUIGet([ItemIndex])),
+  { 1: CT_FREEHAND }
+  do(
+   Camera_SetPitch(GUIAtom, value(GUIControl([edPitch], GUIGet([Text])))),
+   Camera_SetYaw(GUIAtom, value(GUIControl([edYaw], GUIGet([Text])))),
+   Camera_SetProjectionType(GUIAtom, 0)
+  ),
+  { 2: CT_TARGET }
+  do(
+   Camera_SetTarget(
+     GUIAtom,
+     value(GUIControl([edYaw], GUIGet([Text]))),
+     value(GUIControl([edPitch], GUIGet([Text]))),
+     value(GUIControl([edZTarget], GUIGet([Text])))
+   ),
+   Camera_SetProjectionType(
+    GUIAtom, 
+    GUIControl([cbParallelProjection], GUIGet([Checked]))
+   )   
+  )
+ ),
+ Camera_SetHotkey(
+  GUIAtom, 
+  Concat(
+   GUIControl([cbHotKeyPrefix], GUIGet([Text])),
+   [+],
+   GUIControl([cbHotKeyPostfix], GUIGet([Text]))
+  )
+ ),
+ Camera_SetShow3DIcon(
+  GUIAtom,
+  GUIControl([cbShow3DIcon], GUIGet([Checked]))
+ ),
+ 
+ Att([Order], GuiAtom) := value(GuiControl([Order], GuiGet([Text]))),
+ 
+ return(0)
+)
+], [ Applies the settings on the camera properties GUI form to the GUI Atom. GUIInstance must be the Camera and GUIAtom must be a camera atom.
+], [GUICamera_Apply], 0, [Menno van Schayk]);
+DefineFunction([GUICamera_SetHotKey], [Various], 1, 1, [do(
+ if(CompareText(p(1), []) = 1,
+  do(
+   GUIControl([cbHotKeyPrefix], GUISet([ItemIndex], 0)),
+   GUIControl([cbHotKeyPostfix], GUISet([ItemIndex], 0)),
+   return
+  )
+ ),
+  
+ dim([GUICAM_HotKeyPrefix], vbString),
+ dim([GUICAM_HotKeyPostfix], vbString),
+ dim([GUICAM_HotKeySep], vbValue),
+ 
+ GUICAM_HotKeySep := StringPos([+], p(1)),
+ if(GUICAM_HotKeySep = 0,
+  do(
+   { reset hotkey comboboxes }
+   GUICamera_SetHotKey([]),
+   return
+  )
+ ),
+ 
+ GUICAM_HotKeyPrefix := StringCopy(p(1), 1, GUICAM_HotKeySep - 1),
+ GUICAM_HotKeyPostfix := StringCopy(p(1), GUICAM_HotKeySep+1, StringLength(p(1)) - GUICAM_HotKeySep),
+
+ GUIControl(
+  [cbHotKeyPrefix], 
+  GUISet([ItemIndex],
+   InList(GUICAM_HotKeyPrefix,
+    [CTRL],
+    [SHIFT],
+    [ALT]
+   )
+  )
+ ),
+ 
+ GUIControl(
+  [cbHotKeyPostfix], 
+  GUISet([ItemIndex],
+   InList(GUICAM_HotKeyPostfix,
+    [A], [B], [C], [D], [E], [F], [G], [H], [I], [J], [K], [L], [M], [N], [O], 
+    [P], [Q], [R], [S], [T], [U], [V], [W], [X], [Y], [Z],
+    [0], [1], [2], [3], [4], [5], [6], [7], [8], [9],
+    [F1], [F2], [F3], [F4], [F5], [F6], [F7], [F8], [F9], [F10], [F11], [F12]
+   )
+  )
+ )
+) 
+], [Sets the comboboxes of the camera gui from a <prefix>+<postfix> string.
+p(1) = the hotkey string (an empty string clears the comboboxes)
+], [GUICamera_SetHotkey([CTRL+A])], 0, [Menno van Schayk]);
+DefineFunction([GUICameraMotion_Apply], [Various], 0, 0, [do(
+ dim([GUICamMotion_AtomText], vbString),
+
+ { set values }
+ GUICamMotion_AtomText := GUIControl([edFollowAtom], GUIGet([Text])),
+ Camera_SetFollowAtom(
+  GUIAtom,
+  AtomByID(
+   Value( 
+    StringCopy(
+     GUICamMotion_AtomText, 
+     1,
+     StringPos([:], GUICamMotion_AtomText)-1
+    ) 
+   ),
+   model
+  ),
+  GUIControl([cbFollowRotation], GUIGet([Checked]))
+ ),
+
+ GUICamMotion_AtomText := GUIControl([edTargetAtom], GUIGet([Text])),
+ Camera_SetTargetAtom(
+  GUIAtom,
+  AtomByID(
+   Value( 
+    StringCopy(
+     GUICamMotion_AtomText, 
+     1,
+     StringPos([:], GUICamMotion_AtomText)-1
+    ) 
+   ),
+   model
+  )
+ ),
+ 
+ Camera_SetFollowMoveTrigger(GUIAtom, GUIControl([scFollowMoveTrigger], GUIGet([ResultCode]))),
+ Camera_SetFollowRotateTrigger(GUIAtom, GUIControl([scFollowRotateTrigger], GUIGet([ResultCode]))),
+ Camera_SetTargetMoveTrigger(GUIAtom, GUIControl([scTargetMoveTrigger], GUIGet([ResultCode]))),
+ 
+ 
+ return(0)
+)
+], [Applies the settings on the camera motion GUI form to the GUI Atom. GUIInstance must be the CameraMotionForm and GUIAtom must be a camera atom.
+], [GUICameraMotion_Apply], 0, [Menno van Schayk]);
+Set(Icon(a), 
+	RegisterIcon(pDir([media\images\default.jpg]), [default.jpg]));
+AddModel3D(
+	RegisterModel3D(Model3DDir([\camera.3ds]), [camera.3ds], 0, 0, 0, 2, 2, 2, -90, 0, 0), a);
+SetMaterial(
+	RegisterMaterial([Default], 8421504, 8421504, 3289650, 0, 0.100000001490116, 0, false, false, 1, 0), 1, a);
+Set(Version(a), 7.3);
+SetTreeIcon(pDir([Media\Icons\Camera.ico]));
+Set(Info, [General camera atom.
+
+General
+-----------
+
+This camera atom has several purposes:
+
+1. Setting up preset view angles to a simulation model.
+2. Tracking atoms in 3D space.
+3. Making 3D flying visible in 2D space.
+4. To be used by other visualization components as tool for 
+   example movie recording.
+
+Double click the camera atom for its preferences. Right click
+the camera atom to active it as the current 3D camera in the 
+active 3D engine or to track other atoms by relative location 
+or by targeting.
+
+Channels
+-----------
+
+The channels are not intended to be connected manually, but
+the channels are used internally to track other atoms.
+
+Input Channel 1: The camera will stay at the same relative position
+                 of this atom. 
+                 To set this channel use: Camera_SetFollowAtom
+Input Channel 2: The camera will always point towards (target) this atom 
+                 in sight.
+                 To set this channel use: Camera_SetTargetAtom
+
+Function
+------------
+
+Functions to use this atom are:
+
+Camera_GetFollowMoveTrigger
+Camera_GetFollowRotateTrigger
+Camera_GetTargetMoveTrigger
+Camera_GetFollowRotation
+Camera_GetTargetAtom
+Camera_GetFollowAtom
+Camera_GetTarget
+Camera_GetCameraType
+Camera_GetHotKey
+Camera_GetNearPlane
+Camera_GetFarPlane
+Camera_GetFOV
+Camera_GetPitch
+Camera_GetYaw
+Camera_GetRoll
+Camera_SetNearPlane
+Camera_SetFarPlane
+Camera_SetFOV
+Camera_SetPitch
+Camera_SetYaw
+Camera_SetRoll
+Camera_SetCameraType
+Camera_SetHotkey
+Camera_SetTarget
+Camera_SetTargetAtom
+Camera_SetFollowAtom
+Camera_SetFollowRotation
+Camera_SetShow3DIcon
+Camera_SetFollowMoveTrigger
+Camera_SetFollowRotateTrigger
+Camera_SetTargetMoveTrigger
+Camera_UpdateTargetByAtom
+Camera_UpdateLocationByAtom
+Camera_UpdateRotationByAtomCamera_GetShow3DIcon
+Camera_MakeCurrent
+Camera_ClosePropertiesWindow
+Camera_OpenPropertiesWindow
+Camera_CloseMotionPropertiesWindow
+Camera_OpenMotionPropertiesWindow
+
+
+For more details see the 4DScript syntax overview window.
+
+Note:
+------------------
+
+This atom uses event binding to track movements of itself and 
+other atoms. If you want to change the location of the camera
+atom then you can just use SetLoc and the camera will move 
+along. For more information see the 'BindEvent' command.
+
+Last revision:
+------------------
+February, 2008
+]);
+SetChannels(2, 0);
+SetChannelRanges(1, 2, 0, 0);
+int001(226);
+SetLoc(0, 0, 1.7);
+SetSize(1, 1, 1);
+SetTranslation(-0.5, -0.5, 0);
+Set(RotationAs, 180);
+LockPosition(false);
+LockSize(true);
+DisableIconRotation(false);
+SetProductCode([]);
+CreateAttributes(19);
+SetAttributeName(r(1), [FieldOfView]);
+SetAttributeName(r(2), [Yaw]);
+SetAttributeName(r(3), [Pitch]);
+SetAttributeName(r(4), [Roll]);
+SetAttributeName(r(5), [NearPlane]);
+SetAttributeName(r(6), [FarPlane]);
+SetAttributeName(r(7), [CamType]);
+SetAttributeName(r(8), [Hotkey]);
+SetAttributeName(r(9), [TargetX]);
+SetAttributeName(r(10), [TargetY]);
+SetAttributeName(r(11), [TargetZ]);
+SetAttributeName(r(12), [FollowRotation]);
+SetAttributeName(r(13), [Show3DIcon]);
+SetAttributeName(r(14), [FollowMoveTrigger]);
+SetAttributeName(r(15), [FollowRotateTrigger]);
+SetAttributeName(r(16), [TargetMoveTrigger]);
+SetAttributeName(r(17), [ProjectionType]);
+SetAttributeName(r(18), [Camera]);
+SetAttributeName(r(19), [Order]);
+SetAtt(r(1), 67.5);
+SetAtt(r(2), 180);
+SetAtt(r(3), 90);
+SetAtt(r(5), 0.3);
+SetAtt(r(6), 2048);
+SetAtt(r(13), 1);
+SetExprAtt(r(14), [Camera_UpdateLocationByAtom(c, i)]);
+SetExprAtt(r(15), [Camera_UpdateRotationByAtom(c, i)]);
+SetExprAtt(r(16), [Camera_UpdateTargetByAtom(c, i)]);
+SetAtt(r(18), 1);
+int024;
+Set(OnEvent, [if(c.BlockEvents = 0, do (  if(EventCode = EVENT_ATOM_LOCATION_CHANGED,   SetCameraPosition(xLoc(c), yLoc(c), zLoc(c), c.CameraID)  ),    if(EventCode = EVENT_ATOM_ROTATION_CHANGED,   Camera_SetYaw(c, RotationAs(c))  ),    if (EventCode = EVENT_CAMERA_POSITION_CHANGED,   SetLoc(    CameraPosition(X_AXIS, c.CameraID),    CameraPosition(Y_AXIS, c.CameraID),    CameraPosition(Z_AXIS, c.CameraID)   )  ),    if(EventCode = EVENT_CAMERA_ROTATION_CHANGED,   Camera_UpdateRotation(c)  ),    if(EventCode = EVENT_CAMERA_TARGET_CHANGED,   Camera_UpdateTarget(c)  ),    if(EventCode = Camera_FOLLOW_ATOM_MOVED,   FollowMoveTrigger  ),    if (EventCode = Camera_FOLLOW_ATOM_ROTATED,   FollowRotateTrigger  ),    if (EventCode = Camera_TARGET_ATOM_MOVED,   TargetMoveTrigger  ) ))]);
+Set(OnCreation, [{ only execute this code when the atom is a daughter of the camera   and no camera has already been created }if( and(  m(c) <> baseclass,  c.CameraID = 0 ), do(  { do not allow events to update the attributes }  c.BlockEvents := 1,  { create a camera and store its ID in the label CameraID }  Camera_create(c, CamType),    { set the camera properties }  SetCameraPosition(xLoc(c), yLoc(c), zLoc(c), c.CameraID),  Camera_SetFOV(c, FieldOfView),  Camera_SetRoll(c, Roll),  Camera_SetNearPlane(c, NearPlane),  Camera_SetFarPlane(c, FarPlane),  Camera_SetProjectionType(c, ProjectionType),  if(CamType = CT_TARGET,   Camera_SetTarget(c, TargetX, TargetY, TargetZ),   do   (    Camera_SetPitch(c, Pitch),    Camera_SetYaw(c, Yaw)   )  ),  { set target and location atom }  if(IcConnected(Camera_TARGET_CHANNEL, c),   Camera_SetTargetAtom(c, in(Camera_TARGET_CHANNEL, c))  ),  if(IcConnected(Camera_FOLLOW_CHANNEL, c),   Camera_SetFollowAtom(c, in(Camera_FOLLOW_CHANNEL, c), FollowRotation)  ),  { update rotation according to camera }  Camera_UpdateRotation(c),   { allow events to update the attributes }  c.BlockEvents := 0 ))]);
+Set(OnDestruction, [do( Camera_ClosePropertiesWindow(c), Camera_CloseMotionPropertiesWindow(c), Camera_Destroy(c))]);
+Set(OnUser, [Do(
+ { Delete any current instances of this form.} 
+ GuiDestroy([Camera]),
+ 
+ { Register the GUI-form for this atom.}
+ GuiRegister(PDir([\Atoms\Camera.gui]), 1),
+ 
+ { Show the GUI-form.}
+ Guicreate([Camera], [Camera], 0, c, 0, 1)
+)
+]);
+Set(On2DDraw, [do( { draw arrow to target (if any) } if(  CamType = CT_TARGET,  do(   PushCoords,   BaseCoords,   DrawArrow(     xLoc(c),     yLoc(c),     TargetX,     TargetY,     0.5,     0.5,     ColorBlack,     True,     100   ),   PopCoords  ) ), { draw focus cone } Camera_DrawFocusCone(  0 - xTrans(c),  0 - yTrans(c),  NearPlane,  FarPlane,  FieldOfView,  GridColor ),  { draw camera self as circle } DrawCircle(  0.5,   0.5,   0.5,   Color, ColorBlack ))]);
+Set(On3DDraw, [do( { only draw the camera if it is not the current camera } if(  and(   CurrentCamera <> c.CameraID,   Show3DIcon  ),  do(   TranslateCoords(0.5, 0.5),   RotateCoords(90, 0, 0, 1),   RotateCoords(360-Pitch+90, 0, 1, 0),   RotateCoords(360-Roll, 1, 0, 0),   Drawmodel3D(model3D)  ) ))]);
+SetStatus(0);
+int018;
+int007;

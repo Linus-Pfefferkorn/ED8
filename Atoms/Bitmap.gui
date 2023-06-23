@@ -1,0 +1,168 @@
+EDControl(EditForm:
+  BorderIcons = set(SystemMenu),
+  BorderStyle = Single,
+  Caption = str('Bitmap'),
+  Height = 349,
+  Left = 204,
+  Name = str('Bitmap'),
+  Position = Default,
+  ShowHint = True,
+  Top = 467,
+  Visible = True,
+  Width = 397,
+  Controls(
+    EDControl(MultiPage:
+      ActivePage = 1,
+      Align = Client,
+      Anchors = set(Left,Top,Right,Bottom),
+      Height = 309,
+      Left = 0,
+      Name = str('MultiPage1'),
+      TabOrder = 1,
+      Top = 0,
+      Width = 397,
+      Controls(
+        EDControl(SinglePage:
+          Caption = str('General'),
+          Name = str('SinglePage1'),
+          PageIndex = 1,
+          Controls(
+            EDControl(GroupBox:
+              Caption = str(''),
+              Height = 64,
+              Left = 8,
+              Name = str('GroupBox2'),
+              TabOrder = 1,
+              Top = 8,
+              Width = 370,
+              Controls(
+                EDControl(Label:
+                  Caption = str('Atom name:'),
+                  Color = -16777208,
+                  Height = 13,
+                  Left = 12,
+                  Name = str('StaticText14'),
+                  Top = 32,
+                  Width = 56),
+                EDControl(Edit:
+                  Height = 21,
+                  Left = 132,
+                  Name = str('ebAtomName'),
+                  TabOrder = 1,
+                  Top = 24,
+                  Width = 225))),
+            EDControl(GroupBox:
+              Caption = str('Settings'),
+              Height = 180,
+              Left = 8,
+              Name = str('GroupBox1'),
+              TabOrder = 2,
+              Top = 88,
+              Width = 370,
+              Controls(
+                EDControl(CheckBox:
+                  Caption = str('Scale to atom dimensions'),
+                  Left = 12,
+                  Name = str('chkAtomDimensions'),
+                  TabOrder = 5,
+                  Top = 128,
+                  Width = 153),
+                EDControl(Label:
+                  Caption = str('Icon:'),
+                  Color = -16777208,
+                  Height = 13,
+                  Left = 12,
+                  Name = str('StaticText1'),
+                  Top = 32,
+                  Width = 24),
+                EDControl(Icon:
+                  Height = 24,
+                  Left = 132,
+                  Name = str('IconSelector'),
+                  Top = 26,
+                  Width = 225),
+                EDControl(Label:
+                  Caption = str('Icon scale factor:'),
+                  Color = -16777208,
+                  Height = 13,
+                  Left = 12,
+                  Name = str('StaticText12'),
+                  Top = 64,
+                  Width = 82),
+                EDControl(Edit:
+                  Height = 21,
+                  Left = 132,
+                  Name = str('IconScaleFactor'),
+                  TabOrder = 1,
+                  Top = 58,
+                  Width = 100),
+                EDControl(Label:
+                  Caption = str('Display scale factor:'),
+                  Color = -16777208,
+                  Height = 13,
+                  Left = 12,
+                  Name = str('StaticText13'),
+                  Top = 96,
+                  Width = 95),
+                EDControl(Edit:
+                  Height = 21,
+                  Left = 132,
+                  Name = str('DisplayScaleFactor'),
+                  TabOrder = 2,
+                  Top = 90,
+                  Width = 100),
+                EDControl(CheckBox:
+                  Caption = str('Image is vector image'),
+                  Left = 12,
+                  Name = str('chkVector'),
+                  TabOrder = 4,
+                  Top = 152,
+                  Width = 153))))))),
+    EDControl(Panel:
+      Align = Bottom,
+      Anchors = set(Left,Right,Bottom),
+      BevelOuter = None,
+      Caption = str(''),
+      Height = 40,
+      Left = 0,
+      Name = str('Panel1'),
+      TabOrder = 2,
+      Top = 309,
+      Width = 397,
+      Controls(
+        EDControl(Button:
+          Caption = str('&Help'),
+          Left = 8,
+          Name = str('btnHelp'),
+          TabOrder = 1,
+          Top = 8,
+          Events(
+            Click = str('Help(PDir([HELP\ED Help.hlp]), [Bitmap])'#13))),
+        EDControl(Button:
+          Caption = str('&Ok'),
+          Default = True,
+          Left = 144,
+          Name = str('btnOk'),
+          TabOrder = 2,
+          Top = 8,
+          Events(
+            Click = str('Do('#13' GuiControl([btnApply]),'#13' GuiRun([Click]),'#13' GuiDestroy,'#13' GuiUnregister([Bitmap])'#13')'#13))),
+        EDControl(Button:
+          Cancel = True,
+          Caption = str('&Cancel'),
+          Left = 230,
+          Name = str('btnCancel'),
+          TabOrder = 3,
+          Top = 8,
+          Events(
+            Click = str('Do('#13' GuiDestroy,'#13' GuiUnregister([Bitmap])'#13')'#13))),
+        EDControl(Button:
+          Caption = str('&Apply'),
+          Left = 312,
+          Name = str('btnApply'),
+          TabOrder = 4,
+          Top = 8,
+          Events(
+            Click = str('do('#13#13'  {Save TextField}'#13#13'  name(GuiAtom) := Guicontrol([ebAtomName], GuiGet([Text])),'#13#13'  Att([scalefactor],GuiAtom) := Value(GuiControl([IconScaleFactor],GuiGet([Text]))),'#13#13'  Att([displayscale],GuiAtom) := Value(GuiControl([DisplayScaleFactor],GuiGet([Text]))),'#13#13'  {Rest}'#13#13'  Icon(GuiAtom) := GuiControl([IconSelector], GuiGet([Icon])),'#13#13'  if(GuiControl([chkAtomDimensions], GuiGet([Checked])),'#13'   Att([scaletoatom],GuiAtom) := 1,'#13'   Att([scaletoatom],GuiAtom) := 0'#13'  ),'#13#13'  if(GuiControl([chkVector], GuiGet([Checked])),'#13'   Att([vector],GuiAtom) := 1,'#13'   Att([vector],GuiAtom) := 0'#13'  ),'#13#13'  Bitmap_ScaletoDimensions(GuiAtom)'#13')'#13)))))),
+  Events(
+    Show = str('do('#13'  {Set Caption}'#13'  if('#13'   atomexists(m(GuiAtom)),'#13'   GuiControl([Bitmap],GuiSet([Caption],concat(name(m(GuiAtom)), [ - ], name(GuiAtom)))),'#13'   GuiControl([Bitmap],GuiSet([Caption],concat([Baseclass - ], name(GuiAtom))))'#13'  ),'#13#13'  {Set ActivePage}'#13#13'  GuiControl([MultiPage1]),GuiSet([ActivePage],1),'#13#13'  {Set TextField}'#13#13'  GuiControl([ebAtomName], Guiset([Text], name(GuiAtom))),'#13#13'  GuiControl([IconScaleFactor],GuiSet([Text],textatt([scalefactor],GuiAtom))),'#13#13'  GuiControl([DisplayScaleFactor],GuiSet([Text],textatt([displayscale],GuiAtom))),'#13#13'  {Rest}'#13#13'  GuiControl([IconSelector],GuiSet([Icon], Icon(GuiAtom))),'#13'  if((Att([scaletoatom], GuiAtom) = 1),'#13'    GuiControl([chkAtomDimensions], GuiSet([Checked], True)),'#13'    GuiControl([chkAtomDimensions], GuiSet([Checked], False))'#13'  ),'#13#13'  if((Att([vector], GuiAtom) = 1),'#13'    GuiControl([chkVector], GuiSet([Checked], True)),'#13'    GuiControl([chkVector], GuiSet([Checked], False))'#13'  ),'#13#13'  {Position the form}'#13'  Gui_PositionGuiAroundAtom(GuiControl([Bitmap])),'#13#13'  GuiRun([Update])'#13')'#13)))

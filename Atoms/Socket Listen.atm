@@ -1,0 +1,123 @@
+
+
+{Preregister functions}
+
+PreregisterFunction([SymbolDraw], 4, 5);
+PreregisterFunction([Symbol3DDraw], 0, 0);
+
+
+{Atom: Socket Listen}
+
+sets;
+BaseClass;
+createAtom(a, s, [], 1, false);
+Set(OnInit, [Do(
+ autoloadicon(pdir([Media\Images\Symbols\sockin.bmp]),[sockin]),
+ autoloadicon(pdir([Media\Images\Symbols\sockout.bmp]),[sockout]),
+ autoloadicon(pdir([Media\Images\Symbols\flowdecision.bmp]),[flowdecision]),
+ autoloadicon(pdir([Media\Images\Symbols\flowqueue.bmp]),[flowqueue])
+)
+]);
+int023([Socket Listen], 10512442, 1264);
+DefineFunction([SymbolDraw], [Visualization], 4, 5, [Do(
+ dishape(0,0,xsize,ysize,0.25,colorblack,p(4)),
+ dishape(0,0,xsize,1,0.25,colorblack,color),
+ dibmp(0.3,1,p(3),1,5,2.5,2.5),
+ dionscale(13,
+  do(
+   ditext(0.2,0.1,p(1),colorwhite,color,0.5,[Arial],-(xsize,0.3),0.8),
+   ditext(2.7,1.1,p(2),0,p(4),0.45,[Arial],-(xsize,2.8),0.8)
+  )
+ ),
+ repeat(
+  nric(c),
+  if(
+   atomexists(in(count,c)),
+   if(
+    p(5),
+    diline(2,0,-(xabsloc(in(count,c),model),xabsloc(c,model)),-(yabsloc(in(count,c),model),-(yabsloc(c,model),ysize(in(1,c)))),colorblack),
+    diline(0,0.5,-(xabsloc(in(count,c),model),-(xabsloc(c,model),xsize(in(1,c)))),-(yabsloc(in(count,c),model),yabsloc(c,model)),colorblack)
+   )
+  )
+ )
+)
+], [Draws a symbol icon], [SymbolDraw([abc])], 0, [Socket Listen.atm]);
+DefineFunction([Symbol3DDraw], [Visualization], 0, 0, [Do(
+ di3DBox(0,0,0,xsize,0,xsize,color,0,0,icon,1,30,30)
+)
+], [Draws a symbol 3D icon], [Symbol3DDraw([abc])], 0, [Socket Listen.atm]);
+Set(Icon(a), 
+	RegisterIcon(pDir([Media\Images\Symbols\sockin.bmp]), [sockin]));
+SetMaterial(
+	RegisterMaterial([Default], 8421504, 8421504, 3289650, 0, 0.100000001490116, 0, false, false, 1, 0), 1, a);
+Set(Version(a), 7.3);
+SetTreeIcon(pDir([Media\Icons\SocketListen.ico]));
+Set(Info, [Sockets
+
+General
+------------
+A server socket that responds to messages on a port you specify. 
+You can have more than one server socket atom in your model, 
+listening to the same or different ports.
+
+A server socket can, for example, receive a message that is sent 
+by the 'Socket send' atom.
+
+Right click:
+  define portnumber and the response to incoming messages
+
+Channels:
+---------------
+0 input, multiple output
+
+Setup:
+---------
+Starts listening to messages on default portnumber = 7122
+
+Important:
+--------------
+TCP/IP must be installed
+
+Last revision:
+-------------------
+February, 2008
+]);
+Set(DdbRec, [>t-islistening:1.]);
+SetChannels(0, 1);
+SetChannelRanges(0, 0, 0, 255);
+int001(45);
+SetSize(5, 2, 1);
+LockPosition(false);
+LockSize(false);
+DisableIconRotation(false);
+SetProductCode([]);
+createAttributes(2);
+SetAttributeName(r(1), [portnumber]);
+SetAttributeName(r(2), [response]);
+SetAtt(r(1), 7122);
+SetExprAtt(r(2), [execstring(message)]);
+int024;
+Set(OnCreation, [SocketStartListen(c,[7122])
+]);
+Set(OnDestruction, [SocketStopListen(c)
+]);
+Set(OnUser, [Do(
+ { Delete any current instances of this form.} 
+ GuiDestroy([SocketListen]),
+
+ { Register the GUI-form for this atom.}
+ GuiRegister(PDir([\Atoms\SocketListen.gui]), 1),
+
+ { Show the GUI-form.}
+ Guicreate([SocketListen], [SocketListen], 0, c, 0, 1)
+)
+]);
+Set(On2DDraw, [StandardDisplay(Name, [Server], Icon)
+]);
+Set(On3DDraw, [Symbol3DDraw
+]);
+Set(OnMessage, [Att(2)
+]);
+SetStatus(0);
+int018;
+int007;

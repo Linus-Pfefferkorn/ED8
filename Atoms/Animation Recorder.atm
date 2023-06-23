@@ -1,0 +1,127 @@
+
+
+{Atom: Animation Recorder}
+
+sets;
+BaseClass;
+CreateAtom(a, s, [], 1, false);
+int023([Animation Recorder], 5728350, 3312);
+Set(Icon(a), 
+	RegisterIcon(pDir([media\images\default.jpg]), [default.jpg]));
+SetMaterial(
+	RegisterMaterial([Default], 8421504, 8421504, 3289650, 0, 0.100000001490116, 0, false, false, 1, 0), 1, a);
+Set(Version(a), 7.3);
+SetTreeIcon(pDir([Media\Icons\AnimationRecorder.ico]));
+Set(Info, [Animation Recorder
+
+General
+------------
+Records and replays 3D animation sequences (viewpoint, angles 
+and scale).
+
+It stores the camera movements during the simulation run.
+
+To export an animation use the AVI Creator atom.
+
+Last Revision:
+---------------------
+February, 2008
+]);
+Set(DdbRec, [>t-alloworganize:1.]);
+int001(224);
+SetSize(10, 2, 0.1);
+LockPosition(false);
+LockSize(false);
+DisableIconRotation(false);
+SetProductCode([]);
+CreateAttributes(5);
+SetAttributeName(r(1), [playing]);
+SetAttributeName(r(2), [recording]);
+SetAttributeName(r(3), [autoreplay]);
+SetAttributeName(r(4), [curframe]);
+SetAttributeName(r(5), [singleframe]);
+SetAtt(r(3), 1);
+SetAtt(r(4), 1);
+int024;
+Set(OnUser, [if(
+ doubleclick,
+ if(
+  >(nrows(c),0),
+  do(
+   setcell(0,0,[Frame],c),
+   setcell(0,1,[X_AXIS],c),
+   setcell(0,2,[Y_AXIS],c),
+   setcell(0,3,[Z_AXIS],c),
+   setcell(0,4,[Yaw],c),
+   setcell(0,5,[Pitch],c),
+   setcell(0,6,[Roll],c),
+   edittable(c)
+  ),
+  msg([First record a 3D animation.],1)
+ ),
+ do(
+  case(
+   popupmenu(mousex,mousey,
+    concat(
+     [Reset/Play/Stop//Record (restart)/Record (attach)//],
+     if(autoreplay,[Autoreplay On],[Autoreplay Off]),
+     [//Previous Frame/Next Frame/Go to Frame//Set First Frame/Set Last Frame//Help]
+    )
+   ),
+   do(curframe:=1,playing:=0,recording:=0),
+   do(playing:=1,recording:=0),
+   do(playing:=0,recording:=0),
+   [nothing],
+   do(settable(0,0,c),playing:=0,recording:=1),
+   do(playing:=0,recording:=1),
+   [nothing],
+   if(autoreplay,autoreplay:=false,autoreplay:=true),
+   [nothing],
+   do(curframe:=max(1,curframe-1),singleframe:=1),
+   do(curframe:=min(nrows(c),curframe+1),singleframe:=1),
+   do(
+    v:=0,
+    v:=inputnum(curframe,[Go to frame number],1,nrows(c),0),
+    if(and(v>0,v<=nrows(c)),curframe:=v),
+    singleframe:=1
+   ),
+   [nothing],
+   do(
+    v:=0,
+    v:=inputnum(1,[Enter the number of the first frame in the sequence],1,nrows(c)-1,0),
+    if(
+     and(v>1,v<nrows(c)),
+     do(
+      repeat(
+       nrows(c)-v,
+       do(
+        setcell(count,1,cell(count+v,1,c),c),
+        setcell(count,2,cell(count+v,2,c),c),
+        setcell(count,3,cell(count+v,3,c),c),
+        setcell(count,4,cell(count+v,4,c),c),
+        setcell(count,5,cell(count+v,5,c),c),
+        setcell(count,6,cell(count+v,6,c),c)
+       )
+      ),
+      settable(nrows(c)-v,6,c),
+      curframe:=max(1,curframe-v)
+     )
+    )
+   ),
+   do(
+    v:=0,
+    v:=inputnum(nrows(c),[Enter the number of the last frame in the sequence],1,nrows(c),0),
+    if(v>0,do(settable(v,6,c),curframe:=min(curframe,v)))
+   ),
+   [nothing],
+   do(Help(PDir([HELP\ED Help.hlp]), [Animation Recorder]))
+  ),
+  setrank(last(up(c)),c)
+ )
+)
+]);
+Set(On2DDraw, [do( standarddisplay(concat(if(playing,[Play],if(recording,[Record],[Stopped])),[ - ],string(curframe))), dionscale(13,  do(   dishape(0,1.4,xsize,0.2,0,colorblack,coloryellow),   if(    not(recording),    do(     dishape(8,0.2,0.6,0.6,0.3,colorblack,colorgreen),     dishape(*(xsize(c),/(curframe-1,max(1,nrows(c)))),1,0.2,1,0,colorblack,colorwhite)    )   ),   if(recording,dishape(9,0.2,0.6,0.6,0.3,colorblack,colorred))  ) ))]);
+Set(On3DDraw, [Do( if(  or(   playing,singleframe  ),  if(   curframe>nrows(c),   do(    curframe:=1,    if(     not(autoreplay),     playing := false    )   ),   do(    if(     not(singleframe),     curframe:=curframe + 1    ),    if(     cell(curframe,1,c) > 0,     do(      SetCameraPosition(cell(curframe,1,c), cell(curframe,2,c), cell(curframe,3,c)),      SetCameraYaw(cell(curframe,4,c)),      SetCameraPitch(cell(curframe,5,c)),      SetCameraRoll(cell(curframe,6,c)),      singleframe:=0     )    )   )  ),  if(   recording,   do(    settable(nrows(c)+1,6,c),    curframe:=nrows(c),    setcell(curframe,1,CameraPosition(X_AXIS), c),    setcell(curframe,2,CameraPosition(Y_AXIS), c),    setcell(curframe,3,CameraPosition(Z_AXIS), c),    setcell(curframe,4,CameraYaw,c),    setcell(curframe,5,CameraPitch,c),    setcell(curframe,6,CameraRoll,c)   )  ) ))]);
+SetStatus(0);
+int018;
+int007;

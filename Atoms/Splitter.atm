@@ -1,0 +1,181 @@
+
+
+{Atom: Splitter}
+
+sets;
+BaseClass;
+createAtom(a, s, [], 1, false);
+int023([Splitter], 155353, 1256);
+Set(Icon(a), 
+	RegisterIcon(pDir([media\images\default.jpg]), [default.jpg]));
+SetMaterial(
+	RegisterMaterial([Default], 8421504, 8421504, 3289650, 0, 0.100000001490116, 0, false, false, 1, 0), 1, a);
+Set(Version(a), 7.3);
+SetTreeIcon(pDir([Media\Icons\Splitter.ico]));
+Set(Info, [Splits atom into N atoms.
+
+General
+------------
+Sends out a number of copies of the entering atom through each 
+outputchannel. For each outputchannel the number of atoms to output 
+can be specified, expresions are allowed. After entry the input is 
+closed until the atom is empty again. The atoms are sent out in order, 
+starting with outputchannel 1.
+
+Double click:
+  Edit table for atom quantities per outputchannel, special naming 
+  definitions per channel of outgoing atoms. If no name is specified 
+  in the table the original name is used.
+
+Right click:
+  Edit cycle split time, trigger and special naming function.
+
+Channels:
+---------------
+1 inputchannel, N outputchannels
+
+Statuses: 
+--------------
+  1 - Idle
+  2 - Busy
+  5 - Blocked
+
+Note: 
+--------
+Labels of entering atom are also copied to the new atoms the original 
+atom will be destroyed.
+
+Applications: disassembly operations, distribution models, unpack 
+operations.
+
+Doubleclick: 
+  Edit split table. Rightclick: edit split time
+
+Last Revision:
+---------------------
+February, 2008
+]);
+SetChannels(1, 2);
+SetChannelRanges(1, 1, 1, 255);
+int001(62);
+SetSize(5, 2, 0.1);
+LockPosition(false);
+LockSize(false);
+DisableIconRotation(false);
+SetProductCode([]);
+createAttributes(5);
+SetAttributeName(r(1), [cycletime]);
+SetAttributeName(r(2), [entrytrigger]);
+SetAttributeName(r(3), [exittrigger]);
+SetAttributeName(r(4), [CounterChannel]);
+SetAttributeName(r(5), [NamingRule]);
+SetExprAtt(r(1), [0]);
+SetAtt(r(5), 1);
+int024;
+SetTable(2, 3);
+int015(0, 0, [ 
+1
+2
+]);
+int015(1, 0, [`Quantity`
+1
+1
+]);
+int015(2, 0, [`AtomName`
+]);
+int015(3, 0, [`Still to send`
+0
+0
+]);
+Set(OnEvent, [case(eventcode,
+{1: createnew atom if needed for this channel}
+ if(>(cell(att(4,c),3,c),0),
+  do(
+   createatomcopy(
+    first(c),c,
+    if(stringlength(cell(att(4,c),2,c,2))=0,
+     name(first(c)),
+     cell(att(4,c),2,c,2)
+    )
+   ),
+   case(NamingRule,
+    {1 : do nothing }
+    [],
+    {2 : add channel no to name }
+    name(last(c)):=concat(name(last(c)),[-],string(att(4,c))),
+    {3 : add sequence no to name }
+    name(last(c)):=concat(name(last(c)),[-],string(cell(att(4,c),3,c))),
+    {4 : add channel no and seq no to name }
+    name(last(c)):=concat(name(last(c)),[-],string(att(4,c)),[-],string(cell(att(4,c),3,c)))
+   ),
+   setrank(1,last(c)),
+   setcell(att(4,c),3,-(cell(att(4,c),3,c),1),c),
+   setstatus(5,c),
+   openoc(att(4,c),c)
+  ),
+  do(
+   inc(att(4,c)),
+   if(>(att(4,c),nrows(c)), {last channel done}
+    createevent(0,c,2),
+    createevent(0,c,1)
+   )
+  )
+ ),
+{2: destroy original atom and start over}
+ do(destroyatom(first(c)),openic(1,c),setstatus(1,c))
+)
+]);
+Set(OnEntered, [do(
+ setatt(4,0,c),
+ setstatus(2,c),
+ closeic(1,c),
+ att(2,c),
+ repeat(nrows(c),
+  do(
+   setcell(count,3,execstring(cell(count,1,c,2)),c),
+   if(and(=(att(4,c),0),>(cell(count,3,c),0)),setatt(4,count,c))
+  )
+ ),
+ if(>(att(4,c),0),createevent(att(1,c),c,1),createevent(att(1,c),c,2))
+)
+]);
+Set(OnExited, [do(
+ closealloc(c),
+ if(=(cell(att(4,c),3,c),0),inc(att(4,c))),
+ att(3,c),
+ if(>(att(4,c),nrows(c)), {last channel done}
+  createevent(0,c,2),
+  createevent(0,c,1)
+ )
+)
+]);
+Set(OnCreation, [autoconnect
+]);
+Set(OnReset, [do(
+ setstatus(1,c),
+ closealloc(c),
+ settable(nroc(c),3,c),
+ repeat( {set index numbers}
+  nrows(c),
+  setcell(count,0,string(count),c)
+ )
+)
+]);
+Set(OnUser, [Do(
+  { Delete any current instances of this form.} 
+  GuiDestroy([Splitter]),
+
+  { Register the GUI-form for this atom.}
+  GuiRegister(PDir([\Atoms\Splitter.gui]), 1),
+
+  { Show the GUI-form.}
+   Guicreate([Splitter], [Splitter], 0, c, 0, 1)
+ )
+]);
+Set(OnOcReady, [moverequest(first(c),att(4,c))
+]);
+Set(On2DDraw, [standarddisplay(name(c))
+]);
+SetStatus(0);
+int018;
+int007;

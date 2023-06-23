@@ -1,0 +1,17 @@
+:Base ED Gantt.HLP>MAIN
+:Title Enterprise Dynamics Gantt Help
+1 Enterprise Dynamics=Incontrol Enterprise Dynamics
+1 Enterprise Dynamics Support=Enterprise Dynamics Support
+1 Gantt Chart User Guide
+2 Gantt Chart User Guide=Gantt Chart User Guide
+2 Concepts=Concepts
+2 The Chart View=The Chart View
+1 Using 4DScript
+2 Using 4DScript=Using 4DScript
+2 The 4DScript Gantt Chart Commands=The 4DScript Gantt Chart Commands
+2 Basic commands=Basic commands
+2 Editing the Gantt chart=Editing the Gantt chart
+2 Accessing Gantt chart elements=Accessing Gantt chart elements
+2 Visual appearance=Visual appearance
+1 Using the Gantt chart to influence the model
+2 Using the Gantt chart to influence the model=Using the Gantt chart to influence the model

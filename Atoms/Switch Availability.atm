@@ -1,0 +1,211 @@
+
+
+{Atom: Switch Availability}
+
+sets;
+BaseClass;
+createAtom(a, s, [], 1, false);
+int023([Switch Availability], 32768, 1264);
+Set(Icon(a), 
+	RegisterIcon(pDir([media\images\default.jpg]), [default.jpg]));
+Addmodel3D(
+	Registermodel3D(model3DDir([\controller.wrl]), [controller.wrl], 0, 0, 0, 1, 1, -1, -90, 0, 0), a);
+Addmodel3D(
+	Registermodel3D(model3DDir([\controller1.wrl]), [controller1.wrl], 0, 0, 0, 1, 1, -1, -90, 0, 0), a);
+Addmodel3D(
+	Registermodel3D(model3DDir([\controller2.wrl]), [controller2.wrl], 0, 0, 0, 1, 1, -1, -90, 0, 0), a);
+SetMaterial(
+	RegisterMaterial([Default], 8421504, 8421504, 3289650, 0, 0.100000001490116, 0, false, false, 1, 0), 1, a);
+Set(Version(a), 7.3);
+SetTreeIcon(pDir([Media\Icons\SwitchAvailability.ico]));
+Set(Info, [Control availability manually.
+
+General
+------------
+Control availability manually. This atom is ALWAYS used in 
+conjunction with the Availability Control.
+
+Connect the outputchannels with the inputchannels of one or 
+more availabilty controls. The availability controls in their turn 
+control the availability of atoms in the flow. Its status is visualized
+through color (red is not available, green is available). 
+
+Channels:
+--------------
+N outputchannels
+
+Statuses:
+-------------
+  11 - Available
+  12 - Not Available
+
+Double click:
+toggle availability setting. Rightclick: switch availability on/off
+
+Last revision:
+-------------------
+February, 2008
+]);
+SetChannels(0, 1);
+SetChannelRanges(0, 0, 1, 255);
+int001(32);
+SetSize(5, 1, 1);
+LockPosition(false);
+LockSize(false);
+DisableIconRotation(false);
+SetProductCode([]);
+createAttributes(2);
+SetAttributeName(r(1), [OnOff]);
+SetAttributeName(r(2), [3DIcon]);
+SetAtt(r(1), 1);
+SetAtt(r(2), 3);
+int024;
+Set(OnEvent, [Do(  
+ If(
+  OnOff,
+  {* Atoms are going up *}
+  if(
+    Label([t-available], c) = 0,
+    
+    {**Needed because Availability Control assumes this atom to be available at reset**}
+    Do(
+     Status(c) := 11,
+     SetLabel([t-available], 1, c),
+     Color(c) := ColorGreen,
+     OpenAllOC(c)
+    )
+  ),
+ 
+  {* Atoms are going down *}
+  Do(
+   Status(c) := 12,
+   SetLabel([t-available], 0, c),
+   Color(c) :=  ColorRed,
+   OpenAllOC(c)
+  )
+ )
+)
+]);
+Set(OnCreation, [Do(
+ SetLabel([t-atomoutconnect], [t028], c),
+ Label([t-available], c) := 1
+)
+]);
+Set(OnReset, [Do(
+ createEvent(0, c),
+ Repeat(
+  NrOC(c),
+  If(
+   Or(
+    Not(AtomExists(Out(Count, c))),
+    Not(CompareText(Label([t-atomtype], Out(Count, c)), [t028]))
+   ),
+   Msg(
+    Concat(
+     [Outputchannel ],
+     String(Count), 
+     [ of ],
+     Name(c),
+     [ must be connected with an Availability Control atom]
+    ),
+    3
+   )   
+  )
+ )
+)
+]);
+Set(OnUser, [Do(
+ If(
+  DoubleClick,
+  {* Check current setting and change it *}
+  If(
+   OnOff,
+   OnOff := 0,
+   OnOff := 1
+  ),
+  Do(
+    { Delete any current instances of this form.} 
+    GuiDestroy([Switch Availability]),
+
+    { Register the GUI-form for this atom.}
+    GuiRegister(PDir([\Atoms\Switch Availability.gui]), 1),
+
+    { Show the GUI-form.}
+     Guicreate([Switch Availability], [Switch Availability], 0, c, 0, 1)
+  )
+ ),
+ {* Change Status, label value and color and open output *}
+ If(
+  OnOff,
+  Do(
+   Status(c) := 11,
+   SetLabel([t-available], 1, c),
+   Color(c) := ColorGreen,
+   OpenAllOC(c)
+  ),
+  Do(
+    Status(c) := 12,
+    SetLabel([t-available], 0, c),
+    Color(c) := ColorRed,
+    OpenAllOC(c)     
+  )
+ )
+)
+]);
+Set(On2DDraw, [Do(
+ diShape(0, 0, xSize(c), 1, 0.25, ColorBlack, Color(c)),
+ diOnScale(
+  13,
+  diText(0.2, 0.1, Name(c), ColorWhite, Color(c), 0.5, [Arial], xSize(c) - 0.3, 0.8)
+ )
+)
+]);
+Set(On3DDraw, [Case(
+ 3DIcon,
+ {* Draw None *}
+ SetSetting(sa3DDraw, 0, c),
+ {* Draw Simple Box *}
+ Do(
+  di3DBox(0, 0, 0, 1, 0.5, 2, ColorGray),
+  di3DBox(0.2, -0.05, 1.5, 0.6, 0.6, 0.3, Color(c))
+  ),
+ {** Draw empty controller **}
+ Drawmodel3D(model3D(1, c), 0, 0, 0),
+ {** Draw controller 1 **}
+ Drawmodel3D(model3D(2, c), 0, 0, 0),
+ {** Draw controller 2 **}
+ Drawmodel3D(model3D(3, c), 0, 0, 0)
+)
+]);
+Set(OnMessage, [Do(
+ If(
+  Message = 1,
+  {* Go up *}
+  If(
+   OnOff = 0,
+   {* Change Status, label value and color and open output *}
+   Do(
+    OnOff := 1,
+    Status(c) := 11,
+    SetLabel([t-available], 1, c),
+    Color(c) := ColorGreen, 
+    OpenAllOC(c)
+   )
+  ),
+  If(
+   OnOff = 1,
+   {* Change Status, label value and color and open output *}
+   Do(
+    OnOff := 0,
+    Status(c) := 12,
+    SetLabel([t-available], 0, c),
+    Color(c) := ColorRed,
+    OpenAllOC(c)
+   )
+  )
+ )
+)
+]);
+SetStatus(0);
+int018;
+int007;

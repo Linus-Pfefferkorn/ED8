@@ -1,0 +1,431 @@
+
+
+{Preregister functions}
+
+PreregisterFunction([Warehouse_bin_location_search5_circular], 1, 1);
+PreregisterFunction([Warehouse_bin_location_search1_in_rows_asc], 1, 1);
+PreregisterFunction([Warehouse_bin_location_search2_in_cols_asc], 1, 1);
+PreregisterFunction([Warehouse_bin_location_search4_in_cols_desc], 1, 1);
+PreregisterFunction([Warehouse_bin_location_search3_in_rows_desc], 1, 1);
+
+
+{Atom: Warehouse}
+
+sets;
+BaseClass;
+CreateAtom(a, s, [], 1, false);
+Set(OnInit, [lateinit( [do(   vricontransparent(icon(c),1)  ) ])]);
+int023([Warehouse], 4605453, 240);
+DefineFunction([Warehouse_bin_location_search5_circular], [Various], 1, 1, [do(
+ {--starting coordinates--}
+ var([startRow], vbValue, Att(3, p(1))),
+ var([startCol], vbValue, Att(4, p(1))),
+ {--temporary coordinates--}
+ var([tempRow], vbValue, startRow),
+ var([tempCol], vbValue, startCol),
+ {--incrementing coordinates to enlarge search--}
+ var([tempRadius], vbValue, 0),
+ var([tempLine], vbValue, 0),
+ {--Flag for searching direction--}
+ var([tempDir], vbValue, 0),
+ {--flag for succesful search--}
+ var([foundFlag], vbValue, 0),
+
+ {--Searching in rising circles around starting bin location--}
+ LoopUntil(
+  {--Found bin location is not occupied--}
+  foundFlag,
+  do(
+   Inc(tempRadius),
+   Inc(tempLine, 2),
+   tempRow := startRow - tempRadius,
+   tempCol := startCol - tempRadius,
+   tempdir := 0,
+   
+   LoopUntil(
+    foundFlag,
+    do(
+     Inc(tempDir),
+     
+     LoopUntil(
+      {--Found bin location is not occupied--}
+      foundFlag,
+      do(
+       {--next cell of circle (changing direction 4 times)--}
+       Case(
+        tempDir,
+        Inc(tempRow, 1),
+        Inc(tempCol, 1),
+        Inc(tempRow, -1),
+        Inc(tempCol, -1)           
+       ),
+       if(
+        {--temporary bin location is within borders and empty--}
+        and(
+         tempRow > 0,
+         tempRow <= Att(1, p(1)),
+         tempCol > 0,
+         tempCol <= Att(2, p(1)),
+         Cell(tempRow, tempCol, p(1)) = 0
+        ),
+        {--select temporary bin location--}
+        do(
+         foundFlag := 1,
+         Att(3, p(1)) := tempRow,
+         Att(4, p(1)) := tempCol
+        )
+       )
+      ),
+      {--rising circle results in rising number of cells in one line--}
+      tempLine
+     )
+    ),
+    {--4 lines of search around circle--}
+    4
+   )
+  ),
+  {--Limited to Warehouse dimensions--}
+  Max(
+   Att(1, c),
+   Att(2, c)
+  )
+ )
+
+)
+], [Searches circular for a free bin location starting from the designated bin location.
+], [Warehouse_circular_bin_location_search5(c)], 0, [Warehouse]);
+DefineFunction([Warehouse_bin_location_search1_in_rows_asc], [Various], 1, 1, [LoopUntil(
+ {--Found bin location is not occupied--}
+ Cell(Att(3, p(1)), Att(4, p(1)), p(1)) = 0,
+ if(
+  {--Next row in the same col exists--}
+  Att(3, p(1)) < Att(1, p(1)),
+  {--Select next row in the same col--}
+  Att(3, p(1)) := Att(3, p(1)) + 1,
+  Do(
+   {--Select first row in the next col--}
+   Att(3, p(1)) := 1,
+   if(
+    {--Next col in the same row exists--}
+    Att(4, p(1)) < Att(2, p(1)),  
+    {--Select next col in the same row--}
+    Att(4, p(1)) := Att(4, p(1)) + 1, 
+    {--Select first col in the next row--}
+    Att(4, p(1)) := 1
+   )
+  )
+ ),
+ {--Limited to Warehouse dimensions--}
+ Att(1, p(1)) * Att(2, p(1))
+)
+], [Searches in rows ascending for a free bin location starting from the designated bin location.
+], [Warehouse_bin_location_search1_in_rows_asc(c)], 0, [Warehouse]);
+DefineFunction([Warehouse_bin_location_search2_in_cols_asc], [Various], 1, 1, [LoopUntil(
+ {--Found bin location is not occupied--}
+ Cell(Att(3, p(1)), Att(4, p(1)), p(1)) = 0,
+ if(
+  {--Next col in the same row exists--}
+  Att(4, p(1)) < Att(2, p(1)),
+  {--Select next col in the same row--}
+  Att(4, p(1)) := Att(4, p(1)) + 1,
+  Do(
+   {--Select first col in the next row--}
+   Att(4, p(1)) := 1,
+   if(
+    {--Next row in the same col exists--}
+    Att(3, p(1)) < Att(1, p(1)),
+    {--Select next row in the same col--}
+    Att(3, p(1)) := Att(3, p(1)) + 1,   
+    {--Select first row in the next col--}
+    Att(3, p(1)) := 1
+   )
+  )
+ ),
+ {--Limited to Warehouse dimensions--}
+ Att(1, p(1)) * Att(2, p(1))
+)
+], [Searches in cols ascending for a free bin location starting from the designated bin location.
+], [Warehouse_bin_location_search2_in_cols_asc(c)], 0, [Warehouse]);
+DefineFunction([Warehouse_bin_location_search4_in_cols_desc], [Various], 1, 1, [LoopUntil(
+ {--Found bin location is not occupied--}
+ Cell(Att(3, p(1)), Att(4, p(1)), p(1)) = 0,
+ if(
+  {--Next col in the same row exists--}
+  Att(4, p(1)) > 1,
+  {--Select next col in the same row--}
+  Att(4, p(1)) := Att(4, p(1)) - 1,
+  Do(
+   {--Select first col in the next row--}
+   Att(4, p(1)) := Att(2, p(1)),
+   if(
+    {--Next row in the same col exists--}
+    Att(3, p(1)) > 1,
+    {--Select next row in the same col--}
+    Att(3, p(1)) := Att(3, p(1)) - 1,   
+    {--Select first row in the next col--}
+    Att(3, p(1)) := Att(1, p(1))
+   )
+  )
+ ),
+ {--Limited to Warehouse dimensions--}
+ Att(1, p(1)) * Att(2, p(1))
+)
+], [Searches in cols descending for a free bin location starting from the designated bin location.], [Warehouse_bin_location_search4_in_cols_desc(c)], 0, [Warehouse]);
+DefineFunction([Warehouse_bin_location_search3_in_rows_desc], [Various], 1, 1, [LoopUntil(
+ {--Found bin location is not occupied--}
+ Cell(Att(3, p(1)), Att(4, p(1)), p(1)) = 0,
+ if(
+  {--Next row in the same col exists--}
+  Att(3, p(1)) > 1,
+  {--Select next row in the same col--}
+  Att(3, p(1)) := Att(3, p(1)) - 1,
+  Do(
+   {--Select first row in the next col--}
+   Att(3, p(1)) := Att(1, p(1)),
+   if(
+    {--Next col in the same row exists--}
+    Att(4, p(1)) > 1,  
+    {--Select next col in the same row--}
+    Att(4, p(1)) := Att(4, p(1)) - 1, 
+    {--Select first col in the next row--}
+    Att(4, p(1)) := Att(2, p(1))
+   )
+  )
+ ),
+ {--Limited to Warehouse dimensions--}
+ Att(1, p(1)) * Att(2, p(1))
+)
+], [Searches in rows descending for a free bin location starting from the designated bin location.], [Warehouse_bin_location_search3_in_rows_desc(c)], 0, [Warehouse]);
+Set(Icon(a), 
+	RegisterIcon(IconsDir([bmp\buffers\warehouse.bmp]), [warehouse]));
+SetMaterial(
+	RegisterMaterial([Default], 8421504, 8421504, 3289650, 0, 0.100000001490116, 0, false, false, 1, 0), 1, a);
+AddTexture(
+	RegisterTexture(IconsDir([Bmp\Buffers\warehouse.bmp]), [warehouse.bmp], 128, 64, 255, 255, 0, 0, 0, 0), a);
+Set(Version(a), 7.3);
+SetTreeIcon(pDir([Media\Icons\Warehouse.ico]));
+Set(Info, [Warehouse for storing products
+
+General
+------------
+Atoms that enter are stored at a specific location in the warehouse. If the 
+warehouse is full its input is closed. Each cell can contain one atom. 
+If the warehouse has outputchannels, products are sent out. You can specify 
+which product to send out.
+
+The user can specify a trigger on entry/exit.
+
+Channels:
+--------------
+N inputchannels, N outputchannels
+
+Doubleclick:
+  View contents 
+
+Rightclick:
+  Edit sendto, product to send, input strategy, queue discipline, rows, 
+  columns, height, storagerule, triggers on entry/exit
+
+Last Revision:
+---------------------
+January, 2009
+]);
+SetChannels(1, 0);
+SetChannelRanges(1, 255, 0, 255);
+int001(257);
+SetSize(20, 2, 10);
+LockPosition(false);
+LockSize(false);
+DisableIconRotation(false);
+SetProductCode([]);
+CreateAttributes(17);
+SetAttributeName(r(1), [rows]);
+SetAttributeName(r(2), [columns]);
+SetAttributeName(r(3), [currow]);
+SetAttributeName(r(4), [curcol]);
+SetAttributeName(r(5), [entrytrigger]);
+SetAttributeName(r(6), [exittrigger]);
+SetAttributeName(r(7), [putinrow]);
+SetAttributeName(r(8), [putincol]);
+SetAttributeName(r(9), [instrategy]);
+SetAttributeName(r(10), [queuediscipline]);
+SetAttributeName(r(11), [sendto]);
+SetAttributeName(r(12), [prodtosend]);
+SetAttributeName(r(13), [temp]);
+SetAttributeName(r(14), [showcontents]);
+SetAttributeName(r(15), [DisplayTexture]);
+SetAttributeName(r(16), [3dwidth]);
+SetAttributeName(r(17), [searchmode]);
+SetAtt(r(1), 10);
+SetAtt(r(2), 20);
+SetExprAtt(r(7), [label([row],i)]);
+SetExprAtt(r(8), [label([column],i)]);
+SetExprAtt(r(9), [{.openallic(c)|Any inputchannel .}openallic(c)]);
+SetExprAtt(r(10), [{.content(c)|Fifo (First In First Out) .}content(c)]);
+SetExprAtt(r(11), [1]);
+SetExprAtt(r(12), [first(c)]);
+SetAtt(r(15), 1);
+SetAtt(r(16), 1);
+SetAtt(r(17), 1);
+int024;
+SetTable(10, 20);
+int015(0, 0, [ 
+1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+]);
+int015(1, 0, [1
+]);
+int015(2, 0, [2
+]);
+int015(3, 0, [3
+]);
+int015(4, 0, [4
+]);
+int015(5, 0, [5
+]);
+int015(6, 0, [6
+]);
+int015(7, 0, [7
+]);
+int015(8, 0, [8
+]);
+int015(9, 0, [9
+]);
+int015(10, 0, [10
+]);
+int015(11, 0, [11
+]);
+int015(12, 0, [12
+]);
+int015(13, 0, [13
+]);
+int015(14, 0, [14
+]);
+int015(15, 0, [15
+]);
+int015(16, 0, [16
+]);
+int015(17, 0, [17
+]);
+int015(18, 0, [18
+]);
+int015(19, 0, [19
+]);
+int015(20, 0, [20
+]);
+Set(OnEvent, [case(eventcode,
+ if(and(>(content(c),0),>(nroc(c),0)),openalloc(c)),
+ att(9,c)
+)
+]);
+Set(OnEntered, [do( 
+ {--Queue discipline--}
+ setrank(att(10, c), i),
+ 
+ {--Get current row index--}
+ Att(3, c) := Att(7, c),
+ 
+ {--Check for valid row index--}
+ Case(
+  WhichIsTrue(
+   {--No valid row--}
+   Att(3, c) < 1,
+   {--Row outside of warehouse dimensions--}
+   Att(3, c) > Att(1, c)
+  ),
+  {--Set to row no. 1--}
+  Att(3, c) := 1,
+  {--Set to maximum row--}
+  Att(3, c) := Att(1, c)
+ ),
+
+ {--Get current col index--}
+ Att(4, c) := Att(8, c),
+ 
+ {--Check for valid col index--}
+ Case(
+  WhichIsTrue(
+   {--No valid row--}
+   Att(4, c) < 1,
+   {--Row outside of warehouse dimensions--}
+   Att(4, c) > Att(2, c)
+  ),
+  {--Set to row no. 1--}
+  Att(4, c) := 1,
+  {--Set to maximum row--}
+  Att(4, c) := Att(2, c)
+ ),
+ 
+ if(
+  {--Bin location is occupied. Search is neccessary.--}
+  cell(Att(3, c), Att(4, c), c) <> 0, 
+  
+  Case(
+   {--Search in rows or in cols, ascending or descending, or circular around designated bin locaation--}
+   Max(1, Att([searchmode], c)),
+   
+   {--Search in rows ascending--}
+   Warehouse_bin_location_search1_in_rows_asc(c),
+   
+   {--Search in cols ascending--}
+   Warehouse_bin_location_search2_in_cols_asc(c),
+   
+   {--Search in rows descending--}
+   Warehouse_bin_location_search3_in_rows_desc(c),
+   
+   {--Search in cols descending--}  
+   Warehouse_bin_location_search4_in_cols_desc(c),
+   
+   {--Search circular around the designated bin location--}
+   Warehouse_bin_location_search5_circular(c)
+  )
+ ),
+ 
+ {--Store ID into the found table cell--} 
+ cell(Att(3, c), Att(4, c), c) := atomid(i),
+ 
+ {--Write row index to Product--}
+ sddb([t108-whsrow], att(3, c), i), 
+ 
+ {--Write col index to Product--}
+ sddb([t108-whscol], att(4, c), i),
+ 
+ {--Set location in the Warehouse according to assigned row and col--}
+ setloc(
+  *(-(Att(4, c),1),/(xsize(c), Att(2, c))),
+  0,
+  *(-(Att(3, c),1),/(zsize(c), Att(1, c))),
+  i
+ ),
+ 
+ if(
+  {--Content reached capacity--}
+  content(c) >= Att(1, c) * Att(2, c),
+  {--Lock--}
+  closeallic(c)
+ ),
+ 
+ {--Entrytrigger--}
+ att(5, c),
+ 
+ createevent(0, c, 1)
+)
+]);
+Set(OnExited, [do( setcell(ddb([t108-whsrow],i),ddb([t108-whscol],i),0,c), sddb([t108-whsrow],0,i), sddb([t108-whscol],0,i), closealloc(c), if(>(content(c),0),  do(setstatus(15,c),createevent(0,c,1)) ), att(6,c), createevent(0,c,2))]);
+Set(OnCreation, [autoconnect]);
+Set(OnReset, [do( closealloc(c), setatt(3,1,c), setatt(4,1,c), settable(0,0,c), settable(att(1,c),att(2,c),c))]);
+Set(OnUser, [Do(  { Delete any current instances of this form.}   GuiDestroy([Warehouse]),  { Register the GUI-form for this atom.}  GuiRegister(PDir([\Atoms\Warehouse.gui]), 1),  { Show the GUI-form.}   GuiCreate([Warehouse], [Warehouse], 0, c, 0, 1))]);
+Set(OnOcReady, [if( >(content(c),0), do(  setrank(1,att(12,c)),  moverequest(first(c),att(11,c)) ))]);
+Set(On2DDraw, [do( standarddisplay(name,string(content)), if(att(14,1),foratomlayerunder(c,dibmp(xloc,+(zloc,1),icon,1,5,1,1))))]);
+Set(On3DDraw, [if( att(15,c), do(  do(   repeat(    +(att(2),1),    do(     di3dbox(*(/(xsize(c),att(2,c)),-(count,1)),0,0,0.03,-0.03,zsize(c),color,0,0, Icon),     di3dbox(*(/(xsize(c),att(2,c)),-(count,1)),att(16,c),0,0.03,0.03,zsize(c),color,0,0)    )   ),   repeat(    att(1),    di3dbox(0,0,*(/(zsize(c),att(1,c)),count),xsize(c),att(16,c),-0.02, ColorGray)   )  ) ), do(  do(   repeat(    +(att(2),1),    do(     di3dbox(*(/(xsize(c),att(2,c)),-(count,1)),0,0,0.03,-0.03,zsize(c),color,0,0),     di3dbox(*(/(xsize(c),att(2,c)),-(count,1)),att(16,c),0,0.03,0.03,zsize(c),color,0,0)    )   ),   repeat(    att(1),    di3dbox(0,0,*(/(zsize(c),att(1,c)),count),xsize(c),att(16,c),-0.02, ColorGray)   )  ) ))]);
+SetStatus(0);
+int018;
+int007;

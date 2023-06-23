@@ -1,0 +1,123 @@
+EDControl(EditForm:
+  BorderIcons = set(SystemMenu),
+  BorderStyle = Single,
+  Caption = str('Gantt Chart Order Changing'),
+  Height = 311,
+  Name = str('GanttChartOrderChanging'),
+  Position = DesktopCenter,
+  ShowHint = True,
+  Top = 255,
+  Visible = False,
+  Width = 523,
+  Controls(
+    EDControl(Panel:
+      Align = Bottom,
+      Anchors = set(Left,Right,Bottom),
+      BevelOuter = None,
+      Caption = str(''),
+      Height = 40,
+      Left = 0,
+      Name = str('Panel1'),
+      TabOrder = 1,
+      Top = 235,
+      Width = 523,
+      Controls(
+        EDControl(Button:
+          Caption = str('&Close'),
+          Default = True,
+          Left = 432,
+          Name = str('Button42'),
+          TabOrder = 1,
+          Top = 3,
+          Events(
+            Click = str('do('#13' var([atmTemp], vbAtom, 0),'#13' atmTemp := first(vtp(label([t-ganntguiref],model))),'#13#13' setlabel([t-cntr1],0,model),'#13#13' repeat(nrows(atmTemp),setcell(count,3,-1,atmTemp)),'#13#13' repeat('#13'  gui([list],0,[Listbox2],[items],[count]),'#13'  do('#13'   setlabel([t-tmp],count,main),'#13'   repeat(nrows(atmTemp),'#13'    if('#13'     comparetext('#13'      gui([list],0,[Listbox2],[items],[get],label([t-tmp],main)),'#13'      cell(count,2,atmTemp,2)'#13'     ),'#13'     do('#13'      setcell(count,3,label([t-tmp],main),atmTemp),'#13'      setcell(label([t-tmp],main),4,count,atmTemp)'#13'     )'#13'    )'#13'   )'#13'  )'#13' ),'#13' repeat(nrows(atmTemp)-label([t-tmp],main),'#13'  setcell(count+label([t-tmp],main),4,0,atmTemp)'#13' ),'#13' setlabel([t-tmp],0,main),'#13' setlabel([t-ganntguiref],0,main),'#13' gui([destroy],0)'#13')  '#13))))),
+EDControl(Panel:
+      Align = Client,
+      Anchors = set(Left,Top,Right,Bottom),
+      BevelOuter = None,
+      Caption = str(''),
+      Height = 235,
+      Left = 0,
+      Name = str('Panel12'),
+      TabOrder = 2,
+      Top = 0,
+      Width = 523,
+      Controls(
+        EDControl(GroupBox:
+          Caption = str('Settings'),
+          Height = 257,
+          Left = 8,
+          Name = str('GroupBox1'),
+          TabOrder = 1,
+          Top = 8,
+          Width = 505,
+        Controls(
+EDControl(ListBox:
+          Height = 185,
+          Left = 12,
+          Name = str('ListBox1'),
+          TabOrder = 2,
+          Top = 56,
+          Width = 145,
+          Events(
+            Enter = str('GUI([SetProperty],0,[Button3],[Default],1)'),
+            Exit = str('GUI([SetProperty],0,[Button3],[Default],0)'))),
+        EDControl(Button:
+          Caption = str('&Select >>'),
+          Left = 168,
+          Name = str('btnSelect'),
+          TabOrder = 3,
+          Top = 56,
+          Events(
+            Click = str(' do('#13#10'  setlabel([Index],GUI([GetProperty],0,[ListBox1],[ItemIndex]),model),'#13#10'  if('#13#10'   label([Index],model)>0,'#13#10'   do('#13#10'    GUI([List],0,[ListBox2],[Items],[Add],GUI([List],0,[ListBox1],[Items],[Get],label([Index],model))),'#13#10'    GUI([List],0,[ListBox1],[Items],[Delete],label([Index],model)),'#13#10'    if('#13#10'     or('#13#10'      label([Index],model)<GUI([List],0,[ListBox1],[Items],[Count]),'#13#10'      label([Index],model)=1'#13#10'     ),'#13#10'     GUI([SetProperty],0,[ListBox1],[ItemIndex],label([Index],model)),'#13#10'     GUI([SetProperty],0,[ListBox1],[ItemIndex],label([Index],model)-1)'#13#10'    ) '#13#10'   )'#13#10'  ),'#13#10'  GUI([SetProperty],0,0,[ActiveControl],[ListBox1])'#13#10' )'))),
+        EDControl(Button:
+          Caption = str('<< &Deselect'),
+          Left = 168,
+          Name = str('btnDeselect'),
+          TabOrder = 4,
+          Top = 88,
+          Events(
+            Click = str('do('#13#10' setlabel([Index],GUI([GetProperty],0,[ListBox2],[ItemIndex]),model),'#13#10' if(label([Index],model)>0,'#13#10'  do('#13#10'   GUI([List],0,[ListBox1],[Items],[Add],GUI([List],0,[ListBox2],[Items],[Get],label([Index],model))),'#13#10'   GUI([List],0,[ListBox2],[Items],[Delete],label([Index],model)),'#13#10'   if(or(label([Index],model)<GUI([List],0,[ListBox2],[Items],[Count]),label([Index],model)=1),'#13#10'     GUI([SetProperty],0,[ListBox2],[ItemIndex],label([Index],model)),'#13#10'     GUI([SetProperty],0,[ListBox2],[ItemIndex],label([Index],model)-1)'#13#10'   )'#13#10'  )'#13#10' ),'#13#10' GUI([SetProperty],0,0,[ActiveControl],[ListBox2])'#13#10')'))),
+        EDControl(ListBox:
+          Height = 185,
+          Left = 256,
+          Name = str('ListBox2'),
+          TabOrder = 5,
+          Top = 56,
+          Width = 145,
+          Events(
+            Enter = str('GUI([SetProperty],0,[Deselect],[Default],1)'),
+            Exit = str('GUI([SetProperty],0,[Deselect],[Default],0)'))),
+        EDControl(Button:
+          Caption = str('&Up'),
+          Left = 416,
+          Name = str('btnUp'),
+          TabOrder = 6,
+          Top = 56,
+          Events(
+            Click = str('do('#13#10' setlabel([Index],GUI([GetProperty],0,[ListBox2],[ItemIndex]),model),'#13#10' if(label([Index],model)>1,'#13#10'  do('#13#10'   GUI([List],0,[ListBox2],[Items],[Move],label([Index],model),label([Index],model)-1),'#13#10'   GUI([SetProperty],0,[ListBox2],[ItemIndex],label([Index],model)-1)'#13#10'  )'#13#10' ),'#13#10' GUI([SetProperty],0,0,[ActiveControl],[ListBox2])'#13#10')'))),
+        EDControl(Button:
+          Caption = str('&Down'),
+          Left = 416,
+          Name = str('btnDown'),
+          TabOrder = 7,
+          Top = 88,
+          Events(
+            Click = str(' do('#13#10'  setlabel([Index],GUI([GetProperty],0,[ListBox2],[ItemIndex]),model),'#13#10'  if('#13#10'   and(label([Index],model)>0,label([Index],model)<GUI([List],0,[ListBox2],[Items],[Count])),'#13#10'   do('#13#10'    GUI([List],0,[ListBox2],[Items],[Move],label([Index],model),label([Index],model)+1),'#13#10'    GUI([SetProperty],0,[ListBox2],[ItemIndex],label([Index],model)+1)'#13#10'   )'#13#10'  ),'#13#10'  GUI([SetProperty],0,0,[ActiveControl],[ListBox2])'#13#10' )'))),
+        EDControl(Label:
+          Caption = str('Remaining processes'),
+          Color = -16777208,
+          Left = 12,
+          Name = str('StaticText1'),
+          Top = 32,
+          Width = 105),
+        EDControl(Label:
+          Caption = str('Processes in Gantt Chart'),
+          Color = -16777208,
+          Left = 256,
+          Name = str('StaticText12'),
+          Top = 32,
+          Width = 121)))))),
+  Events(
+    Init = str('do('#13' var([atmTemp], vbAtom, 0),'#13' atmTemp := first(vtp(label([t-ganntguiref],model))),'#13#13' sddb([t-cntr1],0,model),'#13' repeat(nrows(atmTemp),'#13'  do('#13'   if('#13'    and(cell(count,4,atmTemp)>0,cell(cell(count,4,atmTemp),3,atmTemp)>0),'#13'    gui([list],0,[Listbox2],[items],[add],cell(cell(count,4,atmTemp),2,atmTemp,2))'#13'   )'#13'  )'#13' ),'#13' repeat(nrows(atmTemp),'#13'  if('#13'   cell(count,3,atmTemp)<0,'#13'   gui([list],0,[Listbox1],[items],[add],cell(count,2,atmTemp,2))'#13'  )'#13' )'#13')   '#13)))
+

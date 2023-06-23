@@ -1,0 +1,148 @@
+
+
+{Atom: Gantt Chart}
+
+sets;
+BaseClass;
+CreateAtom(a, s, [], 1, false);
+int023([Gantt Chart], 16753828, 1248);
+Set(Icon(a), 
+	RegisterIcon(IconsDir([Png\products\circlered.png]), [circlered]));
+SetMaterial(
+	RegisterMaterial([Default], 8421504, 8421504, 3289650, 0, 0.100000001490116, 0, false, false, 1, 0), 1, a);
+Set(Version(a), 7.3);
+SetTreeIcon(pDir([Media\Icons\GanttChart.ico]));
+Set(Info, [Gantt Chart functionality.
+
+General
+------------
+You can use this gantt chart in two ways:
+- stand alone: the option 'Gantt Settings | Standalone : Import' 
+  has to be switched on. You can enter the reference 
+  information in 'Import data'. Enter a reference to a table and 
+  enter the colomn references. The sequences should 
+  be grouped. Also the jobs should be in the correct order.
+- In the flow. In this case you should use the Gantt 
+  Initialize, to initialize the logging of information on the 
+  atoms (=sequences) that flow through the gantt chart initialize 
+  up to the Gantt chart itself. Link-up the gantt chart in 
+  the normal flow.
+
+It is possible to display another order in which the Gantt chart 
+displays results. Select 'Change order' to display the 
+interface in which this can be done.
+
+Last Revision:
+---------------------
+April, 2008
+]);
+SetChannels(1, 1);
+SetChannelRanges(1, 255, 1, 1);
+int001(81);
+SetSize(7, 2, 0.1);
+LockPosition(false);
+LockSize(false);
+DisableIconRotation(false);
+SetProductCode([]);
+CreateAttributes(25);
+SetAttributeName(r(1), [BuiltGantt]);
+SetAttributeName(r(2), [overviewlabel]);
+SetAttributeName(r(3), [timelabel]);
+SetAttributeName(r(4), [activitylabel]);
+SetAttributeName(r(5), [sequencelabel]);
+SetAttributeName(r(6), [activitycount]);
+SetAttributeName(r(7), [sequencecount]);
+SetAttributeName(r(8), [fixedactivities]);
+SetAttributeName(r(9), [inputcount]);
+SetAttributeName(r(10), [tmp]);
+SetAttributeName(r(11), [logfrom]);
+SetAttributeName(r(12), [loguntil]);
+SetAttributeName(r(13), [maxjobs]);
+SetAttributeName(r(14), [findids]);
+SetAttributeName(r(15), [tmp2]);
+SetAttributeName(r(16), [imported]);
+SetAttributeName(r(17), [NOT USED]);
+SetAttributeName(r(18), [jobidcol]);
+SetAttributeName(r(19), [activitycol]);
+SetAttributeName(r(20), [begincol]);
+SetAttributeName(r(21), [endcol]);
+SetAttributeName(r(22), [sequencecol]);
+SetAttributeName(r(23), [import_data]);
+SetAttributeName(r(24), [customlabel]);
+SetAttributeName(r(25), [SequenceNameCol]);
+SetExprAtt(r(1), [Do( GanttClear, GanttLabels(overviewlabel, timelabel, activitylabel, sequencelabel), activitycount := 0, sequencecount := 0, Setcs(First(c)), Repeat(nRows(cs),  if(And(Cell(Count, 4, cs) > 0, Cell(Cell(Count, 4, cs), 3, cs) > 0),   Do(    activitycount := activitycount + 1,    GanttAddActivity(Cell(Cell(Count, 4, cs), 2, cs, 2)),    SetLabel(Cell(Cell(Count, 4, cs), 1, cs, 2), activitycount, cs)   )  ) ),  Repeat(nRows(cs),  if(Cell(Count, 3, cs) < 0,   SetLabel(Cell(Count, 1, cs, 2), 1000 + activitycount, cs)  ) ), Repeat(nRows(c),  if(Label(Cell(Count, 2, c, 2), cs) > 0,   {activity already defined}   Do(    if(sequencecount <> Cell(Count, 5, c),     Do(      sequencecount := Cell(Count, 5, c),      GanttAddSequence(Concat(String(sequencecount), [_]))     )    ),    GanttAddJob(sequencecount, Cell(Count, 3, c), Cell(Count, 4, c), Label(Cell(Count, 2, c, 2), cs)),    1   ),   if(Or(Cell(Count, 2, c) > 0, StringLength(Cell(Count, 2, c, 2)) > 0),    Do(     SetTable(nRows(cs) + 1, 4, cs),     SetLabel(Cell(Count, 2, c, 2), nRows(cs), cs),     SetCell(nRows(cs), 1, Cell(Count, 2, c), cs),     if(imported,      SetCell(nRows(cs), 2, Cell(nRows(cs), 1, cs, 2), cs),      SetCell(nRows(cs), 2, Name(AtomByID(Cell(nRows(cs), 1, cs), Model)), cs)     ),     GanttAddActivity(Cell(nRows(cs), 2, cs, 2)),     activitycount := activitycount + 1,     SetCell(nRows(cs), 3, activitycount, cs),     SetCell(nRows(cs), 4, activitycount, cs),     if(sequencecount <> Cell(Count, 5, c),      Do(       sequencecount := Cell(Count, 5, c),       GanttAddSequence(Concat(String(sequencecount), [_]))      )     ),     GanttAddJob(sequencecount, Cell(Count, 3, c), Cell(Count, 4, c), Label(Cell(Count, 2, c, 2), cs)),     1    )      )  ) ),  Repeat(nRows(First(c)),  SetLabel(Cell(Count, 1, First(c), 2), 0, First(c)) ), GanttLegVisible(False, False), GanttShow)]);
+SetTextAtt(r(2), [Production Overview]);
+SetTextAtt(r(3), [Time]);
+SetTextAtt(r(4), [Activity]);
+SetTextAtt(r(5), [Sequence]);
+SetExprAtt(r(11), [0]);
+SetExprAtt(r(12), [hr(1)]);
+SetExprAtt(r(13), [500]);
+SetExprAtt(r(14), [Do( Setcs(First(c)), Repeat(nRows(cs),  Do(   tmp := Cell(Count, 1, cs),   if(tmp > 0,    Do(     tmp2 := AtomID(AtomByName(Cell(Count, 2, cs, 2), Model)),     SetCell(Count, 1, tmp2, cs),     SetLabel(String(tmp2), Cell(Count, 3, cs), cs),     SetLabel(String(tmp), 0, cs),     Repeat(nRows(c),      if(Cell(Count, 2, c) = tmp,       SetCell(Count, 2, tmp2, c)      )     )    )   )  ) ))]);
+SetAtt(r(18), 1);
+SetAtt(r(19), 2);
+SetAtt(r(20), 3);
+SetAtt(r(21), 4);
+SetAtt(r(22), 5);
+SetExprAtt(r(23), [Do( SetAtt(16, 1, c), Setcs(Att(17, c)), SetTable(0, 0, c), SetTable(nRows(cs), 6, c), Repeat(nRows(cs),  Do(   SetCell(Count, 1, Cell(Count, Att(18, c), cs), c),   SetCell(Count, 2, Cell(Count, Att(19, c), cs), c),   SetCell(Count, 3, Cell(Count, Att(20, c), cs), c),   SetCell(Count, 4, Cell(Count, Att(21, c), cs), c),   SetCell(Count, 5, Cell(Count, Att(22, c), cs), c),   SetCell(Count, 6, Cell(Count, Att(24, c), cs), c)  ) ))]);
+int024;
+int020(r(1), false, true);
+int020(r(14), false, true);
+int020(r(23), false, true);
+Set(OnEvent, [Case(EventCode, {1: Entered} { Open the output channel to move the product out. } OpenOc(1, c), {2: Exited} { Open all input channels to receive a new product. } OpenAllIc(c), {3: Initialize system} if(Not(imported),  Do(   { Clear the table. }   SetTable(0, 0, c),   { If there are no fixed activities clear the table of the }   { supportive ActivityInfo atom. }   if(Not(fixedactivities),    SetTable(0, 0, First(c))   )  ) ))]);
+Set(OnEntered, [Do( { Product has entered, close all input channels. } CloseAllIc(c), { Create an event to open the output channel. } CreateEvent(0, c, 1),  if(And(Label([t-gcc], i) > 0, nRows(c) <= MaxJobs, Time >= LogFrom, Time <= LogUntil),  Do(   { Test if there was an initial OnEntry event handler on the product. }   { This label is defined in the Gantt Initialize atom. }   if(Label([t-gc_ent], i) > 0,    { There was an initial OnEntry event handler. Copy only the initial event handler. }    OnEntry(i) := StringCopy(OnEntry(i), 4, Label([t-gc_ent], i)),    { There was no initial OnEntry event handler so clear the event handler. }    OnEntry(i) := []   ),   { Remove the label. }   SetLabel([t-gc_ent], 0, i),   { Test if there was an initial OnExit event handler on the product. }   { This label is defined in the Gantt Initialize atom. }   if(Label([t-gc_ext], i) > 0,    { There was an initial OnExit event handler. Copy only the initial event handler. }    OnExit(i) := StringCopy(OnExit(i), 4, Label([t-gc_ext], i)),    { There was no initial OnExit event handler so clear the event handler. }    OnExit(i) := []   ),   { Remove the label. }   SetLabel([t-gc_ext], 0, i),   { Keep track of the number of products that have entered this atom. }   InputCount := InputCount + 1,   Repeat(Label([t-gcc], i),    Do(     if(Count < Label([t-gcc], i),      Do(       SetTable(nRows(c) + 1, 6, c),       { If this row is the header row set the names of each column. }       if(nRows(c) = 1,        Do(         SetCell(0, 1, [Job nr.], c),         SetCell(0, 2, [Activity], c),         SetCell(0, 3, [Starttime], c),         SetCell(0, 4, [Endtime], c),         SetCell(0, 5, [Sequence], c),         SetCell(0, 6, [CustomLabel], c)        )       ),       { If this row is not the header row set the data. }       SetCell(nRows(c), 1, Count, c), { The job number. }       SetCell(nRows(c), 2, Label(Concat([t-gca], String(Count)), i), c), { The activity number is combined out of the label of the product "t-gca" and the row number. }       SetCell(nRows(c), 3, Label(Concat([t-gcit], String(Count)), i), c), { The starttime is combined with the row number. }       SetCell(nRows(c), 4, Label(Concat([t-gcot], String(Count)), i), c), { The endtime is combined with the row number. }       SetCell(nRows(c), 5, InputCount, c), { The input count makes the sequence number. }       SetCell(nRows(c), 6, Name(i), c)      )     ),     { Clear the used labels. }     Label(Concat([t-gca], String(Count)), i) := 0,     Label(Concat([t-gcit], String(Count)), i) := 0,     Label(Concat([t-gcot], String(Count)), i) := 0    )   ),   Label([t-gcc], i) := 0  ) ))]);
+Set(OnExited, [Do( { Set the status to Idle. } SetStatus(1, c), { Close the output channel. } CloseOc(1, c), { Open all input channels. } CreateEvent(0, c, 2))]);
+Set(OnCreation, [{ Automatically connect this atom with its predecessor. }AutoConnect]);
+Set(OnReset, [Do( { Set the status to Idle. } SetStatus(1, c), { Close the output channel. } CloseOc(1, c), { Create an event with high priority to initialize the Gantt system. } CreateEvent(0, c, 3, 9999), { Initialize the table. } { Note: the table is cleared in the previous event. } SetTable(MaxJobs, nCols(c), c), { No input received yet. } InputCount := 0,  if(Att([loaded], First(c)),  Do(   findids,   SetAtt([loaded], 0, First(c))  ) ))]);
+Set(OnUser, [Do( { Delete any current instances of this form.}  GuiDestroy([GanttChart]), { Register the GUI-form for this atom.} GuiRegister(PDir([\Atoms\GanttChart.gui]), 1), { Show the GUI-form.} GuiCreate([GanttChart], [GanttChart], 0, c, 0, 1))]);
+Set(OnOcReady, [if(Content(c) > 1, { Try to move the product atom through the output channel. } { Note: First(c) is the ActivityInfo atom and we know that only } { one product atom at a time is in the Gantt Chart atom, so Last(c) } { is the product atom. } MoveRequest(Last(c), 1), { There is no product atom in the Gantt Chart atom so open input channels } { to receive one. } Do(  { Close the output channel. }  CloseOc(1, c),  { Open all input channels. }  OpenAllIc(c),  { Set status to Open.}  SetStatus(18, c) ))]);
+Set(OnIcReady, [{ We want to move an atom through the output channel. }{ It might be that the connecting atom is not yet able to receive the atom. }if(Not(IcOpen(OcIcNo(1, c), Out(1, c))), {connected atom cannot receive} Do(  CloseAllIc(c),  OpenOc(1, c) ))]);
+Set(On2DDraw, [Draw2DIcon(3, Name(c), if(Att(16, c), [Stand alone], [In flow]))]);
+SetStatus(0);
+int018;
+
+
+{Atom: ActivityInfo}
+
+sets;
+BaseClass;
+CreateAtom(a, s, [], 1, false);
+int023([ActivityInfo], 0, 0);
+Set(Icon(a), 
+	RegisterIcon(pDir([media\images\default.jpg]), [default.jpg]));
+SetMaterial(
+	RegisterMaterial([Default], 8421504, 8421504, 3289650, 0, 0.100000001490116, 0, false, false, 1, 0), 1, a);
+Set(Version(a), 7.3);
+SetTreeIcon(pDir([Media\Icons\Prohibited.ico]));
+Set(Info, [Needed to store information for the Gantt Chart.
+]);
+Set(DdbRec, [>t-nocreate:1.]);
+int001(82);
+SetSize(1, 1, 1);
+LockPosition(false);
+LockSize(false);
+DisableIconRotation(false);
+SetProductCode([]);
+CreateAttributes(8);
+SetAttributeName(r(1), [loaded]);
+SetAttributeName(r(2), [Tableref]);
+SetAttributeName(r(3), [jobidcol]);
+SetAttributeName(r(4), [activitycol]);
+SetAttributeName(r(5), [begincol]);
+SetAttributeName(r(6), [endcol]);
+SetAttributeName(r(7), [sequencecol]);
+SetAttributeName(r(8), [import_data]);
+SetExprAtt(r(2), [In(1, c)]);
+SetAtt(r(3), 1);
+SetAtt(r(4), 2);
+SetAtt(r(5), 3);
+SetAtt(r(6), 4);
+SetAtt(r(7), 5);
+SetExprAtt(r(8), [Do( Setcs(Att(1, c)), { Empty the table of the Gantt Chart atom. } SetTable(0, 0, Up(c)), { Set the size of the table to the number of rows you want to import. } SetTable(nRows(cs), 6, Up(c)), Repeat(nRows(cs), 1) )]);
+int024;
+int020(r(8), false, true);
+Set(OnCreation, [{ A flag to set that the atom is actually loaded. }LateInit([SetAtt([loaded], 1, c)])]);
+SetStatus(0);
+int018;
+Up;
+int007;

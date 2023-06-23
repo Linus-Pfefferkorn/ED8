@@ -1,0 +1,1117 @@
+
+
+{Atom: Experiment Support}
+
+sets;
+BaseClass;
+CreateAtom(a, s, [], 1, false);
+Set(OnInit, [do( GuiRegister(pdir([\Atoms\ExpWiz.gui]),1), GuiRegister(pdir([\Atoms\Status.gui]),1), GuiRegister(pdir([\Atoms\Statistics.gui]),1), GuiRegister(pdir([\Atoms\SelectStat.gui]),1), GuiRegister(pdir([\Atoms\AnalyzeWiz.gui]),1), GuiRegister(pdir([\Atoms\StandardReport.gui]),1), GuiRegister(pdir([\Atoms\CustomReport.gui]),1), GuiRegister(pdir([\Atoms\ExpReport.gui]),1), ExperimentSetExperimentAtom(c), Dim([refExperimentSupport], vbAtom, c), Dim([refStatusList],vbAtom,AtomByName([StatusList],up(c))), Dim([refTempAtom],vbAtom,c) {used when selecting atoms by mother in Statistics form})]);
+int023([Experiment Support], 0, 0);
+Set(Icon(a), 
+	RegisterIcon(pDir([media\images\default.jpg]), [default.jpg]));
+SetMaterial(
+	RegisterMaterial([Default], 8421504, 8421504, 3289650, 0, 0.100000001490116, 0, false, false, 1, 0), 1, a);
+Set(Version(a), 7.3);
+SetTreeIcon(pDir([Media\Icons\Tools.ico]));
+Set(Info, [System atom, do not drag into your model.
+Allows you to view atom labels in a table.
+
+Last revision: February, 2008
+]);
+Set(DdbRec, [>doneexperimenting:1.>modellayoutwindowwidth:500.>modellayoutwindowheight:445.>t-nocreate:1.]);
+int001(18);
+SetSize(1, 1, 1);
+LockPosition(false);
+LockSize(false);
+DisableIconRotation(false);
+SetProductCode([]);
+CreateAttributes(15);
+SetAttributeName(r(1), [nrruns]);
+SetAttributeName(r(2), [runlength]);
+SetAttributeName(r(3), [warmup]);
+SetAttributeName(r(4), [currun]);
+SetAttributeName(r(5), [method]);
+SetAttributeName(r(6), [usetermcond]);
+SetAttributeName(r(7), [termcond]);
+SetAttributeName(r(8), [onstartrun]);
+SetAttributeName(r(9), [onendrun]);
+SetAttributeName(r(10), [onendwarmup]);
+SetAttributeName(r(11), [expmemo]);
+SetAttributeName(r(12), [runningexp]);
+SetAttributeName(r(13), [nrstatcols]);
+SetAttributeName(r(14), [ResultsDir]);
+SetAttributeName(r(15), [ObservationPeriod]);
+SetAtt(r(1), 30);
+SetExprAtt(r(2), [hr(8)]);
+SetExprAtt(r(3), [mins(30)]);
+SetAtt(r(4), 30);
+SetAtt(r(5), 1);
+SetAtt(r(13), 4);
+int024;
+SetTable(2, 34);
+int015(0, 64, [ 
+1
+2
+]);
+int015(1, 64, [1
+`RESULTS`
+`Queue`
+]);
+int015(2, 64, [2
+30
+1
+]);
+int015(3, 64, [3
+1
+`Queue length`
+]);
+int015(4, 64, [4
+4
+`AvgContent(cs)`
+]);
+int015(5, 0, [5
+ 
+5.89668159991802
+]);
+int015(6, 0, [6
+ 
+9.66791330604556
+]);
+int015(7, 0, [7
+ 
+11.8851795950384
+]);
+int015(8, 0, [8
+ 
+7.96895494789789
+]);
+int015(9, 0, [9
+ 
+3.05708513422714
+]);
+int015(10, 0, [10
+ 
+7.5186351020924
+]);
+int015(11, 0, [11
+ 
+3.67085869711932
+]);
+int015(12, 0, [12
+ 
+9.88654818317634
+]);
+int015(13, 0, [13
+ 
+3.58324927361039
+]);
+int015(14, 0, [14
+ 
+4.93028563562895
+]);
+int015(15, 0, [15
+ 
+4.92283200590177
+]);
+int015(16, 0, [16
+ 
+4.42685127411446
+]);
+int015(17, 0, [17
+ 
+7.25696362895262
+]);
+int015(18, 0, [18
+ 
+2.05666344203346
+]);
+int015(19, 0, [19
+ 
+5.18566294977057
+]);
+int015(20, 0, [20
+ 
+5.66691537088834
+]);
+int015(21, 0, [21
+ 
+5.97585112130911
+]);
+int015(22, 0, [22
+ 
+3.20722885275309
+]);
+int015(23, 0, [23
+ 
+10.348378988641
+]);
+int015(24, 0, [24
+ 
+8.70545743398496
+]);
+int015(25, 0, [25
+ 
+7.44726867640872
+]);
+int015(26, 0, [26
+ 
+5.74529094142832
+]);
+int015(27, 0, [27
+ 
+3.41951057706892
+]);
+int015(28, 0, [28
+ 
+4.02369735533255
+]);
+int015(29, 0, [29
+ 
+5.17515427962319
+]);
+int015(30, 0, [30
+ 
+10.1546942818524
+]);
+int015(31, 0, [31
+ 
+2.59263163372962
+]);
+int015(32, 0, [32
+ 
+8.82662654822172
+]);
+int015(33, 0, [33
+ 
+8.3018036367956
+]);
+int015(34, 0, [34
+ 
+6.53363797854362
+]);
+Set(OnEvent, [case( eventcode, do(  {1: after warmup period}  {initialiseren all standard stats}    ForAtomTreeUnder(model,   do(    setcs(a),        Input(cs) := 0,    Output(cs):= 0,    AvgContent(cs) := 0,    {set maximum content to current content}    MaximumContent(cs) := content(cs),     AvgStay(cs) := 0,    MaxStay(cs) := 0,    {no risk setting status to 0 for atoms of which statusmonitor was not enabled}    Statustime(cs,-1) := 0   )  ),    {execute the onendwarmup code for user initialisations}    onendwarmup,  {create event for end of run, runlength is without warmup length}  {createevent(runlength - warmup, c, 2)}  If(   usetermcond = 0,   { * Only if no terminating condition is provided * }   createevent(runlength, c, 2)  ) ),  do(  {2: after run or subrun}  sendmessagedirect(c,[endrun],c) ))]);
+Set(OnMessage, [do(
+  {is received at start of  the first run and in case of seperate runs at start of all following runs}   
+  if(comparetext(message,[expreset]),
+    do(   {experiment reset} 
+      c.DoneExperimenting := 0,
+      
+      { * Clear observation period * }
+      If(
+       currun = 0,
+       ObservationPeriod := 0
+      ),
+        runspeed:= 1E40,
+       {runspeed:= 30, used for testing} 
+      
+      {check if finished or not}
+      
+      if(  currun < nrruns,
+        do(  {next run/observation period}
+          currun := currun+1,
+          
+          {set terminating condition if necessary}
+          if( usetermcond,
+            do(
+             ExperimentSetTerminatingCondition( docatt([termcond],c) )
+            ),
+            do(
+              ExperimentSetTerminatingCondition([])
+            )
+          ),
+          c.SubRunTerminate := 0, {just in case it was >0}
+          
+         {enable status monitor for atoms of which status must be registered}             
+         label([CheckRow],c) := 2, 
+         repeat(nrows(c)-1,
+           do(
+             label([CheckCol],c):=1,
+             loopuntil(comparetext([0],cell(label([CheckRow],c),+(2,*(2,label([CheckCol],c))),c,2)),
+               do(
+                 if( comparetext(concat(sbo,[STATUS],sbc),cell(label([CheckRow],c),+(2,*(2,label([CheckCol],c))),c,2)),
+                    if(cell(label([CheckRow],c),2,c)=1,
+                       do( {Single Atom}
+                          if( atomexists(atombyname(cell(label([CheckRow],c),1,c,2),model)),
+                             do(                              
+                                setcs(atombyname(cell(label([CheckRow],c),1,c,2),model)),                                                                                        
+                                EnableStatusMonitor(cs,1)
+                             ),
+                             do( {Atom does not exists}
+                                trace(concat([Atom ],cell(label([CheckRow],c),1,c,2),[ does not exist. Status monitor is not enabled.] )),
+                                displaytracer
+                             )   
+                          )
+                        ),
+                        do( {Group of Atoms}
+                           {find the group in the grouptable}
+                            
+                           {grouprow is the row for this group in the GroupTable}                 
+                           c.grouprow := 0,
+                           loopuntil( c.grouprow >0,
+                             do(
+                                if( comparetext(cell(Label([CheckRow],c),1,c,2),cell(Count,1,first(c),2)),
+                                  do(
+                                     c.grouprow := Count
+                                  )   
+                                )
+                             ),
+                             nrows(first(c))
+                           ),
+                           
+                           if(c.grouprow >0,
+                             do(  {enable status for all atoms in group}
+                                 loopuntil( comparetext([0],cell(c.grouprow,count+1,first(c),2)),
+                                   do(                                  
+                                      {look for the atom and set cs ... maybe try and work with ID or ptv instead of name} 
+                                      if(atomexists(AtomByName(cell(c.grouprow,count+1,first(c),2),model)),
+                                        do(
+                                           setcs(AtomByName(cell(c.grouprow,count+1,first(c),2),model)),
+                                           EnableStatusMonitor(cs,1)
+                                         ),
+                                         do( {Atom does not exists}
+                                            trace(concat([Atom ],cell(c.grouprow,count+1,first(c),2),[ does not exist. Status monitor is not enabled.] )),
+                                            displaytracer
+                                         )  
+                                       )                                                                                                                                                                                    
+                                   ),
+                                   ncols(first(c))-1
+                                 )                              
+                              ),
+                             do(
+                               trace(concat( [Group ],cell(label([CheckRow],c),1,c,2),[ not found in GroupTable. Status monitor is not enabled.])),
+                               displaytracer                               
+                              )                           
+                           )                           
+                         )
+                     )
+                  ),
+                  label([CheckCol],c) := label([CheckCol],c)+1  
+                ),
+                /(nrstatcols-2,2)            
+              ),
+             Label([CheckCol],c) := 0,
+             Label([CheckRow],c) := Label([CheckRow],c)+1          
+            )         
+          ), 
+          label([CheckRow],c) := 0, 
+                  
+      
+          {execute the onstartrun event}    
+          onstartrun, 
+          
+          {create event for end of warmup period}
+          createevent(warmup,c,1)        
+        )   
+      )
+    )
+  ),
+  
+  {is received when Terminating Condition is True} 
+  
+  if(comparetext(message,[notify]),
+    do(  
+     { * To register the runlength * }
+     ObservationPeriod := ObservationPeriod + Time,
+     
+     ForAtomTreeUnder(model,
+       do(
+         setcs(a),
+         DestroyEventsOfAtom(cs)
+       )
+     ) , 
+         
+      {terminate run}
+      case(method,
+        do( { 1: separate runs, create event end of run}
+          SendMessageDirect(c,[endrun],c)
+    
+        ),
+        do(   {2: subruns, create event end of experiment }
+        
+        {---------------------------------------------------------------------------------------------------------------------------------------------------------}
+        {--- 01/10/03 Decided that it should not be possible to end a subrun experiment with terminating condition--}
+        {---------------------------------------------------------------------------------------------------------------------------------------------------------}
+         trace([It should not have been possible to do a subruns experiment with terminating condition. Results will not be correct.]),
+         displaytracer,
+         
+          c.SubRunTerminate := 1,
+          SendMessageDirect(c,[endrun],c)                                      
+        )        
+      )
+      
+    )
+  ),
+  
+  {is received when run is finished}
+  if( comparetext(message,[endrun]),
+    do(
+     
+         {execute the onendrun code}
+         onendrun, 
+         
+         if(currun = 1,
+           do( {initialize the resultstable after first run}
+             c.maxnrstats := /( nrstatcols - 2,2),
+             SetTable(nRows(c),nrstatcols+*(c.maxnrstats,nrruns)),
+             
+             c.maxnrstats := 0
+           )
+         ),
+     
+        { write performance measures }
+        
+        {currow is the current row of statistics to read from and write to}
+        c.currow := 2,
+        repeat( nrows(c)-1, {all statistics rows}
+          do(
+              if(  cell(c.currow,2,c) = 1, 
+                do( {AtomSelection}
+                  if( atomexists(AtomByName(cell(c.currow,1,c,2),model)),
+                  do(
+                   {look for the atom and set cs ... maybe try and work with ID or ptv instead of name} 
+                   setcs(AtomByName(cell(c.currow,1,c,2),model)),
+               
+                   {for each row loop over all stats }
+                   loopuntil( CompareText([0],cell(c.currow,2+*(count,2) ,c,2)),
+                     do(
+                       c.curcol := nrstatcols + *(count-1,nrruns)+currun ,
+                       
+                       if( CompareText(concat(sbo,[TABLE],sbc),cell(c.currow,2+*(count,2) ,c,2)) ,
+                         do( {Table option, copy the complete table}
+                            
+                            if( currun = 1,
+                              do( {create new table for this statistic}
+                                 createAtom(BaseClass, c,cell(c.currow,1,c,2)),
+                                 
+{}                                 settable(nrows(cs)+1,ncols(cs)+1,last(c)),
+                                 
+                                 {remember rank in statistics table }                                 
+                                 cell(c.currow,c.curcol,c):= getrank(last(c)),
+                                 c.TempRank := getrank(last(c))
+                                 
+                                 {remember nr of rows in new table}
+                                 {setcell(0,0,nrows(cs) ,last(c))}
+                                 
+                               ),
+                               do(                                                                
+{}                                 cell(c.currow,c.curcol,c) := cell(c.currow,c.curcol-1,c),
+{}                                 c.TempRank := cell(c.currow,c.curcol-1,c),
+                                 
+                                 {add extra rows for the current run}
+{}                                 settable(*(nrows(cs)+1,currun),ncols(cs)+1,rank(c.TempRank,c))
+                                )
+                            ),
+                            
+                            {TempRank is the rank of the table to write in}
+                            
+                            {copy complete table, adding nr of current run to first column}
+{}                            matrixrepeat(nrows(cs)+1,ncols(cs)+1,
+                              do(
+                                if( mcy = 0,
+                                  do(
+                                     setcell( *(currun-1,nrows(cs)+1)+mcx,mcy,currun,rank(c.TempRank,c))
+                                   ),
+                                   do(
+{}                                    if( comparetext(cell(mcx-1,mcy-1,cs,2),[]),
+{}                                      setcell( *(currun-1,nrows(cs)+1)+mcx,mcy,[ ],rank(c.TempRank,c)),
+{}                                      setcell( *(currun-1,nrows(cs)+1)+mcx,mcy,cell(mcx-1,mcy-1,cs,2) ,rank(c.TempRank,c)) 
+                                     )
+                                    )
+                                 )                               
+                               )
+                             ),
+                             c.TempRank := 0
+                            
+                          ),
+                          if( CompareText(concat(sbo,[STATUS],sbc),cell(c.currow,2+*(count,2) ,c,2)) ,
+                             do( 
+                                if( currun = 1,
+                                  do( {create new table for this statistic}
+                                     createAtom(BaseClass, c,cell(c.currow,1,c,2)),
+                                     label([StatusTable],last(c)) := 1,
+                                     
+                                     settable(256,2,last(c)),
+                                     
+                                     {add statusnumbers}
+                                     repeat(nrows(last(c)),
+                                        cell(count,1,last(c)):= count
+                                     ),
+                                     
+                                     {remember rank in statistics table }                                 
+                                     cell(c.currow,c.curcol,c):= getrank(last(c)),
+                                     c.TempRank := getrank(last(c))
+                                                                          
+                                   ),
+                                   do(                                                                
+                                     cell(c.currow,c.curcol,c) := cell(c.currow,c.curcol-1,c),
+                                     c.TempRank := cell(c.currow,c.curcol-1,c),
+                                     
+                                     {add extra column for the current run}
+                                     settable(nrows(rank(c.TempRank,c)),ncols(rank(c.TempRank,c))+1,rank(c.TempRank,c))
+                                    )
+                                ),
+                                
+                                {TempRank is the rank of the table to write in}
+                                 repeat( nrows(rank(c.TempRank,c)),
+                                   do(
+                                    if( usetermcond,
+                                       {statustime/runlength is not correct when run is stopped by terminating condition ... percentages will not sum up to 100%}
+                                       setcell(count,ncols(rank(c.TempRank,c)),/(StatusTime(cs,Count),time),rank(c.TempRank,c)),
+                                       setcell(count,ncols(rank(c.TempRank,c)),/(StatusTime(cs,Count),runlength),rank(c.TempRank,c))
+                                      )                       
+                       
+                                    )
+                                  ),
+                                 c.TempRank := 0
+                       
+                              ),
+                             do( {Normal situation, execute the code and put result in table}
+                               cell(c.currow,c.curcol,c):= execstring( cell(c.currow,2+*(count,2) ,c,2) )
+                              )                           
+                           )
+                       ),                                                                     
+                       c.curcol := 0
+                     ),
+                     /( nrstatcols - 2,2)  {=max nr stats}                 
+                   )             
+                 ),
+                 do( {Atom does not exists}
+                    trace(concat([Atom ],cell(c.currow,1,c,2),[ does not exist. No results written.] )),
+                    displaytracer
+                 )   
+                 )
+                ),
+                do( {GroupSelection}
+                
+                  {find the group in the grouptable}
+                   
+                  {grouprow is the row for this group in the GroupTable}                 
+                  c.grouprow := 0,
+                  loopuntil( c.grouprow >0,
+                    do(
+                       if( comparetext(cell(c.currow,1,c,2),cell(Count,1,first(c),2)),
+                         do(
+                            c.grouprow := Count
+                         )   
+                       )
+                    ),
+                    nrows(first(c))
+                  ),
+                  
+                  if(c.grouprow >0,
+                    do( {group found so statistics can be written}
+                     
+                      {statnr is the counter for the statistic, used to set curcol and check statistic code}
+                      c.statnr := 1,
+                      loopuntil( CompareText([0],cell(c.currow,2+*(c.statnr,2),c,2)),
+                        do(  
+                           {curcol is the column to write in}                                          
+                           c.curcol := nrstatcols + *(c.statnr-1,nrruns)+currun,
+                           
+                           {** GROUP OUTPUT**}                            
+                           
+                           if( CompareText(concat(sbo,[OUTPUT],sbc),cell(c.currow,2+*(c.statnr,2) ,c,2)) ,
+                             do(
+                               c.Groupoutput := 0,
+                               loopuntil( comparetext([0],cell(c.grouprow,count+1,first(c),2)),
+                                 do(                                  
+                                    {look for the atom and set cs ... maybe try and work with ID or ptv instead of name} 
+                                    if(atomexists(AtomByName(cell(c.grouprow,count+1,first(c),2),model)),
+                                      do(
+                                         setcs(AtomByName(cell(c.grouprow,count+1,first(c),2),model)),
+                                         c.Groupoutput :=c.Groupoutput + output(cs)
+                                       ),
+                                       do( {Atom does not exists}
+                                          trace(concat([Atom ],cell(c.grouprow,count+1,first(c),2),[ does not exist. No results written.] )),
+                                          displaytracer
+                                       )  
+                                     )                                                                                                                                                                                    
+                                 ),
+                                 ncols(first(c))-1
+                               ),
+                               {write value to results table}
+                               cell(c.currow,c.curcol,c) := c.Groupoutput,
+                               
+                               c.Groupoutput := 0
+                             )
+                           ),
+                           
+                           {** GROUP INPUT**}         
+                           
+                           if( CompareText(concat(sbo,[INPUT],sbc),cell(c.currow,2+*(c.statnr,2) ,c,2)),
+                             do(
+                               c.Groupinput := 0,
+                               loopuntil( comparetext([0],cell(c.grouprow,count+1,first(c),2)),
+                                 do(                                  
+                                    {look for the atom and set cs ... maybe try and work with ID or ptv instead of name} 
+                                    if(atomexists(AtomByName(cell(c.grouprow,count+1,first(c),2),model)),
+                                       do(
+                                         setcs(AtomByName(cell(c.grouprow,count+1,first(c),2),model)),
+                                         c.Groupinput :=c.Groupinput + input(cs)                                                                                
+                                        ),
+                                       do( {Atom does not exists}
+                                          trace(concat([Atom ],cell(c.grouprow,count+1,first(c),2),[ does not exist. No results written.] )),
+                                          displaytracer
+                                       )                                       
+                                     )                                    
+                                 ),
+                                 ncols(first(c))-1
+                               ),
+                               {write value to results table}
+                               cell(c.currow,c.curcol,c) := c.Groupinput,
+                               
+                               c.Groupinput := 0
+                             )
+                           ),
+                           
+                           {** GROUP CONTENT**}         
+                           
+                           if( CompareText(concat(sbo,[CONTENT],sbc),cell(c.currow,2+*(c.statnr,2) ,c,2)),
+                             do(
+                               c.Groupcontent := 0,
+                               loopuntil( comparetext([0],cell(c.grouprow,count+1,first(c),2)),
+                                 do(                                  
+                                    {look for the atom and set cs ... maybe try and work with ID or ptv instead of name}                                     
+                                    if(atomexists(AtomByName(cell(c.grouprow,count+1,first(c),2),model)),
+                                       do(
+                                         setcs(AtomByName(cell(c.grouprow,count+1,first(c),2),model)),
+                                         c.Groupcontent :=c.Groupcontent + content(cs)                                                                             
+                                        ),
+                                       do( {Atom does not exists}
+                                          trace(concat([Atom ],cell(c.grouprow,count+1,first(c),2),[ does not exist. No results written.] )),
+                                          displaytracer
+                                       )                                       
+                                     )                                                                               
+                                 ),
+                                 ncols(first(c))-1
+                               ),
+                               {write value to results table}
+                               cell(c.currow,c.curcol,c) := c.Groupcontent,
+                               
+                               c.Groupcontent := 0
+                             )
+                           ),
+                           
+                           {** GROUP AVGCONTENT**}         
+                           
+                           if( CompareText(concat(sbo,[AVGCONTENT],sbc),cell(c.currow,2+*(c.statnr,2),c,2)),
+                             do(
+                               c.Groupavgcontent := 0,
+                               loopuntil( comparetext([0],cell(c.grouprow,count+1,first(c),2)),
+                                 do(                                  
+                                    {look for the atom and set cs ... maybe try and work with ID or ptv instead of name} 
+                                    if(atomexists(AtomByName(cell(c.grouprow,count+1,first(c),2),model)),
+                                       do(
+                                         setcs(AtomByName(cell(c.grouprow,count+1,first(c),2),model)),
+                                         c.Groupavgcontent :=c.Groupavgcontent + avgcontent(cs)                                                                      
+                                        ),
+                                       do( {Atom does not exists}
+                                          trace(concat([Atom ],cell(c.grouprow,count+1,first(c),2),[ does not exist. No results written.] )),
+                                          displaytracer
+                                       )                                       
+                                     )                                                                                                                                                       
+                                 ),
+                                 ncols(first(c))-1
+                               ),
+                               {write value to results table}
+                               cell(c.currow,c.curcol,c) := c.Groupavgcontent,
+                               
+                               c.Groupavgcontent := 0
+                             )
+                           ),
+                           
+                           {** GROUP MAXCONTENT**}         
+                           
+                           if( CompareText(concat(sbo,[MAXCONTENT],sbc),cell(c.currow,2+*(c.statnr,2) ,c,2)),
+                             do(
+                               c.GroupMaxContent := 0,
+                               loopuntil( comparetext([0],cell(c.grouprow,count+1,first(c),2)),
+                                 do(                                  
+                                    {look for the atom and set cs ... maybe try and work with ID or ptv instead of name} 
+                                    
+                                    if(atomexists(AtomByName(cell(c.grouprow,count+1,first(c),2),model)),
+                                       do(
+                                         setcs(AtomByName(cell(c.grouprow,count+1,first(c),2),model)),                                    
+                                         c.GroupMaxContent := max(c.GroupMaxContent,MaximumContent(cs))                                                       
+                                        ),
+                                       do( {Atom does not exists}
+                                          trace(concat([Atom ],cell(c.grouprow,count+1,first(c),2),[ does not exist. No results written.] )),
+                                          displaytracer
+                                       )                                       
+                                     )                                            
+                                    
+                                 ),
+                                 ncols(first(c))-1
+                               ),
+                               {write value to results table}
+                               cell(c.currow,c.curcol,c) := c.GroupMaxContent,
+                               
+                               c.GroupMaxContent := 0
+                             )
+                           ), 
+                           
+                           {** GROUP AVGSTAY**}         
+                           
+                           if( CompareText(concat(sbo,[AVGSTAY],sbc),cell(c.currow,2+*(c.statnr,2) ,c,2)),
+                             do(
+                               c.GroupStay := 0,
+                               c.GroupProdCount := 0,
+                               loopuntil( comparetext([0],cell(c.grouprow,count+1,first(c),2)),
+                                 do(                                  
+                                    {look for the atom and set cs ... maybe try and work with ID or ptv instead of name} 
+                                    if(atomexists(AtomByName(cell(c.grouprow,count+1,first(c),2),model)),
+                                       do(
+                                          setcs(AtomByName(cell(c.grouprow,count+1,first(c),2),model)),
+                                          
+                                          {c.GroupStay :=c.GroupStay + *(avgstay(cs),+(output(cs),content(cs)) ),}
+                                          {c.GroupProdCount := +(c.GroupProdCount, +(output(cs),content(cs)) ) }
+                                          
+                                          c.GroupStay :=c.GroupStay + *(avgstay(cs),output(cs)),
+                                          c.GroupProdCount := c.GroupProdCount + output(cs)                                                                                                 
+                                        ),
+                                       do( {Atom does not exists}
+                                          trace(concat([Atom ],cell(c.grouprow,count+1,first(c),2),[ does not exist. No results written.] )),
+                                          displaytracer
+                                       )                                       
+                                     )                                               
+                                    
+                                 ),
+                                 ncols(first(c))-1
+                               ),
+                               {write value to results table}
+                               cell(c.currow,c.curcol,c) := c.GroupStay/c.GroupProdCount,
+                               
+                               c.GroupStay := 0,
+                               c.GroupProdCount := 0
+                             )
+                           ),
+                           
+                           {** GROUP MAXSTAY**}         
+                           
+                           if( CompareText(concat(sbo,[MAXSTAY],sbc),cell(c.currow,2+*(c.statnr,2),c,2)),
+                             do(
+                               c.GroupMaxStay := 0,
+                               loopuntil( comparetext([0],cell(c.grouprow,count+1,first(c),2)),
+                                 do(                                  
+                                    {look for the atom and set cs ... maybe try and work with ID or ptv instead of name} 
+                                    if(atomexists(AtomByName(cell(c.grouprow,count+1,first(c),2),model)),
+                                       do(
+                                         setcs(AtomByName(cell(c.grouprow,count+1,first(c),2),model)),                                                                        
+                                         c.GroupMaxStay := max(c.GroupMaxStay,MaxStay(cs))                                             
+                                        ),
+                                       do( {Atom does not exists}
+                                          trace(concat([Atom ],cell(c.grouprow,count+1,first(c),2),[ does not exist. No results written.] )),
+                                          displaytracer
+                                       )                                       
+                                     )                                        
+                                    
+                                 ),
+                                 ncols(first(c))-1
+                               ),
+                               {write value to results table}
+                               cell(c.currow,c.curcol,c) := c.GroupMaxStay,
+                               
+                               c.GroupMaxStay := 0
+                             )
+                           ),
+                           
+                           {** GROUP STATUS**}         
+                           
+                           if( CompareText(concat(sbo,[STATUS],sbc),cell(c.currow,2+*(c.statnr,2) ,c,2)),
+                             do(
+                                if( currun = 1,
+                                  do( {create new table for this statistic}
+                                     createAtom(BaseClass, c,cell(c.currow,1,c,2)),
+                                     label([StatusTable],last(c)) := 1,
+                                     
+                                     settable(256,2,last(c)),
+                                     {emptytable(last(c),256,2),}
+                                     
+                                     {put statusnr in first and 0's in last column}
+                                     repeat(nrows(last(c)),
+                                        do(
+                                           cell(count,1,last(c)):= Count,
+                                           cell(count,ncols(last(c)),last(c)) := 0
+                                         )
+                                      ),      
+                                                                                              
+                                     {remember rank in statistics table }                                 
+                                     cell(c.currow,c.curcol,c):= getrank(last(c)),
+                                     c.TempRank := getrank(last(c))
+                                                                          
+                                   ),
+                                   do(                                                                
+                                     cell(c.currow,c.curcol,c) := cell(c.currow,c.curcol-1,c),
+                                     c.TempRank := cell(c.currow,c.curcol-1,c),
+                                     
+                                     {add extra column for the current run}
+                                     settable(nrows(rank(c.TempRank,c)),ncols(rank(c.TempRank,c))+1,rank(c.TempRank,c)),
+                                     
+                                     {put 0's in new column}
+                                     repeat(nrows(rank(c.TempRank,c)),
+                                        do(
+                                           cell(count,ncols(rank(c.TempRank,c)),rank(c.TempRank,c)) := 0
+                                         )
+                                      )
+                                    )
+                                ),
+                                {TempRank is the rank of the table to write in}
+                                c.AtomNr :=1,
+                                loopuntil( comparetext([0],cell(c.grouprow,c.AtomNr+1,first(c),2)),
+                                  do(                                   
+                                     if(atomexists(AtomByName(cell(c.grouprow,c.AtomNr+1,first(c),2),model)),
+                                        do(                                                
+                                           setcs(AtomByName(cell(c.grouprow,c.AtomNr+1,first(c),2),model)),
+                                           repeat( nrows(rank(c.TempRank,c)),
+                                             do( {count is Status number}
+                                               {add status time to table}
+                                                {value in cell is always percentage so first calculate back to statustime sum, then add new statustime and divide by AtomNr*runlength again}
+                                                 cell(Count,ncols(rank(c.TempRank,c)),rank(c.TempRank,c)) := /(+(*(cell(Count,ncols(rank(c.TempRank,c)),rank(c.TempRank,c)), -(c.AtomNr,1), runlength),  StatusTime(cs,Count) ), *(runlength,c.AtomNr))                                               
+                                              )                                             
+                                            )                                                                 
+                                         ),
+                                        do( {Atom does not exists}
+                                           trace(concat([Atom ],cell(c.grouprow,c.AtomNr+1,first(c),2),[ does not exist. No results written.] )),
+                                           displaytracer
+                                        )                                       
+                                     ),                                                                                                                                                 
+                                    c.AtomNr := c.AtomNr +1
+                                  ),
+                                  ncols(first(c))-1
+                                ),                                                                                               
+                                c.AtomNr :=0,                             
+                                 c.TempRank := 0               
+                             )
+                           ),                                                                                                                                                                                                                                     
+                           c.curcol := 0,
+                           c.statnr := c.statnr+1
+                        ),
+                        /( nrstatcols - 2,2)  {=max nr stats}        
+                      ),
+                      c.statnr :=0                               
+                                                            
+                    ),
+                    do(
+                      trace(concat( [Group ],cell(c.currow,1,c,2),[ not found in GroupTable. No results can be written.])),
+                      displaytracer
+                    )                    
+                  ),                  
+                  c.grouprow := 0                     
+                )
+              ),              
+              c.currow := c.currow+1              
+          )        
+        ),
+        c.currow := 0,
+                        
+        {check if experiment done}
+        
+        if( currun = nrruns,  
+          do(  { stop experiment}
+            stop,
+            SendMessageDirect(c,[finished],c)          
+          ),    
+         do(  {next run/observation}    
+            case( method,
+              do(          {1: separate runs}
+              
+                stop,
+                settimerevent(
+                  [do(
+                    reset,
+                    sendmessagedirect(refExperimentSupport,[expreset],refExperimentSupport),
+                    run,
+                    {Disable Run Until Stop Time}
+                    if(not(=(StopTime, 1E40)),
+                      StopTime:=1E40
+                    )  
+                  )]
+                )
+                    
+              ),                  
+              do(          {2: subruns}
+                if( c.SubRunTerminate = 1,
+                  do( {run terminated by terminating condition so stop experiment}                                                          
+                     stop,
+                     SendMessageDirect(c,[finished],c)                            
+                   ),
+                   do( {not terminated so continu with next subrun}
+                     currun := currun + 1,
+                    
+                    {initialiseren alle standaard stats ..... nu even voor alle atomen in het model ! ... kan slimmer}
+                    {reset standard stats, just like after warmup}
+                    ForAtomTreeUnder(model,
+                      do(
+                         setcs(a),
+                         
+                         Input(cs) := 0,
+                         Output(cs):= 0,
+                         AvgContent(cs) := 0,
+                         {set maximum content to current content}
+                         MaximumContent(cs) := content(cs), 
+                         AvgStay(cs) := 0,
+                         MaxStay(cs) := 0,
+                         {no risk setting status to 0 for atoms of which statusmonitor was not enabled}
+                         Statustime(cs,-1) := 0            
+                      )
+                     ),
+                                                     
+                     onstartrun,
+                     createevent(runlength,c,2)                                        
+                    )
+                 )
+              )             
+            )                                     
+          )      
+        )    
+    )  
+  ),
+  
+  {is received when experiment is finished}
+  
+  if(comparetext(message,[finished]),
+    do(
+      {no longer running via Experiment wizard}
+      att([runningexp],c) := 0,
+      c.SubRunTerminate := 0, {just in case it was >0}
+      
+      {clear the terminating condition}
+      ExperimentSetTerminatingCondition([]),           
+      
+      {reset model}
+      Reset,
+      
+     {fill Experiment Results table}
+      GuiSelect([StatusForm],[tbExperimentResults],GuiSet([RowCount],nrows(c))),
+      GuiSelect([StatusForm],[tbExperimentResults],GuiSet([ColCount],nCols(c))),
+      
+      MatrixRepeat( nrows(c), ncols(c),
+        do( {mcx and mcy are row- and columncounters}
+           GuiSelect([StatusForm],[tbExperimentResults],GuiSet([Cells],mcx-1, mcy-1,
+              cell(mcx,mcy,c,2)                          
+           ))
+        )       
+      ),
+      
+      {Add Experiment Settings}
+      
+      c.TableRowCount := GuiSelect([StatusForm],[tbExperimentResults],GuiGet([RowCount])),
+      
+      GuiSelect([StatusForm],[tbExperimentResults],GuiSet([RowCount],c.TableRowCount+1)),
+      
+      {enough columns ?}
+      if( GuiSelect([StatusForm],[tbExperimentResults],GuiGet([ColCount])) < 7 ,
+        GuiSelect([StatusForm],[tbExperimentResults],GuiSet([ColCount],7))  
+       ),
+             
+      GuiSelect([StatusForm],[tbExperimentResults],GuiSet([Cells],c.TableRowCount, 0,
+        [SETTINGS]       
+      )),
+      GuiSelect([StatusForm],[tbExperimentResults],GuiSet([Cells],c.TableRowCount, 1,
+        If(
+         usetermcond = 0,
+         { * Run length when no condition is provided * }
+         string(att([nrruns],c)*att([runlength],c)),
+         { * Observation Period when a condition is provided * }
+         string(att([ObservationPeriod],c))
+        )
+      )),     
+      GuiSelect([StatusForm],[tbExperimentResults],GuiSet([Cells],c.TableRowCount, 2,
+        string(att([warmup],c))         
+      )),                        
+      GuiSelect([StatusForm],[tbExperimentResults],GuiSet([Cells],c.TableRowCount, 3,
+        string(att([nrruns],c))         
+      )),     
+      GuiSelect([StatusForm],[tbExperimentResults],GuiSet([Cells],c.TableRowCount, 4,
+        string(att([method],c))        
+      )),     
+      GuiSelect([StatusForm],[tbExperimentResults],GuiSet([Cells],c.TableRowCount, 5,
+       att([expMemo],c)          
+      )),
+      if( att([usetermcond],c),
+         do(
+            GuiSelect([StatusForm],[tbExperimentResults],GuiSet([Cells],c.TableRowCount, 6,
+             docatt([termcond],c)          
+            ))                       
+          ),
+          do(
+            GuiSelect([StatusForm],[tbExperimentResults],GuiSet([Cells],c.TableRowCount, 6,
+              [0]         
+            ))                
+          )
+       ),
+               
+     c.TableRowCount := 0,
+                        
+      {Add all the table results}
+      repeat(content(c)-1,
+        do(
+         
+          {set cs to the table}
+          setcs(rank(count+1,c)),
+         
+          {remove useless statusses from StatusTables}
+           if( label([StatusTable],cs),
+               do( {delete statusses with 0 for all runs}
+                 c.StatusRow := 1,
+                 repeat( nrows(cs),
+                    do(
+                     
+                        c.StatusCol := 2,
+                        c.NotUsed := 1,                        
+                        loopuntil( c.NotUsed = 0,
+                           do(
+                              if( cell(c.StatusRow,c.StatusCol ,cs)>0,
+                                 c.NotUsed := 0                               
+                               ),
+                               c.StatusCol := c.StatusCol+1
+                            ),
+                            ncols(cs)-1
+                         ),                                                 
+                        c.StatusCol := 0,
+                        
+                        if(c.NotUsed,
+                          do(
+                            {remove row}
+                             DeleteRow(c.StatusRow,cs),
+                             c.NotUsed := 0   
+                            {c.StatusRow stays the same}
+                           ),
+                           do(                            
+                             c.StatusRow := c.StatusRow + 1
+                            )
+                         )                        
+                     )                
+                  ),
+                  c.StatusRow := 0
+               )           
+           ), 
+                
+         {add extra columns if necessary}
+          c.TableColCount := GuiSelect([StatusForm],[tbExperimentResults],GuiGet([ColCount])),
+          
+          if( ncols(cs) > c.TableColCount ,
+            GuiSelect([StatusForm],[tbExperimentResults],GuiSet([ColCount],nCols(cs)))  
+          ),
+          c.TableColCount := 0 ,
+          
+          {add rows}
+          c.TableRowCount := GuiSelect([StatusForm],[tbExperimentResults],GuiGet([RowCount])),
+          GuiSelect([StatusForm],[tbExperimentResults],GuiSet([RowCount],c.TableRowCount+nRows(cs)+1)),  
+         
+          GuiSelect([StatusForm],[tbExperimentResults],GuiSet([Cells],c.TableRowCount, 0,
+            [TABLE]       
+          )),
+          
+          GuiSelect([StatusForm],[tbExperimentResults],GuiSet([Cells],c.TableRowCount, 1,
+            name(cs)       
+          )),          
+          
+          GuiSelect([StatusForm],[tbExperimentResults],GuiSet([Cells],c.TableRowCount, 2,
+            string(nrows(cs))       
+          )),
+          
+          GuiSelect([StatusForm],[tbExperimentResults],GuiSet([Cells],c.TableRowCount, 3,
+            string(ncols(cs))       
+          )),                  
+          
+          MatrixRepeat( nrows(cs), ncols(cs),
+            do( {mcx and mcy are row- and columncounters}
+               GuiSelect([StatusForm],[tbExperimentResults],GuiSet([Cells],c.TableRowCount+mcx, mcy-1,
+                  cell(mcx,mcy,cs,2)                          
+               ))
+            )       
+          ),                    
+          c.TableRowCount := 0           
+         )       
+       ),
+       
+       {remove all tables}
+      repeat( content(c)-1,
+         destroyatom(last(c))
+       ),
+             
+      
+      {fill Groups table}     
+      GuiSelect([StatusForm],[tbGroups],GuiSet([RowCount],nrows(first(c)))),
+      GuiSelect([StatusForm],[tbGroups],GuiSet([ColCount],nCols(first(c)))),
+      
+      MatrixRepeat( nrows(first(c)), ncols(first(c)),
+        do( {mcx and mcy are row- and columncounters}
+           GuiSelect([StatusForm],[tbGroups],GuiSet([Cells],mcx-1, mcy-1,
+              cell(mcx,mcy,first(c),2)                          
+           ))
+        )       
+      ),       
+      
+     {Save both tables to textfile}
+     
+     c.OutputDir := extractdir(att([model Name],model)),
+     
+     if(comparetext([],c.OutputDir),
+        c.OutputDir := WorkDir
+      ),
+     
+     if(
+      CompareText( Att([ResultsDir], refExperimentSupport), [] ) = 0,
+      c.OutputDir := Att([ResultsDir], refExperimentSupport )
+     ),
+     
+     GuiSelect([StatusForm],[tbExperimentResults],GUISaveTableToFile(concat(c.OutputDir,[\ExperimentResults.sim]) )),
+     GuiSelect([StatusForm],[tbGroups],GUISaveTableToFile(concat(c.OutputDir ,[\ExperimentGroups.sim]) )),  
+     
+     {Destroy status form} 
+     GuiDestroy([StatusForm]),
+     
+     {show modellayout}
+     Display2d,
+     
+      {if needed, open analyze wizard}                        
+      if( GuiSelect([ExpWizForm],[chbAutoAnalyze],GuiGet([Checked])),
+        do(
+          GuiDestroy([ExpWizForm]),
+ 
+          Guicreate([frmAnalyzeWiz],[AnalyzeWizForm],0,c,0,1),
+          GuiSelect([AnalyzeWizForm],[edOutputDir],GuiSet([Text],c.OutputDir ))                    
+        ),
+        do(
+           {set the label to start experiment wizard on run-page}
+           label([ExpCancelled],c) := 1,
+           GuiShow([ExpWizForm])
+        )
+      ),
+      {remove labels}
+      c.OutputDir := 0,
+      c.DoneExperimenting := 1
+    )
+  )
+)
+]);
+SetStatus(0);
+int018;
+
+
+{Atom: Groups}
+
+sets;
+BaseClass;
+CreateAtom(a, s, [], 1, false);
+int023([Groups], 0, 0);
+Set(Icon(a), 
+	RegisterIcon(pDir([media\images\default.jpg]), [default.jpg]));
+SetMaterial(
+	RegisterMaterial([Default], 8421504, 8421504, 3289650, 0, 0.100000001490116, 0, false, false, 1, 0), 1, a);
+Set(Version(a), 7.3);
+SetTreeIcon(pDir([Media\Icons\Tools.ico]));
+Set(DdbRec, [>t-nocreate:1.]);
+int001(19);
+SetSize(1, 1, 1);
+LockPosition(false);
+LockSize(false);
+DisableIconRotation(false);
+SetProductCode([]);
+int024;
+SetStatus(0);
+int018;
+Up;
+int007;

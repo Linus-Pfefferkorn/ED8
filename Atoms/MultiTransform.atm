@@ -1,0 +1,130 @@
+
+
+{Atom: MultiTransform}
+
+sets;
+BaseClass;
+createAtom(a, s, [], 1, false);
+int023([MultiTransform], 3184303, 232);
+Set(Icon(a), 
+	RegisterIcon(pDir([media\images\default.jpg]), [default.jpg]));
+SetMaterial(
+	RegisterMaterial([Default], 8421504, 8421504, 3289650, 0, 0.100000001490116, 0, false, false, 1, 0), 1, a);
+Set(Version(a), 7.3);
+SetTreeIcon(pDir([Media\Icons\MultiTransform.ico]));
+Set(Info, [MultiTransform
+
+General
+------------
+Transform the parameters of (a selection of) atoms like name, size, 
+color and labels.
+
+First choose a selection rule to select atoms for change. If you wish to 
+change labels, then specify total number of labels and name of labels. 
+new parameters values can be edited in the transformation table. 
+Empty fields keep current values.
+
+If you only wish to change 1 atom type then use the SingleTransform.
+
+Last Revision:
+---------------------
+February, 2008
+]);
+SetChannels(1, 1);
+SetChannelRanges(1, 255, 1, 1);
+int001(87);
+SetSize(5, 2, 0.1);
+LockPosition(false);
+LockSize(false);
+DisableIconRotation(false);
+SetProductCode([]);
+createAttributes(8);
+SetAttributeName(r(1), [filter logic]);
+SetAttributeName(r(2), [row logic]);
+SetAttributeName(r(3), [table rows]);
+SetAttributeName(r(4), [DDB change]);
+SetAttributeName(r(5), [filter count]);
+SetAttributeName(r(6), [filter cycle]);
+SetAttributeName(r(7), [row]);
+SetAttributeName(r(8), [transform]);
+SetExprAtt(r(1), [{.true|2. transform all atoms .}true]);
+SetExprAtt(r(2), [{.setatt(7,indexmatch(nrows(c),cell(count,1,c,2),name(i)),c)|1. by atom name: transformations will be applied where the atom name in the row matches the atom name of the passing atom. .}setatt(7,indexmatch(nrows(c),cell(count,1,c,2),name(i)),c)]);
+SetAtt(r(3), 1);
+SetTextAtt(r(5), [false]);
+SetTextAtt(r(6), [false]);
+SetAtt(r(7), 1);
+SetAtt(r(8), 1);
+int024;
+Set(OnEvent, [case(eventcode,
+ openoc(1,c),
+ openallic(c)
+)
+]);
+Set(OnEntered, [do(
+ closeallic(c),
+ if(
+  att(1,c),
+  do(
+   att(2,c),
+   if(
+    >(att(7,c),0),
+    do(
+     if(>(stringlength(cell(att(7,c),2,c,2)),0),set(name(i),cell(att(7,c),2,c,2))),
+     if(>(stringlength(cell(att(7,c),3,c,2)),0),set(icon(i),iconbyname(cell(att(7,c),3,c,2)))),
+     if(>(stringlength(cell(att(7,c),4,c,2)),0),set(color(i),execstring(cell(att(7,c),4,c,2)))),
+     if(>(stringlength(cell(att(7,c),5,c,2)),0),setsize(cell(att(7,c),5,c,1),ysize(i),zsize(i),i)),
+     if(>(stringlength(cell(att(7,c),6,c,2)),0),setsize(xsize(i),cell(att(7,c),6,c,1),zsize(i),i)),
+     if(>(stringlength(cell(att(7,c),7,c,2)),0),setsize(xsize(i),ysize(i),cell(att(7,c),7,c,1),i)),
+     repeat(
+      -(ncols(c),7),
+      if(>(stringlength(cell(att(7,c),+(7,count),c,2)),0),sddb(cell(0,+(7,count),c,2),cell(att(7,c),+(7,count),c),i))
+     )
+    )
+   )
+  )
+ ),
+ createevent(0,c,1)
+)
+]);
+Set(OnExited, [do(
+ closealloc(c),
+ createevent(0,c,2)
+)
+]);
+Set(OnCreation, [autoconnect
+]);
+Set(OnReset, [do(
+ setatt(5,0,c),
+ closealloc(c)
+)
+]);
+Set(OnUser, [Do(
+ { Delete any current instances of this form.} 
+ GuiDestroy([MultiTransform]),
+
+ { Register the GUI-form for this atom.}
+ GuiRegister(PDir([\Atoms\MultiTransform.gui]), 1),
+
+ { Show the GUI-form.}
+ Guicreate([MultiTransform], [MultiTransform], 0, c, 0, 1)
+)
+]);
+Set(OnOcReady, [if(
+ =(content(c),0),
+ createevent(0,c,2),
+ moverequest(first(c),1)
+)
+]);
+Set(OnIcReady, [if(
+ not(icopen(ocicno(1,c),out(1,c))),
+ do(
+  openoc(1,c),
+  closeallic(c)
+ )
+)
+]);
+Set(On2DDraw, [standarddisplay(name(c))
+]);
+SetStatus(0);
+int018;
+int007;

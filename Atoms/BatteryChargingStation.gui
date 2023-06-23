@@ -1,0 +1,141 @@
+EDControl(EditForm:
+  BorderIcons = set(SystemMenu),
+  BorderStyle = Single,
+  Caption = str('Battery Charging Station'),
+  Height = 267,
+  Name = str('BatteryChargingStation'),
+  Position = Default,
+  ShowHint = True,
+  Top = 261,
+  Visible = True,
+  Width = 395,
+  Controls(
+    EDControl(MultiPage:
+      ActivePage = 1,
+      Align = Client,
+      Anchors = set(Left,Top,Right,Bottom),
+      Height = 227,
+      Left = 0,
+      Name = str('MultiPage1'),
+      TabOrder = 1,
+      Top = 0,
+      Width = 395,
+      Controls(
+        EDControl(SinglePage:
+          Caption = str('General'),
+          Name = str('General'),
+          PageIndex = 1,
+          Controls(
+            EDControl(GroupBox:
+              Caption = str(''),
+              Height = 64,
+              Left = 8,
+              Name = str('GroupBox1'),
+              TabOrder = 1,
+              Top = 8,
+              Width = 370,
+              Controls(
+                EDControl(Label:
+                  Caption = str('Atom name:'),
+                  Color = -16777208,
+                  Height = 13,
+                  Left = 12,
+                  Name = str('StaticText1'),
+                  Top = 32,
+                  Width = 56),
+                EDControl(Edit:
+                  Height = 21,
+                  Left = 132,
+                  Name = str('edName'),
+                  TabOrder = 1,
+                  Top = 24,
+                  Width = 225))),
+            EDControl(GroupBox:
+              Caption = str('Settings'),
+              Height = 96,
+              Left = 8,
+              Name = str('GroupBox2'),
+              TabOrder = 2,
+              Top = 88,
+              Width = 370,
+              Controls(
+                EDControl(Edit:
+                  Height = 21,
+                  Left = 132,
+                  Name = str('edstations'),
+                  TabOrder = 1,
+                  Top = 26,
+                  Width = 100,
+                  Events(
+                    Exit = str('do('#13'  {Check for a proper user entry!}'#13'  if('#13'    or('#13'      Value(GuiControl([edStations], GuiGet([Text])))<1,               {less than one station}'#13'      not(IsNumeric(GuiControl([edStations], GuiGet([Text])))),'#13'      Value(GuiControl([edStations], GuiGet([Text])))>99             {entry is not a number}     '#13'      ),'#13'       do('#13'       GuiControl([edStations], GuiSet([Text], [4])),'#13'       msg([Allowed number of docking stations: 1 - 255])'#13'       )'#13'    ),'#13'  if('#13'    Frac(Value(GuiControl([edStations], GuiGet([Text]))))>0,'#13'    GuiControl([edStations], GuiSet([Text], ValueToString(Ceil(Value(GuiControl([edStations], GuiGet([Text]))))) ))'#13'    )  '#13'  '#13'  )'#13))),
+                EDControl(Label:
+                  Caption = str('No. of docking stations:'),
+                  Color = -16777208,
+                  Height = 13,
+                  Left = 12,
+                  Name = str('ststations'),
+                  Top = 32,
+                  Width = 112),
+                EDControl(Label:
+                  Caption = str('Charging current [A]:'),
+                  Color = -16777208,
+                  Height = 13,
+                  Left = 12,
+                  Name = str('stloadtime'),
+                  Top = 64,
+                  Width = 97),
+                EDControl(ScriptEdit:
+                  Left = 132,
+                  Name = str('sceChargingCurrent'),
+                  TabOrder = 2,
+                  Top = 58,
+                  Width = 225))))))),
+    EDControl(Panel:
+      Align = Bottom,
+      Anchors = set(Left,Right,Bottom),
+      BevelOuter = None,
+      Caption = str(''),
+      Height = 40,
+      Left = 0,
+      Name = str('Panel1'),
+      TabOrder = 2,
+      Top = 227,
+      Width = 395,
+      Controls(
+        EDControl(Button:
+          Caption = str('&Apply'),
+          Left = 312,
+          Name = str('btnApply'),
+          TabOrder = 4,
+          Top = 8,
+          Events(
+            Click = str('do('#13'  Name(GuiAtom) := GuiControl([edName],GuiGet([Text])),'#13#13#13'  {Set number of charging stations}'#13'   SetAtt([Stations],value(GuiControl([edStations],GuiGet([Text]))),GuiAtom),'#13'  {Set charging current for charging the empty battery}'#13'   SetAtt([ChargingCurrent],value(GuiControl([sceChargingCurrent],GuiGet([Code]))),GuiAtom),'#13'  '#13'  {destroy all existing docking stations  }'#13'  Repeat('#13'   Content(GuiAtom),'#13'   DestroyAtom(last(GuiAtom))'#13'  ),  '#13'  att([DockPosition],GuiAtom):=0,'#13'  '#13'  {Create new sub-atoms}'#13'  CreateAtom(AtomByName([Incoming Queue],Library),GuiAtom,[Incoming Queue]),'#13'  SetChannels(1,att([Stations],GuiAtom),first(GuiAtom)),'#13'  SetLoc(-2,0,0,first(GuiAtom)),'#13'       '#13'  Repeat('#13'   att([Stations],GuiAtom),'#13'   do('#13'     CreateAtom(AtomByName([Docking Station],Library),GuiAtom,concat([Docking Station],String(Count))),'#13'     {Connect Incoming Queue with Docking Stations}'#13'     Connect(Count,first(GuiAtom),1,rank(Count+1,GuiAtom)),'#13'     {Set attributes for each docking station}'#13'     SetAtt([DockNumber],Count,last(GuiAtom)),'#13'     SetAtt([ChargingCurrent], att([ChargingCurrent],GuiAtom),last(GuiAtom)),'#13'     {Location for each docking station}'#13'     SetLoc(att([DockPosition],GuiAtom),0,0,Last(GuiAtom)),'#13'     att([DockPosition],GuiAtom):=att([DockPosition],GuiAtom)+xSize(Last(GuiAtom))+1.5'#13'     )'#13'   ),'#13'  xSize(GuiAtom):= att([DockPosition],GuiAtom)-1.5,'#13'  '#13'  ForAtomLayerUnder(GuiAtom,SetSetting(saHideChannels,1))'#13'  '#13'  )'#13))),
+        EDControl(Button:
+          Cancel = True,
+          Caption = str('&Cancel'),
+          Left = 230,
+          Name = str('btncancel'),
+          TabOrder = 3,
+          Top = 8,
+          Events(
+            Click = str('GuiDestroy '#13))),
+        EDControl(Button:
+          Caption = str('&Ok'),
+          Default = True,
+          Left = 144,
+          Name = str('btnOk'),
+          TabOrder = 2,
+          Top = 8,
+          Events(
+            Click = str('do('#13'  {Set number of charging stations}'#13'   SetAtt([Stations],value(GuiControl([edStations],GuiGet([Text]))),GuiAtom),'#13'  {Set charging current for charging the empty battery}'#13'   SetAtt([ChargingCurrent],value(GuiControl([sceChargingCurrent],GuiGet([Code]))),GuiAtom),'#13'  '#13'  {destroy all existing docking stations  }'#13'  Repeat('#13'   Content(GuiAtom),'#13'   DestroyAtom(last(GuiAtom))'#13'  ),  '#13'  att([DockPosition],GuiAtom):=0,'#13'  '#13'  {Create new sub-atoms}'#13'  CreateAtom(AtomByName([Incoming Queue],Library),GuiAtom,[Incoming Queue]),'#13'  SetChannels(1,att([Stations],GuiAtom),first(GuiAtom)),'#13'  SetLoc(-2,0,0,first(GuiAtom)),'#13'       '#13'  Repeat('#13'   att([Stations],GuiAtom),'#13'   do('#13'     CreateAtom(AtomByName([Docking Station],Library),GuiAtom,concat([Docking Station],String(Count))),'#13'     {Connect Incoming Queue with Docking Stations}'#13'     Connect(Count,first(GuiAtom),1,rank(Count+1,GuiAtom)),'#13'     {Set attributes for each docking station}'#13'     SetAtt([DockNumber],Count,last(GuiAtom)),'#13'     SetAtt([ChargingCurrent], att([ChargingCurrent],GuiAtom),last(GuiAtom)),'#13'     {Location for each docking station}'#13'     SetLoc(att([DockPosition],GuiAtom),0,0,Last(GuiAtom)),'#13'     att([DockPosition],GuiAtom):=att([DockPosition],GuiAtom)+xSize(Last(GuiAtom))+1.5'#13'     )'#13'   ),'#13'  xSize(GuiAtom):= att([DockPosition],GuiAtom)-1.5,'#13'  '#13'  ForAtomLayerUnder(GuiAtom,SetSetting(saHideChannels,1)),'#13'  '#13'  GuiDestroy'#13'  )'#13#13#13))),
+        EDControl(Button:
+          Caption = str('&Help'),
+          Left = 8,
+          Name = str('btnHelp'),
+          TabOrder = 1,
+          Top = 8,
+          Events(
+            Click = str('Help(PDir([HELP\ED Help.hlp]), [Battery Charging Station])'#13)))))),
+  Events(
+    Show = str('do('#13' {Set Caption}'#13' if('#13'  atomexists(m(GuiAtom)),'#13'  GuiControl([BatteryChargingStation],GuiSet([Caption],concat(name(m(GuiAtom)), [ - ], name(GuiAtom)))),'#13'  GuiControl([BatteryChargingStation],GuiSet([Caption],concat([Baseclass - ], name(GuiAtom))))'#13' ),'#13#13' {Set ActivePage}'#13' GuiControl([MultiPage1]),GuiSet([ActivePage],1),'#13' '#13' {Set Name of the current atom / battery-charging station at start-up}'#13' GuiControl([edname], GuiSet([Text], Name(GuiAtom))),'#13' '#13' {Set edit field}'#13' GuiControl([edstations], GuiSet([Text], ValueToString(Att([Stations],GuiAtom)))),'#13' '#13' {Set script edit field}'#13' GuiControl([sceChargingCurrent], GuiSet([Code], ValueToString(Att([ChargingCurrent],GuiAtom)))),'#13' '#13' { Set position }'#13' Gui_PositionGuiAroundAtom(GuiControl([BatteryChargingStation])),'#13' '#13' GuiRun([Update])'#13')'#13)))
+

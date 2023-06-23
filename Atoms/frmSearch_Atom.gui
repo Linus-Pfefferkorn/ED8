@@ -1,0 +1,129 @@
+EDControl(EditForm:
+  BorderIcons = set(SystemMenu,Minimize),
+  BorderStyle = Single,
+  Caption = str('Search Results'),
+  Height = 401,
+  InstanceOptions = DestroyOnHide,
+  Name = str('frmSearch_Atom'),
+  Position = ScreenCenter,
+  ShowHint = True,
+  Top = 197,
+  Visible = False,
+  Width = 395,
+  Controls(
+    EDControl(Panel:
+      Align = Client,
+      Anchors = set(Left,Top,Right,Bottom),
+      Caption = str(''),
+      Height = 325,
+      Left = 0,
+      Name = str('Panel1'),
+      TabOrder = 1,
+      Top = 0,
+      Width = 395,
+      Controls(
+        EDControl(GroupBox:
+          Caption = str('Summary'),
+          Height = 96,
+          Left = 8,
+          Name = str('GroupBox1'),
+          TabOrder = 1,
+          Top = 8,
+          Width = 370,
+        Controls(
+EDControl(Label:
+          Caption = str('Search atom:'),
+          Color = -16777208,
+          Left = 12,
+          Name = str('StaticText1'),
+          Top = 32,
+          Width = 67),
+        EDControl(Edit:
+          Enabled = False,
+          Height = 21,
+          Left = 132,
+          Name = str('SearchAtom'),
+          ReadOnly = True,
+          TabOrder = 2,
+          Top = 26,
+          Width = 225),
+        EDControl(Label:
+          Caption = str('Total hits:'),
+          Color = -16777208,
+          Left = 12,
+          Name = str('StaticText3'),
+          Top = 64,
+          Width = 50),
+        EDControl(Edit:
+          Enabled = False,
+          Height = 21,
+          Left = 132,
+          Name = str('TotalHits'),
+          TabOrder = 3,
+          Top = 58,
+          Width = 225))),
+EDControl(GroupBox:
+          Caption = str('Found in Atoms (Name: ID)'),
+          Height = 192,
+          Left = 8,
+          Name = str('GroupBox2'),
+          TabOrder = 4,
+          Top = 120,
+          Width = 370,
+        Controls(
+EDControl(ListBox:
+          Height = 81,
+          Left = 40,
+          Name = str('AtomResults'),
+          TabOrder = 5,
+          Top = 48,
+          Visible = False,
+          Width = 201),
+        EDControl(ListBox:
+          Height = 112,
+          Left = 12,
+          Name = str('SearchResults'),
+          TabOrder = 6,
+          Top = 32,
+          Width = 344),
+        EDControl(Button:
+          Caption = str('&Go to Atom'),
+          Default = True,
+          Left = 280,
+          Name = str('btnGoToAtom'),
+          TabOrder = 7,
+          Top = 152,
+          Events(
+            Click = str('do('#13'  var([valID], vbValue),'#13'  var([atmFound], vbAtom),'#13'  var([valShowIn], vbValue),'#13'  var([valZoom], vbValue, 1),'#13'  valID := value(StrSeparate(GuiControl([SearchResults], GuiGet([Items], GuiGet([ItemIndex]))), [AtomID: ], 2)),'#13'  atmFound := AtomByID(valID, Main),'#13'  GuiSelect([frmSearch], [ShowResultsIn], valShowIn := GuiGet([ItemIndex])),'#13'  '#13'  if('#13'    valShowIn,'#13'    '#13'    {**2D model**}'#13'    do('#13'      GuiSelect([frmSearch], [2DZoomFactor], valZoom := value(GuiGet([Text]))),'#13'      if('#13'        valZoom <= 0,'#13'        valZoom := 15'#13'      ),'#13'      Search_DisplayAtomIn2Dmodel(atmFound, valZoom)'#13'    ),'#13'    do('#13'      Search_DisplayAtomInTree(atmFound)'#13'    )'#13'  )'#13'  '#13')'#13))))))),
+EDControl(Panel:
+      Align = Bottom,
+      Anchors = set(Left,Right,Bottom),
+      BevelOuter = None,
+      Caption = str(''),
+      Height = 40,
+      Left = 0,
+      Name = str('Panel2'),
+      TabOrder = 2,
+      Top = 325,
+      Width = 395,
+      Controls(
+        EDControl(Button:
+          Caption = str('&Help'),
+          Left = 8,
+          Name = str('btnHelp'),
+          TabOrder = 1,
+          Top = 8,
+          Events(
+            Click = str('Help(PDir([Help\ED Windows.hlp]), [Search])'#13))),
+        EDControl(Button:
+          Cancel = True,
+          Caption = str('&Close'),
+          Left = 312,
+          Name = str('btnClose'),
+          TabOrder = 2,
+          Top = 8,
+          Events(
+            Click = str('do('#13'  GuiDestroy,'#13'  GuiUnregister([frmSearch_Atom])'#13')'#13)))))),
+  Events(
+    Show = str('do('#13'  GuiControl([SearchResults], GuiSet([ItemIndex], 1))'#13#13')'#13)))
+

@@ -1,0 +1,212 @@
+EDControl(EditForm:
+  BorderIcons = set(SystemMenu),
+  BorderStyle = Single,
+  Caption = str('Export Table'),
+  Height = 454,
+  Name = str('ExportTable'),
+  Position = Default,
+  ShowHint = True,
+  Top = 287,
+  Visible = True,
+  Width = 395,
+  Controls(
+    EDControl(MultiPage:
+      ActivePage = 1,
+      Align = Client,
+      Anchors = set(Left,Top,Right,Bottom),
+      Height = 414,
+      Left = 0,
+      Name = str('MultiPage1'),
+      TabOrder = 1,
+      Top = 0,
+      Width = 395,
+      Controls(
+        EDControl(SinglePage:
+          Caption = str('General'),
+          Name = str('SinglePage1'),
+          PageIndex = 1,
+          Controls(
+            EDControl(GroupBox:
+              Caption = str(''),
+              Height = 64,
+              Left = 8,
+              Name = str('GroupBox1'),
+              TabOrder = 1,
+              Top = 8,
+              Width = 370,
+              Controls(
+                EDControl(Edit:
+                  Height = 21,
+                  Left = 132,
+                  Name = str('AtomName'),
+                  TabOrder = 1,
+                  Top = 26,
+                  Width = 225),
+                EDControl(Label:
+                  Caption = str('Atom name:'),
+                  Color = -16777208,
+                  Height = 13,
+                  Left = 12,
+                  Name = str('StaticText12'),
+                  Top = 32,
+                  Width = 56))),
+            EDControl(GroupBox:
+              Caption = str('Settings'),
+              Height = 192,
+              Left = 8,
+              Name = str('GroupBox32'),
+              TabOrder = 2,
+              Top = 88,
+              Width = 370,
+              Controls(
+                EDControl(Edit:
+                  Height = 21,
+                  Left = 132,
+                  Name = str('Path'),
+                  TabOrder = 1,
+                  Top = 26,
+                  Width = 225),
+                EDControl(Edit:
+                  Height = 21,
+                  Left = 132,
+                  Name = str('FileName'),
+                  TabOrder = 2,
+                  Top = 58,
+                  Width = 225),
+                EDControl(Label:
+                  Caption = str('File name:'),
+                  Color = -16777208,
+                  Height = 13,
+                  Left = 12,
+                  Name = str('StaticText1'),
+                  Top = 64,
+                  Width = 48),
+                EDControl(Label:
+                  Caption = str('Column delimiter:'),
+                  Color = -16777208,
+                  Height = 13,
+                  Left = 12,
+                  Name = str('Icon32'),
+                  Top = 96,
+                  Width = 79),
+                EDControl(Label:
+                  Caption = str('Include header:'),
+                  Color = -16777208,
+                  Height = 13,
+                  Left = 12,
+                  Name = str('Icon322'),
+                  Top = 128,
+                  Width = 74),
+                EDControl(Label:
+                  Caption = str('Display file:'),
+                  Color = -16777208,
+                  Height = 13,
+                  Left = 12,
+                  Name = str('Icon323'),
+                  Top = 160,
+                  Width = 53),
+                EDControl(ComboBox:
+                  Height = 21,
+                  Items = str('Comma delimited'#13#10'Line delimited'#13#10'Tab delimited'#13#10),
+                  Left = 132,
+                  Name = str('ColumnDelimiter'),
+                  Style = DropDownList,
+                  TabOrder = 3,
+                  Top = 90,
+                  Width = 225),
+                EDControl(CheckBox:
+                  Caption = str(''),
+                  Left = 132,
+                  Name = str('IncludeHeader'),
+                  TabOrder = 4,
+                  Top = 124),
+                EDControl(CheckBox:
+                  Caption = str(''),
+                  Left = 132,
+                  Name = str('DisplayFile'),
+                  TabOrder = 5,
+                  Top = 156),
+                EDControl(Label:
+                  Caption = str('Path:'),
+                  Color = -16777208,
+                  Height = 13,
+                  Left = 12,
+                  Name = str('StaticText13'),
+                  Top = 32,
+                  Width = 25))),
+            EDControl(GroupBox:
+              Caption = str('Miscellaneous'),
+              Height = 64,
+              Left = 8,
+              Name = str('GroupBox12'),
+              TabOrder = 3,
+              Top = 296,
+              Width = 370,
+              Controls(
+                EDControl(Button:
+                  Caption = str('Co&nnect'),
+                  Left = 12,
+                  Name = str('btnConnect'),
+                  TabOrder = 1,
+                  Top = 24,
+                  Events(
+                    Click = str('connect('#13' 0,'#13' selectatom(model,first(model),'#13' [Select an atom of which to export a table]),'#13' 1,'#13' GuiAtom'#13')'#13))),
+                EDControl(Button:
+                  Caption = str('&Export Table Data to File'),
+                  Hint = str('Pressing this button will apply the changes you have made.'),
+                  Left = 98,
+                  Name = str('btnExportTableDataToFile'),
+                  TabOrder = 2,
+                  Top = 24,
+                  Width = 150,
+                  Events(
+                    Click = str('do('#13' '#13' { First run the Apply code to make sure user changes to the input are applied before exporting the data. }'#13' GuiControl([btnApply]),'#13' GuiRun([Click]),'#13#13' if('#13'  { check if the atom is connected to an atom of which we want the table to be exported. }'#13'  atomexists(in(1,GuiAtom)) = False,'#13'  do('#13'   msg([An export can''t be made. The atom is not connected to another atom.], 1),'#13'   return(-1)'#13'  )'#13' ),'#13' '#13' { Check if the user inserted a filename, if not make a default one...} '#13' if('#13'  comparetext(Att([TableName], GuiAtom), []) =  True,'#13'  do('#13'   Att([TableName], GuiAtom) := concat(name(in(1, GuiAtom)), [.txt]),'#13'   '#13'   { Also change the entry in the Gui to make it consistent with the value of the attribute it corresponds to. }'#13'   GuiControl([FileName], GuiSet([Text], Att([TableName], GuiAtom)))'#13'  )'#13' ),'#13' '#13' { Check if the user has inserted a path to save the file to...}'#13' if('#13'  comparetext(Att([Path], GuiAtom),[]) = True,'#13'  do('#13'   Att([Path], GuiAtom) := workdir,'#13#13'   { Also change the entry in the Gui to make it consistent with the value of the attribute it corresponds to. }'#13'   GuiControl([Path], GuiSet([Text], Att([Path], GuiAtom)))'#13'  )'#13' ),'#13#13' if('#13'  { Check if the connected atom''s table has a non zero dimension...}'#13'  and('#13'   >(nrows(in(1, GuiAtom)),0),'#13'   >(ncols(in(1, GuiAtom)),0)'#13'  ),'#13'  { If so write the data to a file. }'#13'  do('#13'   { create the File, or open an existing one...}'#13'   fileopen('#13'    concat('#13'     Att([Path], GuiAtom),'#13'     Att([TableName], GuiAtom)'#13'    )'#13'   ),'#13'   { Make sure the file is empty before we begin to write. }'#13'   fileclear,'#13#13'   { Check if the user wants the file to have a Header. }'#13'   if('#13'    Att([IncludeHeader], GuiAtom),'#13'    { Write the Header which is "Table of:" plus the name of the connected atom. }'#13'    do(filetextwrite(concat([Table of ],name(in(1, GuiAtom)))),filetextwrite([]))'#13'   ),'#13'  '#13'   { Write all table entries to the file. }'#13'   repeat('#13'    nrows(in(1, GuiAtom)),'#13'    do('#13'     Att([CurRow], Guiatom) := Count,'#13'     Att([CurText], GuiAtom) := [],'#13#13'     repeat('#13'      ncols(in(1, GuiAtom)),'#13'      do('#13'       settextatt('#13'        4,'#13'        concat('#13'         Att([CurText], GuiAtom),'#13'         cell('#13'          Att([CurRow], GuiAtom), '#13'          Count,'#13'          in(1, GuiAtom),'#13'          2'#13'         ),'#13'         '#13'         { Check out which delimiter the user has chosen, based on this choose: a comma, a cold return or a tab. }'#13'         if('#13'          ncols(in(1, GuiAtom)) = Count,'#13'          [],'#13'          Case('#13'           Att([Delimiter], GuiAtom), '#13'           [,], '#13'           cr, '#13'           tab'#13'          )'#13'         )'#13'        ),'#13'        GuiAtom'#13'       )'#13'      )'#13'     ),'#13'     filetextwrite(textatt(4, GuiAtom))'#13'    )'#13'   ),'#13'   fileclose,'#13'   { If the user wants to see the file, then open the saved file again in the text editor. }'#13'   if('#13'    Att([DisplayFile], GuiAtom),'#13'    do('#13'     displayeditorfile('#13'      concat('#13'       Att([Path], GuiAtom),'#13'       Att([TableName], GuiAtom)'#13'      )'#13'     ),'#13'     displayeditor'#13'    )'#13'   ),'#13'   msg('#13'    concat('#13'     [Table data has been saved succesfully at: ],'#13'     Att([Path], GuiAtom),'#13'     Att([TableName], GuiAtom)'#13'    )'#13'   )'#13'  ),'#13'  msg([No data is available for export.], 1)'#13' )'#13')'#13))))))))),
+    EDControl(Panel:
+      Align = Bottom,
+      Anchors = set(Left,Right,Bottom),
+      BevelOuter = None,
+      Caption = str(''),
+      Height = 40,
+      Left = 0,
+      Name = str('Panel1'),
+      TabOrder = 2,
+      Top = 414,
+      Width = 395,
+      Controls(
+        EDControl(Button:
+          Caption = str('&Help'),
+          Left = 8,
+          Name = str('btnHelp'),
+          TabOrder = 1,
+          Top = 8,
+          Events(
+            Click = str('Help(PDir([HELP\ED Help.hlp]), [Export Table])'#13))),
+        EDControl(Button:
+          Caption = str('&Ok'),
+          Default = True,
+          Left = 144,
+          Name = str('btnOk'),
+          TabOrder = 2,
+          Top = 8,
+          Events(
+            Click = str('Do('#13' GuiControl([btnApply]),'#13' GuiRun([Click]),'#13' GuiDestroy'#13')'#13))),
+        EDControl(Button:
+          Cancel = True,
+          Caption = str('&Cancel'),
+          Left = 230,
+          Name = str('btnCancel'),
+          TabOrder = 3,
+          Top = 8,
+          Events(
+            Click = str('GuiDestroy '#13))),
+        EDControl(Button:
+          Caption = str('&Apply'),
+          Left = 312,
+          Name = str('btnApply'),
+          TabOrder = 4,
+          Top = 8,
+          Events(
+            Click = str('do('#13' '#13'  {Save TextField}'#13' '#13'  TextAtt([TableName],GuiAtom) := GuiControl([FileName],GuiGet([Text])),'#13'    '#13'  TextAtt([path],GuiAtom) := GuiControl([Path],GuiGet([Text])),'#13#13'  {Save Combobox}'#13'  '#13'  Att([delimiter],GuiAtom) := GuiControl([ColumnDelimiter],GuiGet([ItemIndex])),'#13'    '#13'  {Save CheckBox}'#13'  '#13'  Att([includeheader],GuiAtom) := GuiControl([IncludeHeader],GuiGet([Checked])),'#13'  '#13'  Att([displayfile],GuiAtom) := GuiControl([DisplayFile],GuiGet([Checked])),'#13'       '#13'  GuiRun([Update])'#13')'#13)))))),
+  Events(
+    Show = str('do('#13#13' {Set Caption}'#13' if('#13'  atomexists(m(GuiAtom)),'#13'  GuiControl([ExportTable],GuiSet([Caption],concat(name(m(GuiAtom)), [ - ], name(GuiAtom)))),'#13'  GuiControl([ExportTable],GuiSet([Caption],concat([Baseclass - ], name(GuiAtom))))'#13' ),'#13' '#13' {Set ActivePage}'#13'    '#13' GuiControl([MultiPage1]),GuiSet([ActivePage],1),'#13' '#13' {Set TextField}'#13'     '#13' GuiControl([AtomName],GuiSet([Text],Name(GuiAtom))),'#13' '#13' GuiControl([Path],GuiSet([Text], TextAtt([Path],GuiAtom))),'#13' '#13' GuiControl([FileName],GuiSet([Text], TextAtt([TableName],GuiAtom))),'#13#13' { Set CheckBox }'#13' '#13' GuiControl([IncludeHeader], GuiSet([Checked], Att([IncludeHeader], GuiAtom))),'#13' GuiControl([DisplayFile], GuiSet([Checked], Att([DisplayFile], GuiAtom))),'#13#13' {Set ComboBox}'#13' GuiControl([ColumnDelimiter], GuiSet([ItemIndex], Att([Delimiter], GuiAtom))),'#13#13' Gui_PositionGuiAroundAtom(GuiControl([ExportTable])),'#13#13#13' GuiRun([Update])'#13')'#13)))
+

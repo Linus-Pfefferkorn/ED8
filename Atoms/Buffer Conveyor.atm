@@ -1,0 +1,227 @@
+
+
+{Atom: Buffer Conveyor}
+
+sets;
+BaseClass;
+CreateAtom(a, s, [], 1, false);
+int023([Buffer Conveyor], 255, 1266);
+Set(Icon(a), 
+	RegisterIcon(pDir([media\images\default.jpg]), [default.jpg]));
+SetMaterial(
+	RegisterMaterial([Default], 8421504, 8421504, 3289650, 0, 0.100000001490116, 0, false, false, 1, 0), 1, a);
+Set(Version(a), 7.3);
+SetTreeIcon(pDir([Media\Icons\Buffer Conveyor.ico]));
+Set(Info, [Buffering belt conveyor
+
+General
+------------
+This conveyor is essentially a belt or non-accumulating 
+conveyor. However it has the possibility to start buffering items.
+It does this byswitching to buffering mode. If an outside atom gives a 
+message 'buffer' the belt will switch to 'buffer' mode. When the next product 
+enters the conveyor, the conveyor moves only one position (being equal 
+to the size of the defined window). When the next product enters it again 
+moves one position until the whole conveyor is filled. It will then 
+automatically switch to a non buffering mode.
+
+If during the 'buffering mode' the conveyor gets 
+a message which is not equal to 'buffer' it will start to work as 
+a normal belt conveyor again. It is possible to force the conveyor into 
+buffer model only after it has completely empty. During this time it just works 
+a normal non accumulating or belt conveyor.
+
+Statuses:
+-------------
+  13 - Empty
+  26 - Conveying
+    5 - Blocked
+  22 - Collecting.
+
+Last revision:
+-------------------
+March, 2008
+
+]);
+SetChannels(1, 1);
+SetChannelRanges(1, 255, 1, 255);
+int001(63);
+SetSize(10, 1, 1);
+LockPosition(false);
+LockSize(false);
+DisableIconRotation(false);
+SetProductCode([]);
+CreateAttributes(37);
+SetAttributeName(r(1), [dummy]);
+SetAttributeName(r(2), [bufferatstart]);
+SetAttributeName(r(3), [speed]);
+SetAttributeName(r(4), [calculate]);
+SetAttributeName(r(5), [totblocked]);
+SetAttributeName(r(6), [entrytrigger]);
+SetAttributeName(r(7), [exittrigger]);
+SetAttributeName(r(8), [blocked]);
+SetAttributeName(r(9), [sendto]);
+SetAttributeName(r(10), [disp_cont]);
+SetAttributeName(r(11), [batchsize]);
+SetAttributeName(r(12), [tmp]);
+SetAttributeName(r(13), [inputopen]);
+SetAttributeName(r(14), [spacingrule]);
+SetAttributeName(r(15), [spacing]);
+SetAttributeName(r(16), [use_physical_length]);
+SetAttributeName(r(17), [input_length]);
+SetAttributeName(r(18), [horlength]);
+SetAttributeName(r(19), [elevation]);
+SetAttributeName(r(20), [angle]);
+SetAttributeName(r(21), [length]);
+SetAttributeName(r(22), [leg_supports]);
+SetAttributeName(r(23), [calclength]);
+SetAttributeName(r(24), [3d_angle]);
+SetAttributeName(r(25), [horspeed]);
+SetAttributeName(r(26), [vertspeed]);
+SetAttributeName(r(27), [legdist]);
+SetAttributeName(r(28), [temp]);
+SetAttributeName(r(29), [leadtimea]);
+SetAttributeName(r(30), [leadtimeb]);
+SetAttributeName(r(31), [buffer]);
+SetAttributeName(r(32), [startbufferrule]);
+SetAttributeName(r(33), [stopbufferrule]);
+SetAttributeName(r(34), [reqpending]);
+SetAttributeName(r(35), [transfirst]);
+SetAttributeName(r(36), [translast]);
+SetAttributeName(r(37), [IsConveyor]);
+SetExprAtt(r(1), [10]);
+SetExprAtt(r(3), [1]);
+SetExprAtt(r(4), [ do(  setatt(12,+(att(5,c),if(>(att(8,c),0),-(time,att(8,c)),0)),c),  foratomlayerunder(c,   do(    setcs,    setloc(     -(*(xsize(c),/(*(att(25,c),-(-(time,entrytime(cs)),-(att(12,c),ddb([t-blck],cs)))),att(18,c))),xsize(cs)),     /(-(ysize(c),ysize(cs)),2),*(xsize(c),/(*(att(26,c),-(-(time,entrytime(cs)),-(att(12,c),ddb([t-blck],cs)))),     att(18,c)))+zsize(c),     cs    )    )  ) )]);
+SetExprAtt(r(9), [1]);
+SetAtt(r(10), 1);
+SetAtt(r(11), 4);
+SetAtt(r(14), 1);
+SetAtt(r(16), 1);
+SetAtt(r(17), 10);
+SetExprAtt(r(18), [if(att(16,c),xsize(c),att(17,c))]);
+SetExprAtt(r(20), [arctan(att(19,c)/att(18,c))]);
+SetExprAtt(r(21), [if(att(19,c)<>0,att(18,c)/cos(att(20,c)),att(18,c))]);
+SetAtt(r(22), 3);
+SetAtt(r(27), 1);
+SetAtt(r(32), 1);
+SetAtt(r(33), 1);
+SetAtt(r(37), 12);
+int024;
+int020(r(24), false, true);
+Set(OnEvent, [case(eventcode, { 1 : open the input again } do(  if(   buffer,   {The conveyer is in buffer mode}   do(    inputopen := 1,    setstatus(22,c),    if(     content(c) > 0,     blocked := time    ),    openallic(c)   ),   {The conveyer is not in buffer mode}   if(    blocked = 0,    {When the conveyer is not blocked, the input channels open}    do(     inputopen := 1,     openallic(c)    )   )  ) ), { 2 : send on the product } do(  closeallic(c),  blocked := time,  setstatus(5,c),  openalloc(c)  ))]);
+Set(OnEntered, [do( closeallic(c), inputopen := 0, entrytrigger, if(  blocked > 0,  do(   setatt(5,+(att(5,c),-(time,att(8,c))),c),   blocked := 0  ) ), setstatus(26,c), sddb([t-blck],totblocked,i), temp:=productspacing(spacingrule,xsize(i),spacing), if(  buffer,  {When the conveyer is in buffer mode}  do(   If(    And(       content(c) = batchsize,     stopbufferrule = 4    ),    {If the number of products on the conveyer is the batchsize, the products will be sent on}    do(     transfirst:=max(-(/(horlength,horspeed),-(-(time,entrytime(first(c))),-(totblocked,ddb([t-blck],first(c))))),0),     Createevent(transfirst,c,2)    ),    Do(     {still fits entirely on the conveyor including window!!}     if(      <(/(temp,horspeed),       max(-(/(horlength,horspeed),-(-(time,entrytime(first(c))),-(totblocked,ddb([t-blck],first(c))))),0)      ),       {When the product fits on the conveyer, over the time of moving one product the inputchannels open again}      createevent(/(temp,horspeed),c,1),      {When the product doesn't fit on the conveyer event 2 is created after the time it takes to fill up the empty space}      createevent(max(-(/(horlength,horspeed),-(-(time,entrytime(first(c))),-(totblocked,ddb([t-blck],first(c))))),0),c,2)     )    )   )  ),  {when the conveyer is not in buffer mode}  do(   if(    content(c) = 1,    createevent(/(horlength,if(buffer,min(productspacing(spacingrule,xsize(i),spacing),horspeed),horspeed)),c,2)   ),   { Check if this product can be entirely on conveyor }   if(    <(/(productspacing(spacingrule,xsize(i),spacing),horspeed),      max(-(/(horlength,horspeed),-(-(time,entrytime(first(c))),-(totblocked,ddb([t-blck],first(c))))),0)    ),    createevent(/(productspacing(spacingrule,xsize(i),spacing),horspeed),c,1)   )  ) ))]);
+Set(OnExited, [do( closealloc(c), setatt(5,+(att(5,c),-(time,blocked)),c), { still to move: total moving time - ( (time-entrytime) - (totblocked nu - totblocked enter) ) } if(  content(c) = 0,  totblocked := 0,  do(   temp:=productspacing(spacingrule,xsize(last(c)),spacing),   transfirst:=max(-(/(horlength,horspeed),-(-(time,entrytime(first(c))),-(totblocked,ddb([t-blck],first(c))))),0),   translast:=max(-(/(temp,horspeed),-(-(time,entrytime(last(c))),-(totblocked,ddb([t-blck],last(c))))),0)  ) ), if(  buffer,  case(   stopbufferrule,   { 1: on message stop, so now keep on buffering }   do(    if(     inputopen,     do(      createevent(0,c,1),      blocked := 0     ),     if(      content(c) > 0,      if(       <(translast,transfirst),       createevent(translast,c,1),       createevent(transfirst,c,2)      ),      do(       createevent(/(max(0,-(temp,horlength)),horspeed),c,1),       blocked := 0      )     )    )   ),   { 2: full conveyor, switch to non-buffer, carry on normally  }   do(    buffer:=false   ),   {3: full conveyor, wait till completely empty }   if(    content(c)=0,    buffer:=false,    createevent(transfirst,c,2)   ),   {4: Batch size and then empty conveyer}   If(    content(c) = 0,    buffer := false,    createevent(transfirst,c,2)   )  ) ), { not buffer, normal exit} if(  not(buffer),  if(   content(c) > 0,   do(    createevent(transfirst,c,2),    { check if input is open, if not create an event in x time }    if(     inputopen,     createevent(0,c,1),     if(      translast < transfirst,      createevent(translast,c,1)     )    ),    setstatus(26,c)   ),   do(    if(     reqpending=true,     do(      reqpending:=false,      buffer:=true     )    ),    createevent(/(max(0,-(temp,horlength)),horspeed),c,1),    setstatus(13,c)   )  ) ), if(  and(   startbufferrule=3,   not(buffer),   content(c) = 0  ),  buffer:=true  ), sddb([t-blck],0,i), blocked := 0, exittrigger)]);
+Set(OnCreation, [do( AutoConnect, {Legs} If(   LegDist > 0,    Leg_Supports :=Trunc(xSize(c) / LegDist) + 1,       Leg_Supports := 0), setstatus(1,c))]);
+Set(OnReset, [do( if(  use_physical_length,  input_length := xsize(c) ), closealloc(c), totblocked := 0, blocked := 0, if(  or(   bufferatstart,   startbufferrule=3  ),  do(   setstatus(13,c),   buffer:=true  ),  do(    setstatus(12,c),   buffer:=false  ) ), inputopen := 0, calclength := length, setsetting(sashowcontents,disp_cont,c), {3D angle} 3d_angle := arctan(/(att(19,c),xsize(c))), temp := sqrt(sqr(xsize(c))+sqr(att(19,c)))/sqrt(sqr(att(17,c))+sqr(att(19,c))), {horspeed} horspeed := *(att(3,c),*(cos(att(24,c)),att(28,c))), {vertspeed} vertspeed := *(att(3,c),*(sin(att(24,c)),att(28,c))),{Legs} If(LegDist > 0,    Leg_Supports :=Trunc(xSize(c) / LegDist) + 1,       Leg_Supports := 0 ))]);
+Set(OnUser, [Do(  { Delete any current instances of this form.}   GuiDestroy([Buffer Conveyor]),  { Register the GUI-form for this atom.}  GuiRegister(PDir([\Atoms\Buffer Conveyor.gui]), 1),  { Show the GUI-form.}   GuiCreate([Buffer Conveyor], [Buffer Conveyor], 0, c, 0, 1))]);
+Set(OnOcReady, [if( content(c) > 0, moverequest(first(c),sendto))]);
+Set(On2DDraw, [do( if(  disp_cont,  {If the contents of the conveyer needs to be displayed}  calculate,  if(   discale > 11,   ditext(0.4,0,concat([Content : ],string(content(c))),colorblack,color(c),0.5,[arial])  ) ))]);
+Set(On3DDraw, [if( boxvisible(0,0,0,xsize,ysize,zsize), do(  {If the contents must be visible, the attribute calculate will be executed}    if(   disp_cont,   calculate  ),  {Draw the conveyer}  box(0,-0.06,-(zsize(c),0.1), /(xsize(c),cos(angle)) ,0.06, 0.1,0,att(20,c),0,color),  box(0,ysize(c),-(zsize(c),0.1),/(xsize(c),cos(angle)),0.06,0.1,0,att(20,c),0,color),  box(0,0.1,-(zsize(c),0.05),/(xsize(c),cos(angle)),-(ysize(c),0.2),0.05,0,att(20,c),0,colorblack),  If(   LegDist  > 0, {leg supports}   Do(    Repeat(     Leg_Supports,     Do(            di3DBox(xSize(c)- 0.05 - (*(Count - 1, LegDist)), -0.05, 0, 0.05, 0.05, (zSize(c) + Elevation)- (Count - 1) * LegDist * tan(angle)- 0.05, 14473664, 0),      di3DBox(xSize(c)- 0.05 - (*(Count - 1, LegDist)), ySize(c), 0, 0.05, 0.05, (zSize(c) + Elevation) - (Count - 1) * LegDist * tan(Angle)- 0.05, 14473664, 0),      di3DBox(xSize(c)- 0.05 - (*(Count - 1, LegDist)), 0, -((zSize(c) + Elevation) - (Count - 1) * LegDist * tan(Angle), 0.3)- 0.05, 0.03, ySize, 0.03, Color, 0)     )    )   )  ) ))]);
+Set(OnMessage, [if(
+ comparetext(message,[buffer]),
+ {If the message contains the word buffer}
+ if(
+  and(
+   startbufferrule < 3,
+   not(buffer)
+  ),
+  {If the conveyer is not already in buffermode and the start buffer rule exists, go to buffer mode}
+  if(
+   startbufferrule = 1,  {direct buffer}
+   if(
+    content(c)=0,
+    {If the conveyer is empty, set the conveyer in buffer mode}
+    buffer:=true,
+    {If the conveyer is not empty yet some other things have to be taken care of}
+    do(
+     {If the conveyer is blocked the total blocked time is updated}
+     if(
+      att([blocked],c) > 0,
+      setatt([totblocked],(att([totblocked],c) + (time  - att([blocked],c))),c)
+     ),
+     blocked := time, 
+     temp:=productspacing(spacingrule,xsize(last(c)),spacing),
+     transfirst:=max(-(/(att(18,c),att(25,c)),-(-(time,entrytime(first(c))),-(att(5,c),ddb([t-blck],first(c))))),0),
+     translast:=max(-(/(temp,att(25,c)),-(-(time,entrytime(last(c))),-(att(5,c),ddb([t-blck],last(c))))),0),
+     {Destroy all the planned events for this atom}
+     destroyeventsofatom(c),
+     if(
+      inputopen = 0,
+      {When the input is open}
+      if(
+       translast < transfirst, 
+       {first product needs to move too}
+       do(          
+        blocked := 0,
+        createevent(translast,c,1)
+       ),
+        do(
+        blocked := 0,
+        createevent(transfirst,c,2)
+       )
+      ),
+      {when the input insn't open}
+      setstatus(22,c)
+     ),
+     {set the conveyer in the buffer mode}
+     buffer:=true
+    )
+   ),
+   {go buffering when empty }
+   reqpending:=true
+  )
+ ),
+ {the message isn't "buffer"}
+ if(
+  buffer,
+  {go to NON-buffer mode}
+  do(
+   if(
+    content(c)=0,
+    {If the conveyer is empty, just change the buffer mode to not buffering}
+    buffer:=false,
+    {Else do something more before the conveyer can stop buffering}
+    do(
+     {If the conveyer is blocked the total blocked time is updated}
+     if(
+      blocked > 0,
+      setatt([totblocked],+(att([totblocked],c),-(time,att([blocked],c))),c)
+     ), 
+     blocked := 0,
+     temp:=productspacing(spacingrule,xsize(last(c)),spacing),
+     transfirst:=max(-(/(att(18,c),att(25,c)),-(-(time,entrytime(first(c))),-(att(5,c),ddb([t-blck],first(c))))),0),
+     translast:=max(-(/(temp,att(25,c)),-(-(time,entrytime(last(c))),-(att(5,c),ddb([t-blck],last(c))))),0),
+     {Destroy all events planned for this atom}
+     destroyeventsofatom(c),
+     if(
+      status(c)=22,
+      if(
+       content(c)=0,
+       setstatus(13,c),
+       setstatus(26,c))
+     ),
+     if(
+      inputopen = 0,
+      if(
+       translast > transfirst, 
+       {first product needs to move too}
+       createevent(transfirst,c,2),
+       {Else}
+       do(
+        createevent(translast,c,1),
+        createevent(transfirst,c,2)
+       )
+      ),
+      createevent(transfirst,c,2)
+     ),
+     {Set the buffer mode on false}
+     buffer:=false
+    )
+   )
+  )
+ )
+)
+]);
+SetStatus(1);
+int018;
+int007;

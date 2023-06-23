@@ -1,0 +1,181 @@
+EDControl(EditForm:
+  BorderIcons = set(SystemMenu),
+  BorderStyle = Single,
+  Caption = str('VR Building'),
+  Height = 301,
+  Name = str('VR Building'),
+  Position = Default,
+  ShowHint = True,
+  Top = 626,
+  Visible = True,
+  Width = 395,
+  Controls(
+    EDControl(MultiPage:
+      ActivePage = 2,
+      Align = Client,
+      Anchors = set(Left,Top,Right,Bottom),
+      Height = 261,
+      Left = 0,
+      Name = str('MultiPage1'),
+      TabOrder = 1,
+      Top = 0,
+      Width = 395,
+      Controls(
+        EDControl(SinglePage:
+          Caption = str('General'),
+          Name = str('SinglePage1'),
+          PageIndex = 1,
+          Controls(
+            EDControl(GroupBox:
+              Caption = str(''),
+              Height = 64,
+              Left = 8,
+              Name = str('GroupBox1'),
+              TabOrder = 1,
+              Top = 8,
+              Width = 370,
+            Controls(
+EDControl(Label:
+              Caption = str('Atom name:'),
+              Color = -16777208,
+              Left = 12,
+              Name = str('StaticText1'),
+              Top = 32,
+              Width = 60),
+            EDControl(Edit:
+              Height = 21,
+              Left = 132,
+              Name = str('AtomName'),
+              TabOrder = 2,
+              Top = 26,
+              Width = 225))),
+EDControl(GroupBox:
+              Caption = str('Scale'),
+              Height = 128,
+              Left = 8,
+              Name = str('GroupBox2'),
+              TabOrder = 3,
+              Top = 88,
+              Width = 370,
+            Controls(
+EDControl(Label:
+              Caption = str('Scale Y:'),
+              Color = -16777208,
+              Left = 12,
+              Name = str('StaticText32'),
+              Top = 64,
+              Width = 44),
+            EDControl(Edit:
+              Height = 21,
+              Left = 132,
+              Name = str('SizeX'),
+              TabOrder = 4,
+              Top = 26,
+              Width = 100),
+            EDControl(Label:
+              Caption = str('Scale Z:'),
+              Color = -16777208,
+              Left = 12,
+              Name = str('StaticText52'),
+              Top = 96,
+              Width = 44),
+            EDControl(Edit:
+              Height = 21,
+              Left = 132,
+              Name = str('SizeY'),
+              TabOrder = 5,
+              Top = 58,
+              Width = 100),
+            EDControl(Label:
+              Caption = str('Scale X:'),
+              Color = -16777208,
+              Left = 12,
+              Name = str('StaticText622'),
+              Top = 32,
+              Width = 44),
+            EDControl(Edit:
+              Height = 21,
+              Left = 132,
+              Name = str('SizeZ'),
+              TabOrder = 6,
+              Top = 90,
+              Width = 100))))),
+EDControl(SinglePage:
+          Caption = str('Visualization'),
+          Name = str('SinglePage2'),
+          PageIndex = 2,
+          Controls(
+            EDControl(GroupBox:
+              Caption = str('Settings'),
+              Height = 64,
+              Left = 8,
+              Name = str('GroupBox3'),
+              TabOrder = 1,
+              Top = 8,
+              Width = 370,
+            Controls(
+EDControl(Label:
+              Caption = str('3D Icon:'),
+              Color = -16777208,
+              Left = 12,
+              Name = str('StaticText7'),
+              Top = 32,
+              Width = 45),
+            EDControl(ComboBox:
+              Height = 21,
+              Items = str('Factory 1'#13#10'Factory 2'#13#10'Factory 3'#13#10'Factory 4'#13#10),
+              Left = 132,
+              Name = str('3DIcon'),
+              Style = DropDownList,
+              TabOrder = 2,
+              Top = 26,
+              Width = 225))))))),
+    EDControl(Panel:
+      Align = Bottom,
+      Anchors = set(Left,Right,Bottom),
+      BevelOuter = None,
+      Caption = str(''),
+      Height = 40,
+      Left = 0,
+      Name = str('Panel1'),
+      TabOrder = 2,
+      Top = 261,
+      Width = 395,
+      Controls(
+        EDControl(Button:
+          Caption = str('&Help'),
+          Left = 8,
+          Name = str('btnHelp'),
+          TabOrder = 1,
+          Top = 8,
+          Events(
+            Click = str('Help(PDir([HELP\ED Help.hlp]), [VR Building])'#13))),
+        EDControl(Button:
+          Caption = str('&Ok'),
+          Default = True,
+          Left = 144,
+          Name = str('btnOk'),
+          TabOrder = 2,
+          Top = 8,
+          Events(
+            Click = str('Do('#13' GuiControl([btnApply]),'#13' GuiRun([Click]),'#13' GuiDestroy,'#13' GuiUnregister([VR Building])'#13')'#13))),
+        EDControl(Button:
+          Cancel = True,
+          Caption = str('&Cancel'),
+          Left = 230,
+          Name = str('btnCancel'),
+          TabOrder = 3,
+          Top = 8,
+          Events(
+            Click = str('Do('#13' GuiDestroy,'#13' GuiUnregister([VR Building])'#13')'#13))),
+        EDControl(Button:
+          Caption = str('&Apply'),
+          Left = 312,
+          Name = str('btnApply'),
+          TabOrder = 4,
+          Top = 8,
+          Events(
+            Click = str('do('#13' '#13'  {Save TextField}'#13'   '#13'  Name(GuiAtom) := GuiControl([AtomName],GuiGet([Text])),'#13#13'  Att([xScale], GuiAtom) := Value(GuiControl([SizeX],GuiGet([Text]))),'#13#13'  Att([yScale], GuiAtom) := Value(GuiControl([SizeY],GuiGet([Text]))),'#13'  '#13'  Att([zScale], GuiAtom) := Value(GuiControl([SizeZ],GuiGet([Text]))),'#13#13'  {Save Combobox}'#13'    '#13'  Att([Icon3D],GuiAtom) := GuiControl([3DIcon],GuiGet([ItemIndex]))'#13'  '#13')'#13)))))),
+  Events(
+    Show = str('do('#13' '#13'  {Set Caption}'#13#13'  if('#13'   atomexists(m(GuiAtom)),'#13'   GuiControl([VR Building],GuiSet([Caption],concat(name(m(GuiAtom)), [ - ], name(GuiAtom)))),'#13'   GuiControl([VR Building],GuiSet([Caption],concat([Baseclass - ], name(GuiAtom))))'#13'  ),'#13#13'  {Set ActivePage}'#13'     '#13'  GuiControl([MultiPage1]),GuiSet([ActivePage],1),'#13'  '#13'  {Set TextField}'#13'  '#13'  GuiControl([AtomName],GuiSet([Text],Name(GuiAtom))),'#13'  '#13'  GuiControl([SizeX],GuiSet([Text], string(Att([xScale], GuiAtom)))),'#13'  '#13'  GuiControl([SizeY],GuiSet([Text], string(Att([yScale], GuiAtom)))),'#13'  '#13'  GuiControl([SizeZ],GuiSet([Text], string(Att([zScale], GuiAtom)))),'#13'            '#13'  GuiControl([3DIcon],GuiSet([ItemIndex], Att([Icon3D],GuiAtom))),'#13'  '#13'  {Position the form}'#13'  Gui_PositionGuiAroundAtom(GuiControl([VR Building])),'#13#13'  GuiRun([Update])'#13')'#13)))
+

@@ -1,0 +1,115 @@
+
+
+{Atom: Omni Light}
+
+sets;
+BaseClass;
+CreateAtom(a, s, [], 1, false);
+int023([Omni Light], 13487565, 589905);
+Set(Icon(a), 
+	RegisterIcon(pDir([Media\Images\Atoms\omni_big.bmp]), [omni_big], 1, 1, 16777215, 1, 1, false, 0));
+SetMaterial(
+	RegisterMaterial([Sun], 8454143, 8454143, 16777215, 4539717, 0.939999997615814, 0, false, false, 1, 0), 1, a);
+Set(Version(a), 7.3);
+SetTreeIcon(pDir([Media\Icons\OmniLight.ico]));
+Set(DdbRec, [>lightid:1.>islight:1.]);
+int001(100);
+SetLoc(0, 0, 3);
+SetSize(1, 1, 1);
+LockPosition(false);
+LockSize(true);
+DisableIconRotation(false);
+SetProductCode([]);
+CreateAttributes(5);
+SetAttributeName(r(1), [DiffuseColor]);
+SetAttributeName(r(2), [AmbientIntensity]);
+SetAttributeName(r(3), [SpecularIntensity]);
+SetAttributeName(r(4), [DrawSource]);
+SetAttributeName(r(5), [Enabled]);
+SetExprAtt(r(1), [ColorWhite]);
+SetAtt(r(2), 0.2);
+SetAtt(r(3), 0.2);
+SetAtt(r(5), 1);
+int024;
+Set(OnEvent, [if(
+ EventCode = EVENT_ATOM_LOCATION_CHANGED,
+ SetLightPosition(xLoc, yLoc, zLoc, c.LightID)
+)
+]);
+Set(OnCreation, [if(
+ m(c) <> baseclass,
+ do(
+   { this label indentifies this atom as a light }
+   c.IsLight := 1, 
+   { if no light atoms are in it the model, remove all default lights }
+   v := 0,
+   ForAtomTreeUnder(model, if(Label([IsLight]),  v:=v+1)),
+   if (v=1,
+    { remove all lights }
+    DestroyLight(0)
+   ),
+   { create an omni light }
+   c.LightID := createLight(LT_OMNI_LIGHT),
+   SetLightPosition(xLoc, yLoc, zLoc, c.LightID),
+   SendMessageDirect(c, 1),
+   { Bind event for location change }
+   BindEvent(c, EVENT_ATOM_LOCATION_CHANGED, EVENT_ATOM_LOCATION_CHANGED)
+ )
+)
+]);
+Set(OnDestruction, [DestroyLight(c.LightID)]);
+Set(OnUser, [Do(
+ { Delete any current instances of this form.} 
+ GuiDestroy([OmniLight]),
+ 
+ { Register the GUI-form for this atom.}
+ GuiRegister(PDir([\Atoms\OmniLight.gui]), 1),
+ 
+ { Show the GUI-form.}
+ Guicreate([OmniLight], [OmniLight], 0, c, 0, 1)
+)
+]);
+Set(On3DDraw, [if( DrawSource, do(  SetMaterialColor(DiffuseColor, DIFFUSE_COLOR),  SetMaterialColor(RgbColor(AmbientIntensity*255, AmbientIntensity*255, AmbientIntensity*255), EMISSIVE_COLOR),   SetMaterialColor(RgbColor(SpecularIntensity*255, SpecularIntensity*255, SpecularIntensity*255), SPECULAR_COLOR),   DrawSphere(0.5, 0.5, 0.5, 0.5, 0.5, 0.5) ) )]);
+Set(OnMessage, [case(Message,
+ do { 1:  Set properties to light }
+ (
+  { set diffuse color }
+  SetLightColor(DiffuseColor, DIFFUSE_COLOR, c.LightID),
+  { set ambient color }
+  SetLightColor(
+   rgbColor(
+    rColor(DiffuseColor) * AmbientIntensity,
+    gColor(DiffuseColor) * AmbientIntensity,
+    bColor(DiffuseColor) * AmbientIntensity
+   ), 
+   AMBIENT_COLOR, 
+   c.LightID
+  ),
+  { set specular color }
+  SetLightColor(
+   rgbColor(
+    rColor(DiffuseColor) * SpecularIntensity,
+    gColor(DiffuseColor) * SpecularIntensity,
+    bColor(DiffuseColor) * SpecularIntensity
+   ), 
+   SPECULAR_COLOR, 
+   c.LightID
+  ),
+  { set enabled or disabled }
+  SetLightEnabled(Enabled, c.LightID)
+ ),
+ Do(
+  { Delete any current instances of this form.} 
+  GuiDestroy([OmniLight]),
+
+  { Register the GUI-form for this atom.}
+  GuiRegister(PDir([\Atoms\OmniLight.gui]), 1),
+
+  { Show the GUI-form.}
+  Guicreate([OmniLight], [OmniLight], 0, c, 0, 1)
+ )
+)
+]);
+SetStatus(0);
+int018;
+int007;

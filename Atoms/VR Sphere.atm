@@ -1,0 +1,63 @@
+
+
+{Atom: VR Sphere}
+
+sets;
+BaseClass;
+createAtom(a, s, [], 1, false);
+int023([VR Sphere], 16777215, 1264);
+Set(Icon(a), 
+	RegisterIcon(pDir([Media\Textures\Sky\c-cloud.jpg]), [c-cloud.jpg], 1, 0, 0, 255, 255, false, 0));
+SetMaterial(
+	RegisterMaterial([White], 16777215, 16777215, 16777215, 16777215, 1, 0, false, false, 1, 0), 1, a);
+Set(Version(a), 7.3);
+SetTreeIcon(pDir([Media\Icons\VRSphere.ico]));
+int001(98);
+SetSize(5, 2, 0);
+LockPosition(false);
+LockSize(false);
+DisableIconRotation(false);
+SetProductCode([]);
+createAttributes(5);
+SetAttributeName(r(1), [radius]);
+SetAttributeName(r(2), [xoffset]);
+SetAttributeName(r(3), [yoffset]);
+SetAttributeName(r(4), [zoffset]);
+SetAttributeName(r(5), [iconrepeat]);
+SetAtt(r(1), 1000);
+SetAtt(r(5), 1);
+int024;
+Set(OnUser, [Do(
+  { Delete any current instances of this form.} 
+  GuiDestroy([VR Sphere]),
+
+  { Register the GUI-form for this atom.}
+  GuiRegister(PDir([\Atoms\VR Sphere.gui]), 1),
+
+  { Show the GUI-form.}
+   Guicreate([VR Sphere], [VR Sphere], 0, c, 0, 1)
+)
+]);
+Set(On2DDraw, [do(
+ dishape(0,0,xsize,ysize,0.25,colorblack,colorwhite),
+ dishape(0,0,xsize,1,0.25,colorblack,7485496),
+ dionscale(13,
+  do(
+   ditext(0.2,0.1,name(c),colorwhite,7485496,0.5,[Arial],-(xsize,0.3),0.8),
+   ditext(0.2,1.1,concat([radius: ],string(att(1,c))),0,colorwhite,0.5,[Arial],-(xsize,0.3),0.8)
+  )
+ )
+)
+]);
+Set(On3DDraw, [do(
+ SetMaterialTexture(IconToTexture(Icon)),
+ ScaleTextureCoords(att(5, c), att(5, c)),
+ SetMaterialTwoSided(True),
+ RotateCoords(90, 1, 0, 0),
+ SetMaterialColor(Color, EMISSIVE_COLOR),
+ DrawSphere(att(2, c), att(3, c), att(4, c), att(1, c), att(1,  c), att(1, c))
+)
+]);
+SetStatus(0);
+int018;
+int007;

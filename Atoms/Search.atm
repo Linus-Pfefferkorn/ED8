@@ -1,0 +1,471 @@
+
+
+{Preregister functions}
+
+PreregisterFunction([Search_TextInCode], 1, 5);
+PreregisterFunction([Search_AddToInListLines], 2, 2);
+PreregisterFunction([Search_AddToMemoTracer], 2, 2);
+PreregisterFunction([Search_DisplayAtomIn2Dmodel], 2, 3);
+PreregisterFunction([Search_DisplayAtomInTree], 1, 1);
+PreregisterFunction([Search_AtomByName], 2, 4);
+PreregisterFunction([Search_AtomByCode], 2, 3);
+PreregisterFunction([Search_OpenForm], 0, 0);
+PreregisterFunction([Search_DisplayAtomMotherInTree], 1, 1);
+PreregisterFunction([Search_ResetSettings], 0, 0);
+
+
+{Atom: Search}
+
+sets;
+BaseClass;
+CreateAtom(a, s, [], 1, false);
+Set(OnInit, [Do( GuiRegister(PDir([Atoms\frmSearch_MemoTracer.gui]), 1), dim([atmMotherSearch], vbAtom, c))]);
+int023([Search], 0, 524288);
+DefineFunction([Search_TextInCode], [Search], 1, 5, [do(
+  PushAtomPointer(s),
+  
+  {**Find What**}
+  var([strSearch], vbString, p(1)),
+  
+  {**Search Under**}
+  if(
+    p(2) > 0,
+    if(
+      AtomExists(p(2), Main),
+      var([atmTree], vbAtom, p(2)),
+      do(
+        msg(Concat(string(p(2)), [ does not exist, so no search possible under this atom], 3)),
+        return
+      )
+    ),
+    var([atmTree], vbAtom, main)
+  ),
+  
+  {**Search Options**}
+  {**0 = None, 1 = Match Case, 2 = Do Not Clear Previous, else = both**}
+  var([valSearchOption], vbValue, p(3)),
+  var([valCaseSensitive], vbValue),
+  var([valClearPrevious], vbValue),
+  if(
+    Or(
+      valSearchOption < 0,
+      valSearchOption > 3
+    ),
+    valSearchOption := 3
+  ),
+  case(valSearchOption + 1,
+    do(
+      valCaseSensitive := 0,
+      valClearPrevious := 1
+    ),
+    do(
+      valCaseSensitive := 1,
+      valClearPrevious := 1
+    ),
+    do(
+      valCaseSensitive := 0,
+      valClearPrevious := 0
+    ),
+    do(
+      valCaseSensitive := 1,
+      valClearPrevious := 0
+    )
+  ),
+  
+  {**Show Results in**}
+  {**1 = listLines, else in Memo tracer**}
+  var([valShowResults], vbValue),
+  if(
+    p(4) = 1,
+    do(
+      valShowResults := 1,
+      GuiDestroy([frmSearch_ListLines]),
+      GuiRegister(PDir([Atoms\frmSearch_ListLines.gui]), 1),
+      Guicreate([frmSearch_ListLines], [frmSearch_ListLines], 0),
+      GuiSelect([frmSearch_ListLines], [SearchString], GuiSet([Text], strSearch)),
+      GuiSelect([frmSearch_ListLines], [SearchUnder], GuiSet([Text], Concat(name(atmTree), [: ], string(AtomID(atmTree)))))
+    ),
+    do(
+      valShowResults := 0,
+      if(
+        valClearPrevious,
+        GuiDestroy([frmSearch_MemoTracer])
+      ),
+      Guicreate([frmSearch_MemoTracer], [frmSearch_MemoTracer], 0),
+      GuiSelect([frmSearch_MemoTracer], [SearchResults], GuiList([Lines], [Add], Concat([--- Start of Search For "], strSearch, ["---]))),  
+      GuiSelect([frmSearch_MemoTracer], [SearchString], GuiSet([Text], strSearch)),
+      GuiSelect([frmSearch_MemoTracer], [SearchUnder], GuiSet([Text], Concat(name(atmTree), [: ], string(AtomID(atmTree)))))
+    )
+  ),
+  
+  
+  {**Search In**}
+  {**1 = In Functions, 2 = in events, 4 = in attributes, 3, 5, 6 = combination, else in all**}
+  var([valSearchIn], vbValue, p(5)),
+  var([valSearchInFunctions], vbValue),
+  var([valSearchInEvents], vbValue),
+  var([valSearchInAtt], vbValue),
+  if(
+    Or(
+      valSearchIn <= 0,
+      valSearchIn > 7
+    ),
+    valSearchIn := 7
+  ),
+  case(valSearchIn,
+    {**1**}
+    do(
+      valSearchInFunctions := 1,
+      valSearchInEvents := 0,
+      valSearchInAtt := 0
+    ),
+    {**2**}
+    do(
+      valSearchInFunctions := 0,
+      valSearchInEvents := 1,
+      valSearchInAtt := 0
+    ),
+    {**3**}
+    do(
+      valSearchInFunctions := 1,
+      valSearchInEvents := 1,
+      valSearchInAtt := 0
+    ),
+    {**4**}
+    do(
+      valSearchInFunctions := 0,
+      valSearchInEvents := 0,
+      valSearchInAtt := 1
+    ),
+    {**5**}
+    do(
+      valSearchInFunctions := 1,
+      valSearchInEvents := 0,
+      valSearchInAtt := 1
+    ),
+    {**6**}
+    do(
+      valSearchInFunctions := 0,
+      valSearchInEvents := 1,
+      valSearchInAtt := 1
+    ),
+    {**7**}
+    do(
+      valSearchInFunctions := 1,
+      valSearchInEvents := 1,
+      valSearchInAtt := 1
+    )
+  ),
+     
+  var([valCounter], vbValue),
+  var([strCode], vbString),
+  var([valNrMatches], vbValue),
+  var([strAttName], vbString),
+  var([strEvent], vbString),
+  var([valTotalHits], vbValue, 0),
+  Var([valCounter], vbValue),
+  Var([strFound], vbString),
+  Var([strFunctionName], vbString),
+  
+  if(
+    not(valCaseSensitive),
+    strSearch := Lowercase(strSearch)
+  ),
+  
+  ForAtomTreeUnder(
+    atmTree,
+    do(
+      Sets,
+      strFound := [],
+      
+      {**Function**}
+      if(
+        valSearchInFunctions,
+        do(
+          valCounter := 1,
+          While(
+            StringLength(FunctionOnAtomName(s, valCounter)) > 0,
+            do(
+              strFunctionName := FunctionOnAtomName(s, valCounter),
+              if(
+                not(valCaseSensitive),
+                strFunctionName := Lowercase(strFunctionName)
+              ),
+              valNrMatches := SubstrCount(strFunctionName, strSearch),
+              if(
+                valNrMatches > 0,
+                do(
+                  inc(valTotalHits, valNrMatches),
+                  strFound := concat(strFound, String(valNrMatches, 3, 0), [ times found in name of function: ], FunctionOnAtomName(s, valCounter), [;])
+                )
+              ),            
+            
+              strCode := FunctionOnAtomInfo(s, valCounter, [Code]),
+              if(
+                not(valCaseSensitive),
+                strCode := Lowercase(strCode)
+              ),
+              valNrMatches := SubstrCount(strCode, strSearch),
+              if(
+                valNrMatches > 0,
+                do(
+                  inc(valTotalHits, valNrMatches),
+                  strFound := concat(strFound, String(valNrMatches, 3, 0), [ times found in code of function: ], FunctionOnAtomName(s, valCounter), [;])
+                )
+              ),
+              inc(valCounter)
+            )
+          )
+        )
+      ),
+     
+      {**Events**}
+      if(
+        valSearchInEvents,
+        for(
+          valCounter := ATOM_EVENT_FIRST,
+          valCounter <= ATOM_EVENT_LAST,
+          Inc(valCounter),
+          do(
+            strCode := EventString(s, valCounter),
+            strEvent := EventName(valCounter),
+            
+            if(
+              not(valCaseSensitive),
+              strCode := Lowercase(strCode)
+            ),
+            
+            valNrMatches := SubstrCount(strCode, strSearch),
+            if(
+              valNrMatches > 0,
+              do(
+                inc(valTotalHits, valNrMatches),
+                strFound := concat(strFound, String(valNrMatches, 3, 0), [ times found in event: ], strEvent, [;])
+              )
+            )
+          )
+        )
+      ),
+      
+      {**Attributes**}
+      if(
+        valSearchInAtt,
+        do(
+          for(
+            valCounter := 1,
+            valCounter <= NrOfAttributes(s),
+            Inc(valCounter),
+            do(
+              strCode := TextAtt(valCounter, s),
+              strAttName := AttributeName(valCounter, s), 
+              if(
+                not(valCaseSensitive),
+                strCode := Lowercase(strCode)
+              ),
+              valNrMatches := SubstrCount(strCode, strSearch),
+              if(
+                valNrMatches > 0,
+                do(
+                  inc(valTotalHits, valNrMatches),
+                  strFound := concat(strFound, String(valNrMatches, 3, 0), [ times found in attribute: ], strAttName, [;])
+                )
+              )
+            )
+          )
+        )
+      ),
+      
+      if(
+        StringLength(strFound) > 0,
+        if(
+          valShowResults,
+          Search_AddToInListLines(s, strFound),
+          Search_AddToMemoTracer(s, strFound)
+        )
+      )
+    ),
+    1
+  ),
+ 
+  if(
+    valShowResults,
+    do(
+      GuiSelect([frmSearch_ListLines], [TotalHits], GuiSet([Text], string(valTotalHits))),  
+      GuiShow([frmSearch_ListLines])
+    ),
+    do(
+      GuiSelect([frmSearch_MemoTracer], [TotalHits], GuiSet([Text], string(valTotalHits))),
+      GuiSelect([frmSearch_MemoTracer], [SearchResults], GuiList([Lines], [Add], Concat([--- End of Search For "], strSearch, ["---]))),
+      GuiSelect([frmSearch_MemoTracer], [SearchResults], GuiList([Lines], [Add], [])),
+      GuiShow([frmSearch_MemoTracer])
+    )
+  ),
+  
+  s := PopAtomPointer
+)
+], [Search for a string in all functions and events under a specified atom and returns the results in the tracer. 
+e1 = string to search, 
+e2 (optional) = start searching under atom
+e3 (optional) =  search option {**0 = None, 1 = Match Case, 2 = Do Not Clear Previous, else = both**}
+e4 (optional) =  Show Results in {**1 = listLines, else in Memo tracer**}
+e5 (optional) =  Search In {**1 = In Functions, 2 = in events, 4 = in attributes, 3, 5, 6 = combination, else in all**}], [Search_TextInCode([ED])], 0, [Search.atm]);
+DefineFunction([Search_AddToInListLines], [Search], 2, 2, [do(  var([atmFound], vbAtom, p(1)),  var([strFoundWhere], vbString, p(2)),  var([strAtom], vbString),    strAtom := Concat([AtomName: ], name(atmFound), [; AtomID: ], string(AtomID(atmFound))),    GuiSelect([frmSearch_ListLines], [SearchResults], GuiList([Items], [Add], strAtom)),  GuiSelect([frmSearch_ListLines], [AtomResults], GuiList([Items], [Add], strFoundWhere)))], [e1 = atom where text is founde2 = where text is found on atom (separated by ;)], [Search_AddToInListLines(model, [function: test; event: onentered])], 0, [Search.atm]);
+DefineFunction([Search_AddToMemoTracer], [Search], 2, 2, [do(  var([atmFound], vbAtom, p(1)),  var([strFound], vbString, p(2)),  var([strAtom], vbString),  var([valFound], vbValue),  strAtom := Concat([AtomName: ], name(atmFound), [; AtomID: ], string(AtomID(atmFound))),    GuiSelect([frmSearch_MemoTracer], [SearchResults], GuiList([Lines], [Add], strAtom)),    {**Show results in memo**}  valFound := SubstrCount(strFound, [;]),  GuiSelect(    [frmSearch_MemoTracer],     [SearchResults],     Repeat(      valFound,      GuiList([Lines], [Add], concat([  ], StrSeparate(strFound, [;], Count)))    )  ))], [e1 = atom where text is founde2 = where text is found on atom (separated by ;)], [Search_AddToMemoTracer(model, [function: test; event: onentered])], 0, [Search.atm]);
+DefineFunction([Search_DisplayAtomIn2Dmodel], [Search], 2, 3, [do(  var([atmShow], vbAtom),  var([valZoom], vbValue, p(2)),  var([valNotSetVisible], vbValue, p(3)),  atmShow := p(1),  if(    and(      AtomExists(atmShow, model),      not(atmShow = model),      or(        mod(GetLayerOptions(GetLayer(atmShow)), 2) = 1,        valNotSetVisible = 0      )    ),    Do(           {**create model layout if necessary**}      If(        or(          Not(IsmodelLayoutVisible),          not(AtomExists(atmShow, DispAtom))        ),        createmodelLayout      ),            {**Set layer to visible if allowed**}      if(        and(          valNotSetVisible = 0,          mod(GetLayerOptions(GetLayer(atmShow)), 2) <> 1        ),        SetLayerOptions(GetLayer(atmShow), GetLayerOptions(GetLayer(atmShow)) + LO_VISIBLE)      ),            animatom := atmShow,      scale := valZoom,                  {**Center atom**}      viewX := xAbsLoc(atmShow, DispAtom)       + xCenter(atmShow) * cos(RotationAs(atmShow)) - yCenter(atmShow) * sin(RotationAs(atmShow))       - xCenter(atmShow) * sin(RotationAc(atmShow)) - yCenter(atmShow) * sin(RotationAc(atmShow))      - 0.5 * ViewWidth,            viewY := yAbsLoc(atmShow, DispAtom)       + xCenter(atmShow) * sin(RotationAs(atmShow)) + yCenter(atmShow) * cos(RotationAs(atmShow))       + xCenter(atmShow) * sin(RotationAc(atmShow)) - yCenter(atmShow) * sin(RotationAc(atmShow))       - 0.5 * ViewHeight,           Activate(2D3D),      Restore(2D3D)    )  ))], [e1 = atom to showe2 = zoom factore3 (optional) = if <> 0, then do not set layer to visible if it is not visible], [Search_DisplayAtomIn2Dmodel(atombyName([ED], model), 15)], 0, [Search.atm]);
+DefineFunction([Search_DisplayAtomInTree], [Search], 1, 1, [do( if(  AtomExists(p(1), Main),  do(   var([valTreeForm], vbValue),   var([atmTree], vbAtom, p(1)),   valTreeForm := FindTreeForm(2), {**Check if main tree is open**}   if(    valTreeForm = -1,     Case(      WhichIsTrue(       AtomExists(atmTree, Library),       AtomExists(atmTree, Model)      ),      valTreeForm := FindTreeForm(0),   {**Check if library tree is open**}      valTreeForm := FindTreeForm(1)    {**Check if model tree is open**}     )    ),    if(     valTreeForm = -1, {**No active form exits: open new**}     KernelFnc([show atom editor])    ),    if(      AtomTreeFind(atmTree) = 0,      do(        AtomTreeRefresh,        AtomTreeFind(atmTree),        BringToFront(TreeForm)      ),      BringToFront(TreeForm)    )  ) ))], [Displays atom e1 in the treeview], [Search_DisplayAtomInTree(AnimAtom)], 0, [Search.atm]);
+DefineFunction([Search_AtomByName], [Search], 2, 4, [do(  PushAtomPointer(s),  var([strNameToSearch], vbString, p(1)),  var([atmFrom], vbAtom, p(2)),  var([strAtom], vbString),  var([atmUp], vbAtom),  var([strAtomName], vbString),    GuiDestroy([frmSearch_Atom]),  GuiRegister(PDir([Atoms\frmSearch_Atom.gui]), 1),  Guicreate([frmSearch_Atom], [frmSearch_Atom], 0),    if(    not(AtomExists(atmFrom, Main)),    return  ),  var([valTotalHits], vbValue, 0),  var([valDirection], vbValue, p(3)),    if(    valDirection <> 1,    valDirection := 2  ),    var([valMatchCase], vbValue, p(4)),  if(    valMatchCase <> 1,    do(      valMatchCase := 0,      strNameToSearch := Lowercase(strNameToSearch)    )  ),      case(    valDirection,        {**Up**}    ForAtomsBefore(atmFrom,      do(        Sets,        atmUp := s,        ForAtomTreeUnder(atmUp,          do(            Sets,            if(              valMatchCase,              strAtomName := Name(s),              strAtomName := Lowercase(Name(s))            ),            if(              StringPos(strNameToSearch, strAtomName) > 0,              do(                strAtom := Concat([AtomName: ], name(s), [; AtomID: ], string(AtomID(s))),                  GuiSelect([frmSearch_Atom], [SearchResults], GuiList([Items], [Add], strAtom)),                inc(valTotalHits)              )            )          )        )      ),      1    ),        {**Down**}    ForAtomsBehind(atmFrom,      do(        Sets,        atmUp := s,        ForAtomTreeUnder(atmUp,          do(            Sets,            if(              valMatchCase,              strAtomName := Name(s),              strAtomName := Lowercase(Name(s))            ),            if(              StringPos(strNameToSearch, strAtomName) > 0,              do(                strAtom := Concat([AtomName: ], name(s), [; AtomID: ], string(AtomID(s))),                  GuiSelect([frmSearch_Atom], [SearchResults], GuiList([Items], [Add], strAtom)),                inc(valTotalHits)              )            )          )        )      ),      1    )   ),        s := PopAtomPointer,    if(    valTotalHits > 0,    do(      GuiSelect([frmSearch_Atom], [SearchAtom], GuiSet([Text], p(1))),      GuiSelect([frmSearch_Atom], [TotalHits], GuiSet([Text], string(valTotalHits))),      GuiSelect([frmSearch_Atom], [SearchResults], GuiSet([ItemIndex], 1)),      GuiShow([frmSearch_Atom])    )  ),    valTotalHits)], [e1 = name(part) to search fore2 = atom from which to start searchinge3 (optional) = 1 search up; else search downe4 (optional) = 1 match case; else do not match caseReturns the total number of hits and if greater than zero opens a form with the results], [Search_AtomByName([ED], model, 1)], 0, [Search.atm]);
+DefineFunction([Search_AtomByCode], [Search], 2, 3, [do(
+  PushAtomPointer(s),
+  var([strCode], vbString, p(1)),
+  var([atmFrom], vbAtom, p(2)),
+  var([strAtom], vbString),
+  var([atmUp], vbAtom),
+  
+  GuiDestroy([frmSearch_Atom]),
+  GuiRegister(PDir([Atoms\frmSearch_Atom.gui]), 1),
+  Guicreate([frmSearch_Atom], [frmSearch_Atom], 0),
+  
+  if(
+    not(AtomExists(atmFrom, Main)),
+    return
+  ),
+  var([valTotalHits], vbValue, 0),
+  var([valDirection], vbValue, p(3)),
+  
+  if(
+    valDirection <> 1,
+    valDirection := 2
+  ),
+  
+  case(
+    valDirection,
+    
+    {**Up**}
+    ForAtomsBefore(atmFrom,
+      do(
+        Sets,
+        atmUp := s,
+        ForAtomTreeUnder(atmUp,
+          do(
+            Sets,
+            if(
+              ExecString(strCode),
+              do(
+                strAtom := Concat([AtomName: ], name(s), [; AtomID: ], string(AtomID(s))),  
+                GuiSelect([frmSearch_Atom], [SearchResults], GuiList([Items], [Add], strAtom)),
+                inc(valTotalHits)
+              )
+            )
+          )
+        )
+      ),
+      1
+    ),
+    
+    {**Down**}
+    ForAtomsBehind(atmFrom,
+      do(
+        Sets,
+        atmUp := s,
+        ForAtomTreeUnder(atmUp,
+          do(
+            Sets,
+            if(
+              ExecString(strCode),
+              do(
+                strAtom := Concat([AtomName: ], name(s), [; AtomID: ], string(AtomID(s))),  
+                GuiSelect([frmSearch_Atom], [SearchResults], GuiList([Items], [Add], strAtom)),
+                inc(valTotalHits)
+              )
+            )
+          )
+        )
+      ),
+      1
+    )
+  ),
+  
+    
+  s := PopAtomPointer,
+  
+  if(
+    valTotalHits > 0,
+    do(
+      GuiSelect([frmSearch_Atom], [SearchAtom], GuiSet([Text], strCode)),
+      GuiSelect([frmSearch_Atom], [TotalHits], GuiSet([Text], string(valTotalHits))),
+      GuiSelect([frmSearch_Atom], [SearchResults], GuiSet([ItemIndex], 1)),
+      GuiShow([frmSearch_Atom])
+    )
+  ),
+  
+  valTotalHits
+)
+], [e1 = 4D Script code to search for
+e2 = atom from which to search
+e3 (optional) = 1 search up; else search down
+Returns the total number of hits and if greater than zero it opens a gui with the results], [Search_AtomByCode([att([Capacity], s) = 10], model)], 0, [Search.atm]);
+DefineFunction([Search_OpenForm], [Search], 0, 0, [do(  GuiDestroy([frmSearch]),  GuiRegister(PDir([Atoms\frmSearch.gui]), 1),  Guicreate([frmSearch], [frmSearch], 0, AtomByName([Search], Library), 0, 1))], [Opens the search form], [Search_OpenSearchForm], 0, [Search.atm]);
+DefineFunction([Search_DisplayAtomMotherInTree], [Search], 1, 1, [Search_DisplayAtomInTree(M(p(1)))], [e1 = atom of which to display the mother atom in the treeview], [Search_DisplayAtomMotherInTree(treeatom)], 0, [Search.atm]);
+DefineFunction([Search_ResetSettings], [Search], 0, 0, [do(
+  SetTable(0, 0, atmMotherSearch),
+  att([2DZoomFactor], atmMotherSearch) := 15,
+  Att([ActivePage], atmMotherSearch) := 1,
+  Att([DestroyForm], atmMotherSearch) := 0,
+  Att([FindAtomBy], atmMotherSearch) := 2,
+  Att([LastSearchByCode], atmMotherSearch) := 0,
+  Att([NrSearchID], atmMotherSearch) := 0,
+  Att([NrSearchName], atmMotherSearch) := 0,
+  Att([NrSearchReference], atmMotherSearch) := 0, 
+  Att([NrSearchString], atmMotherSearch) := 0,
+  Att([SearchIn], atmMotherSearch) := 7,
+  Att([SearchOption], atmMotherSearch) := 0,
+  TextAtt([SearchUnder], atmMotherSearch) := [Main: 1],
+  Att([ShowResults], atmMotherSearch) := 1,
+  Att([ShowResultsIn], atmMotherSearch) := 2
+)
+], [Resets the search settings], [Search_ResetSettings], 0, [Search.atm]);
+Set(Icon(a), 
+	RegisterIcon(pDir([media\images\default.jpg]), [default.jpg]));
+SetMaterial(
+	RegisterMaterial([Default], 8421504, 8421504, 3289650, 0, 0.100000001490116, 0, false, false, 1, 0), 1, a);
+Set(Version(a), 8);
+SetTreeIcon(pDir([Media\Icons\Tools.ico]));
+Set(DdbRec, [>t-nocreate:1.]);
+int001(22);
+SetSize(1, 1, 1);
+LockPosition(false);
+LockSize(false);
+DisableIconRotation(false);
+SetProductCode([]);
+CreateAttributes(14);
+SetAttributeName(r(1), [2DZoomFactor]);
+SetAttributeName(r(2), [ActivePage]);
+SetAttributeName(r(3), [DestroyForm]);
+SetAttributeName(r(4), [FindAtomBy]);
+SetAttributeName(r(5), [LastSearchByCode]);
+SetAttributeName(r(6), [NrSearchID]);
+SetAttributeName(r(7), [NrSearchName]);
+SetAttributeName(r(8), [NrSearchReference]);
+SetAttributeName(r(9), [NrSearchString]);
+SetAttributeName(r(10), [SearchIn]);
+SetAttributeName(r(11), [SearchOption]);
+SetAttributeName(r(12), [SearchUnder]);
+SetAttributeName(r(13), [ShowResults]);
+SetAttributeName(r(14), [ShowResultsIn]);
+SetAtt(r(1), 15);
+SetAtt(r(2), 2);
+SetAtt(r(4), 4);
+SetAtt(r(9), 7);
+SetAtt(r(10), 7);
+SetTextAtt(r(12), [Main: 1]);
+SetAtt(r(13), 1);
+SetAtt(r(14), 2);
+int024;
+Set(OnCreation, [do(
+  {**Clear history**}
+  Search_ResetSettings
+)
+]);
+SetStatus(0);
+int018;
+int007;

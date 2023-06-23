@@ -1,0 +1,171 @@
+EDControl(EditForm:
+  BorderIcons = set(SystemMenu),
+  BorderStyle = Single,
+  Caption = str('Empirical Distribution'),
+  Height = 379,
+  Left = 1600,
+  Name = str('EmpiricalDistribution'),
+  Position = Default,
+  ShowHint = True,
+  Top = 300,
+  Visible = True,
+  Width = 396,
+  Controls(
+    EDControl(MultiPage:
+      ActivePage = 1,
+      Align = Client,
+      Anchors = set(Left,Top,Right,Bottom),
+      Height = 339,
+      Left = 0,
+      Name = str('MultiPage1'),
+      TabOrder = 1,
+      Top = 0,
+      Width = 396,
+      Controls(
+        EDControl(SinglePage:
+          Caption = str('General'),
+          Name = str('SinglePage1'),
+          PageIndex = 1,
+          Controls(
+            EDControl(GroupBox:
+              Caption = str(''),
+              Height = 64,
+              Left = 8,
+              Name = str('GroupBox1'),
+              TabOrder = 1,
+              Top = 8,
+              Width = 370,
+              Controls(
+                EDControl(Edit:
+                  Height = 21,
+                  Left = 132,
+                  Name = str('ebAtomName'),
+                  TabOrder = 1,
+                  Top = 26,
+                  Width = 225),
+                EDControl(Label:
+                  Caption = str('Atom name:'),
+                  Color = -16777208,
+                  Height = 13,
+                  Left = 12,
+                  Name = str('StaticText1'),
+                  Top = 32,
+                  Width = 56))),
+            EDControl(GroupBox:
+              Caption = str('Settings'),
+              Height = 128,
+              Left = 8,
+              Name = str('GroupBox2'),
+              TabOrder = 2,
+              Top = 88,
+              Width = 370,
+              Controls(
+                EDControl(Edit:
+                  Height = 21,
+                  Left = 132,
+                  Name = str('ebDistributionName'),
+                  TabOrder = 1,
+                  Top = 26,
+                  Width = 225),
+                EDControl(Label:
+                  Caption = str('Number of classes:'),
+                  Color = -16777208,
+                  Height = 13,
+                  Left = 12,
+                  Name = str('StaticText12'),
+                  Top = 64,
+                  Width = 90),
+                EDControl(Label:
+                  Caption = str('Return a string:'),
+                  Color = -16777208,
+                  Height = 13,
+                  Left = 12,
+                  Name = str('StaticText122'),
+                  Top = 96,
+                  Width = 72),
+                EDControl(Edit:
+                  Height = 21,
+                  Left = 132,
+                  Name = str('ebNumberOfClasses'),
+                  TabOrder = 2,
+                  Top = 58,
+                  Width = 100),
+                EDControl(CheckBox:
+                  Caption = str(''),
+                  Left = 132,
+                  Name = str('ReturnAString'),
+                  TabOrder = 3,
+                  Top = 92),
+                EDControl(Label:
+                  Caption = str('Distribution name:'),
+                  Color = -16777208,
+                  Height = 13,
+                  Left = 12,
+                  Name = str('StaticText123'),
+                  Top = 32,
+                  Width = 84))),
+            EDControl(GroupBox:
+              Caption = str('Miscellaneous'),
+              Height = 64,
+              Left = 8,
+              Name = str('GroupBox22'),
+              TabOrder = 3,
+              Top = 232,
+              Width = 370,
+              Controls(
+                EDControl(Button:
+                  Caption = str('&Edit classes'),
+                  Left = 12,
+                  Name = str('btnEditTable'),
+                  TabOrder = 1,
+                  Top = 24,
+                  Events(
+                    Click = str('edittable(GuiAtom)'#13))))))))),
+    EDControl(Panel:
+      Align = Bottom,
+      Anchors = set(Left,Right,Bottom),
+      BevelOuter = None,
+      Caption = str(''),
+      Height = 40,
+      Left = 0,
+      Name = str('Panel1'),
+      TabOrder = 2,
+      Top = 339,
+      Width = 396,
+      Controls(
+        EDControl(Button:
+          Caption = str('&Apply'),
+          Left = 312,
+          Name = str('btnApply'),
+          TabOrder = 4,
+          Top = 8,
+          Events(
+            Click = str('do('#13' { Before applying check out if the inserted name can be used (is not already in use... ) }'#13' if('#13'  or('#13'   and('#13'    functionexists(GuiControl([ebDistributionName], GuiGet([Text]))) = True,'#13'    comparetext(GuiControl([ebDistributionName], GuiGet([Text])), TextAtt([oldname], GuiAtom)) = True'#13'   ),'#13'   comparetext(GuiControl([ebDistributionName], GuiGet([Text])),[untitled]) = True'#13'  ),'#13'  do('#13'   msg([The name you defined for the distribution is already in use. Define another name.], 1),'#13'   return(-1)'#13'  )'#13' ),'#13#13' if('#13'  not(comparetext(TextAtt([oldname], GuiAtom),[untitled])),'#13'  invalidatefunction(TextAtt([oldname], GuiAtom))'#13' ),'#13#13' {Save TextField}'#13' '#13' name(GuiAtom) := GuiControl([ebAtomName], GuiGet([Text])),'#13' '#13' TextAtt([empiricalname],GuiAtom) := GuiControl([ebDistributionName],GuiGet([Text])),'#13' '#13' Att([nrrecords],GuiAtom) := Value(GuiControl([ebNumberOfClasses], GuiGet([Text]))),'#13#13' {Save CheckBox}'#13' '#13' Att([textflag],GuiAtom) := GuiControl([ReturnAString],GuiGet([Checked])),'#13' '#13' '#13' { Adjust some other things...}'#13#13' { Set the tabel to the size the user defined. }'#13' nrows(GuiAtom) := Att([NrRecords], GuiAtom),'#13' '#13' if('#13'  Att([textflag],GuiAtom) = True,'#13'  cell(0,2,GuiAtom) := [String],'#13'  cell(0,2,GuiAtom) := [Value]'#13' ),'#13#13' { Register a function with the name the user inserted. }'#13' registerfunction('#13'  TextAtt([empiricalname], GuiAtom),'#13'  [Stochastic],'#13'  0,'#13'  0,'#13'  concat('#13'   [do('#13'    var([atmDistribution], vbAtom, 0),'#13'    atmDistribution := vtp(], string(ptv(GuiAtom)),[),'#13'    Att([randomnr], atmDistribution) := random(100),'#13'    Att([flag], atmDistribution) := 0,'#13'    repeat('#13'     nrows(atmDistribution),'#13'     if(=(att([flag], atmDistribution),0),'#13'      if(<(att([randomnr], atmDistribution),cell(count,1, atmDistribution)),'#13'       do(setatt([flag],1, atmDistribution),if(att([textflag], atmDistribution),settextatt([value],cell(count,2,2, atmDistribution)),setatt([value],cell(count,2, atmDistribution))))'#13'      )'#13'     )'#13'    ),'#13'    att([value], atmDistribution)'#13'   )]'#13'  ),'#13'  [Returns a random sample from the empirical distribution table], textatt([empiricalname],GuiAtom),true'#13' ),'#13' '#13' Set(oninit(GuiAtom),[lateinit([Att([RegFunc])])])'#13')'#13))),
+        EDControl(Button:
+          Cancel = True,
+          Caption = str('&Cancel'),
+          Left = 230,
+          Name = str('btnCancel'),
+          TabOrder = 3,
+          Top = 8,
+          Events(
+            Click = str('GuiDestroy '#13))),
+        EDControl(Button:
+          Caption = str('&Ok'),
+          Default = True,
+          Left = 144,
+          Name = str('btnOk'),
+          TabOrder = 2,
+          Top = 8,
+          Events(
+            Click = str('Do('#13' GuiControl([btnApply]),'#13' GuiRun([Click]),'#13' GuiDestroy,'#13' GuiUnregister([Empirical Distribution])'#13')'#13))),
+        EDControl(Button:
+          Caption = str('&Help'),
+          Left = 8,
+          Name = str('btnHelp'),
+          TabOrder = 1,
+          Top = 8,
+          Events(
+            Click = str('Help(PDir([HELP\ED Help.hlp]), [Empirical Distribution])'#13)))))),
+  Events(
+    Show = str('do('#13'  {Set Caption}'#13'  if('#13'   atomexists(m(GuiAtom)),'#13'   GuiControl([EmpiricalDistribution],GuiSet([Caption],concat(name(m(GuiAtom)), [ - ], name(GuiAtom)))),'#13'   GuiControl([EmpiricalDistribution],GuiSet([Caption],concat([Baseclass - ], name(GuiAtom))))'#13'  ),'#13' '#13'  {Set ActivePage}'#13'     '#13'  GuiControl([MultiPage1]),GuiSet([ActivePage],1),'#13'      '#13'  {Set TextField}'#13'  '#13'  GuiControl([ebAtomName],GuiSet([Text], name(GuiAtom))),'#13#13'  GuiControl([ebDistributionName],GuiSet([Text], TextAtt([empiricalname],GuiAtom))),'#13'  '#13'  GuiControl([ebNumberOfClasses],GuiSet([Text], TextAtt([nrrecords],GuiAtom))),'#13#13'  {Set CheckBox}'#13'  '#13'  GuiControl([ReturnAString],GuiSet([Checked], Att([textflag],GuiAtom))),    '#13#13' {Position the form}'#13' Gui_PositionGuiAroundAtom(GuiControl([EmpiricalDistribution])),'#13#13' GuiRun([Update])'#13')'#13)))

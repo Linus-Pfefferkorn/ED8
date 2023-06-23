@@ -1,0 +1,157 @@
+
+
+{Preregister functions}
+
+PreregisterFunction([GroundStorage__SearchForAFreeStoragePlace], 1, 2);
+PreregisterFunction([GroundStorage_ResetTable], 2, 2);
+PreregisterFunction([GroundStorage__Get2DView], 1, 1);
+PreregisterFunction([GroundStorage_DrawDeactivatedStoragePlaces], 3, 3);
+
+
+{Atom: Ground Storage}
+
+sets;
+BaseClass;
+CreateAtom(a, s, [], 1, false);
+Set(OnInit, [lateinit( [do(  registereditfield([warehouserows],[Nr of rows],[att(1)],[setatt(1,&)],fieldvalue(1,100,0),[Number of rows]),  registereditfield([warehousecolumns],[Nr of columns],[att(2)],[do(setatt(2,&),settable(att(1),att(2)))],fieldvalue(1,200,0),[Number of columns]),  registereditfield([attputrow],[Put in row],[textatt(7)],[setexpratt(7,&)],fieldlistboxsyntax(4,[duniform(1,nrows(c))/label([?],i)/if(=(?,?),?,?)/cell(?,?,?)]),[Expression to determine warehouse row]),  registereditfield([attputcol],[Put in column],[textatt(8)],[setexpratt(8,&)],fieldlistboxsyntax(4,[duniform(1,ncols(c))/label([?],i)/if(=(?,?),?,?)/cell(?,?,?)]),[Expression to warehouse column]),  vricontransparent(icon(c),1) )])]);
+int023([Ground Storage], 0, 240);
+DefineFunction([GroundStorage__SearchForAFreeStoragePlace], [Various], 1, 2, [do( var([atmGroundStorage], vbAtom), var([atmProduct], vbAtom),  var([valStartRow], vbValue), var([valStartCol], vbValue), var([valTempRadius], vbValue, 0), var([valvalTempRow], vbValue, 0), var([valTempRow], vbValue), var([valTempLine], vbValue), var([valTempCol], vbValue), var([valTempdir], vbValue),  var([bolFound], vbValue), var([bolFoundPlace], vbValue, false),  atmGroundStorage := p(1), atmProduct := p(2),  { if the product exists, then assume that the function was called from outside of the ground storage atom and use the labels set there } if(  AtomExists(atmProduct),  do(   valStartRow := Label([Row], atmProduct),   valStartCol := Label([Column], atmProduct)  ),  do(   valStartRow := Att([currow], atmGroundStorage),   valStartCol := Att([curcol], atmGroundStorage)  ) ),  { We can skip the function if the storage place is free. We need this check if the function is called from 'outside' of the ground storage } if(  Cell(valStartRow, valStartCol, atmGroundStorage) <> 0,  do(      { search in rising circles around starting storage place }   LoopUntil(    bolFoundPlace = true,      do(     Inc(valTempRadius),     Inc(valTempLine, 2),          valTempRow := valStartRow - valTempRadius,     valTempCol := valStartCol - valTempRadius,     valTempDir := 0,       LoopUntil(      bolFoundPlace = true,        do(       Inc(valTempDir),              LoopUntil(        bolFoundPlace = true,                do(         { next cell of circle (4 times changing direction) }         Case(          valTempDir,          Inc(valTempRow, 1),          Inc(valTempCol, 1),          Inc(valTempRow, -1),          Inc(valTempCol, -1)                    ),                  if(          { temporary storage place is within borders and empty }          and(           valTempRow > 0,           valTempRow <= nRows(atmGroundStorage),                      valTempCol > 0,           valTempCol <= nCols(atmGroundStorage),                      Cell(valTempRow, valTempCol, atmGroundStorage) = 0          ),            { assign storage place }          do(           bolFoundPlace := true,                      if(            AtomExists(atmProduct) > 0,            do(             Label([Row], atmProduct) := valTempRow,             Label([Column], atmProduct) := valTempCol            ),            do(             Att([currow], atmGroundStorage) := valTempRow,             Att([curcol], atmGroundStorage) := valTempCol            )           ),                      return(1)          )         )        ),          { LoopUntil 3: rising circle results in rising number of cells in one line }        valTempLine               )      ),      { LoopUntil 2: 4 lines of search around circle }      4           )    ),    { LoopUntil 1: limited to rack dimensions }    Max(     nRows(atmGroundStorage),     nCols(atmGroundStorage)    )       ),      if(    bolFoundPlace = false,    do(     CloseAllIC(atmGroundStorage),     return(0)    )   )  ) ))], [This function searches for a free storage place in circles around the desired storage place. If a storage place could be found, it is stored in the attributes currow and curcol of the ground storage. If nothing is free, the model will stop.The second parameter is needed when the function is called from outside of the Ground Storage atom.p(1) as GroundStorageoptional parameter:p(2) as Product], [GroundStorage__SearchForAFreeStoragePlace(AtomByName([Ground Storage1], Model), i)], 0, [Conrad Bisanz]);
+DefineFunction([GroundStorage_ResetTable], [Various], 2, 2, [do( var([valCurRow], vbValue, 1), var([valCurCol], vbValue, 1),  var([valDoNotDelete], vbValue, p(1)), var([atmGroundStorage], vbAtom, p(2)),  Label([OccCells], atmGroundStorage) := 0,  Repeat(  Att([rows], atmGroundStorage) * Att([columns], atmGroundStorage),  Do(   if(    not(Cell(valCurRow, valCurCol, atmGroundStorage) = valDoNotDelete),    Cell(valCurRow, valCurCol, atmGroundStorage) := 0,    Label([OccCells], atmGroundStorage) := Label([OccCells], atmGroundStorage) + 1   ),      if(    valCurRow < Att([rows], atmGroundStorage),    inc(valCurRow),    do(     valCurRow := 1,     if(      valCurCol < Att([columns], atmGroundStorage),      Inc(valCurCol)     )    )   )  ) ))], [go through the table and if the cellvalue isn't valDoNotDelete then reset itp(1) valDoNotDeletep(2) atmGroundStorage], [Enter Syntax Example], 0, [Conrad Bisanz]);
+DefineFunction([GroundStorage__Get2DView], [Various], 1, 1, [do( Case(  p(1),  [0|1. Standard view],  [1|2. Grid view] ))], [p(1) as counter.], [Enter Syntax Example], 0, [Conrad Bisanz]);
+DefineFunction([GroundStorage_DrawDeactivatedStoragePlaces], [Various], 3, 3, [do( var([valCurRow], vbValue, 1), var([valCurCol], vbValue, 1),  var([valDoNotDelete], vbValue, p(1)), var([atmGroundStorage], vbAtom, p(2)), var([val2D3D], vbValue, p(3)),  Repeat(  Att([rows], atmGroundStorage) * Att([columns], atmGroundStorage),  Do(   if(    Cell(valCurRow, valCurCol, atmGroundStorage) = valDoNotDelete,    do(     if(      val2D3D,      do(       { draw 2D }       DrawRectangle(        valCurCol - 1,         valCurRow - 1,         valCurCol,         valCurRow,         ColorRed,         ColorRed,         0       )      ),      do(       di3DBox(        valCurCol - 1,        valCurRow - 1,        0,        1,        1,        0.1,        ColorRed       )      )     )    )   ),      if(    valCurRow < Att([rows], atmGroundStorage),    inc(valCurRow),    do(     valCurRow := 1,     if(      valCurCol < Att([columns], atmGroundStorage),      Inc(valCurCol)     )    )   )  ) ))], [p(1) as valDoNotDelete,p(2) as atmGroundStorage,p(3) as 2D/3D], [Enter Syntax Example], 0, [Conrad Bisanz]);
+Set(Icon(a), 
+	RegisterIcon(IconsDir([bmp\buffers\warehouse.bmp]), [warehouse]));
+SetMaterial(
+	RegisterMaterial([Default], 8421504, 8421504, 3289650, 0, 0.100000001490116, 0, false, false, 1, 0), 1, a);
+AddTexture(
+	RegisterTexture(IconsDir([Bmp\Buffers\warehouse.bmp]), [warehouse.bmp], 128, 64, 255, 255, 0, 0, 0, 0), a);
+Set(Version(a), 1);
+SetTreeIcon(pDir([Media\Icons\GroundStorage.ico]));
+Set(Info, [Ground Storage for storing products
+
+General
+------------
+Atoms that enter are stored at a specific location in the Ground Storage. If the 
+Ground Storage is full its input is closed. Each cell can contain one atom. 
+If the Ground Storage has outputchannels, products are sent out. You can specify 
+which product to send out.
+
+The user can specify a trigger on entry/exit.
+
+Channels:
+--------------
+N inputchannels, N outputchannels
+
+Rightclick:
+  Edit sendto, product to send, input strategy, queue discipline, rows, 
+  columns, storagerule, triggers on entry/exit
+
+Last Revision:
+---------------------
+September 02, 2008
+
+]);
+SetChannels(1, 1);
+SetChannelRanges(1, 255, 0, 255);
+int001(220);
+SetSize(20, 10, 0);
+LockPosition(false);
+LockSize(false);
+DisableIconRotation(false);
+SetProductCode([]);
+CreateAttributes(17);
+SetAttributeName(r(1), [rows]);
+SetAttributeName(r(2), [columns]);
+SetAttributeName(r(3), [currow]);
+SetAttributeName(r(4), [curcol]);
+SetAttributeName(r(5), [entrytrigger]);
+SetAttributeName(r(6), [exittrigger]);
+SetAttributeName(r(7), [putinrow]);
+SetAttributeName(r(8), [putincol]);
+SetAttributeName(r(9), [instrategy]);
+SetAttributeName(r(10), [queuediscipline]);
+SetAttributeName(r(11), [sendto]);
+SetAttributeName(r(12), [prodtosend]);
+SetAttributeName(r(13), [temp]);
+SetAttributeName(r(14), [showcontents]);
+SetAttributeName(r(15), [SizeToRowsCols]);
+SetAttributeName(r(16), [2DView]);
+SetAttributeName(r(17), [Detection]);
+SetAtt(r(1), 10);
+SetAtt(r(2), 20);
+SetExprAtt(r(7), [label([row],i)]);
+SetExprAtt(r(8), [label([column],i)]);
+SetExprAtt(r(9), [{.openallic(c)|Any inputchannel .}openallic(c)]);
+SetExprAtt(r(10), [{.content(c)|Fifo (First In First Out) .}content(c)]);
+SetExprAtt(r(11), [1]);
+SetExprAtt(r(12), [first(c)]);
+SetAtt(r(14), 1);
+SetAtt(r(15), 1);
+SetAtt(r(16), 1);
+SetAtt(r(17), 1);
+int024;
+SetTable(10, 20);
+int015(0, 0, [ 
+1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+]);
+int015(1, 0, [1
+]);
+int015(2, 0, [2
+]);
+int015(3, 0, [3
+]);
+int015(4, 0, [4
+]);
+int015(5, 0, [5
+]);
+int015(6, 0, [6
+]);
+int015(7, 0, [7
+]);
+int015(8, 0, [8
+]);
+int015(9, 0, [9
+]);
+int015(10, 0, [10
+]);
+int015(11, 0, [11
+]);
+int015(12, 0, [12
+]);
+int015(13, 0, [13
+]);
+int015(14, 0, [14
+]);
+int015(15, 0, [15
+]);
+int015(16, 0, [16
+]);
+int015(17, 0, [17
+]);
+int015(18, 0, [18
+]);
+int015(19, 0, [19
+]);
+int015(20, 0, [20
+]);
+Set(OnEvent, [Case( EventCode,  { If there are products in the ground storage and there are outputchannels present, open output. } if(  and(   Content(c) > 0,   NrOC(c) > 0  ),  OpenAllOC(c) ),  Att([instrategy], c))]);
+Set(OnEntered, [do(  SetRank(att([queuediscipline], c), i),  { Make sure that we don't start with empty attributes } if(  and(   Att([putinrow], c) > 0,   Att([putincol], c) > 0  ),  do(   SetAtt([currow], Att([putinrow], c), c),   SetAtt([curcol], Att([putincol], c), c)  ),  do(   SetAtt([currow], 1, c),   SetAtt([curcol], 1, c)     ) ),  { If the storage place is not empty, search for another } if(  Cell(Att([currow], c), Att([curcol], c), c) <> 0,  do(   if(    Att([Detection], c) = 1,    GroundStorage__SearchForAFreeStoragePlace(c),    do(     LoopUntil(      Cell(Att([currow], c), Att([curcol], c), c) = 0,            if(       Att([currow], c) < Att([rows], c),       SetAtt([currow], Att([currow], c) + 1, c),              do(        SetAtt([currow], 1, c),                if(         Att([curcol], c) < Att([columns], c),         SetAtt([curcol], Att([curcol], c) + 1, c),         SetAtt([curcol], 1, c)        )       )      ),      Att([rows], c) * Att([columns], c)     )    )   )  ) ),  { Mark the storage place as occupied } SetCell(Att([currow], c), Att([curcol], c), AtomID(i), c),  SetLabel([t108-whsrow], att([currow], c), i),  SetLabel([t108-whscol], att([curcol], c), i),  { Set location of the product } SetLoc(  ( Att([curcol], c) - 1 ) * xSize(c) / att([columns], c),  ( Att([currow], c) - 1 ) * ySize(c) / att([rows], c),  0,  i ),  { If the ground storage is full, then close the input } if(  Content(c) = Att([rows], c) * Att([columns], c) - Label([OccCells], c),  CloseAllIC(c) ),  att([entrytrigger], c), createevent(0, c, 1))]);
+Set(OnExited, [do( SetCell(Label([t108-whsrow], i), Label([t108-whscol], i), 0, c), SetLabel([t108-whsrow], 0, i),  SetLabel([t108-whscol], 0, i), CloseAllOC(c),  if(  Content(c) > 0,  do(   SetStatus(15, c),   CreateEvent(0, c, 1)  ) ), att([exittrigger], c), CreateEvent(0, c, 2))]);
+Set(OnCreation, [AutoConnect]);
+Set(OnReset, [do( CloseAllOC(c), SetAtt([currow], 1, c), SetAtt([curcol], 1, c), GroundStorage_ResetTable(-1, c))]);
+Set(OnUser, [Do( { Delete any current instances of this form.}  GuiDestroy([frmGroundStorage]), { Register the GUI-form for this atom.} GuiRegister(PDir([\Atoms\Ground Storage.gui]), 1), { Show the GUI-form.} GuiCreate([frmGroundStorage], [frmGroundStorage], 0, c, 0, 1))]);
+Set(OnOcReady, [if( Content(c) > 0, do(  SetRank(1, Att([prodtosend], c)),  MoveRequest(First(c), Att([sendto], c)) ))]);
+Set(On2DDraw, [if( Att([2DView], c) = 1,  { Draw grid } do(  Repeat(   nCols(c) + 1,   DrawLine(    xSize(c) / Att([columns], c) * Count - xSize(c) / Att([columns], c),    ySize(c),    xSize(c) / Att([columns], c) * Count - xSize(c) / Att([columns], c),    0,    Color,    1   )  ),    Repeat(   nRows(c) + 1,   DrawLine(    xSize(c),    ySize(c) / att([rows], c) * Count - ySize(c) / att([rows], c),    0,    ySize(c) / att([rows], c) * Count - ySize(c) / att([rows], c),    Color,    1   )  ),    if(   att(14,1),   foratomlayerunder(    c,    dibmp(     xLoc(a),     yloc(a),     Icon(a),     1,     5,     1,     1    )   )  ),  GroundStorage_DrawDeactivatedStoragePlaces(-1, c, 1) ),  { Draw standard representation } do(  StandardDisplay(Name(c), String(Content(c))) ))]);
+Set(On3DDraw, [do( Repeat(  Att([columns]) + 1,  do(   di3DBox(    xSize(c) / Att([columns], c) * Count - xSize(c) / Att([columns], c), { xloc }    0,              { yloc }    0,              { zloc }    0.03,           { length }     ySize(c),       { width }    -0.01,          { height }    Color(c)   )  ) ),  repeat(  Att([rows]) + 1,  di3DBox(   0,   ySize(c) / Att([rows], c) * Count - ySize(c) / Att([rows], c),   0,   xSize(c),   0,   -0.03,    Color(c),   0,   0  ) ), GroundStorage_DrawDeactivatedStoragePlaces(-1, c, 0))]);
+SetStatus(0);
+int018;
+int007;

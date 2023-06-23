@@ -1,0 +1,177 @@
+
+
+{Preregister functions}
+
+PreregisterFunction([History_ListAllAtomsWithHistoryTurnedOn], 1, 1);
+PreregisterFunction([TimeForStatus], 4, 4);
+PreregisterFunction([MaxContent], 3, 3);
+PreregisterFunction([MaxAge], 1, 1);
+PreregisterFunction([MinAge], 1, 1);
+PreregisterFunction([AvgAge], 1, 1);
+
+
+{Atom: History}
+
+sets;
+BaseClass;
+createAtom(a, s, [], 1, false);
+Set(OnInit, [Do(
+ If(Not(MenuExists([&Simulate])),  AddMenu([&Simulate],[],[])),
+ AddMenu([&History], [&Simulate], Concat([ExecOnUser(vtp(], String(ptv(c)), [))]))
+)
+]);
+int023([History], 0, 0);
+DefineFunction([History_ListAllAtomsWithHistoryTurnedOn], [History], 1, 1, [do(
+ Guicontrol(p(1), GuiList([Items], [Clear])),
+ ForAtomTreeUnder(
+  model,
+  if(
+   AtomHistory(a) = true,
+   Guicontrol(p(1), GuiList([Items], [Add], concat(name(a), [(atomid = ], String(AtomID(a)), [)])))
+  )
+ )
+)
+], [p(1) as Listbox. The GuiControl where the results are displayed in.
+
+Result: none. Displays the atoms that have their history turned on.
+], [Enter Syntax Example], 0, [History.atm]);
+DefineFunction([TimeForStatus], [Atom Status], 4, 4, [do(
+ sddb([t-ref],ptv(p(1)),main),
+ if(=(ddb([t-ref],main),0),
+  msg([Wrong atom reference]),
+  if(
+   not(generalhistory),
+   msg(concat([General history is not on],cr,[It can be switched on in the run control],cr,[You must rerun to be able to view graphs],cr,[Notice that you must also switch on the history of the atom you want to study])),
+   if(not(atomhistory(vtp(ddb([t-ref],main)))),
+    msg(concat([Atom history is not on],cr,[It can be switched on with the Simulate | History menu],cr,[You must rerun to be able to view results])),
+    do(
+     analysehistory(
+      workdir([ed.his]),
+      atomid(vtp(ddb([t-ref],main))),
+      1,
+      p(3),
+      p(4),
+      0,
+      sddb([v1],hstatusfreq(+(p(2),1)),vtp(ddb([t-ref],main)))
+     ),
+     ddb([v1],vtp(ddb([t-ref],main)))
+    )
+   )
+  )
+ )
+)
+], [Returns the time in seconds that atom e1 had a status of e2 during the time period from e3 to e4 absolute seconds. (1=idle, 2=busy, 3=down, 4=waiting, 5=blocked) Refer to "statuslist" atom for complete list of status values. NOTE: this will only work correctly when history is stored in the ed.his file for atom e1.], [TimeForStatus(AnimAtom, 3, 0, Time)], 0, [History.atm]);
+DefineFunction([MaxContent], [Atom Status], 3, 3, [do(
+ sddb([t-ref],ptv(p(1)),main),
+ if(
+  =(ddb([t-ref],main),0),
+  msg([Wrong atom reference]),
+  if(
+   not(generalhistory),
+   msg(concat([General history is not on],cr,[It can be switched on in the run control],cr,[You must rerun to be able to view graphs],cr,[Notice that you must also switch on the history of the atom you want to study])),
+   if(not(atomhistory(vtp(ddb([t-ref],main)))),
+    msg(concat([Atom history is not on],cr,[It can be switched on with the Simulate | History menu],cr,[You must rerun to be able to view results])),
+    do(
+     analysehistory(
+      workdir([ed.his]),
+      atomid(vtp(ddb([t-ref],main))),
+      2,
+      p(2),
+      p(3),
+      0,
+      sddb([v1],-(hqueuecount,1),vtp(ddb([t-ref],main)))
+     ),
+     ddb([v1],vtp(ddb([t-ref],main)))
+    )
+   )
+  )
+ )
+)
+], [Returns the maximum number of products that were queued at one time in atom e1 during the time period from e2 to e3 absolute seconds. NOTE: this will only work correctly when history is stored in the ed.his file for atom e1.], [MaxContent(AnimAtom, 0, Time)], 0, [History.atm]);
+DefineFunction([MaxAge], [Atom Status], 1, 1, [do(
+ sddb([v1],ptv(p(1)),main),
+ if(=(ddb([v1],main),0),
+  msg([Wrong atom reference]),
+  maximum(
+   content(vtp(ddb([v1],main))),
+   age(rank(count,vtp(ddb([v1],main))))
+  )
+ )
+)
+], [Returns the maximum age (time from creation) of atoms currently contained in atom e1], [MaxAge(AnimAtom)], 0, [History.atm]);
+DefineFunction([MinAge], [Atom Status], 1, 1, [do(
+ sddb([v1],ptv(p(1)),main),
+ if(=(ddb([v1],main),0),
+  msg([Wrong atom reference]),
+  minimum(
+   content(vtp(ddb([v1],main))),
+   age(rank(count,vtp(ddb([v1],main))))
+  )
+ )
+)
+], [Returns the minimum age (time from creation) of atoms currently contained in atom e1], [MinAge(AnimAtom)], 0, [History.atm]);
+DefineFunction([AvgAge], [Atom Status], 1, 1, [do(
+ sddb([v1],ptv(p(1)),main),
+ if(
+  =(ddb([v1],main),0),
+  msg([Wrong atom reference]),
+  mean(
+   content(vtp(ddb([v1],main))),
+   age(rank(count,vtp(ddb([v1],main))))
+  )
+ )
+)
+], [Returns the average age (time from creation) of all atoms currently contained in atom e1], [AvgAge(AnimAtom)], 0, [History.atm]);
+Set(Icon(a), 
+	RegisterIcon(pDir([media\images\default.jpg]), [default.jpg]));
+SetMaterial(
+	RegisterMaterial([Default], 8421504, 8421504, 3289650, 0, 0.100000001490116, 0, false, false, 1, 0), 1, a);
+Set(Version(a), 7.3);
+SetTreeIcon(pDir([Media\Icons\Tools.ico]));
+Set(Info, [Controls which atom's history is kept.
+
+General
+------------
+When this atom is in the library, it automatically creates a 'History' menu 
+option under the 'Various' menu. You dont need to drag this atom in your 
+model.
+
+When you select the menu option, a dialog appears in which you can control 
+which atoms should write their history data to file during running. A number 
+of results (like predefined graphs) can only be viewed when an atom's 
+history is switched on.
+
+Last Revision:
+---------------------
+February, 2008
+]);
+Set(DdbRec, [>t-nocreate:1.>t-alloworganize:1.]);
+int001(15);
+SetSize(1, 1, 1);
+LockPosition(false);
+LockSize(false);
+DisableIconRotation(false);
+SetProductCode([]);
+int024;
+Set(OnDestruction, [{ Check if it makes any sense to display the History menu }
+{ Without the atom loaded the function are not registered }
+
+If(
+ Not(AtomExists(m(c))),
+ DeleteMenu([&History])
+)
+]);
+Set(OnUser, [Do(
+ { Delete any current instances of this form.} 
+ GuiDestroy([History]),
+
+ { Register the GUI-form for this atom.}
+ GuiRegister(PDir([\Atoms\History.gui]), 1),
+
+ { Show the GUI-form.}
+ Guicreate([History], [History], 0, c, 0, 1)
+)
+]);
+SetStatus(0);
+int018;
+int007;

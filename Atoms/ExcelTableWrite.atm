@@ -1,0 +1,235 @@
+
+
+{Atom: ExcelTableWrite}
+
+sets;
+BaseClass;
+CreateAtom(a, s, [], 1, false);
+int023([ExcelTableWrite], 16512, 32);
+Set(Icon(a), 
+	RegisterIcon(pDir([media\images\default.jpg]), [default.jpg]));
+SetMaterial(
+	RegisterMaterial([Default], 8421504, 8421504, 3289650, 0, 0.100000001490116, 0, false, false, 1, 0), 1, a);
+Set(Version(a), 7.3);
+SetTreeIcon(pDir([Media\Icons\ExcelWrite2k.ico]));
+Set(Info, [Write data from a table to excel
+
+General
+------------
+This atom has the ability to write data to it's own table or to an Excel 
+Workbook at regular time intervals.
+
+The data written to the table or Excel can be any number of user 
+specified variables. Input channels may be used to reference 
+connected atoms in a variable expression.
+
+Doubleclick:
+  Open the GUI
+
+Last revision:
+-------------------
+February, 2008
+]);
+Set(DdbRec, [>t-alloworganize:1.]);
+SetChannels(1, 0);
+SetChannelRanges(1, 255, 0, 0);
+int001(41);
+SetSize(8, 2, 1);
+LockPosition(false);
+LockSize(false);
+DisableIconRotation(false);
+SetProductCode([]);
+CreateAttributes(16);
+SetAttributeName(r(1), [tablename]);
+SetAttributeName(r(2), [createfunctions]);
+SetAttributeName(r(3), [oldname]);
+SetAttributeName(r(4), [createalias]);
+SetAttributeName(r(5), [nrows]);
+SetAttributeName(r(6), [ncols]);
+SetAttributeName(r(7), [excelenabled]);
+SetAttributeName(r(8), [bookname]);
+SetAttributeName(r(9), [sheetname]);
+SetAttributeName(r(10), [startrowexcel]);
+SetAttributeName(r(11), [currentrowexcel]);
+SetAttributeName(r(12), [timeinterval]);
+SetAttributeName(r(13), [viewexcel]);
+SetAttributeName(r(14), [tableenabled]);
+SetAttributeName(r(15), [nrvariables]);
+SetAttributeName(r(16), [startcolumnexcel]);
+SetTextAtt(r(1), [untitled]);
+SetExprAtt(r(2), [set(
+ oninit,
+ concat(
+  [
+  do(
+   registerfunction(   
+    ],
+    sbo,textatt(1),sbc,
+    [,
+    [Basic],
+    2,
+    2,
+    concat([cell(p(1),p(2),vtp(],string(ptv),[))]),
+    [returns table value e1,e2],
+    [No example],
+    true,[ExcelTableWrite.atm]
+   ),
+   registerfunction(
+    ],
+    sbo,concat([set],textatt(1)),sbc,
+    [,
+    [Basic],
+    3,
+    3,
+    concat([setcell(p(1),p(2),p(3),vtp(],string(ptv),[))]),
+    [sets table e1,e2 to e3],
+    [No example],
+    true,[ExcelTableWrite.atm]
+   ),
+
+   registerfunction(
+    ],
+    sbo,concat([ref],textatt(1)),sbc,
+    [,
+    [Basic],
+    0,
+    0,
+    concat([vtp(],string(ptv),[)]),
+    [reference to the table with an alias],
+    [No example],
+    true,[ExcelTableWrite.atm]
+   )
+
+  )
+  ]
+ )
+)]);
+SetAtt(r(5), 1);
+SetAtt(r(6), 5);
+SetTextAtt(r(8), [untitled]);
+SetTextAtt(r(9), [Sheet1]);
+SetAtt(r(10), 1);
+SetExprAtt(r(12), [hr(1)]);
+SetAtt(r(13), 1);
+SetAtt(r(16), 1);
+int024;
+Set(OnEvent, [Case(EventCode,
+
+{Case-1}
+ Do(
+  If(Or(CompareText(Att(8,c),[untitled]),Not(FileExists(Att(8,c)))),
+   Do(
+    Msg(
+     Concat([Must define a valid Excel wOrkbook filename And path],cr,lf,
+      [Or check the "Excel_Write Enabled" off],cr,lf,
+      [The simulation run is stopped]
+     )
+    ),
+    Stop
+   )
+  ),
+  If(DDEReady,DDEClose),
+  If(Not(And(ExcelOpen(TextAtt(8, c), Att(14,c)), ExcelSheet(TextAtt(9, c)))),
+   Do(ExcelOpen(TextAtt(8, c), Att(14,c)), ExcelSheet(TextAtt(9, c)), createEvent(0, c, 2)),
+   createEvent(0, c, 2)
+  )
+ ),
+
+{Case-2}
+ Do(
+  var([valFrames], vbValue),
+  
+  {Write to Table If enabled}
+  If(
+   Att(14,c),
+   Do(
+    SetTable(Att(11,c)+1-Att(10,c),Att(15,c),c),
+    Repeat(Att(15,c),
+     SetCell(Att(11,c)+1-Att(10,c),Count,Att(+(Count,16),c),c)
+    )
+   )
+  ),
+  
+  {Write to Excel If enabled}
+  If(
+   Att(7,c),
+   Do(
+    If(Not(DDEReady), Do(Stop, Msg([Excel is Not available anymOre. Run is stopped !]))),
+    valFrames := FramesPerSecond,
+    Framespersecond := 1,
+    Repeat(
+     Att(15,c),
+     Do(
+      ExcelWrite(Att(11, c), + (Count, -(Att(16, c), 1)), Att( +(Count, 16), c))
+     )
+    )
+   )
+  ),
+  Framespersecond := valFrames,
+  Inc(Att(11, c)),
+  createEvent(Att(12, c), c, 2)
+ ),
+
+{Case-3}
+ Do(
+ 
+ {Write to Table If enabled}
+  If(
+   Att(14, c),
+   Do(
+    SetTable(Att(11, c), Att(15, c), c),
+    Repeat(Att(15, c),
+     SetCell(Att(11, c), Count, Att( +(Count, 16), c), c)
+    )
+   )
+  ),
+  
+  {Write to Excel If enabled}
+  If(
+   Att(7,c),
+   Do(
+    If(Not(DDEReady), Do(Stop, Msg([Excel is Not available anymOre. Run is stopped !]))),
+    SetFramesPerSecond(1),
+    Repeat(
+     Att(15, c),
+     Do(
+      ExcelWrite(Att(11, c), +(Count, -(Att(16, c), 1)), Att( +(Count, 16), c))
+     )
+    )
+   )
+  )
+ )
+)
+]);
+Set(OnCreation, [SetRank(1, c)
+]);
+Set(OnDestruction, [Do(
+ InvalidateFunction(TextAtt(1, c)),
+ InvalidateFunction(Concat([set], TextAtt(1, c))),
+ If(DDEReady, ExcelClose)
+)
+]);
+Set(OnReset, [Do(
+ SetTable(1, nCols(c), c),
+ Set(Name(c), TextAtt(1, c)),
+ SetAtt(11,Att(10, c), c),
+ If(And(Att(14, c), Not(Att(7, c))), createEvent(0, c, 2)),
+ If(Att(7, c), createEvent(0,c,1))
+)
+]);
+Set(OnUser, [Do(
+ { Delete any current instances of this form.} 
+ GuiDestroy([ExcelTableWrite]),
+
+ { Register the GUI-form for this atom.}
+ GuiRegister(PDir([\Atoms\ExcelTableWrite.gui]), 1),
+
+ { Show the GUI-form.}
+ Guicreate([ExcelTableWrite], [ExcelTableWrite], 0, c, 0, 1)
+)
+]);
+Set(On2DDraw, [Draw2Dicon(3, [ExcelTableWrite], TextAtt(1,c))
+]);
+SetStatus(0);
+int018;
+int007;

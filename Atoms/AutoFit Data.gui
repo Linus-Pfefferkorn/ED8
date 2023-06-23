@@ -1,0 +1,103 @@
+EDControl(EditForm:
+  BorderIcons = set(SystemMenu,Minimize),
+  BorderStyle = Single,
+  Caption = str('Autofit'),
+  Height = 321,
+  Name = str('Autofit'),
+  Position = ScreenCenter,
+  ShowHint = True,
+  Top = 309,
+  Visible = False,
+  Width = 386,
+  Controls(
+    EDControl(GroupBox:
+      Caption = str('Data to fit'),
+      DoubleBuffered = True,
+      Height = 273,
+      Left = 8,
+      Name = str('GroupBox1'),
+      TabOrder = 1,
+      Top = 8,
+      Width = 370,
+      Controls(
+        EDControl(Label:
+          Caption = str('Number of data points:'),
+          Color = -16777208,
+          Height = 13,
+          Left = 8,
+          Name = str('Label1'),
+          Top = 32,
+          Width = 107),
+        EDControl(Label:
+          Caption = str('Data expression:'),
+          Color = -16777208,
+          Height = 13,
+          Left = 8,
+          Name = str('Label12'),
+          Top = 64,
+          Width = 79),
+        EDControl(Label:
+          Caption = str('Shift distribution:'),
+          Color = -16777208,
+          Height = 13,
+          Left = 8,
+          Name = str('Label122'),
+          Top = 240,
+          Width = 77),
+        EDControl(Edit:
+          Height = 21,
+          Left = 132,
+          Name = str('Numberofpoints'),
+          TabOrder = 1,
+          Text = str('100'),
+          Top = 24,
+          Width = 225),
+        EDControl(SyntaxComboBox:
+          CodeItems = str(#1'objectstart'#1'code:NegExp(50)'#1'objectend'#1'objectstart'#1'code:ExcelRead(Count, 1)'#1'objectend'),
+          Left = 132,
+          Name = str('DataExpr'),
+          TabOrder = 2,
+          Top = 56,
+          Width = 225),
+        EDControl(Memo:
+          Height = 145,
+          Left = 132,
+          Lines = str('Information:'#13#10#13#10'Enter an expression to select a set of data, use count as the index for each data sample.'#13#10'Example: if you want to fit 100 data points from column 1 of a table called Mytable, you could set the expression to Mytable(count,1). Use the expression excelread(count,1), if you want to read from Excel (make sure that the DDE link is open).'),
+          Name = str('Memo1'),
+          TabOrder = 3,
+          Top = 88,
+          Width = 225),
+        EDControl(CheckBox:
+          Caption = str(''),
+          Left = 132,
+          Name = str('shiftDistribution'),
+          TabOrder = 4,
+          Top = 240))),
+    EDControl(StaticText:
+      BorderStyle = None,
+      Caption = str(''),
+      Color = -16777208,
+      Height = 4,
+      Left = 16,
+      Name = str('StaticText12'),
+      Top = 64,
+      Width = 4),
+    EDControl(Button:
+      Caption = str('Cancel'),
+      Left = 214,
+      Name = str('Button12'),
+      TabOrder = 3,
+      Top = 289,
+      Events(
+        Click = str('GuiDestroy'#13))),
+    EDControl(Button:
+      Caption = str('Autofit'),
+      Left = 302,
+      Name = str('autofit'),
+      TabOrder = 4,
+      Top = 289,
+      Events(
+        Click = str('Do('#13' var([atmC], vbAtom, AtomByName([AutoFit Support], Library)),'#13' GuiSelect([Autofit], [Numberofpoints]),'#13' SetExprAtt([expression], GuiControl([DataExpr], GuiGet([ResultCode])), atmC),'#13' '#13' Att([ndata], atmC) := Value(GuiControl([Numberofpoints], GuiGet([text]))),'#13' Att([shift], atmC) := If(GuiControl([ShiftDistribution], GuiGet([checked])), 1, 0),'#13' AutoFit(Att([ndata], atmC), Att([expression], atmC), Att([shift], atmC)),'#13' GuiDestroy'#13')'#13)))),
+  Events(
+    Show = str('Do('#13' var([atmC], vbAtom, AtomByName([AutoFit Support])),'#13' GuiControl([Numberofpoints], GuiSet([Text], String(Att([ndata], atmC)))),'#13' GuiControl([DataExpr],GuiSet([ResultCode], TextAtt([expression], atmC))),'#13' If(Att([shift], atmC) = 1,'#13'  GuiControl([ShiftDistribution], GuiSet([checked], 1)),'#13'  GuiControl([ShiftDistribution], GuiSet([checked], 0))'#13' )'#13')'#13)))
+

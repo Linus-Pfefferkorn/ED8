@@ -1,0 +1,49 @@
+
+
+{Atom: Advanced Linear Robot}
+
+sets;
+BaseClass;
+CreateAtom(a, s, [], 1, false);
+int023([Advanced Linear Robot], 33023, 1072);
+Set(Icon(a), 
+	RegisterIcon(pDir([media\images\default.jpg]), [default.jpg]));
+SetMaterial(
+	RegisterMaterial([Default], 8421504, 8421504, 3289650, 0, 0.100000001490116, 0, false, false, 1, 0), 1, a);
+Set(Version(a), 0);
+SetTreeIcon(pDir([Media\Icons\Advanced Linear Robot.ico]));
+int001(311);
+SetSize(2, 2, 1);
+LockPosition(false);
+LockSize(false);
+DisableIconRotation(false);
+SetProductCode([]);
+int024;
+Set(OnCreation, [do(
+ if(
+  Confirm(
+   Concat(
+    [The ], Name(m(c)), [ atom is only included in the licensed Enterprise Dynamics Logistics full versions.], CR, CR,
+    [Press 'OK' to get more detailed information about this atom.], CR
+   )
+  ),
+  Case( 
+   PopupMenu(  
+    ScreenPosX,  
+    ScreenPosY,  
+    [See the atoms help file/Get online information] 
+   ), 
+   do(
+    Help(PDir([HELP\ED Help.hlp]), Name(m(c)))
+   ), 
+   do(
+    Exec([http://www.incontrolsim.com/index.php/ed-logistics.html])
+   )
+  )
+ ),
+ DestroyAtom(c)
+)
+]);
+SetStatus(0);
+int018;
+int007;

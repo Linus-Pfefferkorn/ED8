@@ -1,0 +1,160 @@
+
+
+{Atom: Node}
+
+sets;
+BaseClass;
+createAtom(a, s, [], 1, false);
+int023([Node], 8421504, 1264);
+Set(Icon(a), 
+	RegisterIcon(pDir([Media\Images\Atoms\server.bmp]), [server]));
+SetMaterial(
+	RegisterMaterial([Default], 8421504, 8421504, 3289650, 0, 0.100000001490116, 0, false, false, 1, 0), 1, a);
+Set(Version(a), 7.3);
+SetTreeIcon(pDir([Media\Icons\Node.ico]));
+Set(Info, [Node.
+
+General
+------------
+Use this atom to create a path when the movement of atoms takes 
+time.
+
+By connecting different nodes one can create a path for products, 
+persons, etc.
+
+The user can specify a default path speed. This speed is used if 
+the atom that enters doesn't have a label as specified in 
+'SpeedLabel'. If the entering atom has such a label, this is used .
+
+The capacity of a node can also be specified (the number of atoms 
+that can be traveling from this node to other nodes at the same 
+time).
+
+Last revision:
+-------------------
+February, 2008
+
+]);
+SetChannels(1, 1);
+SetChannelRanges(1, 255, 1, 255);
+int001(27);
+SetSize(1, 1, 0);
+LockPosition(false);
+LockSize(false);
+DisableIconRotation(false);
+SetProductCode([]);
+createAttributes(10);
+SetAttributeName(r(1), [SendTo]);
+SetAttributeName(r(2), [Speed]);
+SetAttributeName(r(3), [SpeedLabel]);
+SetAttributeName(r(4), [Capacity]);
+SetAttributeName(r(5), [CurSpeed]);
+SetAttributeName(r(6), [DisplayPath]);
+SetAttributeName(r(7), [ArrowPos]);
+SetAttributeName(r(8), [ArrowSize]);
+SetAttributeName(r(9), [EntryTrigger]);
+SetAttributeName(r(10), [ExitTrigger]);
+SetExprAtt(r(1), [1]);
+SetExprAtt(r(2), [1]);
+SetTextAtt(r(3), [pathspeed]);
+SetAtt(r(4), 10);
+SetAtt(r(6), 1);
+SetAtt(r(7), 50);
+SetAtt(r(8), 0.4);
+int024;
+Set(OnEvent, [Do(
+ StopAtom(i),
+ MoveRequest(i, Label([s-oc], i)) 
+)
+]);
+Set(OnEntered, [Do(
+ {* If there is no more capacity, close allthe inputchannels *}
+ If(
+  Content(c) >= Capacity,
+  CloseAllIc(c)
+ ),
+ SetLabel([s-oc], Att(1, c), i),
+ EntryTrigger,
+ Setcs(Out(Label([s-oc], i), c)),
+ {* Define the current speed *}
+ CurSpeed := If(
+   Label(TextAtt(3, c), i) = 0,
+   Speed,
+   Label(TextAtt(3, c), i)
+ ),
+ {* create an event and let the atom travel ot the next location *}
+ If(
+  AtomExists(cs),
+  createEvent( 
+    TravelTo(
+      i,
+      1,
+      xAbsLoc(cs, model) - xAbsLoc(c, model),
+      yAbsLoc(cs, model) - yAbsLoc(c, model),
+      zAbsLoc(cs, model) - zAbsLoc(c, model),
+      CurSpeed, 0, 0, 0
+    ),
+   c, 0, 0, i
+  )
+ )
+)
+]);
+Set(OnExited, [Do(
+ Set(RotationAs(i), 0),
+ ExitTrigger,
+ OpenAllIc(c)
+)
+]);
+Set(OnCreation, [AutoConnect
+]);
+Set(OnUser, [Do(
+  { Delete any current instances of this form.} 
+  GuiDestroy([Node]),
+
+  { Register the GUI-form for this atom.}
+  GuiRegister(PDir([\Atoms\Node.gui]), 1),
+
+  { Show the GUI-form.}
+   Guicreate([Node], [Node], 0, c, 0, 1)
+  )
+]);
+Set(On2DDraw, [Do(
+ {* Draw the node itself *}
+ diShape(-0.5, -0.5, 1, 1, 0.5, Color, ColorWhite),
+ {* Draw the paths from the network if it exists *}
+ Repeat(
+  nRoc,
+  If(
+   And(
+    DisplayPath,
+    AtomExists(Out(Count, c))
+   ),
+   diLine(0, 0,
+     -(xAbsLoc(Out(Count, c), model), xAbsLoc(c, model)),
+     -(yAbsLoc(Out(Count, c), model), yAbsLoc(c, model)),
+     Color(c), ArrowSize, ArrowPos
+   )
+  )
+ )
+)
+]);
+Set(On3DDraw, [{* Draw  network paths if they exists *}
+ Repeat(
+  nRoc,
+  If(
+   And(
+    DisplayPath,
+    AtomExists(Out(Count, c))
+   ),
+   PointsPlane(0, 0, 0,
+     -(xAbsLoc(Out(Count, c), model), xAbsLoc(c, model)),
+     -(yAbsLoc(Out(Count, c), model), yAbsLoc(c, model)),
+     -(zAbsLoc(Out(Count, c), model), zAbsLoc(c, model)),
+     0.1, 0.1, 0.1, Color
+   )
+  )
+ )
+]);
+SetStatus(0);
+int018;
+int007;

@@ -1,0 +1,139 @@
+EDControl(EditForm:
+  BorderIcons = set(SystemMenu),
+  BorderStyle = Single,
+  Caption = str('Optimizer'),
+  Height = 312,
+  Name = str('Optimizer'),
+  Position = Default,
+  ShowHint = True,
+  Top = 387,
+  Visible = True,
+  Width = 395,
+  Controls(
+    EDControl(MultiPage:
+      ActivePage = 1,
+      Align = Client,
+      Anchors = set(Left,Top,Right,Bottom),
+      Height = 236,
+      Left = 0,
+      Name = str('MultiPage1'),
+      TabOrder = 1,
+      Top = 0,
+      Width = 395,
+      Controls(
+        EDControl(SinglePage:
+          Caption = str('General'),
+          Name = str('SinglePage1'),
+          PageIndex = 1,
+          Controls(
+            EDControl(GroupBox:
+              Caption = str(''),
+              Height = 64,
+              Left = 8,
+              Name = str('GroupBox2'),
+              TabOrder = 1,
+              Top = 8,
+              Width = 370,
+            Controls(
+EDControl(Edit:
+              Height = 21,
+              Left = 132,
+              Name = str('AtomName'),
+              TabOrder = 2,
+              Top = 29,
+              Width = 225),
+            EDControl(Label:
+              Caption = str('Atom name:'),
+              Color = -16777208,
+              Left = 12,
+              Name = str('StaticText13'),
+              Top = 32,
+              Width = 60))),
+EDControl(GroupBox:
+              Caption = str('Settings'),
+              Height = 64,
+              Left = 8,
+              Name = str('GroupBox1'),
+              TabOrder = 3,
+              Top = 88,
+              Width = 370,
+            Controls(
+EDControl(Label:
+              Caption = str('Runtime(s):'),
+              Color = -16777208,
+              Left = 12,
+              Name = str('StaticText1'),
+              Top = 32,
+              Width = 57),
+            EDControl(ScriptEdit:
+              Left = 132,
+              Name = str('seRuntime'),
+              TabOrder = 4,
+              Top = 26,
+              Width = 225))),
+EDControl(GroupBox:
+              Caption = str('Miscellaneous'),
+              Height = 64,
+              Left = 8,
+              Name = str('GroupBox12'),
+              TabOrder = 5,
+              Top = 168,
+              Width = 370,
+            Controls(
+EDControl(Button:
+              Caption = str('O&ptimize'),
+              Left = 12,
+              Name = str('Button1'),
+              TabOrder = 6,
+              Top = 24,
+              Events(
+                Click = str('if('#13' fileexists(pdir([OptQuest\OptQuest.exe])),'#13' do('#13'  dbclose,'#13'  dbconnect(pdir([OptQuest]),[tedin.dbf],[]),'#13'  dbconnect(pdir([OptQuest]),[tedout.dbf],[]),'#13'  dbsql([DELETE FROM tedin],1),'#13'  dbsql([DELETE FROM tedout],1),'#13'  dbsql(concat([INSERT INTO Tedin ( ATOM, INITIALVAL ) VALUES ( ''runtime'', ''], string(att(1, GuiAtom)),['')]), 1),'#13'  repeat('#13'   content(GuiAtom),'#13'   if('#13'    comparetext([Variable],stringcopy(name(rank(count,GuiAtom)),1,8)),'#13'    dbsql(concat([INSERT INTO Tedin (ATOM,NAME,INITIALVAL,TESTVAL,LOWERVAL,UPPERVAL,STEP) VALUES (''],att([atom],rank(count,GuiAtom)),['',''],att([name_var],rank(count,GuiAtom)),['',],string(att([varvalue],rank(count,GuiAtom)),5,3),[,],string(att([varvalue],rank(count,GuiAtom)),5,3),[,],string(att([lowerlimit],rank(count,GuiAtom)),5,3),[,],string(att([upperlimit],rank(count,GuiAtom)),5,3),[,],string(att([step],rank(count,GuiAtom)),5,3),[)]),1)'#13'   )'#13'  ),'#13'  dbsql(concat([INSERT INTO Tedout (ATOM,NAME,MAXMINREQ) VALUES (''],att([atom],atombyname([Objective],GuiAtom)),['',''],att([name_obj],atombyname([Objective],GuiAtom)),['',''],att([max_min],atombyname([Objective],GuiAtom)),['')]),1),'#13'  repeat('#13'   content(GuiAtom),'#13'   if('#13'    comparetext([Requirement],stringcopy(name(rank(count,GuiAtom)),1,11)),'#13'    dbsql(concat([INSERT INTO Tedout (ATOM,NAME,MAXMINREQ,LOWERVAL,UPPERVAL) VALUES (''],att([atom],rank(count,GuiAtom)),['',''],att([name_req],rank(count,GuiAtom)),['',''req'',],string(att([lowerlimit],rank(count,GuiAtom)),5,3),[,],string(att([upperlimit],rank(count,GuiAtom)),5,3),[)]),1)'#13'   )'#13'  ),'#13'  dbclose,'#13'  signal(2,signal(1,[taylorstop]),true),'#13'  exec(pdir([optquest/optquest Taylor ED]),1)'#13' ),'#13' execfile(pdir([OptQuest\OptQuest.fnc]))'#13')'#13))))))))),
+    EDControl(Panel:
+      Align = Bottom,
+      Anchors = set(Left,Right,Bottom),
+      BevelOuter = None,
+      Caption = str(''),
+      Height = 40,
+      Left = 0,
+      Name = str('Panel1'),
+      TabOrder = 2,
+      Top = 236,
+      Width = 395,
+      Controls(
+        EDControl(Button:
+          Caption = str('&Help'),
+          Left = 8,
+          Name = str('btnHelp'),
+          TabOrder = 1,
+          Top = 8,
+          Events(
+            Click = str('Help(PDir([HELP\ED Help.hlp]), [Optimizer])'#13))),
+        EDControl(Button:
+          Caption = str('&Ok'),
+          Default = True,
+          Left = 144,
+          Name = str('btnOk'),
+          TabOrder = 2,
+          Top = 8,
+          Events(
+            Click = str('Do('#13' GuiControl([btnApply]),'#13' GuiRun([Click]),'#13' GuiDestroy'#13')'#13))),
+        EDControl(Button:
+          Cancel = True,
+          Caption = str('&Cancel'),
+          Left = 230,
+          Name = str('btnCancel'),
+          TabOrder = 3,
+          Top = 8,
+          Events(
+            Click = str('GuiDestroy '#13))),
+        EDControl(Button:
+          Caption = str('&Apply'),
+          Left = 312,
+          Name = str('btnApply'),
+          TabOrder = 4,
+          Top = 8,
+          Events(
+            Click = str('do('#13' '#13'  {Save TextField}'#13'  name(GuiAtom) := GuiControl([AtomName], GuiGet([Text])),'#13'  '#13'  TextAtt([runtime],GuiAtom) := GuiControl([seRunTime],GuiGet([Code]))'#13')'#13)))))),
+  Events(
+    Show = str('do('#13' {Set Caption}'#13' if('#13'  atomexists(m(GuiAtom)),'#13'  GuiControl([Optimizer],GuiSet([Caption],concat(name(m(GuiAtom)), [ - ], name(GuiAtom)))),'#13'  GuiControl([Optimizer],GuiSet([Caption],concat([Baseclass - ], name(GuiAtom))))'#13' ),'#13#13' {Set ActivePage}'#13' GuiControl([MultiPage1]),GuiSet([ActivePage],1),'#13'     '#13' {Set TextField}'#13' GuiControl([AtomName], GuiSet([Text], name(GuiAtom))),'#13' '#13' GuiControl([seRunTime], GuiSet([Code], TextAtt([runtime],guiatom))),'#13' '#13' Gui_PositionGuiAroundAtom(GuiControl([Optimizer])),'#13'    '#13' GuiRun([Update])'#13')'#13)))
+

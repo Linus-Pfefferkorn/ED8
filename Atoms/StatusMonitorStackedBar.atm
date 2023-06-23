@@ -1,0 +1,684 @@
+
+
+{Preregister functions}
+
+PreregisterFunction([StatusMonitorStackedBar_SetNumberOfSegments], 2, 2);
+PreregisterFunction([StatusMonitorStackedBar_GetNumberOfSegments], 1, 1);
+PreregisterFunction([StatusMonitorStackedBar_Initialize], 1, 1);
+PreregisterFunction([StatusMonitorStackedBar_SetSegmentColor], 3, 3);
+PreregisterFunction([StatusMonitorStackedBar_SetSegmentScore], 3, 3);
+PreregisterFunction([StatusMonitorStackedBar_Animate2D], 1, 1);
+PreregisterFunction([StatusMonitorStackedBar_SetTotalScore], 2, 2);
+PreregisterFunction([StatusMonitorStackedBar_GetTotalScore], 1, 1);
+PreregisterFunction([StatusMonitorStackedBar_DetermineScores], 1, 1);
+PreregisterFunction([StatusMonitorStackedBar_SetSegmentName], 3, 3);
+PreregisterFunction([StatusMonitorStackedBar_SetLegendVisible], 2, 2);
+PreregisterFunction([StatusMonitorStackedBar_GetLegendVisible], 1, 1);
+PreregisterFunction([StatusMonitorStackedBar_GetSegmentColor], 2, 2);
+PreregisterFunction([StatusMonitorStackedBar_SetBorderColor], 2, 2);
+PreregisterFunction([StatusMonitorStackedBar_GetBorderColor], 1, 1);
+PreregisterFunction([StatusMonitorStackedBar_GetSegmentScore], 2, 2);
+PreregisterFunction([StatusMonitorStackedBar_GetSegmentCumulativeScore], 2, 2);
+PreregisterFunction([StatusMonitorStackedBar_UseDefaultColours], 1, 1);
+PreregisterFunction([StatusMonitorStackedBar_SetPercentagesVisible], 2, 2);
+PreregisterFunction([StatusMonitorStackedBar_GetPercentagesVisible], 1, 1);
+PreregisterFunction([StatusMonitorStackedBar_SetTitle], 2, 2);
+PreregisterFunction([StatusMonitorStackedBar_GetTitle], 1, 1);
+PreregisterFunction([StatusMonitorStackedBar_SetTitleVisible], 2, 2);
+PreregisterFunction([StatusMonitorStackedBar_GetTitleVisible], 1, 1);
+PreregisterFunction([StatusMonitorStackedBar_SetTextColor], 2, 2);
+PreregisterFunction([StatusMonitorStackedBar_GetTextColor], 1, 1);
+PreregisterFunction([StatusMonitorStackedBar_SetTextSizePercentages], 2, 2);
+PreregisterFunction([StatusMonitorStackedBar_GetTextSizePercentages], 1, 1);
+PreregisterFunction([StatusMonitorStackedBar_SetTextSizeTitle], 2, 2);
+PreregisterFunction([StatusMonitorStackedBar_GetTextSizeTitle], 1, 1);
+PreregisterFunction([StatusMonitorStackedBar_SetTextSizeLegend], 2, 2);
+PreregisterFunction([StatusMonitorStackedBar_GetTextSizeLegend], 1, 1);
+PreregisterFunction([StatusMonitorStackedBar_GuiDataTypeAndRangeValidation], 1, 1);
+PreregisterFunction([StatusMonitorStackedBar_GuiApplyChanges], 1, 1);
+PreregisterFunction([StatusMonitorStackedBar_GetSegmentName], 2, 2);
+PreregisterFunction([StatusMonitorStackedBar_SetRefreshRate], 2, 2);
+PreregisterFunction([StatusMonitorStackedBar_GetRefreshRate], 1, 1);
+PreregisterFunction([StatusMonitorStackedBar_Refresh], 1, 1);
+PreregisterFunction([StatusMonitorStackedBar_SetShowPercentagesBesidesLegend], 2, 2);
+PreregisterFunction([StatusMonitorStackedBar_GetShowPercentagesBesidesLegend], 1, 1);
+PreregisterFunction([StatusMonitorStackedBar_InitializeStatuses], 1, 1);
+PreregisterFunction([StatusMonitorStackedBar_SetStatusesInitialized], 2, 2);
+PreregisterFunction([StatusMonitorStackedBar_GetStatusesInitialized], 1, 1);
+PreregisterFunction([StatusMonitorStackedBar_SetDiagramVisible], 2, 2);
+PreregisterFunction([StatusMonitorStackedBar_GetDiagramVisible], 1, 1);
+PreregisterFunction([StatusMonitorStackedBar_StartCollectingStatusInformation], 1, 1);
+PreregisterFunction([StatusMonitorStackedBar_Animate3D], 1, 1);
+PreregisterFunction([StatusMonitorStackedBar_GetHeightBoundingBox], 1, 1);
+PreregisterFunction([StatusMonitorStackedBar_SetHeightBoundingBox], 2, 2);
+PreregisterFunction([StatusMonitorStackedBar_GetWidthBoundingBox], 1, 1);
+PreregisterFunction([StatusMonitorStackedBar_SetWidthBoundingBox], 2, 2);
+PreregisterFunction([StatusMonitorStackedBar_GetAutomaticScaling], 1, 1);
+PreregisterFunction([StatusMonitorStackedBar_SetAutomaticScaling], 2, 2);
+
+
+{Atom: StatusMonitorStackedBar}
+
+sets;
+BaseClass;
+CreateAtom(a, s, [], 1, false);
+Set(OnInit, [do( { This constant is set according to the number of statuses in the StatusList atom.   If you added statuses manually then change this constant to represent the number   of available statuses. } dim([StatusMonitorStackedBar_NUMBEROFSTATUSES], vbConstant, 33), { Define some columnnumber constants for the Status Monitor} dim([StatusMonitorStackedBar_COLUMNNUMBER_SEGMENTSCORE], vbValue, 1), dim([StatusMonitorStackedBar_COLUMNNUMBER_SEGMENTCUMULATIVESCORE], vbValue, 2), dim([StatusMonitorStackedBar_COLUMNNUMBER_SEGMENTCOLOR], vbValue, 3), dim([StatusMonitorStackedBar_COLUMNNUMBER_SEGMENTNAME], vbValue, 4),  { Event Code constants } dim([StatusMonitorStackedBar_EVENTCODE_STARTCOLLECTINGSTATUSINFORMATION], vbConstant, 1001), dim([StatusMonitorStackedBar_EVENTCODE_REFRESH], vbConstant, 1002))]);
+int023([StatusMonitorStackedBar], 0, 48);
+DefineFunction([StatusMonitorStackedBar_SetNumberOfSegments], [StatusMonitorStackedBar], 2, 2, [do( Att([NumberOfSegments], p(1)) := p(2), nrows(p(1)) := p(2))], [p(1) as StatusMonitorStackedBarp(2) as integer, the number of segmentsResult: none. Sets the property NumberOfSegments of StatusMonitorStackedBar.], [StatusMonitorStackedBar_SetNumberOfSegments( atmStatusMonitorStackedBar, newNumberOfSegments )], 0, [StatusMonitorStackedBar.atm]);
+DefineFunction([StatusMonitorStackedBar_GetNumberOfSegments], [StatusMonitorStackedBar], 1, 1, [Att([NumberOfSegments], p(1))], [p(1) as StatusMonitorStackedBarResult: integer. Get the property NumberOfSegments of StatusMonitorStackedBar.], [newNumberOfSegments := StatusMonitorStackedBar_GetNumberOfSegments( atmStatusMonitorStackedBar )], 0, [StatusMonitorStackedBar.atm]);
+DefineFunction([StatusMonitorStackedBar_Initialize], [StatusMonitorStackedBar], 1, 1, [do( var([indexer], vbValue, 0),  {--Activate 3D animation of existing models--} SetSetting(sa3DOutline, 0, p(1)), SetSetting(sa3DDraw, 1, p(1)), { Put all segment scores back to zero. } for(  indexer := 1, indexer <= StatusMonitorStackedBar_GetNumberOfSegments(p(1)), inc(indexer),  StatusMonitorStackedBar_SetSegmentScore(p(1), indexer, 0) ),  if(  AtomExists(in(1, p(1))) = true,  do(   { create an event to start collecting status information. This is done by an event because     if we call EnableStatusMonitorStackedBar here directly and the monitor has a lower rank than the atom to be     monitored this atom's onReset event will fire later and will DisableTheStatusMonitorStackedBar. Creating an event     at time 0 will occur after all onReset eventHandlers are fired. You see...}   createevent(0, p(1), StatusMonitorStackedBar_EVENTCODE_STARTCOLLECTINGSTATUSINFORMATION),      { And create an event to start up the Refreshment Cycle. This is an almost immediate event so      that the user directly sees something on the diagram. Afterwards the refresh event is created with an interval     equal to the Refresh Rate. See the Refresh function for further details. }   createEvent(1, p(1), StatusMonitorStackedBar_EVENTCODE_REFRESH)     ) ))], [p(1) as StatusMonitorStackedBarResult: none. INitializes the diagram.], [StatusMonitorStackedBar_Initialize(c)], 0, [StatusMonitorStackedBar.atm]);
+DefineFunction([StatusMonitorStackedBar_SetSegmentColor], [StatusMonitorStackedBar], 3, 3, [cell(p(2), StatusMonitorStackedBar_COLUMNNUMBER_SEGMENTCOLOR, p(1)) := p(3)], [p(1) as StatusMonitorStackedBarp(2) as integer, Segment Indexp(3) as ColorResult: none. Sets the color for the specified Segment], [StatusMonitorStackedBar_SetSegmentColor(c)], 0, [StatusMonitorStackedBar.atm]);
+DefineFunction([StatusMonitorStackedBar_SetSegmentScore], [StatusMonitorStackedBar], 3, 3, [do( if(  p(3) >= 0,  cell(p(2), StatusMonitorStackedBar_COLUMNNUMBER_SEGMENTSCORE, p(1)) := p(3),  do(   cell(p(2), StatusMonitorStackedBar_COLUMNNUMBER_SEGMENTSCORE, p(1)) := 0,   trace(    concat(     [The score of segment ],     string(p(2)),     [ has been set to zero because an attempt was made to set it to a value lower than zero. StatusMonitorStackedBar: ],     string(name),     [, Atomid: ],     String(atomid(p(1)))    )   ),   displaytracer  ) ), StatusMonitorStackedBar_DetermineScores(p(1)))], [p(1) as StatusMonitorStackedBarp(2) as integer, Segment Indexp(3) as double, ScoreResult: none. Sets the socre for the specified Segment], [StatusMonitorStackedBar_SetSegmentScore(c, indexer, 0)], 0, [StatusMonitorStackedBar.atm]);
+DefineFunction([StatusMonitorStackedBar_Animate2D], [StatusMonitorStackedBar], 1, 1, [do(
+ var([atmC], vbAtom, p(1)),
+ var([indexer], vbValue, 0),
+ var([heightscore], vbValue, 0),
+ var([segmentsdrawn], vbValue, 0),
+ var([offset], vbValue, 0),
+ var([temp], vbValue, 0),
+ 
+ StatusMonitorStackedBar_SetWidthBoundingBox(c, xSize(c)),
+ 
+ if(
+   StatusMonitorStackedBar_GetAutomaticScaling(atmC),
+   do(
+     StatusMonitorStackedBar_SetTextSizeTitle(atmC, StatusMonitorStackedBar_GetHeightBoundingBox(atmC) / 10),
+     StatusMonitorStackedBar_SetTextSizeLegend(atmC, Min(xSize(atmC), StatusMonitorStackedBar_GetHeightBoundingBox(atmC)) / 20),
+     StatusMonitorStackedBar_SetTextSizePercentages(atmC, Min(xSize(atmC), StatusMonitorStackedBar_GetHeightBoundingBox(atmC)) / 20)
+   )
+ ),
+ 
+ StatusMonitorStackedBar_SetHeightBoundingBox(atmC, ySize(atmC) - 2 * StatusMonitorStackedBar_GetTextSizeTitle(atmC)),
+ 
+ { The Diagram's Title }
+ if(
+  StatusMonitorStackedBar_GetTitleVisible(atmC),
+  DrawText(
+   0,
+   StatusMonitorStackedBar_GetHeightBoundingBox(atmC),
+   StringLength(StatusMonitorStackedBar_GetTitle(atmC)) * StatusMonitorStackedBar_GetTextSizeTitle(atmC),
+   StatusMonitorStackedBar_GetTextSizeTitle(atmC) * 2,
+   StatusMonitorStackedBar_GetTitle(atmC),
+   StatusMonitorStackedBar_GetTextColor(atmC),
+   StatusMonitorStackedBar_GetTextSizeTitle(atmC),
+   [Arial],
+   0,
+   0,
+   0,
+   HA_LEFT + VA_TOP
+  )
+ ),
+ 
+ { APP-124 JG (29-04-2008) Show a message when the diagram is not refreshed...}
+ if(
+  runspeed = 1E40,
+  DrawText(
+   0,
+   -4 * StatusMonitorStackedBar_GetTextSizeTitle(atmC),
+   StatusMonitorStackedBar_GetTextSizeTitle(atmC) * 40,
+   StatusMonitorStackedBar_GetTextSizeTitle(atmC) * 4,
+   Concat(
+    [Refresment has been paused.],
+    CR,
+    [(Lower the runspeed to refresh the diagram)]
+   ),
+   ColorRed,
+   StatusMonitorStackedBar_GetTextSizeTitle(atmC),
+   [Arial],
+   True,
+   0,
+   0,
+   HA_LEFT + VA_TOP
+  )
+ ), 
+
+ { default View when not connected or no scores yet available. }
+ if(
+  StatusMonitorStackedBar_GetTotalScore(atmC) = 0,
+  do(
+   DrawRectangle(
+    0,
+    0,
+    xSize(atmC),
+    StatusMonitorStackedBar_GetHeightBoundingBox(atmC),
+    colorblack,
+    colorblack,
+    1
+   ),
+  
+   { Return nothing to quit the function. }
+   return(0)
+  )
+ ),
+
+
+ { Default Offset }
+ offset := Max(1, StatusMonitorStackedBar_GetTextSizeLegend(atmC)),
+ 
+ if(
+  and(
+   StatusMonitorStackedBar_GetShowPercentagesBesidesLegend(atmC) = true,
+   StatusMonitorStackedBar_GetPercentagesVisible(atmC) = true
+  ),
+  offset := StatusMonitorStackedBar_GetTextSizeLegend(atmC) * 7
+ ),
+ 
+ if(
+  StatusMonitorStackedBar_GetDiagramVisible(atmC) = false,
+  offset := -3
+ ),
+
+ for(
+  indexer := 1, indexer <= StatusMonitorStackedBar_GetNumberOfSegments(atmC), inc(indexer),
+  if(
+   StatusMonitorStackedBar_GetSegmentScore(atmC, indexer) > 0,
+   do(
+    inc(segmentsdrawn),
+    
+    { **************** COLORED SEGMENTS ******************* }
+    if(
+     StatusMonitorStackedBar_GetDiagramVisible(atmC) = True,
+     do(
+      DrawRectangle(
+       0,
+       if(
+        indexer = 1,
+        0,
+        (cell(indexer - 1, STATUSMONITORSTACKEDBAR_COLUMNNUMBER_SEGMENTCUMULATIVESCORE, atmC) / StatusMonitorStackedBar_GetTotalScore(atmC)) * StatusMonitorStackedBar_GetHeightBoundingBox(atmC)
+       ),
+       xSize(atmC),
+       (cell(indexer, STATUSMONITORSTACKEDBAR_COLUMNNUMBER_SEGMENTCUMULATIVESCORE, atmC) / StatusMonitorStackedBar_GetTotalScore(atmC)) * StatusMonitorStackedBar_GetHeightBoundingBox(atmC),
+       cell(indexer, STATUSMONITORSTACKEDBAR_COLUMNNUMBER_SEGMENTCOLOR, atmC),
+       StatusMonitorStackedBar_GetBorderColor(atmC),
+       1
+      ),
+     
+      { **************** PERCENTAGES ******************* }
+      if(
+       and(
+        StatusMonitorStackedBar_GetPercentagesVisible(atmC) = True,
+        StatusMonitorStackedBar_GetShowPercentagesBesidesLegend(atmC) = false,
+        StatusMonitorStackedBar_GetDiagramVisible(atmC) = true
+       ),
+       {**Percentages not besides legend**}
+       do(
+        if(
+         indexer = 1,
+         heightscore := (cell(indexer, STATUSMONITORSTACKEDBAR_COLUMNNUMBER_SEGMENTCUMULATIVESCORE, atmC) / StatusMonitorStackedBar_GetTotalScore(atmC)) * StatusMonitorStackedBar_GetHeightBoundingBox(atmC) / 2,
+         do(
+          temp := cell(indexer, STATUSMONITORSTACKEDBAR_COLUMNNUMBER_SEGMENTSCORE, atmC) / 2,
+          temp := temp + cell(indexer - 1, STATUSMONITORSTACKEDBAR_COLUMNNUMBER_SEGMENTCUMULATIVESCORE, atmC),
+          temp := temp /  StatusMonitorStackedBar_GetTotalScore(atmC),
+          temp := temp * StatusMonitorStackedBar_GetHeightBoundingBox(atmC),
+          heightscore := temp
+         )
+        ),
+        DrawText(
+         0.5 + xSize(atmC),
+         heightscore,
+         StatusMonitorStackedBar_GetTextSizePercentages(atmC) * 10,
+         StatusMonitorStackedBar_GetTextSizePercentages(atmC) * 2,
+         concat(
+          String(StatusMonitorStackedBar_GetSegmentScore(atmC, indexer) / StatusMonitorStackedBar_GetTotalScore(atmC) * 100, 0, 2),
+          [%]
+         ),
+         StatusMonitorStackedBar_GetTextColor(atmC),
+         StatusMonitorStackedBar_GetTextSizePercentages(atmC),
+         [Arial],
+         0,0,0,
+         VA_TOP         
+        )
+       )
+      ) 
+     )
+    ),
+
+    { ***************** LEGEND ************************ }
+    if(
+     StatusMonitorStackedBar_GetLegendVisible(atmC) = True,
+     do(
+      { The box for the color }
+      DrawRectangle(
+       -1 * StatusMonitorStackedBar_GetTextSizeLegend(atmC) - offset,
+       StatusMonitorStackedBar_GetTextSizeLegend(atmC) * (2 * segmentsdrawn - 2),
+       -1 * offset,
+       StatusMonitorStackedBar_GetTextSizeLegend(atmC) * (2 * segmentsdrawn - 1),
+       StatusMonitorStackedBar_GetSegmentColor(atmC, indexer),
+       StatusMonitorStackedBar_GetBorderColor(atmC)
+      ),
+      
+      { The name of the segment }
+      DrawText(
+       - 1 * StatusMonitorStackedBar_GetTextSizeLegend(atmC) * StringLength(String(cell(indexer, StatusMonitorStackedBar_COLUMNNUMBER_SEGMENTNAME, atmC))) - 1.5 * StatusMonitorStackedBar_GetTextSizeLegend(atmC) - offset,
+       StatusMonitorStackedBar_GetTextSizeLegend(atmC) * (2 * segmentsdrawn - 2) - StatusMonitorStackedBar_GetTextSizeLegend(atmC) / 2.5,
+       StatusMonitorStackedBar_GetTextSizeLegend(atmC) * StringLength(String(cell(indexer, StatusMonitorStackedBar_COLUMNNUMBER_SEGMENTNAME, atmC))),
+       StatusMonitorStackedBar_GetTextSizeLegend(atmC) * 2,
+       String(cell(indexer, StatusMonitorStackedBar_COLUMNNUMBER_SEGMENTNAME, atmC)),
+       StatusMonitorStackedBar_GetTextColor(atmC),
+       StatusMonitorStackedBar_GetTextSizeLegend(atmC),
+       [Arial],
+       0,
+       0,
+       0,
+       HA_RIGHT + VA_TOP
+      ),
+            
+      if(
+       and(
+        StatusMonitorStackedBar_GetShowPercentagesBesidesLegend(atmC) = true,
+        StatusMonitorStackedBar_GetPercentagesVisible(atmC) = true
+       ),   
+       {**Percentages besides legend**}
+       DrawText(
+        -1 * offset + StatusMonitorStackedBar_GetTextSizeLegend(atmC),
+        StatusMonitorStackedBar_GetTextSizeLegend(atmC) * (2 * segmentsdrawn - 2) - StatusMonitorStackedBar_GetTextSizeLegend(atmC) / 2.5,
+        StatusMonitorStackedBar_GetTextSizeLegend(atmC) * 10,
+        StatusMonitorStackedBar_GetTextSizeLegend(atmC) * 2,
+        concat(
+          String(StatusMonitorStackedBar_GetSegmentScore(atmC, indexer) / StatusMonitorStackedBar_GetTotalScore(atmC) * 100, 0, 2),
+          [%]
+         ),
+        StatusMonitorStackedBar_GetTextColor(atmC),
+        StatusMonitorStackedBar_GetTextSizeLegend(atmC),
+        [Arial],
+        0,
+        0,
+        0,
+        HA_LEFT + VA_TOP
+       )      
+      )     
+     )
+    )
+   )
+  )
+ )
+)
+
+], [p(1) as StatusMonitorStackedBar
+], [StatusMonitorStackedBar_Animate2D(c)], 0, [StatusMonitorStackedBar.atm]);
+DefineFunction([StatusMonitorStackedBar_SetTotalScore], [StatusMonitorStackedBar], 2, 2, [Att([TotalScore], p(1)) := p(2)], [p(1) as StatusMonitorStackedBarp(2) as doubleResult: none. Sets the property TotalScore of StatusMonitorStackedBar.], [StatusMonitorStackedBar_SetTotalScore( atmStatusMonitorStackedBar, newTotalScore )], 0, [StatusMonitorStackedBar.atm]);
+DefineFunction([StatusMonitorStackedBar_GetTotalScore], [StatusMonitorStackedBar], 1, 1, [Att([TotalScore], p(1))], [p(1) as StatusMonitorStackedBarResult: double. Get the property TotalScore of StatusMonitorStackedBar.], [newTotalScore := StatusMonitorStackedBar_GetTotalScore( atmStatusMonitorStackedBar )], 0, [StatusMonitorStackedBar.atm]);
+DefineFunction([StatusMonitorStackedBar_DetermineScores], [StatusMonitorStackedBar], 1, 1, [do( var([indexer], vbValue, 0),  for(  indexer := 1, indexer <= StatusMonitorStackedBar_GetNumberOfSegments(p(1)), inc(indexer),    if(   indexer = 1,   cell(indexer, StatusMonitorStackedBar_COLUMNNUMBER_SEGMENTCUMULATIVESCORE, p(1)) := cell(indexer, StatusMonitorStackedBar_COLUMNNUMBER_SEGMENTSCORE, p(1)),   cell(indexer, StatusMonitorStackedBar_COLUMNNUMBER_SEGMENTCUMULATIVESCORE, p(1)) := cell(indexer - 1, StatusMonitorStackedBar_COLUMNNUMBER_SEGMENTCUMULATIVESCORE, p(1)) + cell(indexer, StatusMonitorStackedBar_COLUMNNUMBER_SEGMENTSCORE, p(1))  ) ),  StatusMonitorStackedBar_SetTotalScore(p(1), cell(StatusMonitorStackedBar_GetNumberOfSegments(p(1)), StatusMonitorStackedBar_COLUMNNUMBER_SEGMENTCUMULATIVESCORE, p(1))))], [p(1) as StatusMonitorStackedBar], [StatusMonitorStackedBar_DetermineScores(c)], 0, [StatusMonitorStackedBar.atm]);
+DefineFunction([StatusMonitorStackedBar_SetSegmentName], [StatusMonitorStackedBar], 3, 3, [cell(p(2), StatusMonitorStackedBar_COLUMNNUMBER_SEGMENTNAME, p(1)) := p(3)], [p(1) as StatusMonitorStackedBarp(2) as integer, Segment indexp(3) as string, Segment Name], [StatusMonitorStackedBar_SetSegmentName(c)], 0, [StatusMonitorStackedBar.atm]);
+DefineFunction([StatusMonitorStackedBar_SetLegendVisible], [StatusMonitorStackedBar], 2, 2, [Att([LegendVisible], p(1)) := p(2)], [p(1) as StatusMonitorStackedBarp(2) as BooleanResult: none. Sets the property LegendVisible of StatusMonitorStackedBar.], [StatusMonitorStackedBar_SetLegendVisible( atmStatusMonitorStackedBar, newLegendVisible )], 0, [StatusMonitorStackedBar.atm]);
+DefineFunction([StatusMonitorStackedBar_GetLegendVisible], [StatusMonitorStackedBar], 1, 1, [Att([LegendVisible], p(1))], [p(1) as StatusMonitorStackedBarResult: Boolean. Get the property LegendVisible of StatusMonitorStackedBar.], [newLegendVisible := StatusMonitorStackedBar_GetLegendVisible( atmStatusMonitorStackedBar )], 0, [StatusMonitorStackedBar.atm]);
+DefineFunction([StatusMonitorStackedBar_GetSegmentColor], [StatusMonitorStackedBar], 2, 2, [cell(p(2), StatusMonitorStackedBar_COLUMNNUMBER_SEGMENTCOLOR, p(1))], [p(1) as StatusMonitorStackedBarp(2) as integer, Segment indexResult: Color. The color pointer for the requested Segmetn index], [StatusMonitorStackedBar_GetSegmentColor(c, indexer)], 0, [StatusMonitorStackedBar.atm]);
+DefineFunction([StatusMonitorStackedBar_SetBorderColor], [StatusMonitorStackedBar], 2, 2, [Att([BorderColor], p(1)) := p(2)], [p(1) as StatusMonitorStackedBarp(2) as DoubleResult: none. Sets the property BorderColor of StatusMonitorStackedBar.], [StatusMonitorStackedBar_SetBorderColor( atmStatusMonitorStackedBar, newBorderColor )], 0, [StatusMonitorStackedBar.atm]);
+DefineFunction([StatusMonitorStackedBar_GetBorderColor], [StatusMonitorStackedBar], 1, 1, [Att([BorderColor], p(1))], [p(1) as StatusMonitorStackedBarResult: Double. Get the property BorderColor of StatusMonitorStackedBar.], [newBorderColor := StatusMonitorStackedBar_GetBorderColor( atmStatusMonitorStackedBar )], 0, [StatusMonitorStackedBar.atm]);
+DefineFunction([StatusMonitorStackedBar_GetSegmentScore], [StatusMonitorStackedBar], 2, 2, [cell(p(2), StatusMonitorStackedBar_COLUMNNUMBER_SEGMENTSCORE, p(1))], [p(1) as StatusMonitorStackedBarp(2) as integer, Segment indexResult: Double. The score for the segment with index p(2) of StatusMonitorStackedBar p(1)], [StatusMonitorStackedBar_GetSegmentScore(c, indexer)], 0, [StatusMonitorStackedBar.atm]);
+DefineFunction([StatusMonitorStackedBar_GetSegmentCumulativeScore], [StatusMonitorStackedBar], 2, 2, [cell(p(2), StatusMonitorStackedBar_COLUMNNUMBER_SEGMENTCUMULATIVESCORE, p(1))], [p(1) as StatusMonitorStackedBarp(2) as integer, Segment indexResult: Double. The cumulative score for the segment with index p(2) of StatusMonitorStackedBar p(1)], [StatusMonitorStackedBar_GetSegmentCumulativeScore(c, indexer)], 0, [StatusMonitorStackedBar.atm]);
+DefineFunction([StatusMonitorStackedBar_UseDefaultColours], [StatusMonitorStackedBar], 1, 1, [do( var([indexer], vbValue, 0), var([indexer2], vbValue, 0), var([cred], vbValue, 0), var([cgreen], vbValue, 0), var([cblue], vbValue, 0),  { We divide the number of segments in 5 ranges. Every range will vary one of the color components Red, Green or Blue.   This way we get smoothly changing colors from red to purple to blue to green to yellow. Some understanding of color profiles is assumed.} var([b1], vbValue, 0), var([b2], vbValue, 0), var([b3], vbValue, 0), var([b4], vbValue, 0), var([b5], vbValue, 0),  { Obtain the ranges borders depending on the number of segments } b1 := Round(StatusMonitorStackedBar_GetNumberOfSegments(p(1)) / 5 * 1), b2 := 2 * b1, b3 := 3 * b1, b4 := 4 * b1, b5 := 5 * b1,  { Define the default coloring of the segments. } for(  indexer2 := 1, indexer2 <= StatusMonitorStackedBar_GetNumberOfSegments(p(1)), inc(indexer2),    do(   indexer := mod(indexer2, 5),      if(    indexer = 0,    indexer := 5   ),      indexer := indexer / 5,    indexer := indexer * StatusMonitorStackedBar_GetNumberOfSegments(p(1)),   indexer := indexer - b1 + 1,   indexer := indexer + trunc(indexer2 / 5),   if(    indexer <= b1,    do(     cred := 255,     cgreen := 0,     cblue := indexer / b1 * 255    )   ),     if(    and(     indexer > b1,     indexer <= b2    ),    do(     cred := 255 - ((indexer - b1)/ (b2 - b1)) * 255,     cgreen := 0,     cblue := 255    )   ),       if(    and(     indexer > b2,     indexer <= b3    ),    do(     cred := 0,     cgreen := ((indexer - b2) / (b3 - b2)) * 255,     cblue := 255    )   ),      if(    and(     indexer > b3,     indexer <= b4    ),    do(     cred := 0,     cgreen := 255,     cblue := 255 - ((indexer - b3) / (b4 - b3)) * 255    )   ),        if(    and(     indexer > b4,     indexer <= b5    ),    do(     cred := ((indexer - b4) / (b5 - b4)) * 255,     cgreen := 255,     cblue := 0    )   ),     StatusMonitorStackedBar_SetSegmentColor(p(1), indexer2, RgbColor(cred, cgreen, cblue))  ) ))], [p(1) as StatusMonitorStackedBarResult: none. Starts collecting status information at the connected atom.], [StatusMonitorStackedBar_UseDefaultColours(c)], 0, [StatusMonitorStackedBar.atm]);
+DefineFunction([StatusMonitorStackedBar_SetPercentagesVisible], [StatusMonitorStackedBar], 2, 2, [Att([PercentagesVisible], p(1)) := p(2)], [p(1) as StatusMonitorStackedBarp(2) as BooleanResult: none. Sets the property PercentagesVisible of StatusMonitorStackedBar.], [StatusMonitorStackedBar_SetPercentagesVisible( atmStatusMonitorStackedBar, newPercentagesVisible )], 0, [StatusMonitorStackedBar.atm]);
+DefineFunction([StatusMonitorStackedBar_GetPercentagesVisible], [StatusMonitorStackedBar], 1, 1, [Att([PercentagesVisible], p(1))], [p(1) as StatusMonitorStackedBarResult: Boolean. Get the property PercentagesVisible of StatusMonitorStackedBar.], [newPercentagesVisible := StatusMonitorStackedBar_GetPercentagesVisible( atmStatusMonitorStackedBar )], 0, [StatusMonitorStackedBar.atm]);
+DefineFunction([StatusMonitorStackedBar_SetTitle], [StatusMonitorStackedBar], 2, 2, [Att([Title], p(1)) := p(2)], [p(1) as StatusMonitorStackedBarp(2) as StringResult: none. Sets the property Title of StatusMonitorStackedBar.], [StatusMonitorStackedBar_SetTitle( atmStatusMonitorStackedBar, newTitle )], 0, [StatusMonitorStackedBar.atm]);
+DefineFunction([StatusMonitorStackedBar_GetTitle], [StatusMonitorStackedBar], 1, 1, [Att([Title], p(1))], [p(1) as StatusMonitorStackedBarResult: String. Get the property Title of StatusMonitorStackedBar.], [newTitle := StatusMonitorStackedBar_GetTitle( atmStatusMonitorStackedBar )], 0, [StatusMonitorStackedBar.atm]);
+DefineFunction([StatusMonitorStackedBar_SetTitleVisible], [StatusMonitorStackedBar], 2, 2, [Att([TitleVisible], p(1)) := p(2)], [p(1) as StatusMonitorStackedBarp(2) as BooleanResult: none. Sets the property TitleVisible of StatusMonitorStackedBar.], [StatusMonitorStackedBar_SetTitleVisible( atmStatusMonitorStackedBar, newTitleVisible )], 0, [StatusMonitorStackedBar.atm]);
+DefineFunction([StatusMonitorStackedBar_GetTitleVisible], [StatusMonitorStackedBar], 1, 1, [Att([TitleVisible], p(1))], [p(1) as StatusMonitorStackedBarResult: Boolean. Get the property TitleVisible of StatusMonitorStackedBar.], [newTitleVisible := StatusMonitorStackedBar_GetTitleVisible( atmStatusMonitorStackedBar )], 0, [StatusMonitorStackedBar.atm]);
+DefineFunction([StatusMonitorStackedBar_SetTextColor], [StatusMonitorStackedBar], 2, 2, [Att([TextColor], p(1)) := p(2)], [p(1) as StatusMonitorStackedBarp(2) as ColorResult: none. Sets the property TextColor of StatusMonitorStackedBar.], [StatusMonitorStackedBar_SetTextColor( atmStatusMonitorStackedBar, newTextColor )], 0, [StatusMonitorStackedBar.atm]);
+DefineFunction([StatusMonitorStackedBar_GetTextColor], [StatusMonitorStackedBar], 1, 1, [Att([TextColor], p(1))], [p(1) as StatusMonitorStackedBarResult: Color. Get the property TextColor of StatusMonitorStackedBar.], [newTextColor := StatusMonitorStackedBar_GetTextColor( atmStatusMonitorStackedBar )], 0, [StatusMonitorStackedBar.atm]);
+DefineFunction([StatusMonitorStackedBar_SetTextSizePercentages], [StatusMonitorStackedBar], 2, 2, [Att([TextSizePercentages], p(1)) := p(2)], [p(1) as StatusMonitorStackedBarp(2) as DoubleResult: none. Sets the property TextSizePercentages of StatusMonitorStackedBar.], [StatusMonitorStackedBar_SetTextSizePercentages( atmStatusMonitorStackedBar, newTextSizePercentages )], 0, [StatusMonitorStackedBar.atm]);
+DefineFunction([StatusMonitorStackedBar_GetTextSizePercentages], [StatusMonitorStackedBar], 1, 1, [Att([TextSizePercentages], p(1))], [p(1) as StatusMonitorStackedBarResult: Double. Get the property TextSizePercentages of StatusMonitorStackedBar.], [newTextSizePercentages := StatusMonitorStackedBar_GetTextSizePercentages( atmStatusMonitorStackedBar )], 0, [StatusMonitorStackedBar.atm]);
+DefineFunction([StatusMonitorStackedBar_SetTextSizeTitle], [StatusMonitorStackedBar], 2, 2, [Att([TextSizeTitle], p(1)) := p(2)], [p(1) as StatusMonitorStackedBarp(2) as DoubleResult: none. Sets the property TextSizeTitle of StatusMonitorStackedBar.], [StatusMonitorStackedBar_SetTextSizeTitle( atmStatusMonitorStackedBar, newTextSizeTitle )], 0, [StatusMonitorStackedBar.atm]);
+DefineFunction([StatusMonitorStackedBar_GetTextSizeTitle], [StatusMonitorStackedBar], 1, 1, [Att([TextSizeTitle], p(1))], [p(1) as StatusMonitorStackedBarResult: Double. Get the property TextSizeTitle of StatusMonitorStackedBar.], [newTextSizeTitle := StatusMonitorStackedBar_GetTextSizeTitle( atmStatusMonitorStackedBar )], 0, [StatusMonitorStackedBar.atm]);
+DefineFunction([StatusMonitorStackedBar_SetTextSizeLegend], [StatusMonitorStackedBar], 2, 2, [Att([TextSizeLegend], p(1)) := p(2)], [p(1) as StatusMonitorStackedBarp(2) as DoubleResult: none. Sets the property TextSizeLegend of StatusMonitorStackedBar.], [StatusMonitorStackedBar_SetTextSizeLegend( atmStatusMonitorStackedBar, newTextSizeLegend )], 0, [StatusMonitorStackedBar.atm]);
+DefineFunction([StatusMonitorStackedBar_GetTextSizeLegend], [StatusMonitorStackedBar], 1, 1, [Att([TextSizeLegend], p(1))], [p(1) as StatusMonitorStackedBarResult: Double. Get the property TextSizeLegend of StatusMonitorStackedBar.], [newTextSizeLegend := StatusMonitorStackedBar_GetTextSizeLegend( atmStatusMonitorStackedBar )], 0, [StatusMonitorStackedBar.atm]);
+DefineFunction([StatusMonitorStackedBar_GuiDataTypeAndRangeValidation], [StatusMonitorStackedBar], 1, 1, [do(
+ var([PassCheck], vbValue, true),
+ var([TextValue], vbString, 0),
+ var([NumericValue], vbValue, 0),
+
+ { First we do a DataType and DataRange validation before we really apply the changes...}
+
+ { ATOMNAME }
+ textvalue := GuiControl([ebAtomName], GuiGet([Text])),
+ 
+ if(
+  StringLength(textvalue) = 0,
+  do(
+   passcheck := false,   
+   msg([The atomname has to contain at least one character.])
+  )
+ ),
+ 
+ { TITLE }
+ textvalue := GuiControl([ebTitle], GuiGet([Text])),
+ 
+ if(
+  StringLength(textvalue) = 0,
+  do(
+   passcheck := false,   
+   msg([The title has to contain at least one character.])
+  )
+ ),
+ 
+ { REFRESH RATE }
+ textvalue := GuiControl([ebRefreshRate], GuiGet([Text])),
+ numericvalue := Value(GuiControl([ebRefreshRate], GuiGet([Text]))),
+ if(
+  passcheck = true,
+  if(
+   or(
+    StringLength(textvalue) = 0,
+    numericvalue <= 0
+   ),
+   do(
+    passcheck := false,   
+    msg([The inserted value for the refresh rate is invalid.])
+   )
+  )
+ ), 
+  
+ { HEIGTHBOUNDINGBOX } 
+ textvalue := GuiControl([ebHeightBoundingBox], GuiGet([Text])),
+ numericvalue := Value(GuiControl([ebHeightBoundingBox], GuiGet([Text]))),
+ if(
+  passcheck = true,
+  if(
+   or(
+    StringLength(textvalue) = 0,
+    numericvalue <= 0
+   ),
+   do(
+    passcheck := false,   
+    msg([The inserted value for the height of the bounding box is invalid.])
+   )
+  )
+ ),
+
+ { WIDTHBOUNDINGBOX } 
+ textvalue := GuiControl([ebWidthBoundingBox], GuiGet([Text])),
+ numericvalue := Value(GuiControl([ebWidthBoundingBox], GuiGet([Text]))),
+ if(
+  passcheck = true,
+  if(
+   or(
+    StringLength(textvalue) = 0,
+    numericvalue <= 0
+   ),
+   do(
+    passcheck := false,   
+    msg([The inserted value for the width of the bounding box is invalid.])
+   )
+  )
+ ),
+  
+ { TEXTSIZE TITLE } 
+ textvalue := GuiControl([ebTextSizeTitle], GuiGet([Text])),
+ numericvalue := Value(GuiControl([ebTextSizeTitle], GuiGet([Text]))),
+ if(
+  passcheck = true,
+  if(
+   or(
+    StringLength(textvalue) = 0,
+    numericvalue <= 0
+   ),
+   do(
+    passcheck := false,   
+    msg([The inserted value for the textsize of the title is invalid.])
+   )
+  )
+ ),
+
+ { TEXTSIZE LEGEND } 
+ textvalue := GuiControl([ebTextSizeLegend], GuiGet([Text])),
+ numericvalue := Value(GuiControl([ebTextSizeLegend], GuiGet([Text]))),
+ if(
+  passcheck = true,
+  if(
+   or(
+    StringLength(textvalue) = 0,
+    numericvalue <= 0
+   ),
+   do(
+    passcheck := false,   
+    msg([The inserted value for the textsize of the legend is invalid.])
+   )
+  )
+ ),
+
+ { TEXTSIZE PERCENTAGES } 
+ textvalue := GuiControl([ebTextSizePercentages], GuiGet([Text])),
+ numericvalue := Value(GuiControl([ebTextSizePercentages], GuiGet([Text]))),
+ if(
+  passcheck = true,
+  if(
+   or(
+    StringLength(textvalue) = 0,
+    numericvalue <= 0
+   ),
+   do(
+    passcheck := false,   
+    msg([The inserted value for the textsize of the percentages is invalid.])
+   )
+  )
+ ),
+  
+ { If the check succeeds then apply the changes to the StatusMonitorStackedBar }
+ if(
+  passcheck = true,
+  StatusMonitorStackedBar_GuiApplyChanges(p(1))
+ ),
+ 
+ return(passcheck)
+)
+], [p(1) as StatusMonitorStackedBar
+
+Result: Boolean. Returns tru if the data validation succeeds else false 
+], [StatusMonitorStackedBar_GuiDataTypeAndRangeValidation(GuiAtom)], 0, [StatusMonitorStackedBar.atm]);
+DefineFunction([StatusMonitorStackedBar_GuiApplyChanges], [StatusMonitorStackedBar], 1, 1, [do(
+ var([atmC], vbAtom, p(1)),
+ 
+ name(atmC) := GuiControl([ebAtomName], GuiGet([Text])),
+
+ StatusMonitorStackedBar_SetTitle(
+  atmC,
+  GuiControl([ebTitle], GuiGet([Text]))
+ ),
+   
+ StatusMonitorStackedBar_SetRefreshRate(
+  atmC,
+  Value(GuiControl([ebRefreshRate], GuiGet([Text])))
+ ),
+ 
+ StatusMonitorStackedBar_SetAutomaticScaling(
+  atmC,
+  GuiControl([cbAutomaticScaling], GuiGet([Checked])) 
+ ),
+ 
+ StatusMonitorStackedBar_SetHeightBoundingBox(
+  atmC,
+  Value(GuiControl([ebHeightBoundingBox], GuiGet([Text])))
+ ), 
+ 
+ StatusMonitorStackedBar_SetWidthBoundingBox(
+  atmC,
+  Value(GuiControl([ebWidthBoundingBox], GuiGet([Text])))
+ ),
+
+ {**Update GUI**}
+ if(
+   StatusMonitorStackedBar_GetAutomaticScaling(atmC) = True,
+   do(    
+     GuiControl(
+      [ebTextSizeTitle], 
+      GuiSet([Text], String(StatusMonitorStackedBar_GetTextSizeTitle(GuiAtom)))
+     ),
+     
+     GuiControl(
+      [ebTextSizeLegend], 
+      GuiSet([Text], String(StatusMonitorStackedBar_GetTextSizeLegend(GuiAtom)))
+     ),
+     
+     GuiControl(
+      [ebTextSizePercentages], 
+      GuiSet([Text], String(StatusMonitorStackedBar_GetTextSizePercentages(GuiAtom)))
+     )
+   )
+ ), 
+ 
+ {**Adjust xSize acoordingly**}
+ xSize(atmC) := StatusMonitorStackedBar_GetWidthBoundingBox(atmC),
+ 
+ StatusMonitorStackedBar_SetTextColor(
+  atmC,
+  GuiControl([cpText], GuiGet([Color]))
+ ),
+
+ StatusMonitorStackedBar_SetBorderColor(
+  atmC,
+  GuiControl([cpBorder], GuiGet([Color]))
+ ),
+
+ StatusMonitorStackedBar_SetTextSizeTitle(
+  atmC,
+  Value(GuiControl([ebTextSizeTitle], GuiGet([Text])))
+ ),
+
+ StatusMonitorStackedBar_SetTextSizeLegend(
+  atmC,
+  Value(GuiControl([ebTextSizeLegend], GuiGet([Text])))
+ ),
+ 
+ StatusMonitorStackedBar_SetTextSizePercentages(
+  atmC,
+  Value(GuiControl([ebTextSizePercentages], GuiGet([Text])))
+ ),
+
+ {**Adjust ySize acoordingly**}
+ ySize(atmC) := StatusMonitorStackedBar_GetHeightBoundingBox(atmC) + 2 * StatusMonitorStackedBar_GetTextSizeTitle(atmC),
+ 
+ StatusMonitorStackedBar_SetTitleVisible(
+  atmC,
+  GuiControl([cbTitleVisible], GuiGet([Checked]))
+ ),
+
+ StatusMonitorStackedBar_SetLegendVisible(
+  atmC,
+  GuiControl([cbLegendVisible], GuiGet([Checked]))
+ ),
+ 
+ StatusMonitorStackedBar_SetPercentagesVisible(
+  atmC,
+  GuiControl([cbPercentagesVisible], GuiGet([Checked]))
+ ),
+
+ StatusMonitorStackedBar_SetDiagramVisible(
+  atmC,
+  GuiControl([cbDiagramVisible], GuiGet([Checked]))
+ ),
+ 
+ StatusMonitorStackedBar_SetShowPercentagesBesidesLegend(
+  atmC,
+  GuiControl([cbShowPercentagesBesidesLegend], GuiGet([Checked]))
+ ),
+  
+ UpdateAnimator
+)
+], [p(1) as StatusMonitorStackedBar
+
+Result: none. Applies all the inserted values for the StatusMonitorStackedBar atom
+], [StatusMonitorStackedBar_GuiApplyChanges(GuiAtom)], 0, [StatusMonitorStackedBar.atm]);
+DefineFunction([StatusMonitorStackedBar_GetSegmentName], [StatusMonitorStackedBar], 2, 2, [cell(p(2), StatusMonitorStackedBar_COLUMNNUMBER_SEGMENTNAME, p(1), 2)], [p(1) as StatusMonitorStackedBarp(2) as Integer, index of the segmentResult: String. The name og the segment with index p(2)], [StatusMonitorStackedBar_GetSegmentName(c, indexer)], 0, [StatusMonitorStackedBar.atm]);
+DefineFunction([StatusMonitorStackedBar_SetRefreshRate], [StatusMonitorStackedBar], 2, 2, [Att([RefreshRate], p(1)) := p(2)], [p(1) as StatusMonitorStackedBarp(2) as IntegerResult: none. Sets the property RefreshRate of StatusMonitorStackedBar.], [StatusMonitorStackedBar_SetRefreshRate( atmStatusMonitorStackedBar, newRefreshRate )], 0, [StatusMonitorStackedBar.atm]);
+DefineFunction([StatusMonitorStackedBar_GetRefreshRate], [StatusMonitorStackedBar], 1, 1, [Att([RefreshRate], p(1))], [p(1) as StatusMonitorStackedBarResult: Integer. Get the property RefreshRate of StatusMonitorStackedBar.], [newRefreshRate := StatusMonitorStackedBar_GetRefreshRate( atmStatusMonitorStackedBar )], 0, [StatusMonitorStackedBar.atm]);
+DefineFunction([StatusMonitorStackedBar_Refresh], [StatusMonitorStackedBar], 1, 1, [{ APP-124 JG (29-04-2008) When speed is set to unlimited we cancel the refresh procedure...for slowing down reasons...}do( if(  RunSpeed < 1e40,  if(   atomexists(in(1, c)) = True,     do(    var([indexer], vbValue, 0),    var([timeinstatus], vbValue, 0),        for(     indexer:=1, indexer <= StatusMonitorStackedBar_NUMBEROFSTATUSES, inc(indexer),     do(      timeinstatus := StatusTime(in(1, p(1)), indexer),           if(       timeinstatus > 0,       { Now let's see if we can store the information of the score, the name and the identifier on the row}       StatusMonitorStackedBar_SetSegmentScore(p(1), indexer, timeinstatus)      )     )    )   )  ) ), { create a new event to trigger the refresh procedure. } createEvent(StatusMonitorStackedBar_GetRefreshRate(p(1)), p(1), StatusMonitorStackedBar_EVENTCODE_REFRESH))], [p(1) as StatusMonitorStackedBarResult: none. Refreshes the information of the StatusMonitorStackedBar, is only executed in Pull mode], [StatusMonitorStackedBar_Refresh(c)], 0, [StatusMonitorStackedBar.atm]);
+DefineFunction([StatusMonitorStackedBar_SetShowPercentagesBesidesLegend], [StatusMonitorStackedBar], 2, 2, [Att([ShowPercentagesBesidesLegend], p(1)) := p(2)], [p(1) as StatusMonitorStackedBarp(2) as BooleanResult: none. Sets the property ShowPercentagesLeftOfLegend of StatusMonitorStackedBar.], [StatusMonitorStackedBar_SetShowPercentagesLeftOfLegend( atmStatusMonitorStackedBar, newShowPercentagesLeftOfLegend )], 0, [StatusMonitorStackedBar.atm]);
+DefineFunction([StatusMonitorStackedBar_GetShowPercentagesBesidesLegend], [StatusMonitorStackedBar], 1, 1, [Att([ShowPercentagesBesidesLegend], p(1))], [p(1) as StatusMonitorStackedBarResult: Boolean. Get the property ShowPercentagesLeftOfLegend of StatusMonitorStackedBar.], [newShowPercentagesLeftOfLegend := StatusMonitorStackedBar_GetShowPercentagesLeftOfLegend( atmStatusMonitorStackedBar )], 0, [StatusMonitorStackedBar.atm]);
+DefineFunction([StatusMonitorStackedBar_InitializeStatuses], [StatusMonitorStackedBar], 1, 1, [do( { Only initialize the status when the atom is created for the first time in the model. When an atom is duplicated in the model we don't want the statuses to be   initialized again because then coloring information can get lost. And that's exactly something why you want to duplicate a StatusMonitorStackedBar because you want to   reuse self defined coloring of the segments. }  if(  StatusMonitorStackedBar_GetStatusesInitialized(p(1)) = false,  do(   var([indexer], vbValue, 0),      StatusMonitorStackedBar_SetNumberOfSegments(p(1), StatusMonitorStackedBar_NUMBEROFSTATUSES),     for(    indexer := 1, indexer <= StatusMonitorStackedBar_NUMBEROFSTATUSES, inc(indexer),    StatusMonitorStackedBar_SetSegmentName(p(1), indexer, statusname(indexer))   ),      StatusMonitorStackedBar_UseDefaultColours(p(1)),     StatusMonitorStackedBar_SetStatusesInitialized(p(1), true)   ) ))], [p(1) as StatusMonitorStackedBarResult: none. Initializes the available statuses for the Status Monitor], [StatusMonitorStackedBar_InitializeStatuses(c)], 0, [StatusMonitorStackedBar.atm]);
+DefineFunction([StatusMonitorStackedBar_SetStatusesInitialized], [StatusMonitorStackedBar], 2, 2, [Att([StatusesInitialized], p(1)) := p(2)], [p(1) as StatusMonitorStackedBarp(2) as BooleanResult: none. Sets the property StatusesInitialized of StatusMonitorStackedBar.], [StatusMonitorStackedBar_SetStatusesInitialized( atmStatusMonitorStackedBar, newStatusesInitialized )], 0, [StatusMonitorStackedBar.atm]);
+DefineFunction([StatusMonitorStackedBar_GetStatusesInitialized], [StatusMonitorStackedBar], 1, 1, [Att([StatusesInitialized], p(1))], [p(1) as StatusMonitorStackedBarResult: Boolean. Get the property StatusesInitialized of StatusMonitorStackedBar.], [newStatusesInitialized := StatusMonitorStackedBar_GetStatusesInitialized( atmStatusMonitorStackedBar )], 0, [StatusMonitorStackedBar.atm]);
+DefineFunction([StatusMonitorStackedBar_SetDiagramVisible], [StatusMonitorStackedBar], 2, 2, [Att([DiagramVisible], p(1)) := p(2)], [p(1) as StatusMonitorStackedBarp(2) as BooleanResult: none. Sets the property DiagramVisible of StatusMonitorStackedBar.], [StatusMonitorStackedBar_SetDiagramVisible( atmStatusMonitorStackedBar, newDiagramVisible )], 0, [StatusMonitorStackedBar.atm]);
+DefineFunction([StatusMonitorStackedBar_GetDiagramVisible], [StatusMonitorStackedBar], 1, 1, [Att([DiagramVisible], p(1))], [p(1) as StatusMonitorStackedBarResult: Boolean. Get the property DiagramVisible of StatusMonitorStackedBar.], [newDiagramVisible := StatusMonitorStackedBar_GetDiagramVisible( atmStatusMonitorStackedBar )], 0, [StatusMonitorStackedBar.atm]);
+DefineFunction([StatusMonitorStackedBar_StartCollectingStatusInformation], [StatusMonitorStackedBar], 1, 1, [if( atomexists(in(1, c)) = True, { When an atom is connected to the Status Monitor   start collecting status information on this atom } EnableStatusMonitor(in(1, p(1)), true))], [p(1) as StatusMonitorStackedBarResult: none. Starts collecting status information at the connected atom.], [StatusMonitorStackedBar_StartCollectingStatusInformation(c)], 0, [StatusMonitorStackedBar.atm]);
+DefineFunction([StatusMonitorStackedBar_Animate3D], [StatusMonitorStackedBar], 1, 1, [do( var([atmC], vbAtom, p(1)), var([indexer], vbValue, 0), var([heightscore], vbValue, 0), var([segmentsdrawn], vbValue, 0), var([offset], vbValue, 0), var([temp], vbValue, 0), { The Diagram's Title } if(  StatusMonitorStackedBar_GetTitleVisible(atmC),  DrawText(   0,   StatusMonitorStackedBar_GetHeightBoundingBox(atmC),   StringLength(StatusMonitorStackedBar_GetTitle(atmC)) * StatusMonitorStackedBar_GetTextSizeTitle(atmC),   StatusMonitorStackedBar_GetTextSizeTitle(atmC) * 2,   StatusMonitorStackedBar_GetTitle(atmC),   StatusMonitorStackedBar_GetTextColor(atmC),   StatusMonitorStackedBar_GetTextSizeTitle(atmC),   [Arial],   0,   0,   0,   HA_LEFT + VA_TOP  ) ),  { APP-124 JG (29-04-2008) Show a message when the diagram is not refreshed...} if(  runspeed = 1E40,  DrawText(   0,   -4 * StatusMonitorStackedBar_GetTextSizeTitle(atmC),   StatusMonitorStackedBar_GetTextSizeTitle(atmC) * 40,   StatusMonitorStackedBar_GetTextSizeTitle(atmC) * 4,   Concat(    [Refresment has been paused.],    CR,    [(Lower the runspeed to refresh the diagram)]   ),   ColorRed,   StatusMonitorStackedBar_GetTextSizeTitle(atmC),   [Arial],   True,   0,   0,   HA_LEFT + VA_TOP  ) ), { Default Offset } offset := Max(1, StatusMonitorStackedBar_GetTextSizeLegend(atmC)),  if(  and(   StatusMonitorStackedBar_GetShowPercentagesBesidesLegend(atmC) = true,   StatusMonitorStackedBar_GetPercentagesVisible(atmC) = true  ),  offset := StatusMonitorStackedBar_GetTextSizeLegend(atmC) * 7 ),  if(  StatusMonitorStackedBar_GetDiagramVisible(atmC) = false,  offset := -3 ), for(  indexer := 1, indexer <= StatusMonitorStackedBar_GetNumberOfSegments(atmC), inc(indexer),  if(   StatusMonitorStackedBar_GetSegmentScore(atmC, indexer) > 0,   do(    inc(segmentsdrawn),        { **************** COLORED SEGMENTS ******************* }    if(     StatusMonitorStackedBar_GetDiagramVisible(atmC) = True,     do(            {--Segment filling--}      di3DBox(        0,        if(         indexer = 1,         0,         (cell(indexer - 1, STATUSMONITORSTACKEDBAR_COLUMNNUMBER_SEGMENTCUMULATIVESCORE, atmC) / StatusMonitorStackedBar_GetTotalScore(atmC)) * StatusHistogram_GetHeightBoundingBox(atmC)        ),        0,        xSize(atmC),        (cell(indexer, STATUSMONITORSTACKEDBAR_COLUMNNUMBER_SEGMENTCUMULATIVESCORE, atmC) / StatusMonitorStackedBar_GetTotalScore(atmC)) * StatusHistogram_GetHeightBoundingBox(atmC)           - if(indexer = 1, 0, (cell(indexer - 1, STATUSMONITORSTACKEDBAR_COLUMNNUMBER_SEGMENTCUMULATIVESCORE, atmC) / StatusMonitorStackedBar_GetTotalScore(atmC)) * StatusHistogram_GetHeightBoundingBox(atmC)),               StatusHistogram_GetTextSizeTitle(atmC),        cell(indexer, STATUSMONITORSTACKEDBAR_COLUMNNUMBER_SEGMENTCOLOR, atmC)      ),      {--Segment frame--}      SetMaterialWireFrame(1),      di3DBox(        0,        if(         indexer = 1,         0,         (cell(indexer - 1, STATUSMONITORSTACKEDBAR_COLUMNNUMBER_SEGMENTCUMULATIVESCORE, atmC) / StatusMonitorStackedBar_GetTotalScore(atmC)) * StatusHistogram_GetHeightBoundingBox(atmC)         ),        0,        xSize(atmC),        (cell(indexer, STATUSMONITORSTACKEDBAR_COLUMNNUMBER_SEGMENTCUMULATIVESCORE, atmC) / StatusMonitorStackedBar_GetTotalScore(atmC)) * StatusHistogram_GetHeightBoundingBox(atmC)           - if(indexer = 1, 0, (cell(indexer - 1, STATUSMONITORSTACKEDBAR_COLUMNNUMBER_SEGMENTCUMULATIVESCORE, atmC) / StatusMonitorStackedBar_GetTotalScore(atmC)) * StatusHistogram_GetHeightBoundingBox(atmC)),                StatusHistogram_GetTextSizeTitle(atmC),        StatusMonitorStackedBar_GetBorderColor(atmC)      ),      SetMaterialWireFrame(0),           { **************** PERCENTAGES ******************* }      if(       and(        StatusMonitorStackedBar_GetPercentagesVisible(atmC) = True,        StatusMonitorStackedBar_GetShowPercentagesBesidesLegend(atmC) = false,        StatusMonitorStackedBar_GetDiagramVisible(atmC) = true       ),       do(        if(         indexer = 1,         heightscore := cell(indexer, STATUSMONITORSTACKEDBAR_COLUMNNUMBER_SEGMENTCUMULATIVESCORE, atmC) / StatusMonitorStackedBar_GetTotalScore(atmC) * (StatusHistogram_GetHeightBoundingBox(atmC) / 2),         do(          temp := cell(indexer, STATUSMONITORSTACKEDBAR_COLUMNNUMBER_SEGMENTSCORE, atmC) / 2,          temp := temp + cell(indexer - 1, STATUSMONITORSTACKEDBAR_COLUMNNUMBER_SEGMENTCUMULATIVESCORE, atmC),          temp := temp /  StatusMonitorStackedBar_GetTotalScore(atmC),          temp := temp * StatusHistogram_GetHeightBoundingBox(atmC),          heightscore := temp         )        ),        DrawText(         StatusMonitorStackedBar_GetTextSizePercentages(atmC) + xSize(atmC),         heightscore,         StatusMonitorStackedBar_GetTextSizePercentages(atmC) * 10,         StatusMonitorStackedBar_GetTextSizePercentages(atmC) * 2,         concat(          String(StatusMonitorStackedBar_GetSegmentScore(atmC, indexer) / StatusMonitorStackedBar_GetTotalScore(atmC) * 100, 0, 2),          [%]         ),         StatusMonitorStackedBar_GetTextColor(atmC),         StatusMonitorStackedBar_GetTextSizePercentages(atmC),         [Arial],         0,0,0,         HA_LEFT + VA_TOP        )       )      )      )    ),    { ***************** LEGEND ************************ }    if(     StatusMonitorStackedBar_GetLegendVisible(atmC) = True,     do(      { The box for the color }      di3DBox(       -1 * StatusMonitorStackedBar_GetTextSizeLegend(atmC) - offset,       StatusMonitorStackedBar_GetTextSizeLegend(atmC) * (2 * segmentsdrawn - 2),       0,       StatusMonitorStackedBar_GetTextSizeLegend(atmC),       StatusMonitorStackedBar_GetTextSizeLegend(atmC),       StatusMonitorStackedBar_GetTextSizeLegend(atmC),       StatusMonitorStackedBar_GetSegmentColor(atmC, indexer)      ),      SetMaterialWireFrame(1),            di3DBox(       -1 * StatusMonitorStackedBar_GetTextSizeLegend(atmC) - offset,       StatusMonitorStackedBar_GetTextSizeLegend(atmC) * (2 * segmentsdrawn - 2),       0,       StatusMonitorStackedBar_GetTextSizeLegend(atmC),       StatusMonitorStackedBar_GetTextSizeLegend(atmC),       StatusMonitorStackedBar_GetTextSizeLegend(atmC),       StatusMonitorStackedBar_GetBorderColor(atmC)      ),      SetMaterialWireFrame(0),            { The name of the segment }      DrawText(       -1 * StringLength(String(cell(indexer, StatusMonitorStackedBar_COLUMNNUMBER_SEGMENTNAME, atmC))) * StatusMonitorStackedBar_GetTextSizeLegend(atmC) - 1.5 * StatusMonitorStackedBar_GetTextSizeLegend(atmC) - offset,       StatusMonitorStackedBar_GetTextSizeLegend(atmC) * (2 * segmentsdrawn - 1) - StatusMonitorStackedBar_GetTextSizeLegend(atmC) / 2.5,       StringLength(String(cell(indexer, StatusMonitorStackedBar_COLUMNNUMBER_SEGMENTNAME, atmC))) * StatusMonitorStackedBar_GetTextSizeLegend(atmC),       StatusMonitorStackedBar_GetTextSizeLegend(atmC) * 2,       String(cell(indexer, StatusMonitorStackedBar_COLUMNNUMBER_SEGMENTNAME, atmC)),       StatusMonitorStackedBar_GetTextColor(atmC),       StatusMonitorStackedBar_GetTextSizeLegend(atmC),       [Arial],       0,       0,       0,       HA_RIGHT + VA_TOP      ),            if(       and(        StatusMonitorStackedBar_GetShowPercentagesBesidesLegend(atmC) = true,        StatusMonitorStackedBar_GetPercentagesVisible(atmC) = true       ),          DrawText(        -1 * offset + StatusMonitorStackedBar_GetTextSizeLegend(atmC),        StatusMonitorStackedBar_GetTextSizeLegend(atmC) * (2 * segmentsdrawn - 1) - StatusMonitorStackedBar_GetTextSizeLegend(atmC) / 2.5,        StatusMonitorStackedBar_GetTextSizeLegend(atmC) * 10,        StatusMonitorStackedBar_GetTextSizeLegend(atmC) * 2,        concat(          String(StatusMonitorStackedBar_GetSegmentScore(atmC, indexer) / StatusMonitorStackedBar_GetTotalScore(atmC) * 100, 0, 2),          [%]         ),        StatusMonitorStackedBar_GetTextColor(atmC),        StatusMonitorStackedBar_GetTextSizeLegend(atmC),        [Arial],        0,        0,        0,        HA_LEFT + VA_TOP       )            )          )    )   )  ) ))], [p(1) as StatusMonitorStackedBar], [StatusMonitorStackedBar_Animate3D(c)], 0, [StatusMonitorStackedBar.atm]);
+DefineFunction([StatusMonitorStackedBar_GetHeightBoundingBox], [Atom Parameters], 1, 1, [Att(16, p(1))], [Returns the value of attribute HeightBoundingBox (# 16) of StatusMonitorStackedBar e1], [StatusMonitorStackedBar_GetHeightBoundingBox(c)], 0, [StatusMonitorStackedBar.atm]);
+DefineFunction([StatusMonitorStackedBar_SetHeightBoundingBox], [Atom Parameters], 2, 2, [Att(16, p(1)) := p(2)], [Sets the value of attribute HeightBoundingBox (# 16) of StatusMonitorStackedBar e1 to e2], [StatusMonitorStackedBar_SetHeightBoundingBox(c, 1)], 0, [StatusMonitorStackedBar.atm]);
+DefineFunction([StatusMonitorStackedBar_GetWidthBoundingBox], [Atom Parameters], 1, 1, [Att(17, p(1))], [Returns the value of attribute WidthBoundingBox (# 17) of StatusMonitorStackedBar e1], [StatusMonitorStackedBar_GetWidthBoundingBox(c)], 0, [StatusMonitorStackedBar.atm]);
+DefineFunction([StatusMonitorStackedBar_SetWidthBoundingBox], [Atom Parameters], 2, 2, [Att(17, p(1)) := p(2)], [Sets the value of attribute WidthBoundingBox (# 17) of StatusMonitorStackedBar e1 to e2], [StatusMonitorStackedBar_SetWidthBoundingBox(c, 1)], 0, [StatusMonitorStackedBar.atm]);
+DefineFunction([StatusMonitorStackedBar_GetAutomaticScaling], [Atom Parameters], 1, 1, [Att(18, p(1))], [Returns the value of attribute AutomaticScaling (# 18) of StatusMonitorStackedBar e1], [StatusMonitorStackedBar_GetAutomaticScaling(c)], 0, [StatusMonitorStackedBar.atm]);
+DefineFunction([StatusMonitorStackedBar_SetAutomaticScaling], [Atom Parameters], 2, 2, [Att(18, p(1)) := p(2)], [Sets the value of attribute AutomaticScaling (# 18) of StatusMonitorStackedBar e1 to e2], [StatusMonitorStackedBar_SetAutomaticScaling(c, 1)], 0, [StatusMonitorStackedBar.atm]);
+Set(Icon(a), 
+	RegisterIcon(pDir([media\images\default.jpg]), [default.jpg]));
+SetMaterial(
+	RegisterMaterial([Default], 8421504, 8421504, 3289650, 0, 0.100000001490116, 0, false, false, 1, 0), 1, a);
+Set(Version(a), 7.3);
+SetTreeIcon(pDir([Media\Icons\StatusMonitorStackedBar.ico]));
+SetChannels(1, 0);
+SetChannelRanges(1, 1, 0, 0);
+int001(78);
+SetSize(5, 6, 1);
+LockPosition(false);
+LockSize(false);
+DisableIconRotation(false);
+SetProductCode([]);
+CreateAttributes(18);
+SetAttributeName(r(1), [NumberOfSegments]);
+SetAttributeName(r(2), [TotalScore]);
+SetAttributeName(r(3), [Title]);
+SetAttributeName(r(4), [TextColor]);
+SetAttributeName(r(5), [BorderColor]);
+SetAttributeName(r(6), [TextSizeTitle]);
+SetAttributeName(r(7), [TextSizePercentages]);
+SetAttributeName(r(8), [TextSizeLegend]);
+SetAttributeName(r(9), [LegendVisible]);
+SetAttributeName(r(10), [PercentagesVisible]);
+SetAttributeName(r(11), [TitleVisible]);
+SetAttributeName(r(12), [DiagramVisible]);
+SetAttributeName(r(13), [ShowPercentagesBesidesLegend]);
+SetAttributeName(r(14), [RefreshRate]);
+SetAttributeName(r(15), [StatusesInitialized]);
+SetAttributeName(r(16), [HeightBoundingBox]);
+SetAttributeName(r(17), [WidthBoundingBox]);
+SetAttributeName(r(18), [AutomaticScaling]);
+SetTextAtt(r(3), [Status Monitor Stacked Bar]);
+SetExprAtt(r(4), [colorblack]);
+SetExprAtt(r(5), [colorblack]);
+SetAtt(r(6), 0.5);
+SetAtt(r(7), 0.25);
+SetAtt(r(8), 0.25);
+SetAtt(r(9), 1);
+SetAtt(r(10), 1);
+SetAtt(r(11), 1);
+SetAtt(r(12), 1);
+SetAtt(r(14), 60);
+SetAtt(r(16), 5);
+SetAtt(r(17), 5);
+SetAtt(r(18), 1);
+int024;
+SetTable(1, 4);
+int015(0, 64, [ 
+1
+]);
+int015(1, 138, [`SegmentScore`
+]);
+int015(2, 138, [`SegmentCumulativeScore`
+]);
+int015(3, 132, [`SegmentColor`
+]);
+int015(4, 113, [`SegmentName`
+]);
+Set(OnEvent, [case(
+ inlist(
+  eventcode,
+  {1} StatusMonitorStackedBar_EVENTCODE_STARTCOLLECTINGSTATUSINFORMATION,
+  {2} StatusMonitorStackedBar_EVENTCODE_REFRESH
+ ),
+ { 1 }
+ { Start the operation. }
+ StatusMonitorStackedBar_StartCollectingStatusInformation(c),
+ 
+ { 2 }
+ { Start the operation. }
+ StatusMonitorStackedBar_Refresh(c)
+)
+]);
+Set(OnCreation, [StatusMonitorStackedBar_InitializeStatuses(c)
+]);
+Set(OnReset, [StatusMonitorStackedBar_Initialize(c)
+]);
+Set(OnUser, [Do( { Delete any current instances of this form.}  GuiDestroy([StatusMonitorStackedBar]), { Register the GUI-form for this atom.} GuiRegister(PDir([\Atoms\StatusMonitorStackedBar.gui]), 1), { Show the GUI-form.} Guicreate([formStatusMonitorStackedBar], [StatusMonitorStackedBar], 0, c, 0, 1))]);
+Set(On2DDraw, [StatusMonitorStackedBar_Animate2D(c)]);
+Set(On3DDraw, [StatusMonitorStackedBar_Animate3D(c)]);
+SetStatus(0);
+int018;
+int007;

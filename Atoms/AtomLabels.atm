@@ -1,0 +1,943 @@
+
+
+{Preregister functions}
+
+PreregisterFunction([AddAtomLabelsToTable], 1, 1);
+PreregisterFunction([ShowAtomLabels], 1, 1);
+
+
+{Atom: AtomLabels}
+
+sets;
+BaseClass;
+CreateAtom(a, s, [], 1, false);
+Set(OnInit, [Do( if(  not(menuexists([&Tools])),  addmenu([&Tools],[],[]) ), addmenu([-],[&Tools],[]), addmenu(  [View Atom &Labels],  [&Tools],  [ShowAtomLabels(0)],  [Shift+F10] ),  dim([refAtomLabels],vbatom), refAtomLabels := c)]);
+int023([AtomLabels], 0, 0);
+DefineFunction([AddAtomLabelsToTable], [Various], 1, 1, [do( ForAtomTreeUnder(  p(1),  do(   sets,   do(    settable(+(nrows(refAtomLabels),ddbnotemptycount(s)),4,refAtomLabels),    repeat(     ddbnotemptycount(s),     do(      inc(ddb([v1],refAtomLabels),1),      setcell(ddb([v1],refAtomLabels),1,name(s),refAtomLabels),      if(       CompareText(name(s), [main]),              setcell(ddb([v1],refAtomLabels),2,[no container],refAtomLabels),       setcell(ddb([v1],refAtomLabels),2,name(up(s)),refAtomLabels)      ),      setcell(ddb([v1],refAtomLabels),3,ddbnotemptyname(count,s),refAtomLabels),      setcell(ddb([v1],refAtomLabels),4,ddb(ddbnotemptyname(count,s),s),refAtomLabels)     )    )   )  ),  1 ))], [], [], 0, [AtomLabels.atm]);
+DefineFunction([ShowAtomLabels], [Various], 1, 1, [do( var([valAnimOrTree],vbvalue, p(1)),  {Clear all variables} settable(0,0,refAtomLabels), sddb([v2],0,refAtomLabels), sddb([v1],0,refAtomLabels), var([valL],vbValue,0), if(  valAnimOrTree = 0, { valAnimOrTree  = 0, label for animatom!}  do(   if(    And(IsmodelLayoutVisible, NoSelectedAtoms> 0),     repeat(       NoSelectedAtoms,          AddAtomLabelsToTable(SelectedAtoms(Count))                   ),     sets(refAtomLabels)   ),      if(    nrows(refAtomLabels)>0,    valL := 1   )        ),  if(   valAnimOrTree = 1,  { valAnimOrTree  = 1, label for treeatom!}   do(       if(      TreeAtom = 0,            if(       selectatom(main,main,[Select an atom to display content atom labels]),       do(        sets,        ForAtomTreeUnder(s,          do(           valL := valL + DdbNotEmptyCount(a)          ),1        ),        AddAtomLabelsToTable(s)       ),       sets(refAtomLabels)      ),      do(       sets(treeatom),       ForAtomTreeUnder(s,         do(          valL := valL + DdbNotEmptyCount(a)         ),1       ),       AddAtomLabelsToTable(s)      )     )           )  ) ),  {if not cancel go through all atoms to find the ddb fields} if(  valL <> 0,    {if ddb fields are found make colum headers and show table}  do(   setcell(0,1,[Atom],refAtomLabels),   setcell(0,2,[Container],refAtomLabels),   setcell(0,3,[Label],refAtomLabels),   setcell(0,4,[Value],refAtomLabels),   edittable(refAtomLabels)  ),  if(   s<>refAtomLabels,   if(    NoSelectedAtoms = 1,    msg(concat([No labels defined on ],name(s),[ or on its content.]),1),    if(     NoSelectedAtoms > 1,     msg([No labels defined on selected atoms or on their content.],1)    )   ),   msg(([No atom selected.]),1)  ) ), {Clear all ddb fields} sddb([v2],0,refAtomLabels), sddb([v1],0,refAtomLabels))], [Enter helptext], [Enter Syntax Example], 0, [Menno van Schayk]);
+Set(Icon(a), 
+	RegisterIcon(pDir([media\images\default.jpg]), [default.jpg]));
+SetMaterial(
+	RegisterMaterial([Default], 8421504, 8421504, 3289650, 0, 0.100000001490116, 0, false, false, 1, 0), 1, a);
+Set(Version(a), 7.3);
+SetTreeIcon(pDir([Media\Icons\Tools.ico]));
+Set(Info, [System atom, do not drag this atom into your model.General------------Allows you to view atom labels in a table.Last Revision:---------------------February, 2008]);
+Set(DdbRec, [>t-nocreate:1.]);
+int001(10);
+SetSize(1, 1, 1);
+LockPosition(false);
+LockSize(false);
+DisableIconRotation(false);
+SetProductCode([]);
+int024;
+SetTable(179, 4);
+int015(0, 64, [ 
+1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+20
+21
+22
+23
+24
+25
+26
+27
+28
+29
+30
+31
+32
+33
+34
+35
+36
+37
+38
+39
+40
+41
+42
+43
+44
+45
+46
+47
+48
+49
+50
+51
+52
+53
+54
+55
+56
+57
+58
+59
+60
+61
+62
+63
+64
+65
+66
+67
+68
+69
+70
+71
+72
+73
+74
+75
+76
+77
+78
+79
+80
+81
+82
+83
+84
+85
+86
+87
+88
+89
+90
+91
+92
+93
+94
+95
+96
+97
+98
+99
+100
+101
+102
+103
+104
+105
+106
+107
+108
+109
+110
+111
+112
+113
+114
+115
+116
+117
+118
+119
+120
+121
+122
+123
+124
+125
+126
+127
+128
+129
+130
+131
+132
+133
+134
+135
+136
+137
+138
+139
+140
+141
+142
+143
+144
+145
+146
+147
+148
+149
+150
+151
+152
+153
+154
+155
+156
+157
+158
+159
+160
+161
+162
+163
+164
+165
+166
+167
+168
+169
+170
+171
+172
+173
+174
+175
+176
+177
+178
+179
+]);
+int015(1, 64, [`Atom`
+`main`
+`Library`
+`BASIC MODELING`
+`BASIC MODELING`
+`Product`
+`Container`
+`Container`
+`TRANSPORT`
+`TRANSPORT`
+`CONVEYORS`
+`CONVEYORS`
+`ACCUMULATING`
+`ACCUMULATING`
+`Advanced Accumulating Conveyor Straight`
+`Opening-atom`
+`Advanced Accumulating Conveyor Curved`
+`NONACCUMULATING`
+`NONACCUMULATING`
+`Advanced Non Accumulating Conveyor Straight`
+`INTERSECTIONS`
+`INTERSECTIONS`
+`Turntable`
+`Turntable`
+`General Conveyor Functions`
+`FLOORBOUND`
+`FLOORBOUND`
+`Incoming Queue`
+`Docking Station`
+`Battery`
+`Speedometer`
+`Speedometer`
+`RAILBOUND`
+`RAILBOUND`
+`Transfer Car`
+`InitializationTransferCar`
+`Init__Components`
+`Init__TransferCarController`
+`TransferCarLanguagePack`
+`Components`
+`TransferCar`
+`TransferStation`
+`TransferCarStorageUnit`
+`RoutingPlan`
+`ControlTransferCar`
+`ControlTransferStation`
+`DispatchOrders`
+`FinishedOrders`
+`ListTransferStrategies`
+`BuildUpTableTransferCar`
+`BuildUpTableTransferStation`
+`BuildUpTableTransferStationPort`
+`ELEVATION`
+`ELEVATION`
+`ROBOTS`
+`ROBOTS`
+`GrabBase`
+`GrabBase`
+`GrabBase`
+`Grab`
+`Routineslist`
+`Taskslist`
+`Slideway_Z`
+`Slideway_Z`
+`Slideway_Z`
+`Grabber`
+`Routinelist`
+`Tasklist`
+`Tool Base`
+`Tool Base`
+`Tool Base`
+`Tool`
+`Routines`
+`Tasks`
+`CRANES`
+`CRANES`
+`X Direction`
+`Y Direction`
+`Crane`
+`Crane`
+`STORAGE`
+`STORAGE`
+`AUTOMATED`
+`AUTOMATED`
+`Advanced ASRS`
+`Advanced ASRS`
+`SRM`
+`Hoist`
+`Shuttle`
+`SRM Input`
+`SRM Output`
+`High Rise Rack`
+`PROCESSES`
+`PROCESSES`
+`OPERATORS`
+`OPERATORS`
+`Team`
+`Operator`
+`NETWORK`
+`NETWORK`
+`AVAILABILITY`
+`AVAILABILITY`
+`FLOW CONTROL`
+`FLOW CONTROL`
+`Condition Control`
+`Notify Router`
+`TIME`
+`TIME`
+`User Events`
+`User Events`
+`DATA`
+`DATA`
+`Table`
+`Export Table`
+`Word`
+`Excel`
+`Excel`
+`ExcelTableRead`
+`ExcelTableWrite`
+`Database Connection`
+`Database Connection`
+`Socket Listen`
+`ExcelActiveX`
+`ExcelActiveX`
+`TOOLS`
+`TOOLS`
+`Empirical Distribution`
+`Function Editor`
+`Initialize`
+`RESULTS`
+`RESULTS`
+`STATUS`
+`STATUS`
+`GANTT`
+`GANTT`
+`ActivityInfo`
+`Data Recorder`
+`Graph`
+`History Viewer`
+`Report`
+`OPTIMIZATION`
+`OPTIMIZATION`
+`Optimizer`
+`Optimizer`
+`VISUALIZATION`
+`VISUALIZATION`
+`Animation Recorder`
+`Omni Light`
+`Omni Light`
+`VIRTUAL REALITY`
+`VIRTUAL REALITY`
+`SYSTEM`
+`SYSTEM`
+`Atom Versions`
+`Atom Versions`
+`3DIcons`
+`AtomLabels`
+`AtomLabels`
+`AutoFit Support`
+`Basic Icon Library`
+`EditFields`
+`Goods Icon Library`
+`Graphs`
+`History`
+`History`
+`StatusList`
+`Experiment Support`
+`Experiment Support`
+`Experiment Support`
+`Experiment Support`
+`Groups`
+`Search`
+`Gui`
+`Attribute`
+`MoveAtom3D`
+`MoveAtom3D`
+`Kernel Functions`
+`AUTOLOADED`
+`AUTOLOADED`
+`Model`
+]);
+int015(2, 64, [`Container`
+`no container`
+`main`
+`Library`
+`Library`
+`BASIC MODELING`
+`BASIC MODELING`
+`BASIC MODELING`
+`Library`
+`Library`
+`TRANSPORT`
+`TRANSPORT`
+`CONVEYORS`
+`CONVEYORS`
+`ACCUMULATING`
+`Speed Changing Accumulating Conveyor`
+`ACCUMULATING`
+`CONVEYORS`
+`CONVEYORS`
+`NONACCUMULATING`
+`CONVEYORS`
+`CONVEYORS`
+`Turntable Unit`
+`Turntable Unit`
+`CONVEYORS`
+`TRANSPORT`
+`TRANSPORT`
+`Battery Charging Station`
+`Battery Charging Station`
+`Battery Charging Station`
+`FLOORBOUND`
+`FLOORBOUND`
+`TRANSPORT`
+`TRANSPORT`
+`RAILBOUND`
+`Transfer Car`
+`InitializationTransferCar`
+`InitializationTransferCar`
+`InitializationTransferCar`
+`Transfer Car`
+`Components`
+`Components`
+`Components`
+`TransferCarController`
+`TransferCarController`
+`TransferCarController`
+`TransferCarController`
+`TransferCarController`
+`TransferCarController`
+`TransferCarController`
+`TransferCarController`
+`TransferCarController`
+`TRANSPORT`
+`TRANSPORT`
+`TRANSPORT`
+`TRANSPORT`
+`Advanced Scara Robot`
+`Advanced Scara Robot`
+`Advanced Scara Robot`
+`GrabBase`
+`Advanced Scara Robot`
+`Advanced Scara Robot`
+`Slideway_Y`
+`Slideway_Y`
+`Slideway_Y`
+`Slideway_Z`
+`Advanced Linear Robot`
+`Advanced Linear Robot`
+`Advanced Vertical Articulated Robot`
+`Advanced Vertical Articulated Robot`
+`Advanced Vertical Articulated Robot`
+`Tool Base`
+`Advanced Vertical Articulated Robot`
+`Advanced Vertical Articulated Robot`
+`TRANSPORT`
+`TRANSPORT`
+`Portal Crane`
+`X Direction`
+`Y Direction`
+`Y Direction`
+`Library`
+`Library`
+`STORAGE`
+`STORAGE`
+`AUTOMATED`
+`AUTOMATED`
+`Advanced ASRS`
+`SRM`
+`Hoist`
+`Advanced ASRS`
+`Advanced ASRS`
+`Advanced ASRS`
+`Library`
+`Library`
+`Library`
+`Library`
+`OPERATORS`
+`OPERATORS`
+`Library`
+`Library`
+`Library`
+`Library`
+`Library`
+`Library`
+`FLOW CONTROL`
+`FLOW CONTROL`
+`Library`
+`Library`
+`TIME`
+`TIME`
+`Library`
+`Library`
+`DATA`
+`DATA`
+`DATA`
+`DATA`
+`DATA`
+`DATA`
+`DATA`
+`DATA`
+`DATA`
+`DATA`
+`DATA`
+`DATA`
+`Library`
+`Library`
+`TOOLS`
+`TOOLS`
+`TOOLS`
+`Library`
+`Library`
+`RESULTS`
+`RESULTS`
+`RESULTS`
+`RESULTS`
+`Gantt Chart`
+`RESULTS`
+`RESULTS`
+`RESULTS`
+`RESULTS`
+`Library`
+`Library`
+`OPTIMIZATION`
+`OPTIMIZATION`
+`Library`
+`Library`
+`VISUALIZATION`
+`VISUALIZATION`
+`VISUALIZATION`
+`Library`
+`Library`
+`Library`
+`Library`
+`SYSTEM`
+`SYSTEM`
+`SYSTEM`
+`SYSTEM`
+`SYSTEM`
+`SYSTEM`
+`SYSTEM`
+`SYSTEM`
+`SYSTEM`
+`SYSTEM`
+`SYSTEM`
+`SYSTEM`
+`SYSTEM`
+`SYSTEM`
+`SYSTEM`
+`SYSTEM`
+`SYSTEM`
+`Experiment Support`
+`SYSTEM`
+`SYSTEM`
+`SYSTEM`
+`SYSTEM`
+`SYSTEM`
+`SYSTEM`
+`Library`
+`Library`
+`main`
+]);
+int015(3, 64, [`Label`
+`t-nocreate`
+`t-nocreate`
+`t-group`
+`t-nocreate`
+`t-nodestroy`
+`centerpoint`
+`t-nodestroy`
+`t-group`
+`t-nocreate`
+`t-group`
+`t-nocreate`
+`t-group`
+`t-nocreate`
+`test`
+`t-nocreate`
+`test`
+`t-group`
+`t-nocreate`
+`test`
+`t-group`
+`t-nocreate`
+`t-nocreate`
+`v-turn table`
+`t-nocreate`
+`t-group`
+`t-nocreate`
+`t-nocreate`
+`t-nocreate`
+`t-nocreate`
+`y1start`
+`t-nocreate`
+`t-group`
+`t-nocreate`
+`t-nocreate`
+`t-nocreate`
+`t-nocreate`
+`t-nocreate`
+`t-nocreate`
+`t-nocreate`
+`t-nocreate`
+`t-nocreate`
+`t-nocreate`
+`t-nocreate`
+`t-nocreate`
+`t-nocreate`
+`t-nocreate`
+`t-nocreate`
+`t-nocreate`
+`t-nocreate`
+`t-nocreate`
+`t-nocreate`
+`t-group`
+`t-nocreate`
+`t-group`
+`t-nocreate`
+`avar_angle_z`
+`avar_angle_y`
+`t-nocreate`
+`t-nocreate`
+`t-nocreate`
+`t-nocreate`
+`avar_angle_z`
+`avar_angle_y`
+`t-nocreate`
+`t-nocreate`
+`t-nocreate`
+`t-nocreate`
+`avar_angle_z`
+`avar_angle_y`
+`t-nocreate`
+`t-nocreate`
+`t-nocreate`
+`t-nocreate`
+`t-group`
+`t-nocreate`
+`t-nocreate`
+`t-nocreate`
+`t-nocreate`
+`start`
+`t-group`
+`t-nocreate`
+`t-group`
+`t-nocreate`
+`t-atomsubclass1`
+`t-atomclass`
+`t-nocreate`
+`t-nocreate`
+`t-nocreate`
+`t-nocreate`
+`t-nocreate`
+`t-nocreate`
+`t-group`
+`t-nocreate`
+`t-group`
+`t-nocreate`
+`t999-dispatcher`
+`t999-transporter`
+`t-group`
+`t-nocreate`
+`t-group`
+`t-nocreate`
+`t-group`
+`t-nocreate`
+`t-alloworganize`
+`notifyrouter`
+`t-group`
+`t-nocreate`
+`t-userevents`
+`t-alloworganize`
+`t-group`
+`t-nocreate`
+`t-alloworganize`
+`t-alloworganize`
+`t-alloworganize`
+`t-excel`
+`t-alloworganize`
+`t-alloworganize`
+`t-alloworganize`
+`v1`
+`t-alloworganize`
+`t-islistening`
+`t-excel`
+`t-alloworganize`
+`t-group`
+`t-nocreate`
+`t-alloworganize`
+`t-alloworganize`
+`t-alloworganize`
+`t-group`
+`t-nocreate`
+`t-group`
+`t-nocreate`
+`t-group`
+`t-nocreate`
+`t-nocreate`
+`t-alloworganize`
+`t-alloworganize`
+`t-alloworganize`
+`v1`
+`t-group`
+`t-nocreate`
+`t-alloworganize`
+`t086`
+`t-group`
+`t-nocreate`
+`t-alloworganize`
+`lightid`
+`islight`
+`t-group`
+`t-nocreate`
+`t-group`
+`t-nocreate`
+`t-nocreate`
+`t-group`
+`t-nocreate`
+`v1`
+`t-nocreate`
+`t-nocreate`
+`t-nocreate`
+`t-nocreate`
+`t-nocreate`
+`t-nocreate`
+`t-nocreate`
+`t-alloworganize`
+`t-nocreate`
+`doneexperimenting`
+`modellayoutwindowwidth`
+`modellayoutwindowheight`
+`t-nocreate`
+`t-nocreate`
+`t-nocreate`
+`t-nocreate`
+`t-nocreate`
+`3dcontrolsvisible`
+`t-nocreate`
+`t-nocreate`
+`t-group`
+`t-nocreate`
+`t-nocreate`
+]);
+int015(4, 64, [`Value`
+1
+1
+1
+1
+1
+0.22
+1
+1
+1
+1
+1
+1
+1
+1
+1
+1
+1
+1
+1
+1
+1
+1
+1
+1
+1
+1
+1
+1
+1
+0.5
+1
+1
+1
+1
+1
+1
+1
+1
+1
+1
+1
+1
+1
+1
+1
+1
+1
+1
+1
+1
+1
+1
+1
+1
+1
+45
+61.8744942979443
+1
+1
+1
+1
+45
+61.8744942979443
+1
+1
+1
+1
+45
+61.8744942979443
+1
+1
+1
+1
+1
+1
+1
+1
+1
+1
+1
+1
+1
+1
+5
+3
+1
+1
+1
+1
+1
+1
+1
+1
+1
+1
+1
+1
+1
+1
+1
+1
+1
+1
+1
+1
+1
+1
+1
+1
+1
+1
+1
+1
+1
+1
+1
+1
+1
+`workdir([\Examples\parts.dbf])`
+1
+1
+1
+1
+1
+1
+1
+1
+1
+1
+1
+1
+1
+1
+1
+1
+1
+1
+1
+25
+1
+1
+1
+1
+1
+1
+1
+1
+1
+1
+1
+1
+1
+1
+`System`
+1
+156
+1
+1
+1
+1
+1
+1
+1
+1
+1
+1
+840
+547
+1
+1
+1
+1
+1
+1
+1
+1
+1
+1
+1
+]);
+Set(OnDestruction, [if( not(atomexists(m(c))), deletemenu([View Atom &Labels]))]);
+Set(OnUser, [do( {Clear all variables} settable(0,0,c), sddb([v2],0,c), sddb([v1],0,c), var([valL],vbValue,0), {Check if 2d3d window is open (otherwise animatom gives an error)} if(  IsmodelLayoutVisible,   repeat(     NoSelectedAtoms,     AddAtomLabelsToTable(SelectedAtoms(Count))   ) ),  if(  nrows(c)>0,  valL := 1  ), {If no animatom or no 2d3d window, show a tree} if(  and(NoSelectedAtoms=0,valL=0),  if(   selectatom(main,main,[Select an atom to display content atom labels]),   do(    setcs,    ForAtomTreeUnder(cs,      do(       valL := valL + DdbNotEmptyCount(a)      ),1    ),    AddAtomLabelsToTable(cs)   )  ) ),  {if not cancel go through all atoms to find the ddb fields} if(  valL <> 0,    {if ddb fields are found make colum headers and show table}  do(   setcell(0,1,[Atom],c),   setcell(0,2,[Container],c),   setcell(0,3,[Label],c),   setcell(0,4,[Value],c),   edittable(c)  ),  msg(concat([No labels defined on ],name(cs),[ or on its content.]),1) ), {Clear all ddb fields} sddb([v2],0,c), sddb([v1],0,c))]);
+SetStatus(0);
+int018;
+int007;

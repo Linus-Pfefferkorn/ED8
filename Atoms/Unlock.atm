@@ -1,0 +1,105 @@
+
+
+{Atom: Unlock}
+
+sets;
+BaseClass;
+createAtom(a, s, [], 1, false);
+int023([Unlock], 3184303, 1256);
+Set(Icon(a), 
+	RegisterIcon(IconsDir([Png\Products\circlegreen.png]), [circlegreen]));
+SetMaterial(
+	RegisterMaterial([Default], 8421504, 8421504, 3289650, 0, 0.100000001490116, 0, false, false, 1, 0), 1, a);
+Set(Version(a), 7.3);
+SetTreeIcon(pDir([Media\Icons\Unlock.ico]));
+Set(Info, [Control work in process.
+
+General
+------------
+Used in combination with Lock. With these atoms one can 
+restrict the maximum atom contents (work in process)  in a certain 
+area of the model. By connecting inputchannel 2 of this atom with 
+outputchannel 2 of Lock one achieves that the atom input is 
+closed when a certain quantity (locklevel)  is reached. This level is 
+calculated as the difference between the total input of Lock 
+and the total output of Unlock. Unlock opens Lock 
+when an atom exits.
+
+Channels: 
+---------------
+2 inputchannels (channel 1: atom in, channel 2: communication with 
+  Lock), 1 outputchannel 
+
+Applications: control work in process, easily model an operation 
+  using a number of atoms in a sequence.
+
+Last revision:
+-------------------
+February, 2008
+]);
+SetChannels(2, 1);
+SetChannelRanges(2, 2, 1, 1);
+int001(57);
+SetSize(1, 1, 0.1);
+LockPosition(false);
+LockSize(false);
+DisableIconRotation(false);
+SetProductCode([]);
+int024;
+Set(OnEvent, [case(eventcode,
+ {1: entered}
+ openoc(1,c),
+ {2: exited check if open after sending}
+ openic(1,c)
+)
+]);
+Set(OnEntered, [do(
+ closeic(1,c),
+ createevent(0,c,1)
+)
+]);
+Set(OnExited, [do(
+ closeoc(1,c),
+ if(atomexists(in(2,c)),sendmessagedirect(in(2,c),[Atomleft],c)),
+ createevent(0,c,2)
+)
+]);
+Set(OnCreation, [if(
+ and(atomexists(prev(c)),atomexists(m(prev(c))),comparetext(stringcopy(name(m(prev(c))),1,4),[Lock])),
+ connect(2,prev(c),2,c),
+ autoconnect
+)
+]);
+Set(OnReset, [closealloc(c)
+]);
+Set(OnUser, [Do(
+  { Delete any current instances of this form.} 
+  GuiDestroy([UnLock]),
+
+  { Register the GUI-form for this atom.}
+  GuiRegister(PDir([\Atoms\UnLock.gui]), 1),
+
+  { Show the GUI-form.}
+  Guicreate([UnLock], [UnLock], 0, c, 0, 1)
+ )
+]);
+Set(OnOcReady, [if(
+ atomexists(first(c)),
+ moverequest(first(c),1),
+ openic(1,c)
+)
+]);
+Set(OnIcReady, [{if a product can not be sent through, it is not allowed in but oc should be open !}
+if(
+ not(icopen(ocicno(1,c),out(1,c))), {connected atom cannot receive}
+ do(
+  closeic(1,c),
+  openoc(1,c)
+ )
+)
+]);
+Set(On2DDraw, [draw2dicon(2,[U])
+]);
+SetStatus(0);
+int018;
+int007;
